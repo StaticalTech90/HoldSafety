@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">HoldSafety</string>
+    <string name="btnSignUp"><u>Sign Up</u></string>
+    <string name="btnRegisterNext"><u>Next</u></string>
+
+    <string-array name="sex">
+        <item>Sex</item>
+        <item>M</item>
+        <item>F</item>
+    </string-array>
+</resources>

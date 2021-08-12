@@ -1,0 +1,229 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".RegisterGoogleActivity"
+    android:background="@color/dark_blue">
+
+    <ImageView
+        android:id="@+id/backArrow"
+        android:layout_width="30dp"
+        android:layout_height="25dp"
+
+        android:layout_marginTop="30dp"
+        android:layout_marginLeft="40dp"
+        android:src="@drawable/arrow"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/lblRegister"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+
+        android:layout_marginTop="76dp"
+        android:fontFamily="sans-serif-black"
+        android:text="Fill Up Details"
+        android:layout_marginLeft="40dp"
+        android:textColor="@color/white"
+        android:textSize="40sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/backArrow" />
+
+    <TextView
+        android:id="@+id/lblRegisterDesc"
+        android:layout_width="330dp"
+        android:layout_height="wrap_content"
+
+        android:fontFamily="sans-serif"
+        android:layout_marginLeft="40dp"
+        android:text="Input the necessary details to login with Google"
+        android:textColor="@color/gray"
+        android:textSize="18sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/lblRegister" />
+
+    <RelativeLayout
+        android:id="@+id/containerLastName"
+        android:layout_width="340dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="35dp"
+
+        android:paddingTop="15dp"
+        android:paddingBottom="15dp"
+
+        android:background="@drawable/white_container"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/lblRegisterDesc">
+
+        <EditText
+
+            android:id="@+id/txtLastName"
+            android:layout_width="180dp"
+            android:layout_height="wrap_content"
+            android:background="@null"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentEnd="true"
+
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
+
+            android:hint="Last Name *"
+
+            android:fontFamily="sans-serif"/>
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/containerFirstName"
+        android:layout_width="340dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="15dp"
+
+        android:paddingTop="15dp"
+        android:paddingBottom="15dp"
+
+        android:background="@drawable/white_container"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/containerLastName">
+
+        <EditText
+
+            android:id="@+id/txtFirstName"
+            android:layout_width="180dp"
+            android:layout_height="wrap_content"
+            android:background="@null"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentEnd="true"
+
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
+
+            android:hint="First Name *"
+
+            android:fontFamily="sans-serif"/>
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/containerMiddleName"
+        android:layout_width="340dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="15dp"
+
+        android:paddingTop="15dp"
+        android:paddingBottom="15dp"
+
+        android:background="@drawable/white_container"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/containerFirstName">
+
+        <EditText
+
+            android:id="@+id/txtMiddleName"
+            android:layout_width="180dp"
+            android:layout_height="wrap_content"
+            android:background="@null"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentEnd="true"
+
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
+
+            android:hint="Middle Name *"
+
+            android:fontFamily="sans-serif"/>
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/containerSex"
+        android:layout_width="340dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="15dp"
+        android:paddingTop="5dp"
+        android:paddingBottom="5dp"
+
+        android:background="@drawable/white_container"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/containerMiddleName"
+        android:orientation="horizontal">
+
+        <Spinner
+            android:id="@+id/txtSex"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@android:color/transparent"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
+            android:spinnerMode="dropdown" />
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/containerMobileNumber"
+        android:layout_width="340dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="15dp"
+
+        android:paddingTop="15dp"
+        android:paddingBottom="15dp"
+
+        android:background="@drawable/white_container"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/containerSex">
+
+        <EditText
+
+            android:id="@+id/txtMobileNumber"
+            android:layout_width="180dp"
+            android:layout_height="wrap_content"
+            android:background="@null"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentEnd="true"
+
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
+
+            android:hint="Mobile Number *"
+            android:fontFamily="sans-serif"/>
+
+
+    </RelativeLayout>
+
+    <Button
+        android:id="@+id/btnUploadID"
+        android:layout_width="120dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="40dp"
+        android:background="@drawable/white_container"
+        android:text="Upload ID"
+        android:textSize="16sp"
+
+        android:onClick="uploadID"
+
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/containerMobileNumber" />
+
+    <Button
+        android:id="@+id/btnProceed"
+        android:layout_width="150dp"
+        android:layout_height="55dp"
+        android:layout_marginTop="50dp"
+        android:background="@drawable/blue_button"
+        android:fontFamily="sans-serif-black"
+        android:onClick="userRegister"
+        android:padding="10dp"
+        android:text="PROCEED"
+        android:textColor="@color/dark_blue"
+        android:textSize="20sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/btnUploadID" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
