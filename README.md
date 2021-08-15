@@ -13,7 +13,7 @@
   <h3 align="center">HoldSafety App Repo</h3>
 
   <p align="center">
-    An awesome README template to jumpstart your projects!
+    bruh moment
 </p>
 
 <!-- TABLE OF CONTENTS -->
