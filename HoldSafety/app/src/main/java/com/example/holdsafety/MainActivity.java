@@ -16,11 +16,11 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onStart() {
         super.onStart();
-        FirebaseUser currentUser = mAuth.getCurrentUser();
-
-        if(currentUser!=null){
-            setContentView(R.layout.activity_account_details);
-        }
+//        FirebaseUser currentUser = mAuth.getCurrentUser();
+//
+//        if(currentUser!=null){
+//            setContentView(R.layout.activity_account_details);
+//        }
     }
 
     @Override
