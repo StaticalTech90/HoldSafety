@@ -3,6 +3,16 @@
     <string name="btnSignUp"><u>Sign Up</u></string>
     <string name="btnRegisterNext"><u>Next</u></string>
     <string name="btnRemoveAccount"><u>Remove Account</u></string>
+    <string name="btnReports"><u>My Reports</u></string>
+    <string name="btnLogout"><u>Logout</u></string>
+
+    <string-array name="contact_name">
+        <item>Danielle David</item>
+        <item>Francis Fabul</item>
+        <item>Nhoriza Icaro</item>
+        <item>Joselito Mandigma</item>
+        <item>Random Name</item>
+    </string-array>
 
     <string-array name="sex">
         <item>Sex</item>

@@ -1,0 +1,68 @@
+{
+  "project_info": {
+    "project_number": "233680747912",
+    "project_id": "holdsafety-4qmag",
+    "storage_bucket": "holdsafety-4qmag.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:233680747912:android:debdea8e49d81544048e3d",
+        "android_client_info": {
+          "package_name": "com.example.holdsafety"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "233680747912-m8q45hor79go5n8aqfkuneklnkshudqs.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDn61HjR-oQtqAVpaxf5ped3k3NKVslldg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "233680747912-m8q45hor79go5n8aqfkuneklnkshudqs.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:233680747912:android:fbde97dac9c288ba048e3d",
+        "android_client_info": {
+          "package_name": "com.example.holdsafetyadmin"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "233680747912-m8q45hor79go5n8aqfkuneklnkshudqs.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDn61HjR-oQtqAVpaxf5ped3k3NKVslldg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "233680747912-m8q45hor79go5n8aqfkuneklnkshudqs.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
