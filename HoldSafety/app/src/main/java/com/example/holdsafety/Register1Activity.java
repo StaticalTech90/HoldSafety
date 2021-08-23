@@ -1,20 +1,26 @@
 package com.example.holdsafety;
 
-import androidx.appcompat.app.AppCompatActivity;
-
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.util.Arrays;
+import androidx.appcompat.app.AppCompatActivity;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 public class Register1Activity extends AppCompatActivity {
@@ -24,20 +30,14 @@ public class Register1Activity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register1);
 
-        Spinner spinnerSex = (Spinner) findViewById(R.id.txtSex);
+        Spinner spinnerSex = findViewById(R.id.txtSex);
         String[] sex = new String[]{"Sex", "M", "F"};
         List<String> sexList = new ArrayList<>(Arrays.asList(sex));
 
         ArrayAdapter<String> spinnerSexAdapter = new ArrayAdapter<String>(this, R.layout.spinner_sex, sexList){
             @Override
             public boolean isEnabled(int position){
-                if(position == 0){
-                    return false;
-                }
-
-                else{
-                    return true;
-                }
+                return position != 0;
             }
 
             @Override
@@ -78,11 +78,65 @@ public class Register1Activity extends AppCompatActivity {
 
             }
         });
-
     }
 
-    public void userRegisterNext(View view){
-        Intent intent = new Intent (this, Register2Activity.class);
+    public void userRegisterNext(View view) throws ParseException {
+        EditText etLastName = findViewById(R.id.txtLastName);
+        EditText etFirstName = findViewById(R.id.txtFirstName);
+        EditText etMiddleName = findViewById(R.id.txtMiddleName);
+        EditText etBirthdate = findViewById(R.id.txtBirthDate);
+        Spinner spSex = findViewById(R.id.txtSex);
+
+        @SuppressLint("SimpleDateFormat") SimpleDateFormat dateFormat = new SimpleDateFormat("MM-dd-yyyy");
+        String date = etBirthdate.getText().toString();
+        String valid = "01-01-2002"; //age restriction
+        Date validDate = dateFormat.parse(valid);
+
+        String sLastName = etLastName.getText().toString();
+        String sFirstName = etFirstName.getText().toString();
+        String sMiddleName = etMiddleName.getText().toString();
+        String sSex = spSex.getSelectedItem().toString();
+        String sDate = etBirthdate.getText().toString();
+
+        try{
+            Date parsedDate = dateFormat.parse(date);
+            assert parsedDate != null;
+            if(parsedDate.after(validDate)){
+                etBirthdate.setHint("Please enter valid birthdate (mm-dd-yyyy)");
+                etBirthdate.setError("Please enter valid birthdate (mm-dd-yyyy)");
+            } else {
+                if(TextUtils.isEmpty(etLastName.getText())){
+                    etLastName.setHint("please enter last name");
+                    etLastName.setError("please enter last name");
+                } else if(TextUtils.isEmpty(etFirstName.getText())){
+                    etFirstName.setHint("please enter first name");
+                    etFirstName.setError("please enter first name");
+                } else if(TextUtils.isEmpty(etBirthdate.getText())){
+                    etBirthdate.setHint("please enter birthdate (mm-dd-yyyy)");
+                    etBirthdate.setError("please enter birthdate (mm-dd-yyyy)");
+                } else if(spSex.getSelectedItem().equals("Sex")){
+                    ((TextView)spSex.getSelectedView()).setError("please select sex");
+                } else {
+                    //send data over to register2 activity
+                    //not the best practice but fragments are tricky
+                    Intent intent = new Intent (getApplicationContext(), Register2Activity.class);
+                    intent.putExtra("lastName", sLastName);
+                    intent.putExtra("firstName", sFirstName);
+                    intent.putExtra("middleName", sMiddleName);
+                    intent.putExtra("sex", sSex);
+                    intent.putExtra("birthDate", sDate);
+                    startActivity(intent);
+                }
+            }
+        } catch(ParseException pe){
+            etBirthdate.setHint("Please enter valid birthdate");
+            etBirthdate.setError("Please enter valid birthdate");
+        }
+    }
+
+    public void goBack(View view){
+        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+        finish();
         startActivity(intent);
     }
 

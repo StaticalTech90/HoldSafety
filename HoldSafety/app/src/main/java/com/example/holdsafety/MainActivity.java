@@ -7,7 +7,21 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Toast;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+
 public class MainActivity extends AppCompatActivity {
+    FirebaseAuth mAuth;
+
+    @Override
+    public void onStart() {
+        super.onStart();
+//        FirebaseUser currentUser = mAuth.getCurrentUser();
+//
+//        if(currentUser!=null){
+//            setContentView(R.layout.activity_account_details);
+//        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
