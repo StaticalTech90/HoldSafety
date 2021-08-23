@@ -39,6 +39,11 @@ dependencies {
 
     implementation 'com.google.firebase:firebase-auth'
     implementation 'com.google.firebase:firebase-firestore'
+<<<<<<< HEAD
+=======
+    implementation 'androidx.cardview:cardview:1.0.0'
+    implementation 'androidx.recyclerview:recyclerview:1.2.1'
+>>>>>>> a0e652d2cdcb3b2e96daa42d9046600539dc7d1b
 
 
     testImplementation 'junit:junit:4.13.2'
