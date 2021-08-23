@@ -156,9 +156,9 @@
             android:id="@+id/txtSex"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@android:color/transparent"
             android:layout_marginStart="20dp"
             android:layout_marginEnd="20dp"
+            android:background="@android:color/transparent"
             android:spinnerMode="dropdown" />
 
     </RelativeLayout>

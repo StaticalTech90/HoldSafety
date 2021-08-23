@@ -1,5 +1,7 @@
 package com.example.holdsafety;
 
+import static android.content.ContentValues.TAG;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -94,11 +96,11 @@ public class MainActivity extends AppCompatActivity {
             try {
                 // Google Sign In was successful, authenticate with Firebase
                 GoogleSignInAccount account = task.getResult(ApiException.class);
-                //Log.d(TAG, "firebaseAuthWithGoogle:" + account.getId());
+                Log.d(TAG, "firebaseAuthWithGoogle:" + account.getId());
                 firebaseAuthWithGoogle(account.getIdToken());
             } catch (ApiException e) {
                 // Google Sign In failed, update UI appropriately
-                //Log.w(TAG, "Google sign in failed", e);
+                Log.w(TAG, "Google sign in failed", e);
                 Toast.makeText(getApplicationContext(), "Google Sign in Failed.", Toast.LENGTH_LONG).show();
             }
         }
@@ -112,7 +114,7 @@ public class MainActivity extends AppCompatActivity {
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
                             // Sign in success, update UI with the signed-in user's information
-                            //Log.d(TAG, "signInWithCredential:success");
+                            Log.d(TAG, "signInWithCredential:success");
                             FirebaseUser user = mAuth.getCurrentUser();
                             // TODO - Screen change to RegisterGoogleActivity
                             Intent fillDetails = new Intent(getApplicationContext(), RegisterGoogleActivity.class);
@@ -120,7 +122,7 @@ public class MainActivity extends AppCompatActivity {
                             //updateUI(user);
                         } else {
                             // If sign in fails, display a message to the user.
-                            //Log.w(TAG, "signInWithCredential:failure", task.getException());
+                            Log.w(TAG, "signInWithCredential:failure", task.getException());
                             Toast.makeText(getApplicationContext(), "Google Sign in Failed.", Toast.LENGTH_LONG).show();
                             //updateUI(null);
                         }
