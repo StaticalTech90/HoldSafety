@@ -64,16 +64,16 @@
             android:id="@+id/txtLastName"
             android:layout_width="180dp"
             android:layout_height="wrap_content"
-            android:background="@null"
             android:layout_alignParentStart="true"
             android:layout_alignParentEnd="true"
-
             android:layout_marginStart="20dp"
+
             android:layout_marginEnd="20dp"
+            android:background="@null"
 
-            android:hint="Last Name *"
+            android:fontFamily="sans-serif"
 
-            android:fontFamily="sans-serif"/>
+            android:hint="Last Name *" />
     </RelativeLayout>
 
     <RelativeLayout
@@ -182,15 +182,15 @@
             android:id="@+id/txtMobileNumber"
             android:layout_width="180dp"
             android:layout_height="wrap_content"
-            android:background="@null"
             android:layout_alignParentStart="true"
             android:layout_alignParentEnd="true"
-
             android:layout_marginStart="20dp"
-            android:layout_marginEnd="20dp"
 
-            android:hint="Mobile Number *"
-            android:fontFamily="sans-serif"/>
+            android:layout_marginEnd="20dp"
+            android:background="@null"
+
+            android:fontFamily="sans-serif"
+            android:hint="Mobile Number *" />
 
 
     </RelativeLayout>

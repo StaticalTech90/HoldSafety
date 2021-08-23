@@ -11,27 +11,53 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 public class RegisterGoogleActivity extends AppCompatActivity {
+    EditText lastName, firstName, middleName, mobileNo;
+    Button proceed;
+    Spinner spinnerSex;
     public Uri imageURI;
+
+    String email, sex;
+    Date birthDate;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register_google);
 
-        Spinner spinnerSex = (Spinner) findViewById(R.id.txtSex);
+        // check if a user is signed in
+        GoogleSignInAccount signInAccount = GoogleSignIn.getLastSignedInAccount(this);
+        // get the details from their Google account
+        if(signInAccount != null) {
+            email = signInAccount.getEmail();
+        }
+
+        lastName = findViewById(R.id.txtLastName);
+        firstName = findViewById(R.id.txtFirstName);
+        middleName = findViewById(R.id.txtMiddleName);
+        mobileNo = findViewById(R.id.txtMobileNumber);
+        proceed = findViewById(R.id.btnProceed);
+        spinnerSex = findViewById(R.id.txtSex);
         String[] sex = new String[]{"Sex", "M", "F"};
         List<String> sexList = new ArrayList<>(Arrays.asList(sex));
 
-        ArrayAdapter<String> spinnerSexAdapter = new ArrayAdapter<String>(this, R.layout.spinner_sex, sexList){
+        ArrayAdapter<String> spinnerSexAdapter = new ArrayAdapter<String>(this, R.layout.spinner_sex, sexList) {
             @Override
             public boolean isEnabled(int position){
                 if(position == 0){
@@ -81,6 +107,16 @@ public class RegisterGoogleActivity extends AppCompatActivity {
 
             }
         });
+
+        proceed.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(lastName != null && firstName != null && middleName != null && mobileNo != null
+                    && imageURI != null) {
+                    // TODO: insert to DB
+                }
+            }
+        });
     }
 
     public void userRegister(View view){
@@ -104,4 +140,6 @@ public class RegisterGoogleActivity extends AppCompatActivity {
             //uploadPicture();
         }
     }
+
+
 }

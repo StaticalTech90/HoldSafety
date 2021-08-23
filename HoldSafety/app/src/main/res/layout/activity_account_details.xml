@@ -27,7 +27,7 @@
 
         android:layout_marginTop="32dp"
         android:fontFamily="sans-serif-black"
-        android:text="@string/btnRemoveAccount"
+        android:text="Remove Account"
         android:textColor="@color/red"
         android:textSize="15sp"
         app:layout_constraintStart_toEndOf="@+id/backArrow"

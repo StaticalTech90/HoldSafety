@@ -2,6 +2,7 @@
     <string name="app_name">HoldSafety</string>
     <string name="btnSignUp"><u>Sign Up</u></string>
     <string name="btnRegisterNext"><u>Next</u></string>
+    <string name="default_web_client_id">308</string>
 
     <string-array name="sex">
         <item>Sex</item>
