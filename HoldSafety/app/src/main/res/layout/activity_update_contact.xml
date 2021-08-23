@@ -1,0 +1,257 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".UpdateContactActivity"
+    android:background="@color/dark_blue">
+
+    <ImageView
+        android:id="@+id/backArrow"
+        android:layout_width="30dp"
+        android:layout_height="25dp"
+
+        android:layout_marginTop="30dp"
+        android:layout_marginLeft="40dp"
+        android:src="@drawable/left_arrow"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/lblNumOfContacts"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+
+        android:layout_marginTop="32dp"
+        android:layout_marginEnd="40dp"
+
+        android:fontFamily="sans-serif"
+        android:text="Number of Contacts: 2/5"
+        android:textColor="@color/gray"
+        android:textSize="15sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/lblUpdateContact"
+        android:layout_width="330dp"
+        android:layout_height="wrap_content"
+
+        android:layout_marginTop="76dp"
+        android:fontFamily="sans-serif-black"
+        android:text="Update Contact Details"
+        android:layout_marginLeft="40dp"
+        android:textColor="@color/white"
+        android:textSize="33sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/backArrow" />
+
+    <TextView
+        android:id="@+id/lblUpdateContactDesc"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+
+        android:fontFamily="sans-serif"
+        android:layout_marginLeft="40dp"
+        android:text="Emergency Contact Information"
+        android:textColor="@color/gray"
+        android:textSize="18sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/lblUpdateContact" />
+
+    <RelativeLayout
+        android:id="@+id/layoutAccountDetails"
+        android:layout_width="330dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/lblUpdateContactDesc"
+        android:layout_marginTop="40dp">
+
+        <RelativeLayout
+            android:id="@+id/layoutLastName"
+            android:layout_width="160dp"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true">
+
+            <TextView
+                android:id="@+id/lblLastName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+
+                android:fontFamily="sans-serif-light"
+                android:text="Contact Last Name"
+                android:textColor="@color/white"
+                android:textSize="12sp"
+                app:layout_constraintStart_toStartOf="parent"
+                />
+
+            <EditText
+
+                android:id="@+id/txtLastName"
+                android:layout_width="165dp"
+                android:layout_height="wrap_content"
+
+                android:layout_below="@+id/lblLastName"
+
+                android:fontFamily="sans-serif-black"
+                android:text="David"
+                android:textColor="@color/white"
+                android:backgroundTint="@color/white"/>
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/layoutFirstName"
+            android:layout_width="160dp"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true">
+
+            <TextView
+                android:id="@+id/lblFirstName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+
+                android:fontFamily="sans-serif-light"
+                android:text="Contact First Name"
+                android:textColor="@color/white"
+                android:textSize="12sp"
+                app:layout_constraintStart_toStartOf="parent"
+                />
+
+            <EditText
+
+                android:id="@+id/txtFirstName"
+                android:layout_width="165dp"
+                android:layout_height="wrap_content"
+
+                android:layout_below="@+id/lblFirstName"
+
+                android:fontFamily="sans-serif-black"
+                android:text="Danielle"
+                android:textColor="@color/white"
+                android:backgroundTint="@color/white"/>
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/layoutRelation"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_below="@id/layoutLastName"
+            android:layout_marginTop="10dp">
+
+            <TextView
+                android:id="@+id/lblRelation"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+
+                android:fontFamily="sans-serif-light"
+                android:text="Relation with Contact"
+                android:textColor="@color/white"
+                android:textSize="12sp"
+                app:layout_constraintStart_toStartOf="parent"
+                />
+
+            <EditText
+
+                android:id="@+id/txtRelation"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+
+                android:layout_below="@+id/lblRelation"
+
+                android:fontFamily="sans-serif-black"
+                android:text="Friend"
+                android:textColor="@color/white"
+                android:backgroundTint="@color/white"/>
+        </RelativeLayout>
+
+
+        <RelativeLayout
+            android:id="@+id/layoutMobileNumber"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_below="@id/layoutRelation"
+            android:layout_marginTop="10dp">
+
+            <TextView
+                android:id="@+id/lblMobileNumber"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+
+                android:fontFamily="sans-serif-light"
+                android:text="Mobile Number"
+                android:textColor="@color/white"
+                android:textSize="12sp"
+                app:layout_constraintStart_toStartOf="parent"
+                />
+
+            <EditText
+
+                android:id="@+id/txtMobileNumber"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+
+                android:layout_below="@+id/lblMobileNumber"
+
+                android:fontFamily="sans-serif-black"
+                android:text="09125784903"
+                android:textColor="@color/white"
+                android:backgroundTint="@color/white"/>
+        </RelativeLayout>
+
+
+        <RelativeLayout
+            android:id="@+id/layoutEmail"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/layoutMobileNumber"
+            android:layout_marginTop="10dp">
+
+            <TextView
+                android:id="@+id/lblEmail"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+
+                android:fontFamily="sans-serif-light"
+                android:text="Email"
+                android:textColor="@color/white"
+                android:textSize="12sp"
+                app:layout_constraintStart_toStartOf="parent"
+                />
+
+            <EditText
+
+                android:id="@+id/txtPassword"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+
+                android:layout_below="@+id/lblEmail"
+
+                android:fontFamily="sans-serif-black"
+                android:text="danielle.david@gmail.com"
+                android:textColor="@color/white"
+                android:backgroundTint="@color/white"/>
+        </RelativeLayout>
+
+    </RelativeLayout>
+
+    <Button
+        android:id="@+id/btnUpdateContact"
+        android:layout_width="240dp"
+        android:layout_height="55dp"
+        android:layout_marginTop="50dp"
+        android:background="@drawable/blue_button"
+        android:fontFamily="sans-serif-black"
+        android:onClick="updateContact"
+        android:padding="10dp"
+        android:text="UPDATE CONTACT"
+        android:textColor="@color/dark_blue"
+        android:textSize="20sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/layoutAccountDetails" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
