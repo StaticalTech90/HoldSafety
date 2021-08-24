@@ -124,11 +124,8 @@ public class Register1Activity extends AppCompatActivity {
                     intent.putExtra("firstName", sFirstName);
                     intent.putExtra("middleName", sMiddleName);
                     intent.putExtra("sex", sSex);
-<<<<<<< HEAD
                     intent.putExtra("date", sDate);
-=======
                     intent.putExtra("birthDate", sDate);
->>>>>>> a0e652d2cdcb3b2e96daa42d9046600539dc7d1b
                     startActivity(intent);
                 }
             }
