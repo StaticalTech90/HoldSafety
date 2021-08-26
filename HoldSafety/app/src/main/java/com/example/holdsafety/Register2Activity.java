@@ -120,13 +120,13 @@ public class Register2Activity extends AppCompatActivity {
                                     }
                                 });
 
+                        startActivity(new Intent(getApplicationContext(), MenuActivity.class));
                     } else {
                         // If sign up fails, display a message to the user.
                         Log.w(TAG, "signUpWithEmailPassword:failure", task.getException());
                         Toast.makeText(getApplicationContext(), Objects.requireNonNull(task.getException()).toString(),
                                 Toast.LENGTH_SHORT).show();
                     }
-
                 });
             }
         }

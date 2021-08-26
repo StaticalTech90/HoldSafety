@@ -9,16 +9,25 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.HoldSafety">
-        <activity android:name=".Register2Activity" />
         <activity android:name=".Register1Activity" />
-        <activity android:name=".MainActivity">
+        <activity android:name=".Register2Activity" />
+        <activity android:name=".AccountDetailsActivity" />
+        <activity android:name=".AddContactActivity" />
+        <activity android:name=".DesignateContactActivity" />
+        <activity android:name=".RegisterGoogleActivity" />
+        <activity android:name=".SelectContactActivity" />
+        <activity android:name=".UpdateContactActivity" />
+        <activity android:name=".VerifyUserActivity" />
+
+        <activity android:name=".MenuActivity" />
+        <activity android:name=".MainActivity"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".Register2Activity$Register2Activity" />
     </application>
 
 </manifest>

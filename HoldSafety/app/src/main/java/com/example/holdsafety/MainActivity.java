@@ -81,7 +81,7 @@ public class MainActivity extends AppCompatActivity {
 
         //redirects user to landing page if already logged in
         if(fAuth.getCurrentUser() != null){
-            startActivity(new Intent(MainActivity.this, MenuActivity.class));
+            startActivity(new Intent(getApplicationContext(), MenuActivity.class));
             finish();
         }
 
