@@ -5,7 +5,8 @@
     <string name="btnRemoveAccount"><u>Remove Account</u></string>
     <string name="btnReports"><u>My Reports</u></string>
     <string name="btnLogout"><u>Logout</u></string>
-    <string name="default_web_client">308</string>
+    <!--This is the default client to prevent API error 10-->
+    <string name="default_web_client">233680747912-m8q45hor79go5n8aqfkuneklnkshudqs.apps.googleusercontent.com</string>
 
     <string-array name="contact_name">
         <item>Danielle David</item>
