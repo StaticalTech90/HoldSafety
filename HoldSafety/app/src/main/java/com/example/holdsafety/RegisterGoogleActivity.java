@@ -1,5 +1,8 @@
 package com.example.holdsafety;
 
+import static android.content.ContentValues.TAG;
+
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -7,38 +10,75 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
+import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.FirebaseFirestore;
+
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 public class RegisterGoogleActivity extends AppCompatActivity {
+    EditText etLastName, etFirstName, etMiddleName, etMobileNo;
+    Button proceed;
+    Spinner spinnerSex;
     public Uri imageURI;
+
+    private FirebaseAuth mAuth;
+    FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+    String email, sex;
+    Date birthDate;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register_google);
 
-        Spinner spinnerSex = (Spinner) findViewById(R.id.txtSex);
+        // check if a user is signed in
+        GoogleSignInAccount signInAccount = GoogleSignIn.getLastSignedInAccount(this);
+        // get the details from their Google account
+        if(signInAccount != null) {
+            email = signInAccount.getEmail();
+        }
+
+        etLastName = findViewById(R.id.txtLastName);
+        etFirstName = findViewById(R.id.txtFirstName);
+        etMiddleName = findViewById(R.id.txtMiddleName);
+        etMobileNo = findViewById(R.id.txtMobileNumber);
+        proceed = findViewById(R.id.btnProceed);
+        spinnerSex = findViewById(R.id.txtSex);
         String[] sex = new String[]{"Sex", "M", "F"};
         List<String> sexList = new ArrayList<>(Arrays.asList(sex));
 
-        ArrayAdapter<String> spinnerSexAdapter = new ArrayAdapter<String>(this, R.layout.spinner_sex, sexList){
+        ArrayAdapter<String> spinnerSexAdapter = new ArrayAdapter<String>(this, R.layout.spinner_sex, sexList) {
             @Override
             public boolean isEnabled(int position){
                 if(position == 0){
                     return false;
-                }
-
-                else{
+                } else{
                     return true;
                 }
             }
@@ -50,9 +90,7 @@ public class RegisterGoogleActivity extends AppCompatActivity {
 
                 if(position==0){
                     tv.setTextColor(getResources().getColor(R.color.hint_color));
-                }
-
-                else{
+                } else{
                     tv.setTextColor(Color.BLACK);
                 }
                 return view;
@@ -81,6 +119,54 @@ public class RegisterGoogleActivity extends AppCompatActivity {
 
             }
         });
+
+        proceed.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Map<String, Object> docUsers = new HashMap<>();
+
+                String lastName = etLastName.toString();
+                String firstName = etFirstName.toString();
+                String middleName = etMiddleName.toString();
+                String mobileNo = etMobileNo.toString();
+
+                if(TextUtils.isEmpty(etLastName.getText())) {
+                    etLastName.setHint("Enter Last Name");
+                    etLastName.setError("Enter Last Name");
+                } else if(TextUtils.isEmpty(etFirstName.getText())) {
+                    etFirstName.setHint("Enter Last Name");
+                    etFirstName.setError("Enter Last Name");
+                } else if(TextUtils.isEmpty(etMobileNo.getText())) {
+                    etMobileNo.setHint("Enter Last Name");
+                    etMobileNo.setError("Enter Last Name");
+                }
+
+                // TODO: insert to DB
+                docUsers.put("LastName", lastName);
+                docUsers.put("FirstName", firstName);
+                docUsers.put("MiddleName", middleName);
+                docUsers.put("Sex", spinnerSex);
+                docUsers.put("BirthDate", birthDate); // currently empty
+                docUsers.put("MobileNumber", mobileNo);
+                docUsers.put("Email", email);
+
+                FirebaseUser user = mAuth.getCurrentUser();
+
+                db.collection("users").document(user.getUid()).set(docUsers)
+                        .addOnSuccessListener(new OnSuccessListener<Void>() {
+                            @Override
+                            public void onSuccess(Void aVoid) {
+                                Log.d(TAG, "DocumentSnapshot successfully written!");
+                            }
+                        })
+                        .addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                Log.w(TAG, "Error writing document", e);
+                            }
+                        });
+            }
+        });
     }
 
     public void userRegister(View view){
@@ -104,4 +190,6 @@ public class RegisterGoogleActivity extends AppCompatActivity {
             //uploadPicture();
         }
     }
+
+
 }
