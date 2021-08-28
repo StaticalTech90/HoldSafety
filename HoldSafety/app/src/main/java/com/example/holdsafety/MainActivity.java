@@ -26,20 +26,8 @@ import com.google.firebase.auth.GoogleAuthProvider;
 
 public class MainActivity extends AppCompatActivity {
     FirebaseAuth mAuth;
-
-    @Override
-    public void onStart() {
-        super.onStart();
-//        FirebaseUser currentUser = mAuth.getCurrentUser();
-//
-//        if(currentUser!=null){
-//            setContentView(R.layout.activity_account_details);
-//        }
-    }
-
     private GoogleSignInClient mGoogleSignInClient;
     private final static int RC_SIGN_IN = 308;
-    private FirebaseAuth mAuth;
 
     @Override
     protected void onStart() {
@@ -73,7 +61,7 @@ public class MainActivity extends AppCompatActivity {
     private void createRequest() {
         // Configure Google Sign In
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestIdToken(getString(R.string.default_web_client_id))
+                .requestIdToken(getString(R.string.default_web_client))
                 .requestEmail()
                 .build();
 
