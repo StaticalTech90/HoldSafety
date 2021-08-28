@@ -64,11 +64,6 @@ public class RegisterGoogleActivity extends AppCompatActivity {
             email = signInAccount.getEmail();
         }
 
-        etLastName = findViewById(R.id.txtLastName);
-        etFirstName = findViewById(R.id.txtFirstName);
-        etMiddleName = findViewById(R.id.txtMiddleName);
-        etMobileNo = findViewById(R.id.txtMobileNumber);
-        proceed = findViewById(R.id.btnProceed);
         spinnerSex = findViewById(R.id.txtSex);
         String[] sex = new String[]{"Sex", "M", "F"};
         List<String> sexList = new ArrayList<>(Arrays.asList(sex));
@@ -119,58 +114,63 @@ public class RegisterGoogleActivity extends AppCompatActivity {
 
             }
         });
-
-        proceed.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Map<String, Object> docUsers = new HashMap<>();
-
-                String lastName = etLastName.toString();
-                String firstName = etFirstName.toString();
-                String middleName = etMiddleName.toString();
-                String mobileNo = etMobileNo.toString();
-
-                if(TextUtils.isEmpty(etLastName.getText())) {
-                    etLastName.setHint("Enter Last Name");
-                    etLastName.setError("Enter Last Name");
-                } else if(TextUtils.isEmpty(etFirstName.getText())) {
-                    etFirstName.setHint("Enter Last Name");
-                    etFirstName.setError("Enter Last Name");
-                } else if(TextUtils.isEmpty(etMobileNo.getText())) {
-                    etMobileNo.setHint("Enter Last Name");
-                    etMobileNo.setError("Enter Last Name");
-                }
-
-                // TODO: insert to DB
-                docUsers.put("LastName", lastName);
-                docUsers.put("FirstName", firstName);
-                docUsers.put("MiddleName", middleName);
-                docUsers.put("Sex", spinnerSex);
-                docUsers.put("BirthDate", birthDate); // currently empty
-                docUsers.put("MobileNumber", mobileNo);
-                docUsers.put("Email", email);
-
-                FirebaseUser user = mAuth.getCurrentUser();
-
-                db.collection("users").document(user.getUid()).set(docUsers)
-                        .addOnSuccessListener(new OnSuccessListener<Void>() {
-                            @Override
-                            public void onSuccess(Void aVoid) {
-                                Log.d(TAG, "DocumentSnapshot successfully written!");
-                            }
-                        })
-                        .addOnFailureListener(new OnFailureListener() {
-                            @Override
-                            public void onFailure(@NonNull Exception e) {
-                                Log.w(TAG, "Error writing document", e);
-                            }
-                        });
-            }
-        });
     }
 
+    //refactored userRegister onClickListener into independent function
     public void userRegister(View view){
-        Toast.makeText(getApplicationContext(), "Register with Google", Toast.LENGTH_SHORT).show();
+        Map<String, Object> docUsers = new HashMap<>();
+        etLastName = findViewById(R.id.txtLastName);
+        etFirstName = findViewById(R.id.txtFirstName);
+        etMiddleName = findViewById(R.id.txtMiddleName);
+        etMobileNo = findViewById(R.id.txtMobileNumber);
+        proceed = findViewById(R.id.btnProceed);
+        spinnerSex = findViewById(R.id.txtSex);
+
+        Intent intent = getIntent();
+        String userId = intent.getStringExtra("userID");
+        String uEmail = intent.getStringExtra("userEmail");
+        String lastName = etLastName.getText().toString();
+        String firstName = etFirstName.getText().toString();
+        String middleName = etMiddleName.getText().toString();
+        String mobileNo = etMobileNo.getText().toString();
+        String sex = spinnerSex.getSelectedItem().toString();
+
+        if(TextUtils.isEmpty(etLastName.getText())) {
+            etLastName.setHint("Enter Last Name");
+            etLastName.setError("Enter Last Name");
+        } else if(TextUtils.isEmpty(etFirstName.getText())) {
+            etFirstName.setHint("Enter First Name");
+            etFirstName.setError("Enter First Name");
+        } else if(TextUtils.isEmpty(etMobileNo.getText())) {
+            etMobileNo.setHint("Enter Mobile number");
+            etMobileNo.setError("Enter Mobile number");
+        }
+
+        // TODO: insert to DB
+        docUsers.put("LastName", lastName);
+        docUsers.put("FirstName", firstName);
+        docUsers.put("MiddleName", middleName);
+        docUsers.put("Sex", sex);
+        docUsers.put("BirthDate", birthDate); // currently empty
+        docUsers.put("MobileNumber", mobileNo);
+        docUsers.put("Email", uEmail);
+
+        db.collection("users").document(userId).set(docUsers)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Toast.makeText(getApplicationContext(), "DocumentSnapshot successfully written!", Toast.LENGTH_SHORT).show();
+                        Log.d(TAG, "DocumentSnapshot successfully written!");
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Toast.makeText(getApplicationContext(), "Error writing document", Toast.LENGTH_SHORT).show();
+                        Log.w(TAG, "Error writing document", e);
+                    }
+                });
+
     }
 
     public void uploadID(View view){
@@ -178,7 +178,7 @@ public class RegisterGoogleActivity extends AppCompatActivity {
         Intent intent = new Intent();
         intent.setType("image/*");
         intent.setAction(Intent.ACTION_GET_CONTENT);
-        startActivityForResult(intent, 1);
+        startActivityIfNeeded(intent, 1);
     }
 
     @Override

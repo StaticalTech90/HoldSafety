@@ -12,7 +12,8 @@
         <activity android:name=".Register2Activity" />
         <activity android:name=".Register1Activity" />
         <activity android:name=".RegisterGoogleActivity" />
-        <activity android:name=".MainActivity">
+        <activity android:name=".MainActivity"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
