@@ -23,7 +23,9 @@ public class AccountDetailsActivity extends AppCompatActivity {
         Intent intent = new Intent();
         intent.setType("image/*");
         intent.setAction(Intent.ACTION_GET_CONTENT);
-        startActivityForResult(intent, 1);
+
+        //deprecated -> wont work
+        //startActivityForResult(intent, 1);
     }
 
     public void accountUpdate(View view){
