@@ -34,6 +34,7 @@ import com.google.firebase.auth.GoogleAuthProvider;
 public class MainActivity extends AppCompatActivity {
 
     FirebaseAuth mAuth;
+    FirebaseUser user;
     private GoogleSignInClient mGoogleSignInClient;
     private final static int RC_SIGN_IN = 308;
     EditText txtEmailOrMobileNum, txtPassword;
@@ -45,10 +46,10 @@ public class MainActivity extends AppCompatActivity {
         super.onStart();
 
         // check if user is already logged in
-        FirebaseUser user = mAuth.getCurrentUser();
+        user = mAuth.getCurrentUser();
         if(user != null) {
             // TODO Home screen for already logged-in users
-            //Intent intent = new Intent(getApplicationContext(), homescreen.class)
+            //Intent intent = new Intent(getApplicationContext(), MenuActivity.java)
             //startActivity(intent);
         }
     }
@@ -67,18 +68,6 @@ public class MainActivity extends AppCompatActivity {
                 userLoginWithGoogle(v);
             }
         });
-    }
-
-    private void createRequest() {
-        // Configure Google Sign In
-        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestIdToken(getString(R.string.default_web_client))
-                .requestEmail()
-                .build();
-
-        // Build a GoogleSignInClient with the options specified by gso.
-        mGoogleSignInClient = GoogleSignIn.getClient(getApplicationContext(), gso);
-    }
 
         txtEmailOrMobileNum = findViewById(R.id.txtEmailOrMobileNum);
         txtPassword = findViewById(R.id.txtPassword);
@@ -162,11 +151,25 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    public void userLoginWithGoogle(View view){
+    private void createRequest() {
+        // Configure Google Sign In
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestIdToken(getString(R.string.default_web_client))
+                .requestEmail()
+                .build();
+
+        // Build a GoogleSignInClient with the options specified by gso.
+        mGoogleSignInClient = GoogleSignIn.getClient(getApplicationContext(), gso);
+    }
+
+    public void userLoginWithGoogle(View view) {
         Toast.makeText(getApplicationContext(), "Login With Google", Toast.LENGTH_LONG).show();
 
         Intent signInIntent = mGoogleSignInClient.getSignInIntent();
         startActivityIfNeeded(signInIntent, RC_SIGN_IN);
+
+    }
+
     public void loginUser(String email,String password){
         //authentication
         mAuth.signInWithEmailAndPassword(email,password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {

@@ -192,4 +192,9 @@ public class RegisterGoogleActivity extends AppCompatActivity {
     }
 
 
+    public void goBack(View view){
+        Intent intent = new Intent(getApplicationContext(), MenuActivity.class);
+        finish();
+        startActivity(intent);
+    }
 }
