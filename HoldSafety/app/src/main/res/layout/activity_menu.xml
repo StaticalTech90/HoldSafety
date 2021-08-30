@@ -70,10 +70,10 @@
                 android:layout_height="wrap_content"
 
                 android:fontFamily="sans-serif-black"
-                android:textSize="18sp"
+                android:text="User"
 
-                android:text="Daniel Tiongco"
-                android:textColor="@color/white"/>
+                android:textColor="@color/white"
+                android:textSize="18sp" />
 
             <TextView
                 android:id="@+id/lblAccountDetails"
@@ -315,14 +315,13 @@
     </RelativeLayout>
 
     <TextView
-        android:id="@+id/btnLogout"
+        android:id="@+id/txtLogout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-
         android:layout_marginTop="32dp"
-
         android:fontFamily="sans-serif-black"
-        android:text="@string/btnLogout"
+        android:onClick="logoutUser"
+        android:text="Logout"
         android:textColor="@color/red"
         android:textSize="18sp"
         app:layout_constraintEnd_toEndOf="parent"

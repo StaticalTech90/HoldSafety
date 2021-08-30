@@ -1,21 +1,33 @@
 package com.example.holdsafety;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+
 public class AccountDetailsActivity extends AppCompatActivity {
     public Uri imageURI;
+    FirebaseUser user;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_account_details);
+
+        user = FirebaseAuth.getInstance().getCurrentUser();
     }
 
     public void uploadID(View view){
@@ -46,5 +58,45 @@ public class AccountDetailsActivity extends AppCompatActivity {
             Toast.makeText(getApplicationContext(), "Selected " + imageURI, Toast.LENGTH_SHORT).show();
             //uploadPicture();
         }
+    }
+
+    public void removeAccount(View view){
+        user = FirebaseAuth.getInstance().getCurrentUser();
+
+        AlertDialog.Builder dialog;
+        dialog = new AlertDialog.Builder(AccountDetailsActivity.this);
+        dialog.setTitle("Remove Account");
+        dialog.setMessage("Are you sure you want to delete your account? " +
+                "Keep in mind that all information and files would be deleted from the system.");
+
+        dialog.setPositiveButton("Delete", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                user.delete().addOnCompleteListener(new OnCompleteListener<Void>() {
+                            @Override
+                            public void onComplete(@NonNull Task<Void> task) {
+                                if (task.isSuccessful()) {
+                                    Toast.makeText(AccountDetailsActivity.this, "Account Deleted", Toast.LENGTH_SHORT).show();
+
+                                    startActivity(new Intent(AccountDetailsActivity.this, MainActivity.class));
+                                    finish();
+                                }
+                                else{
+                                    Toast.makeText(AccountDetailsActivity.this, "Error: " + task.getException().getMessage(), Toast.LENGTH_LONG).show();
+                                }
+                            }
+                        });
+            }
+        });
+
+        dialog.setNegativeButton("Dismiss", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                dialogInterface.dismiss();
+            }
+        });
+
+        AlertDialog alertDialog = dialog.create();
+        alertDialog.show();
     }
 }

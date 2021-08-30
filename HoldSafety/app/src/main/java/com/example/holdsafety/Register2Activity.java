@@ -97,38 +97,38 @@ public class Register2Activity extends AppCompatActivity {
             etConPassword.setError("please re-enter password");
         } else {
             //register
-                if(!password.equals(cPassword)){
-                    Toast.makeText(getApplicationContext(), "Passwords must be the same.", Toast.LENGTH_SHORT).show();
-                } else {
-                    mAuth.createUserWithEmailAndPassword(email,password).addOnCompleteListener(this, task -> {
-                        if (task.isSuccessful()) {
-                            // Sign up success
-                            Log.d(TAG, "signUpWithEmailPassword:success");
-                            FirebaseUser user = mAuth.getCurrentUser();
+            if(!password.equals(cPassword)){
+                Toast.makeText(getApplicationContext(), "Passwords must be the same.", Toast.LENGTH_SHORT).show();
+            } else {
+                mAuth.createUserWithEmailAndPassword(email,password).addOnCompleteListener(this, task -> {
+                    if (task.isSuccessful()) {
+                        // Sign up success
+                        Log.d(TAG, "signUpWithEmailPassword:success");
+                        FirebaseUser user = mAuth.getCurrentUser();
 
-                            db.collection("users").document(user.getUid()).set(docUsers)
-                                    .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                        @Override
-                                        public void onSuccess(Void aVoid) {
-                                            Log.d(TAG, "DocumentSnapshot successfully written!");
-                                        }
-                                    })
-                                    .addOnFailureListener(new OnFailureListener() {
-                                        @Override
-                                        public void onFailure(@NonNull Exception e) {
-                                            Log.w(TAG, "Error writing document", e);
-                                        }
-                                    });
+                        db.collection("users").document(user.getUid()).set(docUsers)
+                                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                    @Override
+                                    public void onSuccess(Void aVoid) {
+                                        Log.d(TAG, "DocumentSnapshot successfully written!");
+                                    }
+                                })
+                                .addOnFailureListener(new OnFailureListener() {
+                                    @Override
+                                    public void onFailure(@NonNull Exception e) {
+                                        Log.w(TAG, "Error writing document", e);
+                                    }
+                                });
 
-                        } else {
-                            // If sign up fails, display a message to the user.
-                            Log.w(TAG, "signUpWithEmailPassword:failure", task.getException());
-                            Toast.makeText(getApplicationContext(), Objects.requireNonNull(task.getException()).toString(),
-                                    Toast.LENGTH_SHORT).show();
-                        }
-
-                    });
-                }
+                        startActivity(new Intent(getApplicationContext(), MenuActivity.class));
+                    } else {
+                        // If sign up fails, display a message to the user.
+                        Log.w(TAG, "signUpWithEmailPassword:failure", task.getException());
+                        Toast.makeText(getApplicationContext(), Objects.requireNonNull(task.getException()).toString(),
+                                Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
         }
         //nani
         //Toast.makeText(getApplicationContext(), "Register", Toast.LENGTH_SHORT).show();
