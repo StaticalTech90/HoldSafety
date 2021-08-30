@@ -116,7 +116,6 @@ public class MainActivity extends AppCompatActivity {
 
     public void loginUser(String email,String password){
         //authentication
-        //wont work idk why
         fAuth.signInWithEmailAndPassword(email,password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {

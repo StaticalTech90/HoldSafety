@@ -11,24 +11,10 @@ import android.widget.Toast;
 import com.google.firebase.auth.FirebaseAuth;
 
 public class MenuActivity extends AppCompatActivity {
-    Button btnLogout;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_menu);
-
-        btnLogout = findViewById(R.id.btnLogout);
-
-        btnLogout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                FirebaseAuth.getInstance().signOut();
-                Toast.makeText(MenuActivity.this, "Logged Out", Toast.LENGTH_SHORT).show();
-                startActivity(new Intent(MenuActivity.this, MainActivity.class));
-                finish();
-            }
-        });
     }
 
     public void userAccount(View view){
@@ -56,5 +42,10 @@ public class MenuActivity extends AppCompatActivity {
         Toast.makeText(getApplicationContext(), "About the System", Toast.LENGTH_SHORT).show();
     }
 
-
+    public void logoutUser(View view){
+        FirebaseAuth.getInstance().signOut();
+        Toast.makeText(MenuActivity.this, "Logged Out", Toast.LENGTH_SHORT).show();
+        startActivity(new Intent(MenuActivity.this, MainActivity.class));
+        finish();
+    }
 }
