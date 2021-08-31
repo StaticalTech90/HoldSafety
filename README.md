@@ -7,7 +7,6 @@
 <br />
 <p align="center">
   <a href="https://github.com/StaticalTech90/HoldSafety">
-    <img src="images/icon-holdsafety.png" alt="Logo" width="360" height="360">
   </a>
 
   <h3 align="center">HoldSafety App Repo</h3>
