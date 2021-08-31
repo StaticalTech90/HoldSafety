@@ -17,10 +17,12 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 public class AccountDetailsActivity extends AppCompatActivity {
     public Uri imageURI;
     FirebaseUser user;
+    FirebaseFirestore db;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,6 +30,7 @@ public class AccountDetailsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_account_details);
 
         user = FirebaseAuth.getInstance().getCurrentUser();
+        db = FirebaseFirestore.getInstance();
     }
 
     public void uploadID(View view){
@@ -76,6 +79,8 @@ public class AccountDetailsActivity extends AppCompatActivity {
                             @Override
                             public void onComplete(@NonNull Task<Void> task) {
                                 if (task.isSuccessful()) {
+                                    db.collection("users").document(user.getUid()).delete();
+
                                     Toast.makeText(AccountDetailsActivity.this, "Account Deleted", Toast.LENGTH_SHORT).show();
 
                                     startActivity(new Intent(AccountDetailsActivity.this, MainActivity.class));

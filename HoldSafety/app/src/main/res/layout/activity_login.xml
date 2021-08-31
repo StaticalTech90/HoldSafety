@@ -209,21 +209,19 @@
             app:layout_constraintHorizontal_bias="0.353"
             app:layout_constraintStart_toStartOf="parent" />
 
-        <TextView
-            android:id="@+id/lblRegister"
-            android:layout_width="wrap_content"
-            android:onClick="userSignUp"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/btnLoginWithGoogle"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="9dp"
-            android:layout_toEndOf="@+id/lblNoAccount"
-            android:fontFamily="sans-serif-black"
-            android:text="@string/btnSignUp"
-            android:textColor="@color/light_blue"
-            android:textSize="17sp" />
-
     </RelativeLayout>
+
+    <TextView
+        android:id="@+id/lblRegister"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="sans-serif-black"
+        android:onClick="userSignUp"
+        android:text="@string/btnSignUp"
+        android:textColor="@color/light_blue"
+        android:textSize="17sp"
+        tools:layout_editor_absoluteX="294dp"
+        tools:layout_editor_absoluteY="571dp" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
