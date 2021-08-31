@@ -40,19 +40,19 @@
   
 ### Prerequisites
   
-  * WIP
+  * -not available-
   
 ### Installation
   
-  * WIP
+  * -not available-
 
 ## Usage
   
-  * WIP
+  * -not available-
   
 ## Roadmap
   
-  * WIP
+  * [Trello Dashboard](https://trello.com/b/MAgLgwPF/holdsafety)
   
 ## Contributing
   
