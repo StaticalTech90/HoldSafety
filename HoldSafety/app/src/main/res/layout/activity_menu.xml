@@ -19,10 +19,9 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/btnRemoveAccount"
+        android:id="@+id/btnViewReports"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-
 
         android:layout_marginTop="32dp"
         android:layout_marginEnd="40dp"
@@ -32,7 +31,10 @@
         android:textColor="@color/light_blue"
         android:textSize="15sp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+
+        android:clickable="true"
+        android:onClick="viewReports"/>
 
     <RelativeLayout
         android:id="@+id/layoutAccountDetails"
@@ -40,7 +42,7 @@
         android:layout_height="80dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/btnRemoveAccount"
+        app:layout_constraintTop_toBottomOf="@id/btnViewReports"
         android:layout_marginTop="40dp"
         android:clickable="true"
         android:onClick="userAccount"
@@ -70,10 +72,10 @@
                 android:layout_height="wrap_content"
 
                 android:fontFamily="sans-serif-black"
-                android:textSize="18sp"
+                android:text="User"
 
-                android:text="Daniel Tiongco"
-                android:textColor="@color/white"/>
+                android:textColor="@color/white"
+                android:textSize="18sp" />
 
             <TextView
                 android:id="@+id/lblAccountDetails"
@@ -315,14 +317,13 @@
     </RelativeLayout>
 
     <TextView
-        android:id="@+id/btnLogout"
+        android:id="@+id/txtLogout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-
         android:layout_marginTop="32dp"
-
         android:fontFamily="sans-serif-black"
-        android:text="@string/btnLogout"
+        android:onClick="logoutUser"
+        android:text="Logout"
         android:textColor="@color/red"
         android:textSize="18sp"
         app:layout_constraintEnd_toEndOf="parent"

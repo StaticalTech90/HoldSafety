@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".AccountDetails"
+    tools:context=".AccountDetailsActivity"
     android:background="@color/dark_blue">
 
     <ImageView
@@ -23,14 +23,15 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
 
-        android:layout_marginStart="190dp"
-
         android:layout_marginTop="32dp"
+        android:layout_marginEnd="40dp"
+
         android:fontFamily="sans-serif-black"
+        android:onClick="removeAccount"
         android:text="@string/btnRemoveAccount"
         android:textColor="@color/red"
         android:textSize="15sp"
-        app:layout_constraintStart_toEndOf="@+id/backArrow"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
@@ -78,7 +79,7 @@
 
     <RelativeLayout
         android:id="@+id/layoutAccountDetails"
-        android:layout_width="330dp"
+        android:layout_width="320dp"
         android:layout_height="wrap_content"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -111,10 +112,10 @@
 
                 android:layout_below="@+id/lblLastName"
 
+                android:backgroundTint="@color/white"
                 android:fontFamily="sans-serif-black"
-                android:text="Tiongco"
-                android:textColor="@color/white"
-                android:backgroundTint="@color/white"/>
+                android:text="LastName"
+                android:textColor="@color/white" />
         </RelativeLayout>
 
         <RelativeLayout
@@ -143,10 +144,10 @@
 
                 android:layout_below="@+id/lblFirstName"
 
+                android:backgroundTint="@color/white"
                 android:fontFamily="sans-serif-black"
-                android:text="Daniel"
-                android:textColor="@color/white"
-                android:backgroundTint="@color/white"/>
+                android:text="FirstName"
+                android:textColor="@color/white" />
         </RelativeLayout>
 
         <RelativeLayout
@@ -163,11 +164,10 @@
                 android:layout_height="wrap_content"
 
                 android:fontFamily="sans-serif-light"
-                android:text="Last Name"
+                android:text="Middle Name"
                 android:textColor="@color/white"
                 android:textSize="12sp"
-                app:layout_constraintStart_toStartOf="parent"
-                />
+                app:layout_constraintStart_toStartOf="parent" />
 
             <EditText
 
@@ -177,10 +177,10 @@
 
                 android:layout_below="@+id/lblMiddleName"
 
+                android:backgroundTint="@color/white"
                 android:fontFamily="sans-serif-black"
-                android:text="Lim"
-                android:textColor="@color/white"
-                android:backgroundTint="@color/white"/>
+                android:text="MiddleName"
+                android:textColor="@color/white" />
         </RelativeLayout>
 
         <RelativeLayout
@@ -245,10 +245,10 @@
 
                 android:layout_below="@+id/lblMobileNumber"
 
+                android:backgroundTint="@color/white"
                 android:fontFamily="sans-serif-black"
-                android:text="09166263822"
-                android:textColor="@color/white"
-                android:backgroundTint="@color/white"/>
+                android:text="09xx xxx xxxx"
+                android:textColor="@color/white" />
         </RelativeLayout>
 
         <RelativeLayout
@@ -278,10 +278,10 @@
 
                 android:layout_below="@+id/lblSex"
 
+                android:backgroundTint="@color/white"
                 android:fontFamily="sans-serif-black"
                 android:text="M"
-                android:textColor="@color/white"
-                android:backgroundTint="@color/white"/>
+                android:textColor="@color/white" />
         </RelativeLayout>
 
         <RelativeLayout
@@ -311,11 +311,11 @@
 
                 android:layout_below="@+id/lblPassword"
 
+                android:backgroundTint="@color/white"
                 android:fontFamily="sans-serif-black"
-                android:text="aksjakjdkjdlskdj"
                 android:inputType="textPassword"
-                android:textColor="@color/white"
-                android:backgroundTint="@color/white"/>
+                android:text="password"
+                android:textColor="@color/white" />
         </RelativeLayout>
 
         <Button

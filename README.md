@@ -7,13 +7,12 @@
 <br />
 <p align="center">
   <a href="https://github.com/StaticalTech90/HoldSafety">
-    <img src="images/icon-holdsafety.png" alt="Logo" width="360" height="360">
   </a>
 
   <h3 align="center">HoldSafety App Repo</h3>
 
   <p align="center">
-    bruh moment
+    An awesome README template to jumpstart your projects!
 </p>
 
 <!-- TABLE OF CONTENTS -->
@@ -41,19 +40,19 @@
   
 ### Prerequisites
   
-  * WIP
+  * -not available-
   
 ### Installation
   
-  * WIP
+  * -not available-
 
 ## Usage
   
-  * WIP
+  * -not available-
   
 ## Roadmap
   
-  * WIP
+  * [Trello Dashboard](https://trello.com/b/MAgLgwPF/holdsafety)
   
 ## Contributing
   
