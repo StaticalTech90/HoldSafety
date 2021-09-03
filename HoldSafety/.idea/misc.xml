@@ -3,11 +3,14 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Users/nhoriza/Desktop/HoldSafety/HoldSafety/app/src/main/res/drawable/blue_button.xml" value="0.14635416666666667" />
+        <entry key="..\:/Users/nhoriza/Desktop/HoldSafety/HoldSafety/app/src/main/res/drawable/gray_button.xml" value="0.14635416666666667" />
         <entry key="..\:/Users/nhoriza/Desktop/HoldSafety/HoldSafety/app/src/main/res/drawable/safetybutton_selector.xml" value="0.14635416666666667" />
         <entry key="..\:/Users/nhoriza/Desktop/HoldSafety/HoldSafety/app/src/main/res/layout/activity_account_details.xml" value="0.13020833333333334" />
         <entry key="..\:/Users/nhoriza/Desktop/HoldSafety/HoldSafety/app/src/main/res/layout/activity_landing.xml" value="0.18177083333333333" />
         <entry key="..\:/Users/nhoriza/Desktop/HoldSafety/HoldSafety/app/src/main/res/layout/activity_login.xml" value="0.13020833333333334" />
         <entry key="..\:/Users/nhoriza/Desktop/HoldSafety/HoldSafety/app/src/main/res/layout/activity_menu.xml" value="0.13020833333333334" />
+        <entry key="..\:/Users/nhoriza/Desktop/HoldSafety/HoldSafety/app/src/main/res/layout/activity_recording_countdown.xml" value="0.13020833333333334" />
         <entry key="..\:/Users/nhoriza/Desktop/HoldSafety/HoldSafety/app/src/main/res/layout/activity_reports.xml" value="0.1265625" />
         <entry key="..\:/Users/nhoriza/Desktop/HoldSafety/HoldSafety/app/src/main/res/layout/safetybutton_selector.xml" value="0.13020833333333334" />
         <entry key="..\:/Users/nhoriza/Downloads/HoldSafety-main (1)/HoldSafety-main/HoldSafety/app/src/main/res/layout/activity_account_details.xml" value="0.13020833333333334" />

@@ -127,7 +127,6 @@
         android:layout_marginTop="36dp"
         android:background="@drawable/blue_button"
         android:fontFamily="sans-serif-black"
-        android:onClick="userLogin"
         android:padding="10dp"
         android:text="LOGIN"
         android:textColor="@color/dark_blue"

@@ -15,7 +15,7 @@ import android.widget.Toast;
 
 public class LandingActivity extends AppCompatActivity {
     Button btnSafetyButton;
-    TextView seconds;
+    TextView seconds, description;
 
     @SuppressLint("ClickableViewAccessibility")
     @Override
@@ -59,8 +59,9 @@ public class LandingActivity extends AppCompatActivity {
                 seconds.setText(Long.toString(remainTime));
             }
             public void onFinish() {
-                Toast.makeText(getApplicationContext(), "2 seconds finished", Toast.LENGTH_SHORT).show();
-                seconds.setText("2");
+                //Toast.makeText(getApplicationContext(), "2 seconds finished", Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(getApplicationContext(), RecordingCountdownActivity.class);
+                startActivity(intent);
             }
         };
         cTimer.start();
