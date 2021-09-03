@@ -118,7 +118,7 @@ public class MainActivity extends AppCompatActivity {
 
         //redirects user to landing page if already logged in
         if(mAuth.getCurrentUser() != null){
-            startActivity(new Intent(getApplicationContext(), MenuActivity.class));
+            startActivity(new Intent(getApplicationContext(), LandingActivity.class));
             finish();
         }
 
@@ -177,7 +177,7 @@ public class MainActivity extends AppCompatActivity {
             public void onComplete(@NonNull Task<AuthResult> task) {
                 if(task.isSuccessful()){
                     Toast.makeText(MainActivity.this, "Login Successful!", Toast.LENGTH_SHORT).show();
-                    startActivity(new Intent(MainActivity.this, MenuActivity.class));
+                    startActivity(new Intent(MainActivity.this, LandingActivity.class));
                     finish();
                 }
                 else{
