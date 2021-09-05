@@ -240,4 +240,9 @@ public class MainActivity extends AppCompatActivity {
                     }
                 });
     }
+
+    public void othersRedirect(View view) {
+        Intent intent = new Intent(getApplicationContext(), OthersActivity.class);
+        startActivity(intent);
+    }
 }

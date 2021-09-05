@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ContactDevelopersActivity"
+    android:background="@color/dark_blue">
+
+    <ImageView
+        android:id="@+id/backArrow"
+        android:layout_width="30dp"
+        android:layout_height="25dp"
+
+        android:layout_marginTop="30dp"
+        android:layout_marginLeft="40dp"
+        android:src="@drawable/left_arrow"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/lblContactDev"
+        android:layout_width="330dp"
+        android:layout_height="wrap_content"
+
+        android:layout_marginTop="75dp"
+        android:fontFamily="sans-serif-black"
+        android:text="Contact Developers"
+        android:layout_marginLeft="40dp"
+        android:textColor="@color/white"
+        android:textSize="40sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/backArrow" />
+
+    <RelativeLayout
+        android:id="@+id/containerAction"
+        android:layout_width="340dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="30dp"
+        android:paddingTop="5dp"
+        android:paddingBottom="5dp"
+
+        android:background="@drawable/white_container"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/lblContactDev"
+        android:orientation="horizontal">
+
+        <Spinner
+            android:id="@+id/txtAction"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
+            android:background="@android:color/transparent"
+            android:spinnerMode="dropdown" />
+
+    </RelativeLayout>
+
+    <EditText
+        android:id="@+id/txtMessage"
+        android:layout_width="330dp"
+        android:layout_height="wrap_content"
+
+        android:background="@drawable/white_container"
+        android:gravity="top|left"
+        android:inputType="textMultiLine"
+        android:lines="12"
+        android:scrollbars="vertical"
+
+        android:fontFamily="sans-serif"
+        android:textColor="@color/dark_blue"
+
+        android:padding="15dp"
+        android:layout_marginTop="20dp"
+        android:hint="@string/contact_hint"
+
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/containerAction" />
+
+    <Button
+        android:id="@+id/btnSend"
+        android:layout_width="150dp"
+        android:layout_height="55dp"
+        android:layout_marginTop="36dp"
+        android:background="@drawable/blue_button"
+        android:fontFamily="sans-serif-black"
+        android:onClick="sendMessage"
+        android:padding="10dp"
+        android:text="SEND"
+        android:gravity="center"
+        android:textColor="@color/dark_blue"
+        android:textSize="20sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/txtMessage" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
