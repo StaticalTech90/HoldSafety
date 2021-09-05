@@ -32,7 +32,8 @@
             android:fontFamily="sans-serif-black"
             android:text="Login"
             android:textColor="@color/white"
-            android:textSize="40sp" />
+            android:textSize="40sp"
+            android:clickable="true" />
 
         <TextView
             android:id="@+id/lblLoginDesc"
@@ -186,8 +187,8 @@
             android:layout_marginBottom="27dp"
             android:layout_toEndOf="@+id/btnLoginWithGoogle"
             android:fontFamily="sans-serif-light"
-            android:text="Login With Google"
             android:onClick="userLoginWithGoogle"
+            android:text="Login With Google"
             android:textColor="@color/light_blue"
             android:textSize="17sp" />
 
@@ -201,10 +202,10 @@
             android:layout_marginStart="100dp"
             android:layout_marginTop="9dp"
             android:fontFamily="sans-serif-light"
+            android:onClick="userSignUp"
             android:text="Don't have an account? "
             android:textColor="@color/light_blue"
             android:textSize="17sp"
-            android:onClick="userSignUp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.353"
             app:layout_constraintStart_toStartOf="parent" />
@@ -212,13 +213,13 @@
         <TextView
             android:id="@+id/lblRegister"
             android:layout_width="wrap_content"
-            android:onClick="userSignUp"
             android:layout_height="wrap_content"
             android:layout_below="@+id/btnLoginWithGoogle"
             android:layout_marginStart="8dp"
             android:layout_marginTop="9dp"
             android:layout_toEndOf="@+id/lblNoAccount"
             android:fontFamily="sans-serif-black"
+            android:onClick="userSignUp"
             android:text="@string/btnSignUp"
             android:textColor="@color/light_blue"
             android:textSize="17sp" />

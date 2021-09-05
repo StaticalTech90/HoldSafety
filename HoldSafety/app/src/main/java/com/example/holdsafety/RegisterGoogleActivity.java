@@ -46,10 +46,9 @@ public class RegisterGoogleActivity extends AppCompatActivity {
     Spinner spinnerSex;
     public Uri imageURI;
 
-    private FirebaseAuth mAuth;
     FirebaseFirestore db = FirebaseFirestore.getInstance();
 
-    String email, sex;
+    String email;
     Date birthDate;
 
     @Override
@@ -146,7 +145,6 @@ public class RegisterGoogleActivity extends AppCompatActivity {
             etMobileNo.setError("Enter Mobile number");
         }
 
-        // TODO: insert to DB
         docUsers.put("LastName", lastName);
         docUsers.put("FirstName", firstName);
         docUsers.put("MiddleName", middleName);
@@ -190,7 +188,6 @@ public class RegisterGoogleActivity extends AppCompatActivity {
             //uploadPicture();
         }
     }
-
 
     public void goBack(View view){
         Intent intent = new Intent(getApplicationContext(), MenuActivity.class);

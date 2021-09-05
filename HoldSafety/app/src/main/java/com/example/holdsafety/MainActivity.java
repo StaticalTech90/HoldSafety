@@ -39,7 +39,7 @@ public class MainActivity extends AppCompatActivity {
     private final static int RC_SIGN_IN = 308;
     EditText txtEmailOrMobileNum, txtPassword;
     Button btnLogin;
-    TextView txtToggle;
+    TextView txtToggle, txtForgotPassword;
     
     @Override
     protected void onStart() {
@@ -48,7 +48,7 @@ public class MainActivity extends AppCompatActivity {
         // check if user is already logged in
         user = mAuth.getCurrentUser();
         if(user != null) {
-            // TODO Home screen for already logged-in users
+            // TODO: Home screen for already logged-in users
             //Intent intent = new Intent(getApplicationContext(), MenuActivity.java)
             //startActivity(intent);
         }
@@ -73,6 +73,7 @@ public class MainActivity extends AppCompatActivity {
         txtPassword = findViewById(R.id.txtPassword);
         btnLogin = findViewById(R.id.btnLogin);
         txtToggle = findViewById(R.id.txtToggle);
+        txtForgotPassword = findViewById(R.id.lblForgotPassword);
 
         txtToggle.setVisibility(View.GONE);
         txtPassword.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
@@ -114,8 +115,17 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        mAuth = FirebaseAuth.getInstance();
+        // Forgot Password button
+        txtForgotPassword.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // Go to the necessary screen
+                Intent resetPasswordIntent = new Intent(getApplicationContext(), ForgotPasswordActivity.class);
+                startActivity(resetPasswordIntent);
+            }
+        });
 
+        mAuth = FirebaseAuth.getInstance();
         //redirects user to landing page if already logged in
         if(mAuth.getCurrentUser() != null){
             startActivity(new Intent(getApplicationContext(), MenuActivity.class));
@@ -224,7 +234,6 @@ public class MainActivity extends AppCompatActivity {
                             Log.d(TAG, "signInWithCredential:success");
                             FirebaseUser user = mAuth.getCurrentUser();
 
-                            // TODO - Screen change to RegisterGoogleActivity
                             Intent fillDetails = new Intent(getApplicationContext(), RegisterGoogleActivity.class);
                             fillDetails.putExtra("userID", user.getUid());
                             fillDetails.putExtra("userEmail", user.getEmail());
