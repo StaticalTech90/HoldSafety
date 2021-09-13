@@ -45,7 +45,8 @@
             android:fontFamily="sans-serif-black"
             android:text="Login"
             android:textColor="@color/white"
-            android:textSize="40sp" />
+            android:textSize="40sp"
+            android:clickable="true" />
 
         <TextView
             android:id="@+id/lblLoginDesc"
