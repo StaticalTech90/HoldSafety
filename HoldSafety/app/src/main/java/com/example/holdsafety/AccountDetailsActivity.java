@@ -415,17 +415,16 @@ public class AccountDetailsActivity extends AppCompatActivity {
         dialogRemoveAccount.setPositiveButton("Delete", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
+
                 user.delete().addOnCompleteListener(new OnCompleteListener<Void>() {
                             @Override
                             public void onComplete(@NonNull Task<Void> task) {
                                 if (task.isSuccessful()) {
-                                    db.collection("users").document(user.getUid()).delete();
-
                                     //not working
-                                    StorageReference idRef = fStorage.child("id/" + user.getUid());
-                                    idRef.delete();
+                                    fStorage.child("id/"+user.getUid()).delete();
+                                    Toast.makeText(AccountDetailsActivity.this, user.getUid(), Toast.LENGTH_LONG).show();
 
-                                    Toast.makeText(AccountDetailsActivity.this, "Account Deleted", Toast.LENGTH_LONG).show();
+                                    db.collection("users").document(user.getUid()).delete();
 
                                     startActivity(new Intent(AccountDetailsActivity.this, MainActivity.class));
                                     finish();
