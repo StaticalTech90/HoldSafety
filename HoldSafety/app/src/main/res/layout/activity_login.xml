@@ -16,6 +16,19 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <ImageView
+            android:id="@+id/menu"
+            android:layout_width="30dp"
+            android:layout_height="35dp"
+
+            android:layout_marginTop="30dp"
+            android:src="@drawable/menu"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentTop="true"
+            android:clickable="true"
+            android:onClick="othersRedirect"
+            />
+
+        <ImageView
             android:id="@+id/loginImg"
             android:layout_width="match_parent"
             android:layout_height="185dp"
@@ -81,7 +94,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/containerPassword"
         android:layout_width="340dp"
-        android:layout_height="wrap_content"
+        android:layout_height="50dp"
         android:layout_marginTop="20dp"
 
         android:background="@drawable/white_container"
@@ -93,10 +106,12 @@
         app:layout_constraintTop_toBottomOf="@+id/containerEmailOrMobileNum">
 
         <EditText
-
             android:id="@+id/txtPassword"
-            android:layout_width="301dp"
-            android:layout_height="26dp"
+            android:layout_width="180dp"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentEnd="true"
+
             android:layout_marginStart="20dp"
 
             android:layout_marginEnd="20dp"
@@ -109,15 +124,19 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
+            android:textColor="@color/dark_blue"/>
+
         <TextView
             android:id="@+id/txtToggle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_marginEnd="15dp"
             android:text="SHOW"
-            android:textColor="#423E3E"
-            tools:layout_editor_absoluteY="4dp" />
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
+            android:textSize="12sp"
+            android:textStyle="bold"
+            android:layout_centerVertical="true"/>
+    </RelativeLayout>
 
     <Button
         android:id="@+id/btnLogin"
@@ -126,7 +145,6 @@
         android:layout_marginTop="36dp"
         android:background="@drawable/blue_button"
         android:fontFamily="sans-serif-black"
-        android:onClick="loginUser"
         android:padding="10dp"
         android:text="LOGIN"
         android:textColor="@color/dark_blue"
@@ -160,70 +178,67 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/lblForgotPassword">
 
-        <ImageButton
-            android:id="@+id/btnLoginWithGoogle"
-            android:layout_width="70dp"
-            android:layout_height="70dp"
-            android:layout_alignParentStart="true"
-            android:layout_alignParentTop="true"
-            android:layout_marginStart="100dp"
-            android:layout_marginTop="0dp"
-            android:background="@null"
-            android:onClick="userLoginWithGoogle"
-            android:scaleType="fitCenter"
-            android:src="@drawable/google_logo" />
-
-        <TextView
-            android:id="@+id/lblLoginWithGoogle"
+        <RelativeLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentBottom="true"
-            android:layout_marginStart="3dp"
-            android:layout_marginTop="20dp"
-            android:layout_marginEnd="101dp"
-            android:layout_marginBottom="27dp"
-            android:layout_toEndOf="@+id/btnLoginWithGoogle"
-            android:fontFamily="sans-serif-light"
-            android:text="Login With Google"
-            android:onClick="userLoginWithGoogle"
-            android:textColor="@color/light_blue"
-            android:textSize="17sp" />
+            android:layout_centerHorizontal="true">
 
-        <TextView
-            android:id="@+id/lblNoAccount"
-            android:layout_width="wrap_content"
+            <ImageButton
+                android:id="@+id/btnLoginWithGoogle"
+                android:layout_width="70dp"
+                android:layout_height="70dp"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentTop="true"
+                android:layout_marginTop="0dp"
+                android:background="@null"
+                android:onClick="userLoginWithGoogle"
+                android:scaleType="fitCenter"
+                android:src="@drawable/google_logo" />
 
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/btnLoginWithGoogle"
-            android:layout_alignParentStart="true"
-            android:layout_marginStart="80dp"
-            android:layout_marginTop="9dp"
-            android:fontFamily="sans-serif-light"
-            android:text="Don't have an account? "
-            android:textColor="@color/light_blue"
-            android:textSize="17sp"
-            android:onClick="userSignUp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.353"
-            app:layout_constraintStart_toStartOf="parent" />
+            <TextView
+                android:id="@+id/lblLoginWithGoogle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentBottom="true"
+                android:layout_marginStart="3dp"
+                android:layout_marginBottom="27dp"
+                android:layout_toEndOf="@+id/btnLoginWithGoogle"
+                android:fontFamily="sans-serif-light"
+                android:text="Login With Google"
+                android:textColor="@color/light_blue"
+                android:textSize="17sp" />
 
-        <TextView
-            android:id="@+id/lblRegister"
-            android:layout_width="wrap_content"
-            android:onClick="userSignUp"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/btnLoginWithGoogle"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="9dp"
-            android:layout_toEndOf="@+id/lblNoAccount"
-            android:fontFamily="sans-serif-black"
-            android:text="@string/btnSignUp"
-            android:textColor="@color/light_blue"
-            android:textSize="17sp" />
+            <TextView
+                android:id="@+id/lblNoAccount"
+                android:layout_width="wrap_content"
+
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/btnLoginWithGoogle"
+                android:layout_marginTop="9dp"
+                android:fontFamily="sans-serif-light"
+                android:text="Don't have an account?"
+                android:textColor="@color/light_blue"
+                android:textSize="17sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.353"
+                app:layout_constraintStart_toStartOf="parent" />
+
+            <TextView
+                android:id="@+id/lblRegister"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/btnLoginWithGoogle"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="9dp"
+                android:layout_toEndOf="@+id/lblNoAccount"
+                android:fontFamily="sans-serif-black"
+                android:onClick="userSignUp"
+                android:text="@string/btnSignUp"
+                android:textColor="@color/light_blue"
+                android:textSize="17sp" />
+        </RelativeLayout>
 
     </RelativeLayout>
-
 
 </androidx.constraintlayout.widget.ConstraintLayout>

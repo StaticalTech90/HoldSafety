@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".OthersActivity"
+    android:background="@color/dark_blue">
+
+    <ImageView
+        android:id="@+id/backArrow"
+        android:layout_width="30dp"
+        android:layout_height="25dp"
+
+        android:layout_marginTop="30dp"
+        android:layout_marginLeft="40dp"
+        android:src="@drawable/arrow"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <RelativeLayout
+        android:id="@+id/btnContactDevelopers"
+        android:layout_width="320dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="60dp"
+
+        android:paddingTop="15dp"
+        android:paddingBottom="15dp"
+
+        android:clickable="true"
+        android:onClick="contactDevelopers"
+
+        android:background="@drawable/white_container"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/backArrow">
+
+        <TextView
+            android:id="@+id/lblContactDev"
+            android:layout_width="230dp"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+
+            android:layout_marginStart="20dp"
+
+            android:fontFamily="sans-serif"
+            android:text="Contact Developers"
+            android:textColor="@color/dark_blue"
+            android:textSize="17sp" />
+
+        <ImageView
+            android:id="@+id/imgContactDev"
+            android:layout_width="30dp"
+            android:layout_height="25dp"
+
+            android:src="@drawable/contact_dev"
+            android:layout_alignParentEnd="true"
+
+            android:layout_marginEnd="20dp"/>
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/btnUserManual"
+        android:layout_width="320dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+
+        android:paddingTop="15dp"
+        android:paddingBottom="15dp"
+
+        android:clickable="true"
+        android:onClick="userManual"
+
+        android:background="@drawable/white_container"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/btnContactDevelopers">
+
+        <TextView
+            android:id="@+id/lblUserManual"
+            android:layout_width="230dp"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+
+            android:layout_marginStart="20dp"
+
+            android:text="User Manual"
+            android:textSize="17sp"
+            android:fontFamily="sans-serif"
+            android:textColor="@color/dark_blue"/>
+
+        <ImageView
+            android:id="@+id/imgUserManual"
+            android:layout_width="30dp"
+            android:layout_height="25dp"
+
+            android:src="@drawable/manual"
+            android:layout_alignParentEnd="true"
+
+            android:layout_marginEnd="20dp"/>
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/btnTermsAndConditions"
+        android:layout_width="320dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+
+        android:paddingTop="15dp"
+        android:paddingBottom="15dp"
+
+        android:clickable="true"
+        android:onClick="termsAndConditions"
+
+        android:background="@drawable/white_container"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/btnUserManual">
+
+        <TextView
+            android:id="@+id/lblTermsAndConditions"
+            android:layout_width="230dp"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+
+            android:layout_marginStart="20dp"
+
+            android:text="Terms and Conditions"
+            android:textSize="17sp"
+            android:fontFamily="sans-serif"
+            android:textColor="@color/dark_blue"/>
+
+        <ImageView
+            android:id="@+id/imgTermsAndCondition"
+            android:layout_width="30dp"
+            android:layout_height="25dp"
+
+            android:src="@drawable/terms_and_conditions"
+            android:layout_alignParentEnd="true"
+
+            android:layout_marginEnd="20dp"/>
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/btnAbout"
+        android:layout_width="320dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+
+        android:paddingTop="15dp"
+        android:paddingBottom="15dp"
+
+        android:clickable="true"
+        android:onClick="aboutSystem"
+
+        android:background="@drawable/white_container"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/btnTermsAndConditions">
+
+        <TextView
+            android:id="@+id/lblAbout"
+            android:layout_width="230dp"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+
+            android:layout_marginStart="20dp"
+
+            android:text="About the System"
+            android:textSize="17sp"
+            android:fontFamily="sans-serif"
+            android:textColor="@color/dark_blue"/>
+
+        <ImageView
+            android:id="@+id/imgAbout"
+            android:layout_width="30dp"
+            android:layout_height="25dp"
+
+            android:src="@drawable/about"
+            android:layout_alignParentEnd="true"
+
+            android:layout_marginEnd="20dp"/>
+    </RelativeLayout>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+
+        android:text="HoldSafety Version 1.0"
+        android:textColor="@color/light_blue"
+        android:fontFamily="sans-serif-black"
+
+        android:layout_marginEnd="40dp"
+        android:layout_marginBottom="30dp"
+        />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -5,6 +5,8 @@
     <string name="btnRemoveAccount"><u>Remove Account</u></string>
     <string name="btnReports"><u>My Reports</u></string>
     <string name="btnLogout"><u>Logout</u></string>
+    <string name="sampleEvidence"><u>r001/evidence.mp4</u></string>
+    <string name="contact_hint"><i>Please insert a message regarding your concern. </i></string>
     <!--This is the default client to prevent API error 10-->
     <string name="default_web_client">233680747912-m8q45hor79go5n8aqfkuneklnkshudqs.apps.googleusercontent.com</string>
 
@@ -20,5 +22,14 @@
         <item>Sex</item>
         <item>M</item>
         <item>F</item>
+    </string-array>
+
+    <string-array name="reportID">
+        <item>U001</item>
+        <item>U002</item>
+        <item>U003</item>
+        <item>U004</item>
+        <item>U005</item>
+        <item>U006</item>
     </string-array>
 </resources>

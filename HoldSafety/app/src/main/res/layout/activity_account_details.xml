@@ -23,15 +23,15 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
 
-        android:layout_marginStart="190dp"
-
         android:layout_marginTop="32dp"
+        android:layout_marginEnd="40dp"
+
         android:fontFamily="sans-serif-black"
         android:onClick="removeAccount"
         android:text="@string/btnRemoveAccount"
         android:textColor="@color/red"
         android:textSize="15sp"
-        app:layout_constraintStart_toEndOf="@+id/backArrow"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
@@ -79,7 +79,7 @@
 
     <RelativeLayout
         android:id="@+id/layoutAccountDetails"
-        android:layout_width="330dp"
+        android:layout_width="320dp"
         android:layout_height="wrap_content"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

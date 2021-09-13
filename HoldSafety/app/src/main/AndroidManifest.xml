@@ -10,25 +10,49 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.HoldSafety">
+        <activity
+            android:name=".ContactDevelopersActivity"
+            android:exported="true" />
+        <activity
+            android:name=".OthersActivity"
+            android:exported="true" />
+        <activity
+            android:name=".RecordingCountdownActivity"
+            android:exported="true" />
+        <activity
+            android:name=".LandingActivity"
+            android:exported="true" />
         <activity android:name=".Register1Activity" />
         <activity android:name=".Register2Activity" />
         <activity android:name=".AccountDetailsActivity" />
         <activity android:name=".AddContactActivity" />
         <activity android:name=".DesignateContactActivity" />
+        <activity android:name=".ReportsActivity" />
         <activity android:name=".RegisterGoogleActivity" />
         <activity android:name=".SelectContactActivity" />
         <activity android:name=".UpdateContactActivity" />
         <activity android:name=".VerifyUserActivity" />
-
         <activity android:name=".MenuActivity" />
-        <activity android:name=".MainActivity"
-            android:exported="true">
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"
+            android:launchMode="singleTop">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        
+        <receiver android:name=".HoldSafetyWidget">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE"/>
+            </intent-filter>
+
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/holdsafety_widget_info"/>
+        </receiver>
     </application>
 
 </manifest>

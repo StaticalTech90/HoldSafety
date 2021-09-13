@@ -91,7 +91,6 @@ public class Register1Activity extends AppCompatActivity {
     }
 
     public void userRegisterNext(View view) throws ParseException {
-
         @SuppressLint("SimpleDateFormat") SimpleDateFormat dateFormat = new SimpleDateFormat("MM-dd-yyyy");
         String date = etBirthdate.getText().toString();
         String valid = "01-01-2002"; //age restriction
