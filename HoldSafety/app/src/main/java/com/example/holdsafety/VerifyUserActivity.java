@@ -1,8 +1,8 @@
 package com.example.holdsafety;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.os.Bundle;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 public class VerifyUserActivity extends AppCompatActivity {
 

@@ -44,7 +44,8 @@
             </intent-filter>
         </activity>
         
-        <receiver android:name=".HoldSafetyWidget">
+        <receiver android:name=".HoldSafetyWidget"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE"/>
             </intent-filter>
