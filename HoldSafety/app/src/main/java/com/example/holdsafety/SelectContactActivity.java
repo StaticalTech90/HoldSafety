@@ -8,7 +8,7 @@ import android.os.Bundle;
 
 public class SelectContactActivity extends AppCompatActivity {
     RecyclerView recyclerViewContacts;
-    String contactName[];
+    String[] contactName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

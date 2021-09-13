@@ -25,12 +25,23 @@ import java.util.List;
 
 public class Register1Activity extends AppCompatActivity {
 
+    private EditText etLastName;
+    private EditText etFirstName;
+    private EditText etMiddleName;
+    private EditText etBirthdate;
+    private Spinner spinnerSex;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register1);
 
-        Spinner spinnerSex = findViewById(R.id.txtSex);
+        etLastName = findViewById(R.id.txtLastName);
+        etFirstName = findViewById(R.id.txtFirstName);
+        etMiddleName = findViewById(R.id.txtMiddleName);
+        etBirthdate = findViewById(R.id.txtBirthDate);
+        spinnerSex = findViewById(R.id.txtSex);
+
         String[] sex = new String[]{"Sex", "M", "F"};
         List<String> sexList = new ArrayList<>(Arrays.asList(sex));
 
@@ -47,11 +58,10 @@ public class Register1Activity extends AppCompatActivity {
 
                 if(position==0){
                     tv.setTextColor(getResources().getColor(R.color.hint_color));
-                }
-
-                else{
+                } else{
                     tv.setTextColor(Color.BLACK);
                 }
+
                 return view;
             }
         };
@@ -81,11 +91,6 @@ public class Register1Activity extends AppCompatActivity {
     }
 
     public void userRegisterNext(View view) throws ParseException {
-        EditText etLastName = findViewById(R.id.txtLastName);
-        EditText etFirstName = findViewById(R.id.txtFirstName);
-        EditText etMiddleName = findViewById(R.id.txtMiddleName);
-        EditText etBirthdate = findViewById(R.id.txtBirthDate);
-        Spinner spSex = findViewById(R.id.txtSex);
 
         @SuppressLint("SimpleDateFormat") SimpleDateFormat dateFormat = new SimpleDateFormat("MM-dd-yyyy");
         String date = etBirthdate.getText().toString();
@@ -95,7 +100,7 @@ public class Register1Activity extends AppCompatActivity {
         String sLastName = etLastName.getText().toString();
         String sFirstName = etFirstName.getText().toString();
         String sMiddleName = etMiddleName.getText().toString();
-        String sSex = spSex.getSelectedItem().toString();
+        String sSex = spinnerSex.getSelectedItem().toString();
         String sDate = etBirthdate.getText().toString();
 
         try{
@@ -114,8 +119,8 @@ public class Register1Activity extends AppCompatActivity {
                 } else if(TextUtils.isEmpty(etBirthdate.getText())){
                     etBirthdate.setHint("please enter birthdate (mm-dd-yyyy)");
                     etBirthdate.setError("please enter birthdate (mm-dd-yyyy)");
-                } else if(spSex.getSelectedItem().equals("Sex")){
-                    ((TextView)spSex.getSelectedView()).setError("please select sex");
+                } else if(spinnerSex.getSelectedItem().equals("Sex")){
+                    ((TextView)spinnerSex.getSelectedView()).setError("please select sex");
                 } else {
                     //send data over to register2 activity
                     //not the best practice but fragments are tricky

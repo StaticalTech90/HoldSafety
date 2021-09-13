@@ -13,7 +13,7 @@
         android:layout_height="25dp"
 
         android:layout_marginTop="30dp"
-        android:layout_marginLeft="40dp"
+        android:layout_marginStart="40dp"
         android:src="@drawable/arrow"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -41,7 +41,7 @@
         android:layout_marginTop="76dp"
         android:fontFamily="sans-serif-black"
         android:text="Register"
-        android:layout_marginLeft="40dp"
+        android:layout_marginStart="40dp"
         android:textColor="@color/white"
         android:textSize="40sp"
         app:layout_constraintStart_toStartOf="parent"
@@ -53,7 +53,7 @@
         android:layout_height="wrap_content"
 
         android:fontFamily="sans-serif"
-        android:layout_marginLeft="40dp"
+        android:layout_marginStart="40dp"
         android:text="Input the necessary details to register"
         android:textColor="@color/gray"
         android:textSize="18sp"
