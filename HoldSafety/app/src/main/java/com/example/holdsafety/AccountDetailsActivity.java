@@ -22,6 +22,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthCredential;
@@ -41,6 +42,7 @@ public class AccountDetailsActivity extends AppCompatActivity {
     StorageReference fStorage;
     DocumentReference docRef;
     Boolean isNumberChanged = false, isEmailChanged = false;
+    String userPassword;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -170,7 +172,7 @@ public class AccountDetailsActivity extends AppCompatActivity {
                     Toast.makeText(AccountDetailsActivity.this, "No Changes Made", Toast.LENGTH_LONG).show();
                 }
 
-                //if there are new changes
+                //if there are new changes to db
                 if(isNumberChanged){
                     docRef.update("MobileNumber", newMobileNumber);
                     isNumberChanged = false;
@@ -184,38 +186,69 @@ public class AccountDetailsActivity extends AppCompatActivity {
                 }
 
                 if(isEmailChanged) {
-                    AlertDialog.Builder dialogEmail;
-                    dialogEmail = new AlertDialog.Builder(AccountDetailsActivity.this);
-                    dialogEmail.setTitle("Change Email");
-                    dialogEmail.setMessage("You have 48 hours to verify your new email. Failure to do so will delete your account." +
-                            "Are you sure you want to change?");
+                    EditText txtInputPassword;
 
-                    dialogEmail.setPositiveButton("Change", new DialogInterface.OnClickListener() {
+                    AlertDialog.Builder dialogChangeEmail;
+                    dialogChangeEmail = new AlertDialog.Builder(AccountDetailsActivity.this);
+                    dialogChangeEmail.setTitle("Change Email");
+                    dialogChangeEmail.setMessage("You have 48 hours to verify your new email. Failure to do so will delete your account." +
+                            "\n\nAre you sure you want to change?" + "\n\nRe-enter password to save changes:");
+
+                    txtInputPassword = new EditText(AccountDetailsActivity.this);
+                    dialogChangeEmail.setView(txtInputPassword);
+
+                    //saves user input if not empty
+                    txtInputPassword.addTextChangedListener(new TextWatcher() {
                         @Override
-                        public void onClick(DialogInterface dialogInterface, int i) {
-                            docRef.update("Email", newEmail);
-                            changeEmail(newEmail);
-                            Toast.makeText(AccountDetailsActivity.this, "Check your email for verification", Toast.LENGTH_LONG).show();
+                        public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                        }
 
-                            isEmailChanged = false;
+                        @Override
+                        public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                            userPassword = txtInputPassword.getText().toString().trim();
+                        }
 
-                            finish();
-                            startActivity(getIntent());
+                        @Override
+                        public void afterTextChanged(Editable editable) {
                         }
                     });
 
-                    dialogEmail.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    dialogChangeEmail.setPositiveButton("Change", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            //Do nothing here, override this button later to change the close behaviour
+                        }
+                    });
+
+                    dialogChangeEmail.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialogInterface, int i) {
                             dialogInterface.dismiss();
+
                             isEmailChanged = false;
+
                             finish();
                             startActivity(getIntent());
                         }
                     });
 
-                    AlertDialog changeEmailDialog = dialogEmail.create();
+                    AlertDialog changeEmailDialog = dialogChangeEmail.create();
                     changeEmailDialog.show();
+
+                    //Override
+                    changeEmailDialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(new View.OnClickListener()
+                    {
+                        @Override
+                        public void onClick(View v) {
+                            if(TextUtils.isEmpty(userPassword)){
+                                txtInputPassword.setError("Password is required");
+                            }
+                            else {
+                                userPassword = txtInputPassword.getText().toString();
+                                changeEmail(newEmail);
+                            }
+                        }
+                    });
                 }
             }
         });
@@ -282,8 +315,8 @@ public class AccountDetailsActivity extends AppCompatActivity {
 
     public void changeEmail(String newEmail){
         AuthCredential credential = EmailAuthProvider
-                .getCredential(user.getEmail(), "password"); //change this to re-enter password later
-        // prompt the user to re-provide their sign-in credentials
+                .getCredential(user.getEmail(),userPassword);
+
 
         user.reauthenticate(credential)
                 .addOnCompleteListener(new OnCompleteListener<Void>() {
@@ -291,27 +324,90 @@ public class AccountDetailsActivity extends AppCompatActivity {
                     public void onComplete(@NonNull Task<Void> task) {
                         Log.d(TAG, "User re-authenticated.");
 
+                        //updates email in Auth
                         user.updateEmail(newEmail)
                                 .addOnCompleteListener(new OnCompleteListener<Void>() {
                                     @Override
                                     public void onComplete(@NonNull Task<Void> task) {
                                         if (task.isSuccessful()) {
                                             Log.d(TAG, "User email address updated.");
+
+                                            //updates email in document
+                                            docRef.update("Email", newEmail);
+
+                                            //reset values
+                                            isEmailChanged = false;
+                                            userPassword = " ";
+
+                                            Toast.makeText(AccountDetailsActivity.this, "Changes Saved", Toast.LENGTH_LONG).show();
+
+                                            //insert email verification here
+
+                                            finish();
+                                            startActivity(getIntent());
                                         }
                                     }
                                 });
                     }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        isEmailChanged = false;
+                        userPassword = "";
+
+                        Toast.makeText(AccountDetailsActivity.this, "Incorrect Password" + "\nChanges not Saved", Toast.LENGTH_LONG).show();
+
+                        finish();
+                        startActivity(getIntent());
+                    }
                 });
     }
 
+    public void reAuthenticate(){
+        EditText txtPassword;
+
+        AlertDialog.Builder dialogReAuthenticate;
+        dialogReAuthenticate = new AlertDialog.Builder(AccountDetailsActivity.this);
+        dialogReAuthenticate.setTitle("Enter password");
+        dialogReAuthenticate.setMessage("Please re-enter password to save changes.");
+
+        txtPassword = new EditText(AccountDetailsActivity.this);
+        dialogReAuthenticate.setView(txtPassword);
+
+        dialogReAuthenticate.setPositiveButton("Done", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                userPassword = txtPassword.getText().toString();
+//                finish();
+//                startActivity(getIntent());
+            }
+        });
+
+        dialogReAuthenticate.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                dialogInterface.dismiss();
+
+                isEmailChanged = false;
+
+                finish();
+                startActivity(getIntent());
+            }
+        });
+
+        AlertDialog alertDialog = dialogReAuthenticate.create();
+        alertDialog.show();
+    }
+
     public void removeAccount(View view){
-        AlertDialog.Builder dialog;
-        dialog = new AlertDialog.Builder(AccountDetailsActivity.this);
-        dialog.setTitle("Remove Account");
-        dialog.setMessage("Are you sure you want to delete your account? " +
+        AlertDialog.Builder dialogRemoveAccount;
+        dialogRemoveAccount = new AlertDialog.Builder(AccountDetailsActivity.this);
+        dialogRemoveAccount.setTitle("Remove Account");
+        dialogRemoveAccount.setMessage("Are you sure you want to delete your account? " +
                 "Keep in mind that all information and files would be deleted from the system.");
 
-        dialog.setPositiveButton("Delete", new DialogInterface.OnClickListener() {
+        dialogRemoveAccount.setPositiveButton("Delete", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
                 user.delete().addOnCompleteListener(new OnCompleteListener<Void>() {
@@ -337,14 +433,14 @@ public class AccountDetailsActivity extends AppCompatActivity {
             }
         });
 
-        dialog.setNegativeButton("Dismiss", new DialogInterface.OnClickListener() {
+        dialogRemoveAccount.setNegativeButton("Dismiss", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
                 dialogInterface.dismiss();
             }
         });
 
-        AlertDialog alertDialog = dialog.create();
+        AlertDialog alertDialog = dialogRemoveAccount.create();
         alertDialog.show();
     }
 }
