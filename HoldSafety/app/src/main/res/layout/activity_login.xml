@@ -94,7 +94,7 @@
 
         <EditText
 
-            android:id="@+id/txtPassword"
+            android:id="@+id/txtCurrentPassword"
             android:layout_width="301dp"
             android:layout_height="26dp"
             android:layout_marginStart="20dp"

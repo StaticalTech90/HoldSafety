@@ -70,7 +70,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
         txtEmailOrMobileNum = findViewById(R.id.txtEmailOrMobileNum);
-        txtPassword = findViewById(R.id.txtPassword);
+        txtPassword = findViewById(R.id.txtCurrentPassword);
         btnLogin = findViewById(R.id.btnLogin);
         txtToggle = findViewById(R.id.txtToggle);
 

@@ -11,12 +11,13 @@
         android:id="@+id/backArrow"
         android:layout_width="30dp"
         android:layout_height="25dp"
+        android:onClick="goBack"
 
         android:layout_marginTop="30dp"
         android:layout_marginLeft="40dp"
         android:src="@drawable/arrow"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"/>
 
     <TextView
         android:id="@+id/btnRemoveAccount"

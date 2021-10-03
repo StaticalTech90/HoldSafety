@@ -13,26 +13,17 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.FirebaseApp;
-import com.google.firebase.Timestamp;
-import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class Register2Activity extends AppCompatActivity {
     public Uri imageURI;
@@ -62,8 +53,8 @@ public class Register2Activity extends AppCompatActivity {
 
         EditText etMobileNumber = findViewById(R.id.txtMobileNumber);
         EditText etEmail = findViewById(R.id.txtEmail);
-        EditText etPassword = findViewById(R.id.txtPassword);
-        EditText etConPassword = findViewById(R.id.txtConfirmPassword);
+        EditText etPassword = findViewById(R.id.txtCurrentPassword);
+        EditText etConPassword = findViewById(R.id.txtNewPassword);
 
         String lastName = intent.getStringExtra("lastName");
         String firstName = intent.getStringExtra("firstName");

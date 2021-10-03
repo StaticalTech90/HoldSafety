@@ -17,7 +17,7 @@
         <activity android:name=".RegisterGoogleActivity" />
         <activity android:name=".SelectContactActivity" />
         <activity android:name=".UpdateContactActivity" />
-        <activity android:name=".VerifyUserActivity" />
+        <activity android:name=".ChangePasswordActivity" />
 
         <activity android:name=".MenuActivity" />
         <activity android:name=".MainActivity"
