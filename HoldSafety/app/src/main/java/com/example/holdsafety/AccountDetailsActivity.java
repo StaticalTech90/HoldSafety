@@ -12,6 +12,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.Editable;
+import android.text.InputType;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -47,7 +48,7 @@ public class AccountDetailsActivity extends AppCompatActivity {
     StorageReference fStorage;
     DocumentReference docRef;
     Boolean isNumberChanged = false, isEmailChanged = false;
-    String userPassword;
+    String userPassword = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -156,51 +157,49 @@ public class AccountDetailsActivity extends AppCompatActivity {
                 newEmail = txtEmail.getText().toString().trim();
 
                 //checks if fields are empty
-                if(TextUtils.isEmpty(newMobileNumber) && TextUtils.isEmpty(newEmail)){
+                if (TextUtils.isEmpty(newMobileNumber) && TextUtils.isEmpty(newEmail)) {
                     txtMobileNumber.setError("Email is required");
                     txtEmail.setError("Password is required");
                     return;
                 }
 
-                if(TextUtils.isEmpty(newMobileNumber)){
+                if (TextUtils.isEmpty(newMobileNumber)) {
                     txtMobileNumber.setError("Mobile Number is required");
                     return;
                 }
 
-                if(TextUtils.isEmpty(newEmail)){
+                if (TextUtils.isEmpty(newEmail)) {
                     txtEmail.setError("Email is required");
                     return;
                 }
 
                 //not empty fields, no changes
-                if(!isEmailChanged && !isNumberChanged){
+                if (!isEmailChanged && !isNumberChanged) {
                     Toast.makeText(AccountDetailsActivity.this, "No Changes Made", Toast.LENGTH_LONG).show();
                 }
-
-                //if there are new changes to db
-                if(isNumberChanged){
-                    docRef.update("MobileNumber", newMobileNumber);
-                    isNumberChanged = false;
-                    Toast.makeText(AccountDetailsActivity.this, "Mobile Number Successfully Changed", Toast.LENGTH_LONG).show();
-
-                    //if email is not changed reload activity
-                    if(!isEmailChanged){
-                        finish();
-                        startActivity(getIntent());
-                    }
-                }
-
-                if(isEmailChanged) {
+                else if (isEmailChanged || isNumberChanged){
+                    //pop up for re-enter password
                     EditText txtInputPassword;
 
-                    AlertDialog.Builder dialogChangeEmail;
-                    dialogChangeEmail = new AlertDialog.Builder(AccountDetailsActivity.this);
-                    dialogChangeEmail.setTitle("Change Email");
-                    dialogChangeEmail.setMessage("You have 48 hours to verify your new email. Failure to do so will delete your account." +
-                            "\n\nAre you sure you want to change?" + "\n\nRe-enter password to save changes:");
+                    AlertDialog.Builder dialogSaveChanges;
+                    dialogSaveChanges = new AlertDialog.Builder(AccountDetailsActivity.this);
+                    dialogSaveChanges.setTitle("Save Changes");
+
+                    //if only number is changed
+                    if (isNumberChanged && !isEmailChanged){
+                        dialogSaveChanges.setMessage("Re-enter password to save changes:");
+                    }
+
+                    //if both
+                    if (isEmailChanged){
+                        dialogSaveChanges.setMessage("Note: Upon changing your email, you will not be able to save recordings until the new email is verified." +
+                                "\n\nRe-enter password to save changes:");
+                    }
 
                     txtInputPassword = new EditText(AccountDetailsActivity.this);
-                    dialogChangeEmail.setView(txtInputPassword);
+                    dialogSaveChanges.setView(txtInputPassword);
+
+                    txtInputPassword.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
 
                     //saves user input if not empty
                     txtInputPassword.addTextChangedListener(new TextWatcher() {
@@ -218,43 +217,60 @@ public class AccountDetailsActivity extends AppCompatActivity {
                         }
                     });
 
-                    dialogChangeEmail.setPositiveButton("Change", new DialogInterface.OnClickListener() {
+                    dialogSaveChanges.setPositiveButton("Done", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialogInterface, int i) {
                             //Do nothing here, override this button later to change the close behaviour
                         }
                     });
 
-                    dialogChangeEmail.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    dialogSaveChanges.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialogInterface, int i) {
                             dialogInterface.dismiss();
 
+                            //reset values
                             isEmailChanged = false;
+                            isNumberChanged = false;
+                            userPassword = "";
 
                             finish();
                             startActivity(getIntent());
                         }
                     });
 
-                    AlertDialog changeEmailDialog = dialogChangeEmail.create();
+                    AlertDialog changeEmailDialog = dialogSaveChanges.create();
                     changeEmailDialog.show();
 
                     //Override
-                    changeEmailDialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(new View.OnClickListener()
-                    {
+                    changeEmailDialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            if(TextUtils.isEmpty(userPassword)){
+                            if (TextUtils.isEmpty(userPassword)) {
                                 txtInputPassword.setError("Password is required");
-                            }
-                            else {
+                            } else {
                                 userPassword = txtInputPassword.getText().toString();
-                                changeEmail(newEmail);
+
+                                if (isNumberChanged) {
+                                    changeNumber(newMobileNumber);
+                                }
+
+                                if (isEmailChanged) {
+                                    changeEmail(newEmail);
+                                }
                             }
                         }
-                    });
+                    }); //end of dialog code
                 }
+                //if there are new changes
+//                if(isNumberChanged && !isEmailChanged){
+//                    //if email is not changed - proceed to save and reload activity
+//                    reAuthenticate(newEmail, newMobileNumber);
+//                }
+//
+//                if(isEmailChanged) {
+//                    reAuthenticate(newEmail, newMobileNumber);
+//                }
             }
         });
     }
@@ -269,10 +285,6 @@ public class AccountDetailsActivity extends AppCompatActivity {
         //startActivityForResult(intent, 1);
     }
 
-    public void userRegister(View view){
-        Toast.makeText(getApplicationContext(), "Register", Toast.LENGTH_SHORT).show();
-    }
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -284,80 +296,102 @@ public class AccountDetailsActivity extends AppCompatActivity {
     }
 
     public void changePassword(View view){
-        String newPass = "newpassword";
-        AuthCredential credential = EmailAuthProvider
-                .getCredential(user.getEmail(), "password");
-
-        // Prompt the user to re-provide their sign-in credentials
-                user.reauthenticate(credential)
-                        .addOnCompleteListener(new OnCompleteListener<Void>() {
-                            @Override
-                            public void onComplete(@NonNull Task<Void> task) {
-                                if (task.isSuccessful()) {
-                                    user.updatePassword(newPass).addOnCompleteListener(new OnCompleteListener<Void>() {
-                                        @Override
-                                        public void onComplete(@NonNull Task<Void> task) {
-                                            if (task.isSuccessful()) {
-                                                Log.d(TAG, "Password updated");
-
-                                                FirebaseAuth.getInstance().signOut();
-                                                Toast.makeText(AccountDetailsActivity.this, "Password Changed", Toast.LENGTH_SHORT).show();
-
-                                                startActivity(new Intent(AccountDetailsActivity.this, MainActivity.class));
-                                                finish();
-
-                                            } else {
-                                                Log.d(TAG, "Error password not updated");
-                                            }
-                                        }
-                                    });
-                                } else {
-                                    Log.d(TAG, "Error auth failed");
-                                }
-                            }
-                        });
+        startActivity(new Intent(AccountDetailsActivity.this, ChangePasswordActivity.class));
+        finish();
     }
 
     public void changeEmail(String newEmail){
         AuthCredential credential = EmailAuthProvider
                 .getCredential(user.getEmail(),userPassword);
 
-
         user.reauthenticate(credential)
                 .addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
-                        Log.d(TAG, "User re-authenticated.");
+                        if (task.isSuccessful()) {
+                            //updates email in Auth
+                            user.updateEmail(newEmail)
+                                    .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                        @Override
+                                        public void onComplete(@NonNull Task<Void> task) {
+                                            if (task.isSuccessful()) {
+                                                Log.d(TAG, "User email address updated.");
 
-                        //updates email in Auth
-                        user.updateEmail(newEmail)
-                                .addOnCompleteListener(new OnCompleteListener<Void>() {
-                                    @Override
-                                    public void onComplete(@NonNull Task<Void> task) {
-                                        if (task.isSuccessful()) {
-                                            Log.d(TAG, "User email address updated.");
+                                                //updates email in document
+                                                docRef.update("Email", newEmail);
 
-                                            //updates email in document
-                                            docRef.update("Email", newEmail);
+                                                //reset values
+                                                isEmailChanged = false;
+                                                userPassword = "";
 
-                                            //reset values
+                                                Toast.makeText(AccountDetailsActivity.this, "Changes Saved", Toast.LENGTH_LONG).show();
+
+                                                //insert email verification here
+
+                                                finish();
+                                                startActivity(getIntent());
+                                            }
+                                        }
+                                    })
+                                    .addOnFailureListener(new OnFailureListener() {
+                                        @Override
+                                        public void onFailure(@NonNull Exception e) {
+                                            isNumberChanged = false;
                                             isEmailChanged = false;
-                                            userPassword = " ";
+                                            userPassword = "";
 
-                                            Toast.makeText(AccountDetailsActivity.this, "Changes Saved", Toast.LENGTH_LONG).show();
-
-                                            //insert email verification here
+                                            Toast.makeText(AccountDetailsActivity.this, "Update Email Failed" + "\nChanges not Saved", Toast.LENGTH_LONG).show();
 
                                             finish();
                                             startActivity(getIntent());
                                         }
-                                    }
-                                });
+                                    });
+                        }
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
+                        isNumberChanged = false;
+                        isEmailChanged = false;
+                        userPassword = "";
+
+                        Toast.makeText(AccountDetailsActivity.this, "Reauthentication Failed" + "\nChanges not Saved", Toast.LENGTH_LONG).show();
+
+                        finish();
+                        startActivity(getIntent());
+                    }
+                });
+    }
+
+    public void changeNumber(String newMobileNumber){
+        AuthCredential credential = EmailAuthProvider
+                .getCredential(user.getEmail(),userPassword);
+
+        user.reauthenticate(credential)
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if (task.isSuccessful()) {
+                            docRef.update("MobileNumber", newMobileNumber);
+                            isNumberChanged = false;
+                            Toast.makeText(AccountDetailsActivity.this, "Mobile Number Successfully Changed", Toast.LENGTH_LONG).show();
+
+                            isNumberChanged = false;
+
+                            if(!isEmailChanged){
+                                userPassword = "";
+
+                                finish();
+                                startActivity(getIntent());
+                            }
+                        }
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        isNumberChanged = false;
                         isEmailChanged = false;
                         userPassword = "";
 
@@ -369,43 +403,98 @@ public class AccountDetailsActivity extends AppCompatActivity {
                 });
     }
 
-    public void reAuthenticate(){
-        EditText txtPassword;
+    //ignore this - will delete
+    public void reAuthenticate(String  newEmail, String newMobileNumber){
+        EditText txtInputPassword;
 
-        AlertDialog.Builder dialogReAuthenticate;
-        dialogReAuthenticate = new AlertDialog.Builder(AccountDetailsActivity.this);
-        dialogReAuthenticate.setTitle("Enter password");
-        dialogReAuthenticate.setMessage("Please re-enter password to save changes.");
+        AlertDialog.Builder dialogSaveChanges;
+        dialogSaveChanges = new AlertDialog.Builder(AccountDetailsActivity.this);
+        dialogSaveChanges.setTitle("Save Changes");
 
-        txtPassword = new EditText(AccountDetailsActivity.this);
-        dialogReAuthenticate.setView(txtPassword);
+        //if only number is changed
+        if (isNumberChanged && !isEmailChanged){
+            dialogSaveChanges.setMessage("Re-enter password to save changes:");
+        }
 
-        dialogReAuthenticate.setPositiveButton("Done", new DialogInterface.OnClickListener() {
+        //if both
+        if (isEmailChanged){
+            dialogSaveChanges.setMessage("You have 48 hours to verify your new email. Failure to do so will delete your account." +
+                    "\n\nRe-enter password to save changes:");
+        }
+
+        txtInputPassword = new EditText(AccountDetailsActivity.this);
+        dialogSaveChanges.setView(txtInputPassword);
+
+        txtInputPassword.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+
+        //saves new details input if not empty
+        txtInputPassword.addTextChangedListener(new TextWatcher() {
             @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-                userPassword = txtPassword.getText().toString();
-//                finish();
-//                startActivity(getIntent());
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                userPassword = txtInputPassword.getText().toString().trim();
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
             }
         });
 
-        dialogReAuthenticate.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+        dialogSaveChanges.setPositiveButton("Done", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                //Do nothing here, override this button later to change the close behaviour
+            }
+        });
+
+        dialogSaveChanges.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
                 dialogInterface.dismiss();
 
+                //reset values
                 isEmailChanged = false;
+                isNumberChanged = false;
+                userPassword = "";
 
                 finish();
                 startActivity(getIntent());
             }
         });
 
-        AlertDialog alertDialog = dialogReAuthenticate.create();
-        alertDialog.show();
+        AlertDialog changeEmailDialog = dialogSaveChanges.create();
+        changeEmailDialog.show();
+
+        //Override  - only continues if there is a password input
+        changeEmailDialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v) {
+                if(TextUtils.isEmpty(userPassword)){
+                    txtInputPassword.setError("Password is required");
+                }
+                else {
+                    userPassword = txtInputPassword.getText().toString();
+
+                    if (isNumberChanged){
+                        changeNumber(newMobileNumber);
+                    }
+
+                    if (isEmailChanged){
+                        changeEmail(newEmail);
+                    }
+                }
+            }
+        });
     }
 
     public void removeAccount(View view){
+        //add password reauthentication after delete photo works
+        user = FirebaseAuth.getInstance().getCurrentUser();
+
         AlertDialog.Builder dialogRemoveAccount;
         dialogRemoveAccount = new AlertDialog.Builder(AccountDetailsActivity.this);
         dialogRemoveAccount.setTitle("Remove Account");
@@ -446,5 +535,10 @@ public class AccountDetailsActivity extends AppCompatActivity {
 
         AlertDialog alertDialog = dialogRemoveAccount.create();
         alertDialog.show();
+    }
+
+    public void goBack(View view){
+        startActivity(new Intent(AccountDetailsActivity.this, MenuActivity.class));
+        finish();
     }
 }
