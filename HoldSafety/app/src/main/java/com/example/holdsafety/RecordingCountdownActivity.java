@@ -1,12 +1,11 @@
 package com.example.holdsafety;
 
-import androidx.appcompat.app.AppCompatActivity;
-
-import android.content.Intent;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 public class RecordingCountdownActivity extends AppCompatActivity {
     TextView countdownTimer;

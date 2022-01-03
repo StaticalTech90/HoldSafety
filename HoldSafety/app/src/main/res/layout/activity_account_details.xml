@@ -11,12 +11,13 @@
         android:id="@+id/backArrow"
         android:layout_width="30dp"
         android:layout_height="25dp"
+        android:onClick="goBack"
 
         android:layout_marginTop="30dp"
         android:layout_marginLeft="40dp"
         android:src="@drawable/arrow"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"/>
 
     <TextView
         android:id="@+id/btnRemoveAccount"
@@ -101,10 +102,9 @@
                 android:text="Last Name"
                 android:textColor="@color/white"
                 android:textSize="12sp"
-                app:layout_constraintStart_toStartOf="parent"
-                />
+                app:layout_constraintStart_toStartOf="parent" />
 
-            <EditText
+            <TextView
 
                 android:id="@+id/txtLastName"
                 android:layout_width="165dp"
@@ -114,8 +114,8 @@
 
                 android:backgroundTint="@color/white"
                 android:fontFamily="sans-serif-black"
-                android:text="LastName"
-                android:textColor="@color/white" />
+                android:textColor="@color/white"
+                android:textSize="18sp" />
         </RelativeLayout>
 
         <RelativeLayout
@@ -133,10 +133,9 @@
                 android:text="First Name"
                 android:textColor="@color/white"
                 android:textSize="12sp"
-                app:layout_constraintStart_toStartOf="parent"
-                />
+                app:layout_constraintStart_toStartOf="parent" />
 
-            <EditText
+            <TextView
 
                 android:id="@+id/txtFirstName"
                 android:layout_width="165dp"
@@ -146,16 +145,16 @@
 
                 android:backgroundTint="@color/white"
                 android:fontFamily="sans-serif-black"
-                android:text="FirstName"
-                android:textColor="@color/white" />
+                android:textColor="@color/white"
+                android:textSize="18sp" />
         </RelativeLayout>
 
         <RelativeLayout
             android:id="@+id/layoutMiddleName"
             android:layout_width="160dp"
             android:layout_height="wrap_content"
-            android:layout_alignParentStart="true"
             android:layout_below="@id/layoutLastName"
+            android:layout_alignParentStart="true"
             android:layout_marginTop="10dp">
 
             <TextView
@@ -169,8 +168,7 @@
                 android:textSize="12sp"
                 app:layout_constraintStart_toStartOf="parent" />
 
-            <EditText
-
+            <TextView
                 android:id="@+id/txtMiddleName"
                 android:layout_width="165dp"
                 android:layout_height="wrap_content"
@@ -179,16 +177,16 @@
 
                 android:backgroundTint="@color/white"
                 android:fontFamily="sans-serif-black"
-                android:text="MiddleName"
-                android:textColor="@color/white" />
+                android:textColor="@color/white"
+                android:textSize="18sp" />
         </RelativeLayout>
 
         <RelativeLayout
             android:id="@+id/layoutBirthDate"
             android:layout_width="160dp"
             android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
             android:layout_below="@id/layoutFirstName"
+            android:layout_alignParentEnd="true"
             android:layout_marginTop="10dp">
 
             <TextView
@@ -200,10 +198,9 @@
                 android:text="Birth Date"
                 android:textColor="@color/white"
                 android:textSize="12sp"
-                app:layout_constraintStart_toStartOf="parent"
-                />
+                app:layout_constraintStart_toStartOf="parent" />
 
-            <EditText
+            <TextView
 
                 android:id="@+id/txtBirthDate"
                 android:layout_width="165dp"
@@ -211,18 +208,18 @@
 
                 android:layout_below="@+id/lblBirtDate"
 
+                android:backgroundTint="@color/white"
                 android:fontFamily="sans-serif-black"
-                android:text="09/07/2000"
                 android:textColor="@color/white"
-                android:backgroundTint="@color/white"/>
+                android:textSize="18sp" />
         </RelativeLayout>
 
         <RelativeLayout
             android:id="@+id/layoutMobileNumber"
             android:layout_width="160dp"
             android:layout_height="wrap_content"
-            android:layout_alignParentStart="true"
-            android:layout_below="@id/layoutMiddleName"
+            android:layout_alignParentEnd="true"
+            android:layout_below="@id/layoutBirthDate"
             android:layout_marginTop="10dp">
 
             <TextView
@@ -234,8 +231,7 @@
                 android:text="Mobile Number"
                 android:textColor="@color/white"
                 android:textSize="12sp"
-                app:layout_constraintStart_toStartOf="parent"
-                />
+                app:layout_constraintStart_toStartOf="parent" />
 
             <EditText
 
@@ -247,16 +243,51 @@
 
                 android:backgroundTint="@color/white"
                 android:fontFamily="sans-serif-black"
-                android:text="09xx xxx xxxx"
-                android:textColor="@color/white" />
+                android:textColor="@color/white"
+                android:textSize="18sp" />
         </RelativeLayout>
 
         <RelativeLayout
-            android:layout_width="160dp"
+            android:id="@+id/layoutEmail"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:layout_below="@id/layoutBirthDate"
+            android:layout_below="@id/layoutMobileNumber"
             android:layout_marginTop="10dp">
+
+            <TextView
+                android:id="@+id/lblEmail"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+
+                android:fontFamily="sans-serif-light"
+                android:text="Email"
+                android:textColor="@color/white"
+                android:textSize="12sp"
+                app:layout_constraintStart_toStartOf="parent" />
+
+            <EditText
+
+                android:id="@+id/txtEmail"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+
+                android:layout_below="@+id/lblEmail"
+
+                android:backgroundTint="@color/white"
+                android:fontFamily="sans-serif-black"
+                android:inputType="textEmailAddress"
+                android:textColor="@color/white"
+                android:textSize="18sp" />
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="162dp"
+            android:layout_height="60dp"
+            android:layout_below="@+id/layoutMiddleName"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="8dp"
+            android:layout_toStartOf="@+id/layoutMobileNumber">
 
             <TextView
                 android:id="@+id/lblSex"
@@ -267,83 +298,31 @@
                 android:text="Sex"
                 android:textColor="@color/white"
                 android:textSize="12sp"
-                app:layout_constraintStart_toStartOf="parent"
-                />
+                app:layout_constraintStart_toStartOf="parent" />
 
-            <EditText
-
+            <TextView
                 android:id="@+id/txtSex"
                 android:layout_width="165dp"
                 android:layout_height="wrap_content"
 
                 android:layout_below="@+id/lblSex"
 
+                android:layout_marginTop="11dp"
                 android:backgroundTint="@color/white"
                 android:fontFamily="sans-serif-black"
-                android:text="M"
-                android:textColor="@color/white" />
-        </RelativeLayout>
-
-        <RelativeLayout
-            android:id="@+id/layoutPassword"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/layoutMobileNumber"
-            android:layout_marginTop="10dp">
-
-            <TextView
-                android:id="@+id/lblPassword"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-
-                android:fontFamily="sans-serif-light"
-                android:text="Password"
                 android:textColor="@color/white"
-                android:textSize="12sp"
-                app:layout_constraintStart_toStartOf="parent"
-                />
-
-            <EditText
-
-                android:id="@+id/txtPassword"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-
-                android:layout_below="@+id/lblPassword"
-
-                android:backgroundTint="@color/white"
-                android:fontFamily="sans-serif-black"
-                android:inputType="textPassword"
-                android:text="password"
-                android:textColor="@color/white" />
+                android:textSize="18sp" />
         </RelativeLayout>
 
-        <Button
-            android:id="@+id/btnUploadID"
-            android:layout_width="120dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:background="@drawable/white_container"
-            android:text="Upload ID"
-            android:textSize="16sp"
-
-            android:onClick="uploadID"
-
-            android:layout_alignParentEnd="true"
-            android:layout_below="@id/layoutPassword"
-
-            />
     </RelativeLayout>
-
 
     <Button
         android:id="@+id/btnSave"
         android:layout_width="230dp"
         android:layout_height="55dp"
-        android:layout_marginTop="50dp"
+        android:layout_marginTop="100dp"
         android:background="@drawable/blue_button"
         android:fontFamily="sans-serif-black"
-        android:onClick="accountUpdate"
         android:padding="10dp"
         android:text="SAVE CHANGES"
         android:textColor="@color/dark_blue"
@@ -351,5 +330,35 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/layoutAccountDetails" />
+
+    <Button
+        android:id="@+id/btnUploadID"
+        android:layout_width="106dp"
+        android:layout_height="26dp"
+        android:layout_marginStart="88dp"
+        android:layout_marginTop="18dp"
+
+        android:background="@drawable/white_container"
+
+        android:onClick="uploadID"
+        android:text="Upload ID"
+
+        android:textSize="16sp"
+        app:layout_constraintStart_toEndOf="@+id/lblAccountStatus"
+        app:layout_constraintTop_toBottomOf="@id/lblRegisterDesc" />
+
+    <Button
+        android:id="@+id/btnChangePassword"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Change Password"
+        android:onClick="changePassword"
+        tools:layout_editor_absoluteX="126dp"
+        tools:layout_editor_absoluteY="496dp"
+
+        android:layout_marginTop="10dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/layoutAccountDetails"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

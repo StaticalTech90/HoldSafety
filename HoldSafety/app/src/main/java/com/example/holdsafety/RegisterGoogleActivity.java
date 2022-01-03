@@ -2,10 +2,6 @@ package com.example.holdsafety;
 
 import static android.content.ContentValues.TAG;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.graphics.Color;
 import android.net.Uri;
@@ -22,14 +18,14 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
-import com.google.android.gms.auth.api.signin.GoogleSignInClient;
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
@@ -38,7 +34,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 public class RegisterGoogleActivity extends AppCompatActivity {
     EditText etLastName, etFirstName, etMiddleName, etMobileNo;
@@ -46,10 +41,9 @@ public class RegisterGoogleActivity extends AppCompatActivity {
     Spinner spinnerSex;
     public Uri imageURI;
 
-    private FirebaseAuth mAuth;
     FirebaseFirestore db = FirebaseFirestore.getInstance();
 
-    String email, sex;
+    String email;
     Date birthDate;
 
     @Override
@@ -146,7 +140,6 @@ public class RegisterGoogleActivity extends AppCompatActivity {
             etMobileNo.setError("Enter Mobile number");
         }
 
-        // TODO: insert to DB
         docUsers.put("LastName", lastName);
         docUsers.put("FirstName", firstName);
         docUsers.put("MiddleName", middleName);
@@ -190,7 +183,6 @@ public class RegisterGoogleActivity extends AppCompatActivity {
             //uploadPicture();
         }
     }
-
 
     public void goBack(View view){
         Intent intent = new Intent(getApplicationContext(), MenuActivity.class);

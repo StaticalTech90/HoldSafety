@@ -8,7 +8,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 public class ReportsActivity extends AppCompatActivity {
     RecyclerView recyclerViewReports;
-    String reportID[];
+    String[] reportID;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

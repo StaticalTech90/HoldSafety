@@ -1,14 +1,14 @@
 package com.example.holdsafety;
 
+import android.os.Bundle;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.os.Bundle;
-
 public class SelectContactActivity extends AppCompatActivity {
     RecyclerView recyclerViewContacts;
-    String contactName[];
+    String[] contactName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
