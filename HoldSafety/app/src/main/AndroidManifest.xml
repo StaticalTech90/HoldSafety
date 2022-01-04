@@ -24,8 +24,7 @@
         <activity
             android:name=".LandingActivity"
             android:exported="true"/>
-        <activity android:name=".Register1Activity" />
-        <activity android:name=".Register2Activity" />
+        <activity android:name=".RegisterActivity" />
         <activity android:name=".AccountDetailsActivity" />
         <activity android:name=".AddContactActivity" />
         <activity android:name=".DesignateContactActivity" />
