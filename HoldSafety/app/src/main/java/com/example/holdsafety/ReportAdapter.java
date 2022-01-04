@@ -10,10 +10,10 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 public class ReportAdapter extends RecyclerView.Adapter<ReportAdapter.ReportHolder> {
-    String id[];
+    String[] id;
     Context context;
 
-    public ReportAdapter(Context ct, String reportID[]){
+    public ReportAdapter(Context ct, String[] reportID){
         id = reportID;
         context = ct;
     }

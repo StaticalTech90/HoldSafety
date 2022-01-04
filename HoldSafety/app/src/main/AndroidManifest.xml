@@ -3,6 +3,7 @@
     android:name="android.permission.READ_EXTERNAL_STORAGE"
     package="com.example.holdsafety">
 
+    <uses-permission android:name="android.permission.INTERNET"/>
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -31,12 +32,14 @@
         <activity android:name=".RegisterGoogleActivity" />
         <activity android:name=".SelectContactActivity" />
         <activity android:name=".UpdateContactActivity" />
-        <activity android:name=".VerifyUserActivity" />
+        <activity android:name=".ChangePasswordActivity" />
+
         <activity android:name=".MenuActivity" />
         <activity
             android:name=".MainActivity"
             android:exported="true"
             android:launchMode="singleTop">
+            android:configChanges="orientation|screenSize"
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

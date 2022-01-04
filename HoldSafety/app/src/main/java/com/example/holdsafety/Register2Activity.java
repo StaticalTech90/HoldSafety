@@ -10,10 +10,10 @@ import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
-
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -102,7 +102,12 @@ public class Register2Activity extends AppCompatActivity {
     public void userRegister(View view){
         //get values from register1Activity
         Map<String, Object> docUsers = new HashMap<>();
-        intent = getIntent();
+        Intent intent = getIntent();
+
+        EditText etMobileNumber = findViewById(R.id.txtMobileNumber);
+        EditText etEmail = findViewById(R.id.txtEmail);
+        EditText etPassword = findViewById(R.id.txtCurrentPassword);
+        EditText etConPassword = findViewById(R.id.txtNewPassword);
 
         String lastName = intent.getStringExtra("lastName");
         String firstName = intent.getStringExtra("firstName");
