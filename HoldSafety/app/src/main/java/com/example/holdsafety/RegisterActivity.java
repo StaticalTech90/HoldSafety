@@ -3,6 +3,7 @@ package com.example.holdsafety;
 import static android.content.ContentValues.TAG;
 
 import android.annotation.SuppressLint;
+import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.graphics.Color;
 import android.net.Uri;
@@ -13,6 +14,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -30,9 +33,11 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 public class RegisterActivity extends AppCompatActivity {
@@ -41,6 +46,8 @@ public class RegisterActivity extends AppCompatActivity {
     StorageReference fStorage = FirebaseStorage.getInstance().getReference();
     FirebaseUser user;
     Intent intent;
+
+    final Calendar calendar = Calendar.getInstance();
 
     private EditText etLastName;
     private EditText etFirstName;
@@ -52,6 +59,7 @@ public class RegisterActivity extends AppCompatActivity {
     private EditText etPassword;
     private EditText etConPassword;
 
+    Button btnRegister;
     //idk how to dis properly
     private Uri imageURI;
 
@@ -71,6 +79,7 @@ public class RegisterActivity extends AppCompatActivity {
         etEmail = findViewById(R.id.txtEmail);
         etPassword = findViewById(R.id.txtPassword);
         etConPassword = findViewById(R.id.txtConfirmPassword);
+        btnRegister = findViewById(R.id.registerButton);
 
         String[] sex = new String[]{"Sex *", "M", "F"};
         List<String> sexList = new ArrayList<>(Arrays.asList(sex));
@@ -118,10 +127,35 @@ public class RegisterActivity extends AppCompatActivity {
 
             }
         });
+
+        DatePickerDialog.OnDateSetListener date =new DatePickerDialog.OnDateSetListener() {
+            @Override
+            public void onDateSet(DatePicker view, int year, int month, int day) {
+                calendar.set(Calendar.YEAR, year);
+                calendar.set(Calendar.MONTH,month);
+                calendar.set(Calendar.DAY_OF_MONTH,day);
+                updateDate();
+            }
+        };
+
+        //show DatePickerDialog using this listener
+        etBirthdate.setOnClickListener(view -> new DatePickerDialog(
+                RegisterActivity.this,
+                date,
+                calendar.get(Calendar.YEAR),
+                calendar.get(Calendar.MONTH),
+                calendar.get(Calendar.DAY_OF_MONTH)).show()
+        );
+
+        btnRegister.setOnClickListener(v -> {
+            try {
+                userRegister(v);
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+        });
     }
 
-    //TODO: Consider refactoring to onclickListener
-    //TODO: Consider refactoring birthdate
     public void userRegister(View view) throws ParseException {
         Map<String, Object> docUsers = new HashMap<>();
 
@@ -135,7 +169,6 @@ public class RegisterActivity extends AppCompatActivity {
         String password = etPassword.getText().toString().trim();
         String cPassword = etConPassword.getText().toString().trim();
 
-        //TODO: DatePickerDialog thing for date (Study); FRFabul
         @SuppressLint("SimpleDateFormat") SimpleDateFormat dateFormat = new SimpleDateFormat("MM-dd-yyyy");
         String valid = "01-01-2002"; //age restriction
         Date validDate = dateFormat.parse(valid);
@@ -215,18 +248,6 @@ public class RegisterActivity extends AppCompatActivity {
                         });
                     }
                 }
-                // else {
-//                    //send data over to register2 activity
-//                    //not the best practice but fragments are tricky
-//                    Intent intent = new Intent (getApplicationContext(), Register2Activity.class);
-//                    intent.putExtra("lastName", sLastName);
-//                    intent.putExtra("firstName", sFirstName);
-//                    intent.putExtra("middleName", sMiddleName);
-//                    intent.putExtra("sex", sSex);
-//                    intent.putExtra("date", sDate);
-//                    intent.putExtra("birthDate", sDate);
-//                    startActivity(intent);
-//                }
             }
         } catch(ParseException pe){
             etBirthdate.setHint("Please enter valid birthdate");
@@ -240,4 +261,11 @@ public class RegisterActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
+    //update edittext value
+    private void updateDate(){
+        //matched with line 174
+        String myFormat="MM-dd-yyyy";
+        SimpleDateFormat dateFormat=new SimpleDateFormat(myFormat, Locale.US);
+        etBirthdate.setText(dateFormat.format(calendar.getTime()));
+    }
 }
