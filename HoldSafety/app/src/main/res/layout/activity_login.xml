@@ -182,31 +182,20 @@
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true">
 
-            <ImageButton
+            <com.google.android.gms.common.SignInButton
                 android:id="@+id/btnLoginWithGoogle"
                 android:layout_width="70dp"
                 android:layout_height="70dp"
                 android:layout_alignParentStart="true"
                 android:layout_alignParentTop="true"
+                android:layout_alignParentEnd="true"
                 android:layout_marginTop="0dp"
+                android:layout_marginEnd="0dp"
                 android:background="@null"
                 android:onClick="userLoginWithGoogle"
                 android:scaleType="fitCenter"
                 android:src="@drawable/google_logo" />
 
-            <TextView
-                android:id="@+id/lblLoginWithGoogle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentTop="true"
-                android:layout_alignParentBottom="true"
-                android:layout_marginStart="3dp"
-                android:layout_marginBottom="27dp"
-                android:layout_toEndOf="@+id/btnLoginWithGoogle"
-                android:fontFamily="sans-serif-light"
-                android:text="Login With Google"
-                android:textColor="@color/light_blue"
-                android:textSize="17sp" />
 
             <TextView
                 android:id="@+id/lblNoAccount"
