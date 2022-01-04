@@ -204,6 +204,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         });
     }
 
+    /*
     //Google Sign In
     @Override
     public void onActivityReenter(int resultCode, Intent data) {
@@ -222,7 +223,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                                     // Sign in success, update UI with the signed-in user's information
                                     Log.d(TAG, "signInWithCredential:success");
                                     FirebaseUser user = mAuth.getCurrentUser();
-                                    //updateUI(user);
+                                    updateUI(user);
 
                                     //Display Google Data
                                     Toast.makeText(getApplicationContext(), "Login With Google Success: " + user.getDisplayName(), Toast.LENGTH_SHORT).show();
@@ -230,7 +231,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                                     // If sign in fails, display a message to the user.
                                     Log.w(TAG, "signInWithCredential:failure", task.getException());
                                     //Snackbar.make(mBinding.mainLayout, "Authentication Failed.", Snackbar.LENGTH_SHORT).show();
-                                    //updateUI(null);
+                                    updateUI(null);
                                     Toast.makeText(getApplicationContext(), "Login With Google Failed", Toast.LENGTH_SHORT).show();
                                 }
 
@@ -243,12 +244,16 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
             }
         }
     }
+    */
 
     private void updateUI(FirebaseUser user){
+        Toast.makeText(getApplicationContext(), "Update UI", Toast.LENGTH_SHORT).show();
         if(user!=null){
             //Login with Google Successful, There's an account present
             //setContentView(R.layout.activity_landing);
-            Toast.makeText(getApplicationContext(), "User: " + user.getDisplayName(), Toast.LENGTH_SHORT).show();
+            //Toast.makeText(getApplicationContext(), "User: " + user.getDisplayName(), Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent (this, LandingActivity.class);
+            startActivity(intent);
         }
     }
 
@@ -296,20 +301,61 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-
+        Toast.makeText(getApplicationContext(), "On Activity Result", Toast.LENGTH_SHORT).show();
         // Result returned from launching the Intent from GoogleSignInApi.getSignInIntent(...);
         if (requestCode == RC_SIGN_IN) {
             Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
 
             try {
                 // Google Sign In was successful, authenticate with Firebase
+
                 GoogleSignInAccount account = task.getResult(ApiException.class);
                 Log.d(TAG, "firebaseAuthWithGoogle:" + account.getId());
                 firebaseAuthWithGoogle(account.getIdToken());
             } catch (ApiException e) {
                 // Google Sign In failed, update UI appropriately
+
                 Log.w(TAG, "Google sign in failed", e);
                 Toast.makeText(getApplicationContext(), "Google Sign in Failed.", Toast.LENGTH_LONG).show();
+            }
+        }
+
+        else if (requestCode == SIGN_IN_REQUEST_CODE) {
+            Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
+            Toast.makeText(getApplicationContext(), "123", Toast.LENGTH_SHORT).show();
+            try {
+                Toast.makeText(getApplicationContext(), "Try", Toast.LENGTH_SHORT).show();
+                GoogleSignInAccount account = task.getResult(ApiException.class);
+                AuthCredential credential = GoogleAuthProvider.getCredential(account.getIdToken(), null);
+                mAuth.signInWithCredential(credential)
+                        .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                            @Override
+                            public void onComplete(@NonNull Task<AuthResult> task) {
+                                if (task.isSuccessful()) {
+                                    Toast.makeText(getApplicationContext(), "Successful", Toast.LENGTH_SHORT).show();
+                                    // Sign in success, update UI with the signed-in user's information
+                                    Log.d(TAG, "signInWithCredential:success");
+                                    FirebaseUser user = mAuth.getCurrentUser();
+                                    updateUI(user);
+
+                                    //Display Google Data
+                                    Toast.makeText(getApplicationContext(), "Login With Google Success: " + user.getDisplayName(), Toast.LENGTH_SHORT).show();
+                                } else {
+                                    // If sign in fails, display a message to the user.
+                                    Toast.makeText(getApplicationContext(), "Failed", Toast.LENGTH_SHORT).show();
+                                    Log.w(TAG, "signInWithCredential:failure", task.getException());
+                                    //Snackbar.make(mBinding.mainLayout, "Authentication Failed.", Snackbar.LENGTH_SHORT).show();
+                                    updateUI(null);
+                                    Toast.makeText(getApplicationContext(), "Login With Google Failed", Toast.LENGTH_SHORT).show();
+                                }
+
+                                // ...
+                            }
+                        });
+
+            } catch (ApiException e) {
+                Toast.makeText(getApplicationContext(), "Catch", Toast.LENGTH_SHORT).show();
+                e.printStackTrace();
             }
         }
     }
