@@ -59,6 +59,8 @@ public class AccountDetailsActivity extends AppCompatActivity {
         db = FirebaseFirestore.getInstance();
         fStorage = FirebaseStorage.getInstance().getReference();
 
+        Toast.makeText(AccountDetailsActivity.this, "Current User: " + user.getUid(), Toast.LENGTH_SHORT).show();
+
         TextView txtLastName, txtFirstName, txtMiddleName, txtBirthDate, txtSex;
         EditText txtMobileNumber, txtEmail;
         Button btnSave;

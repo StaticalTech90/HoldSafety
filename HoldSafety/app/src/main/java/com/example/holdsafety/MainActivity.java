@@ -294,7 +294,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     }
 
     public void userSignUp(View view){
-        Intent intent = new Intent (this, Register1Activity.class);
+        Intent intent = new Intent (this, RegisterActivity.class);
         startActivity(intent);
     }
 
