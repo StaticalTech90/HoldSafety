@@ -36,7 +36,8 @@ public class AddContactActivity extends AppCompatActivity {
     private EditText etContactFirstName;
     private EditText etContactMobileNumber;
     private EditText etContactEmail;
-    private Spinner spinnerRelation;
+    private String selectedRelation;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,7 +54,7 @@ public class AddContactActivity extends AppCompatActivity {
         etContactFirstName = findViewById(R.id.txtContactFirstName);
         etContactMobileNumber = findViewById(R.id.txtContactMobileNumber);
         etContactEmail = findViewById(R.id.txtContactEmail);
-        spinnerRelation = findViewById(R.id.txtRelationWithContact);
+
     }
 
     public void saveContact(View view){
@@ -63,6 +64,11 @@ public class AddContactActivity extends AppCompatActivity {
         String contactFirstName = etContactFirstName.getText().toString().trim();
         String contactMobileNumber = etContactMobileNumber.getText().toString().trim();
         String contactEmail = etContactEmail.getText().toString().trim();
+        String contactRelation = dropdownRelation();
+
+        Toast.makeText
+                (getApplicationContext(), "Selected Relation In String: " + contactRelation, Toast.LENGTH_SHORT)
+                .show();
         //String contactRelation = dropdownRelation().getSelectedItem().toString().trim();
 
 
@@ -70,7 +76,7 @@ public class AddContactActivity extends AppCompatActivity {
         docContacts.put("firstName", contactFirstName);
         docContacts.put("mobileNumber", contactMobileNumber);
         docContacts.put("email", contactEmail);
-        //docContacts.put("relation", contactRelation);
+        docContacts.put("relation", contactRelation);
 
         if(TextUtils.isEmpty(etContactLastName.getText())){
             etContactLastName.setHint("please enter contact last name");
@@ -87,6 +93,7 @@ public class AddContactActivity extends AppCompatActivity {
         } else {
             db.collection("emergencyContacts").document(userID).collection("contacts").add(docContacts).addOnCompleteListener(this, task -> {
                 if (task.isSuccessful()) {
+
                     Toast.makeText(getApplicationContext(),
                             "Successfully Added Contact",
                             Toast.LENGTH_SHORT).show();
@@ -103,9 +110,9 @@ public class AddContactActivity extends AppCompatActivity {
     }
 
     //Relation to Contact Dropdown (Spinner)
-    public void dropdownRelation(){
+    public String dropdownRelation(){
         Spinner spinnerRelation = (Spinner) findViewById(R.id.txtRelationWithContact);
-        String selectedItemText;
+
         String[] relation = new String[]{"Relation With Contact", "Parent", "Sibling", "Relative", "Close Friend", "Acquaintance"};
         List<String> relationList = new ArrayList<>(Arrays.asList(relation));
 
@@ -151,6 +158,7 @@ public class AddContactActivity extends AppCompatActivity {
                     Toast.makeText
                             (getApplicationContext(), "Selected : " + selectedItemText, Toast.LENGTH_SHORT)
                             .show();
+                    selectedRelation  = (String) spinnerRelation.getSelectedItem().toString().trim();
 
                 }
             }
@@ -159,8 +167,8 @@ public class AddContactActivity extends AppCompatActivity {
             public void onNothingSelected(AdapterView<?> adapterView) {
 
             }
-
         });
+        return selectedRelation;
     }
 
 }
