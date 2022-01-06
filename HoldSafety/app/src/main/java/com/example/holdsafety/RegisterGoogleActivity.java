@@ -145,6 +145,7 @@ public class RegisterGoogleActivity extends AppCompatActivity {
     }
 
     //refactored userRegister onClickListener into independent function
+    //TODO: turn this back into an onClickListener
     public void userRegister(View view){
         user = mAuth.getCurrentUser();
         Map<String, Object> docUsers = new HashMap<>();
