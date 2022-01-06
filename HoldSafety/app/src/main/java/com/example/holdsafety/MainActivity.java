@@ -38,6 +38,7 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
@@ -56,6 +57,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     SignInButton btnGoogle;
 
     FirebaseFirestore db = FirebaseFirestore.getInstance();
+    DocumentReference docRef;
 
     GoogleSignInClient gsc;
     GoogleSignInOptions gso;
@@ -218,19 +220,30 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
             //setContentView(R.layout.activity_landing);
             //Toast.makeText(getApplicationContext(), "User: " + user.getDisplayName(), Toast.LENGTH_SHORT).show();
 
-            /***
-             * TODO: Check if user has complete details/already registered.
-             * If yes, go to LandingActivity
-             * Else, otherwise go to RegisterGoogleActivity
-             */
-            if(user.getUid() != null) { // placeholder condition for TODO
 
-            } else {
-                Intent landingPage = new Intent (this, LandingActivity.class);
-                startActivity(landingPage);
-            }
+            //TODO: User is sent to landing activity directly if account already exists
+            docRef = db.collection("users").document(user.getUid());
 
+            docRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                @Override
+                public void onSuccess(DocumentSnapshot documentSnapshot) {
+                    if(documentSnapshot.exists()) {
+                        String lastName = documentSnapshot.getString("LastName");
+                        String firstName = documentSnapshot.getString("FirstName");
+                        String sex = documentSnapshot.getString("Sex");
+                        String currentMobileNumber = documentSnapshot.getString("MobileNumber");
 
+                        if(lastName != "" && firstName != "" && sex != "" && currentMobileNumber != "") { //Account is complete in db
+                            Intent landingPage = new Intent (MainActivity.this, LandingActivity.class);
+                            startActivity(landingPage);
+                        } else { // Account needs to be completed
+                            Intent completeGoogleRegistration = new Intent(MainActivity.this, RegisterGoogleActivity.class);
+                            startActivity(completeGoogleRegistration);
+                        }
+
+                    }
+                }
+            });
         }
     }
 
@@ -279,27 +292,9 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         Toast.makeText(getApplicationContext(), "On Activity Result", Toast.LENGTH_SHORT).show();
-        // Result returned from launching the Intent from GoogleSignInApi.getSignInIntent(...);
-        if (requestCode == RC_SIGN_IN) {
-            Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
-
-            try {
-                // Google Sign In was successful, authenticate with Firebase
-
-                GoogleSignInAccount account = task.getResult(ApiException.class);
-                Log.d(TAG, "firebaseAuthWithGoogle:" + account.getId());
-                Toast.makeText(getApplicationContext(), "Google Sign in Success.", Toast.LENGTH_LONG).show();
-                firebaseAuthWithGoogle(account.getIdToken());
-            } catch (ApiException e) {
-                // Google Sign In failed, update UI appropriately
-
-                Log.w(TAG, "Google sign in failed", e);
-                Toast.makeText(getApplicationContext(), "Google Sign in Failed.", Toast.LENGTH_LONG).show();
-            }
-        }
 
         //The real Google SignIn method. idk what the if-statement above does.
-        else if (requestCode == SIGN_IN_REQUEST_CODE) {
+        if (requestCode == SIGN_IN_REQUEST_CODE) {
             Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
             Toast.makeText(getApplicationContext(), "123", Toast.LENGTH_SHORT).show();
             try {
@@ -321,17 +316,20 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                                     Toast.makeText(getApplicationContext(), "Login With Google Success: " + user.getDisplayName(), Toast.LENGTH_SHORT).show();
 
                                     //Put Google Data in Firestore
+                                    GoogleSignInAccount account;
+                                    account = GoogleSignIn.getLastSignedInAccount(MainActivity.this);
+
                                     Map<String, Object> docUsers = new HashMap<>();
                                     String email = user.getEmail();
                                     docUsers.put("ID", user.getUid());
                                     docUsers.put("isVerified", false);
-                                    docUsers.put("LastName", "");  // idk how to get the display name and determine first and last name
-                                    docUsers.put("FirstName", ""); // so user input nalang haha lmao
+                                    docUsers.put("LastName", account.getFamilyName());
+                                    docUsers.put("FirstName", account.getGivenName());
                                     docUsers.put("MiddleName", "");
                                     docUsers.put("Sex", "");
                                     docUsers.put("BirthDate", "");
                                     docUsers.put("MobileNumber", "");
-                                    docUsers.put("Email", email); // the only thing we get from the db for RegisterGoogleActivity
+                                    docUsers.put("Email", account.getEmail()); // the only thing we get from the db for RegisterGoogleActivity
 
                                     db.collection("users").document(user.getUid()).set(docUsers)
                                             .addOnSuccessListener(new OnSuccessListener<Void>() {
@@ -368,33 +366,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         }
     }
 
-    private void firebaseAuthWithGoogle(String idToken) {
-        AuthCredential credential = GoogleAuthProvider.getCredential(idToken, null);
-        mAuth.signInWithCredential(credential)
-                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        if (task.isSuccessful()) {
-                            // Sign in success, update UI with the signed-in user's information
-                            Log.d(TAG, "signInWithCredential:success");
-                            FirebaseUser user = mAuth.getCurrentUser();
-
-                            Intent fillDetails = new Intent(getApplicationContext(), RegisterGoogleActivity.class);
-                            fillDetails.putExtra("userID", user.getUid());
-                            fillDetails.putExtra("userEmail", user.getEmail());
-
-                            startActivity(fillDetails);
-                            //updateUI(user);
-                        } else {
-                            // If sign in fails, display a message to the user.
-                            Log.w(TAG, "signInWithCredential:failure", task.getException());
-                            Toast.makeText(getApplicationContext(), "Google Sign in Failed.", Toast.LENGTH_LONG).show();
-                            //updateUI(null);
-                        }
-                    }
-                });
-    }
-
     public void othersRedirect(View view) {
         Intent intent = new Intent(getApplicationContext(), OthersActivity.class);
         startActivity(intent);
@@ -405,8 +376,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         Toast.makeText(getApplicationContext(), "Please check your internet connection.", Toast.LENGTH_LONG).show();
     }
 
-    private void completeProfile(Task<DocumentSnapshot> task) { // currently unused
-        String email = task.getResult().getString("Email");
+    private void completeProfile() { // currently unused
+        //String email = task.getResult().getString("Email");
 
         Intent completeGoogleRegistration = new Intent(this, RegisterGoogleActivity.class);
         startActivity(completeGoogleRegistration);

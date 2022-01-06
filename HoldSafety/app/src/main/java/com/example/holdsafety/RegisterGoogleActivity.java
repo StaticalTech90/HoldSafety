@@ -28,6 +28,8 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
@@ -40,12 +42,14 @@ import java.util.Map;
 
 public class RegisterGoogleActivity extends AppCompatActivity {
     EditText etLastName, etFirstName, etMiddleName, etMobileNo;
-    Button proceed;
+    Button btnProceed;
     Spinner spinnerSex;
     public Uri imageURI;
 
+    FirebaseUser user;
     FirebaseAuth mAuth;
     FirebaseFirestore db = FirebaseFirestore.getInstance();
+    DocumentReference docRef;
 
     String email;
     Date birthDate;
@@ -55,6 +59,13 @@ public class RegisterGoogleActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register_google);
 
+        etLastName = findViewById(R.id.txtLastName);
+        etFirstName = findViewById(R.id.txtFirstName);
+        etMiddleName = findViewById(R.id.txtMiddleName);
+        etMobileNo = findViewById(R.id.txtMobileNumber);
+        btnProceed = findViewById(R.id.btnProceed);
+        spinnerSex = findViewById(R.id.txtSex);
+
         // check if a user is signed in
         GoogleSignInAccount signInAccount = GoogleSignIn.getLastSignedInAccount(this);
         // get the details from their Google account
@@ -62,6 +73,7 @@ public class RegisterGoogleActivity extends AppCompatActivity {
             email = signInAccount.getEmail();
         }
 
+        //Sex selector spinner
         spinnerSex = findViewById(R.id.txtSex);
         String[] sex = new String[]{"Sex", "M", "F"};
         List<String> sexList = new ArrayList<>(Arrays.asList(sex));
@@ -112,21 +124,33 @@ public class RegisterGoogleActivity extends AppCompatActivity {
 
             }
         });
+
+        //Get data from db and auto-input in the form
+        mAuth = FirebaseAuth.getInstance();
+        user = mAuth.getCurrentUser();
+        if(user != null) {
+            docRef = db.collection("users").document(user.getUid());
+            docRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                @Override
+                public void onSuccess(DocumentSnapshot documentSnapshot) {
+                    if(documentSnapshot.exists()) {
+                        etLastName.setText(documentSnapshot.getString("LastName"));
+                        etFirstName.setText(documentSnapshot.getString("FirstName"));
+                        etLastName.setFocusable(false);
+                        etFirstName.setFocusable(false);
+                    }
+                }
+            });
+        }
     }
 
     //refactored userRegister onClickListener into independent function
     public void userRegister(View view){
+        user = mAuth.getCurrentUser();
         Map<String, Object> docUsers = new HashMap<>();
-        etLastName = findViewById(R.id.txtLastName);
-        etFirstName = findViewById(R.id.txtFirstName);
-        etMiddleName = findViewById(R.id.txtMiddleName);
-        etMobileNo = findViewById(R.id.txtMobileNumber);
-        proceed = findViewById(R.id.btnProceed);
-        spinnerSex = findViewById(R.id.txtSex);
 
-        Intent intent = getIntent();
-        String userId = intent.getStringExtra("userID");
-        String uEmail = intent.getStringExtra("userEmail");
+        String userId = user.getUid();
+        String uEmail = user.getEmail();
         String lastName = etLastName.getText().toString();
         String firstName = etFirstName.getText().toString();
         String middleName = etMiddleName.getText().toString();
@@ -142,32 +166,36 @@ public class RegisterGoogleActivity extends AppCompatActivity {
         } else if(TextUtils.isEmpty(etMobileNo.getText())) {
             etMobileNo.setHint("Enter Mobile number");
             etMobileNo.setError("Enter Mobile number");
+        } else {
+            docUsers.put("ID", user.getUid());
+            docUsers.put("LastName", lastName);
+            docUsers.put("FirstName", firstName);
+            docUsers.put("MiddleName", middleName);
+            docUsers.put("Sex", sex);
+            docUsers.put("BirthDate", birthDate); // currently empty
+            docUsers.put("MobileNumber", mobileNo);
+            docUsers.put("Email", uEmail);
+            docUsers.put("isVerified", false);
+
+            db.collection("users").document(userId).set(docUsers)
+                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void aVoid) {
+                            Toast.makeText(getApplicationContext(), "DocumentSnapshot successfully written!", Toast.LENGTH_SHORT).show();
+                            Log.d(TAG, "DocumentSnapshot successfully written!");
+
+                            Intent landing = new Intent(RegisterGoogleActivity.this, LandingActivity.class);
+                            startActivity(landing);
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            Toast.makeText(getApplicationContext(), "Error writing document", Toast.LENGTH_SHORT).show();
+                            Log.w(TAG, "Error writing document", e);
+                        }
+                    });
         }
-
-        docUsers.put("LastName", lastName);
-        docUsers.put("FirstName", firstName);
-        docUsers.put("MiddleName", middleName);
-        docUsers.put("Sex", sex);
-        docUsers.put("BirthDate", birthDate); // currently empty
-        docUsers.put("MobileNumber", mobileNo);
-        docUsers.put("Email", uEmail);
-
-        db.collection("users").document(userId).set(docUsers)
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        Toast.makeText(getApplicationContext(), "DocumentSnapshot successfully written!", Toast.LENGTH_SHORT).show();
-                        Log.d(TAG, "DocumentSnapshot successfully written!");
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Toast.makeText(getApplicationContext(), "Error writing document", Toast.LENGTH_SHORT).show();
-                        Log.w(TAG, "Error writing document", e);
-                    }
-                });
-
     }
 
     public void uploadID(View view){
