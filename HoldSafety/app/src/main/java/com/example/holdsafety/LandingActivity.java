@@ -1,8 +1,9 @@
 package com.example.holdsafety;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.view.MotionEvent;
@@ -44,6 +45,9 @@ public class LandingActivity extends AppCompatActivity {
                 //timer executes this code once finished
                 public void onFinish() {
                     //Toast.makeText(getApplicationContext(), "2 seconds finished", Toast.LENGTH_SHORT).show();
+                    //Enable wifi when button is held
+                    WifiManager wifiManager = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+                    wifiManager.setWifiEnabled(true);
                     startActivity(intent);
                 }
             };

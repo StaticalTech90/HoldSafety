@@ -26,7 +26,6 @@ import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
@@ -159,14 +158,15 @@ public class RegisterGoogleActivity extends AppCompatActivity {
         String sex = spinnerSex.getSelectedItem().toString();
 
         if(TextUtils.isEmpty(etLastName.getText())) {
-            etLastName.setHint("Enter Last Name");
             etLastName.setError("Enter Last Name");
         } else if(TextUtils.isEmpty(etFirstName.getText())) {
-            etFirstName.setHint("Enter First Name");
             etFirstName.setError("Enter First Name");
+        } else if(spinnerSex.getSelectedItem().equals("Sex")) {
+            ((TextView)spinnerSex.getSelectedView()).setError("please select sex");
         } else if(TextUtils.isEmpty(etMobileNo.getText())) {
-            etMobileNo.setHint("Enter Mobile number");
             etMobileNo.setError("Enter Mobile number");
+        } else if(etMobileNo.getText().length() != 11) {
+            etMobileNo.setError("Please enter a valid mobile number");
         } else {
             docUsers.put("ID", user.getUid());
             docUsers.put("LastName", lastName);
@@ -200,7 +200,6 @@ public class RegisterGoogleActivity extends AppCompatActivity {
     }
 
     public void uploadID(View view){
-
         Intent intent = new Intent();
         intent.setType("image/*");
         intent.setAction(Intent.ACTION_GET_CONTENT);
@@ -222,6 +221,4 @@ public class RegisterGoogleActivity extends AppCompatActivity {
         finish();
         startActivity(intent);
     }
-
-
 }

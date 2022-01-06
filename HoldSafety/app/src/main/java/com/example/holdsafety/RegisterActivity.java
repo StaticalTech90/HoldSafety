@@ -189,7 +189,7 @@ public class RegisterActivity extends AppCompatActivity {
         docUsers.put("MobileNumber", mobileNumber);
         docUsers.put("Email", email);
 
-        //validate then register user
+        //Data validation and register
         try{
             Date parsedDate = dateFormat.parse(birthDate);
             assert parsedDate != null;
@@ -209,7 +209,7 @@ public class RegisterActivity extends AppCompatActivity {
                     ((TextView)spinnerSex.getSelectedView()).setError("please select sex");
                 } else if(TextUtils.isEmpty(etMobileNumber.getText())) {
                     etMobileNumber.setError("Please enter mobile number");
-                } else if(etMobileNumber.getText().length() < 11 || etMobileNumber.getText().length() > 11) {
+                } else if(etMobileNumber.getText().length() != 11) {
                     etMobileNumber.setError("Please enter a valid mobile number");
                 } else if(TextUtils.isEmpty(etEmail.getText())) {
                     etEmail.setError("Please enter email");
@@ -245,7 +245,7 @@ public class RegisterActivity extends AppCompatActivity {
                             db.collection("users").document(user.getUid()).set(docUsers)
                                     .addOnSuccessListener(aVoid -> Log.d(TAG, "User successfully registered!"))
                                     .addOnFailureListener(e -> Log.w(TAG, "error", e));
-                            
+
                             startActivity(new Intent(getApplicationContext(), MenuActivity.class));
                         } else {
                             // If sign up fails, display a message to the user.
