@@ -382,4 +382,5 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         Intent completeGoogleRegistration = new Intent(this, RegisterGoogleActivity.class);
         startActivity(completeGoogleRegistration);
     }
+
 }
