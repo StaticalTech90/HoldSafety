@@ -23,7 +23,7 @@ public class MenuActivity extends AppCompatActivity {
 
     public void designateContacts(View view){
         //Toast.makeText(getApplicationContext(), "Designate Contacts", Toast.LENGTH_SHORT).show();
-        Intent intent = new Intent (getApplicationContext(), AddContactActivity.class);
+        Intent intent = new Intent (getApplicationContext(), DesignateContactActivity.class);
         startActivity(intent);
     }
 
