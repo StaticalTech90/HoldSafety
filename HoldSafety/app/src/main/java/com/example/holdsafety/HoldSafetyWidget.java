@@ -12,7 +12,7 @@ public class HoldSafetyWidget extends AppWidgetProvider {
     @Override
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
         for (int appWidgetId: appWidgetIds){
-            Intent intent = new Intent(context, MainActivity.class);
+            Intent intent = new Intent(context, LoginActivity.class);
             PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent,0);
 
             RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.widget_holdsafety);

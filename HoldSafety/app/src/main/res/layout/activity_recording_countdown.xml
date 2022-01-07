@@ -36,7 +36,7 @@
             android:layout_marginStart="3dp"
             android:layout_toEndOf="@+id/imgLogo"
             android:fontFamily="sans-serif-black"
-            android:text="The alert message was alreay sent!"
+            android:text="The alert message was already sent!"
             android:textColor="@color/gray"
             android:textSize="16sp" />
     </RelativeLayout>

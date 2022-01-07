@@ -2,11 +2,6 @@ package com.example.holdsafety;
 
 import static android.content.ContentValues.TAG;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
@@ -517,7 +512,7 @@ public class AccountDetailsActivity extends AppCompatActivity {
 
                                     db.collection("users").document(user.getUid()).delete();
 
-                                    startActivity(new Intent(AccountDetailsActivity.this, MainActivity.class));
+                                    startActivity(new Intent(AccountDetailsActivity.this, LoginActivity.class));
                                     finish();
                                 }
                                 else{

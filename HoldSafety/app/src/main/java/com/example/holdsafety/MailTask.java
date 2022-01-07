@@ -1,4 +1,5 @@
 package com.example.holdsafety;
+
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.os.AsyncTask;
@@ -27,7 +28,7 @@ public class MailTask extends AsyncTask {
         statusDialog.setMessage("Getting ready...");
         statusDialog.setIndeterminate(false);
         statusDialog.setCancelable(false);
-        statusDialog.show();
+        //statusDialog.show();
     }
 
     @Override
