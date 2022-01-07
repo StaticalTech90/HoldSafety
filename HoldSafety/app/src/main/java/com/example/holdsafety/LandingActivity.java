@@ -219,7 +219,7 @@ public class LandingActivity extends AppCompatActivity {
                                     location.getLatitude(), location.getLongitude(), 2);
                             String address = addresses.get(1).getAddressLine(0);
 
-                            Toast.makeText(this, location.getLatitude() + "," + location.getLatitude(), Toast.LENGTH_SHORT).show();
+                            Toast.makeText(this, "Current Location: "+location.getLatitude() + "," + location.getLatitude(), Toast.LENGTH_SHORT).show();
 
                             getEstablishmentsLocations(location, address);
                             //TODO COMPARE LOCATION TO CONTACTS
@@ -397,7 +397,7 @@ public class LandingActivity extends AppCompatActivity {
                             }
                         }
 
-                        Toast.makeText(LandingActivity.this, "" + nearestBrgySnap.getString("Barangay"), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(LandingActivity.this, "Nearest: " + nearestBrgySnap.getString("Barangay"), Toast.LENGTH_SHORT).show();
                         //sendLocationToContacts(location, address);
                     }
                 });
