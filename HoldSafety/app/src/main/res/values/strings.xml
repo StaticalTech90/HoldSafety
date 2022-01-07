@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">HoldSafety</string>
     <string name="btnSignUp"><u>Sign Up</u></string>
+    <string name="btnForgotPassword"><u>Forgot Password?</u></string>
     <string name="btnRegisterNext"><u>Next</u></string>
     <string name="btnRemoveAccount"><u>Remove Account</u></string>
     <string name="btnReports"><u>My Reports</u></string>

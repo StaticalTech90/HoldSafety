@@ -11,7 +11,15 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 public class LandingActivity extends AppCompatActivity {
     Button btnSafetyButton;
@@ -19,6 +27,7 @@ public class LandingActivity extends AppCompatActivity {
     private int timer;
     long remainTime;
     @SuppressLint("ClickableViewAccessibility")
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -70,6 +79,7 @@ public class LandingActivity extends AppCompatActivity {
             }
         });
     }
+
 
     public void menuRedirect(View view) {
         Intent intent = new Intent(getApplicationContext(), MenuActivity.class);

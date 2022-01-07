@@ -16,50 +16,44 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 
 public class ForgotPasswordActivity extends AppCompatActivity {
-    EditText etEmail;
-    Button sendRecoveryLink;
-
-    private FirebaseAuth auth;
+    FirebaseAuth mAuth;
+    EditText txtEmail;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_forgot_password);
 
-        etEmail = findViewById(R.id.txtEmail);
-        sendRecoveryLink = findViewById(R.id.btnSendRecoveryLink);
+        txtEmail = findViewById(R.id.txtEmail);
 
-        auth = FirebaseAuth.getInstance();
-
-        sendRecoveryLink.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // TODO: Reset password via email link
-                String email = etEmail.getText().toString().trim();
-
-                if(TextUtils.isEmpty(email)) {
-                    etEmail.setHint("Enter Email");
-                    etEmail.setError("Enter Email");
-                }
-
-                auth.sendPasswordResetEmail(email).addOnCompleteListener(new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        if(task.isSuccessful()) {
-                            Toast.makeText(ForgotPasswordActivity.this, "We have sent an email", Toast.LENGTH_SHORT).show();
-                        } else {
-                            Toast.makeText(ForgotPasswordActivity.this, "Failed to send an email", Toast.LENGTH_SHORT).show();
-                        }
-                    }
-                });
-
-                // TODO: Go to OTP input screen (if needed)
-                Intent otpInput;
-            }
-        });
+        mAuth = FirebaseAuth.getInstance();
     }
 
     public void recoverAccount(View view){
-        Toast.makeText(getApplicationContext(), "Recovery link is sent to your email", Toast.LENGTH_SHORT).show();
+        String email = txtEmail.getText().toString().trim();
+
+        if(TextUtils.isEmpty(email)) {
+            txtEmail.setError("Enter Email");
+        } else {
+            mAuth.sendPasswordResetEmail(email).addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if(task.isSuccessful()) {
+                            //email exists
+                            Toast.makeText(ForgotPasswordActivity.this, "Recovery link is sent to your email", Toast.LENGTH_LONG).show();
+                            startActivity(new Intent(ForgotPasswordActivity.this, MainActivity.class));
+                            finish();
+                        } else {
+                            //email does not exist
+                            Toast.makeText(ForgotPasswordActivity.this, "Unable to send reset email. Please make sure your email is correct.", Toast.LENGTH_LONG).show();
+                        }
+                    }
+                });
+        }
+    }
+
+    public void goBack(View view){
+        startActivity(new Intent(ForgotPasswordActivity.this, MainActivity.class));
+        finish();
     }
 }

@@ -73,7 +73,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         // check if user is already logged in
         user = mAuth.getCurrentUser();
         if(user != null) {
-            // TODO: Home screen for already logged-in users
             //Intent intent = new Intent(getApplicationContext(), MenuActivity.java)
             //startActivity(intent);
         }
@@ -99,7 +98,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         txtPassword = findViewById(R.id.txtCurrentPassword);
         btnLogin = findViewById(R.id.btnLogin);
         txtToggle = findViewById(R.id.txtToggle);
-        txtForgotPassword = findViewById(R.id.lblForgotPassword);
 
         btnGoogle = findViewById(R.id.btnLoginWithGoogle);
 
@@ -151,7 +149,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
 
             }
         });
-
         txtToggle.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -167,17 +164,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
             }
         });
 
-        // Forgot Password button
-        txtForgotPassword.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                // Go to the necessary screen
-                Intent resetPasswordIntent = new Intent(getApplicationContext(), ForgotPasswordActivity.class);
-                startActivity(resetPasswordIntent);
-            }
-        });
-
-        mAuth = FirebaseAuth.getInstance();
         //redirects user to landing page if already logged in
         if(mAuth.getCurrentUser() != null){
             startActivity(new Intent(getApplicationContext(), LandingActivity.class));
@@ -268,13 +254,16 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
 
     public void loginUser(String email,String password){
         //authentication
-        mAuth.signInWithEmailAndPassword(email,password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+        mAuth.signInWithEmailAndPassword(email,password)
+                .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
                 if(task.isSuccessful()){
-                    Toast.makeText(MainActivity.this, "Login Successful!", Toast.LENGTH_SHORT).show();
-                    startActivity(new Intent(MainActivity.this, LandingActivity.class));
-                    finish();
+                    mAuth = FirebaseAuth.getInstance();
+                    FirebaseUser user = mAuth.getCurrentUser();
+
+                    //pass user to check if it exists in user table
+                    checkUserAccount(user);
                 }
                 else{
                     Toast.makeText(MainActivity.this, "Error: " + task.getException().getMessage(), Toast.LENGTH_LONG).show();
@@ -286,6 +275,30 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     public void userSignUp(View view){
         Intent intent = new Intent (this, RegisterActivity.class);
         startActivity(intent);
+    }
+    
+    private void checkUserAccount(FirebaseUser user) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+        docRef = db.collection("users").document(user.getUid());
+
+        docRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            @Override
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                if(documentSnapshot.exists()){
+                    Toast.makeText(MainActivity.this, "Login Successful!", Toast.LENGTH_SHORT).show();
+                    startActivity(new Intent(MainActivity.this, LandingActivity.class));
+                    finish();
+                }
+                else {
+                    //account does not exist in users table = you are not a registered user/ you are an admin
+                    FirebaseAuth.getInstance().signOut();
+                    Toast.makeText(MainActivity.this, "You are registered as admin. Login via the ADMIN app.", Toast.LENGTH_LONG).show();
+                    finish();
+                    startActivity(getIntent());
+                }
+            }
+        });
     }
 
     @Override
@@ -381,5 +394,13 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
 
         Intent completeGoogleRegistration = new Intent(this, RegisterGoogleActivity.class);
         startActivity(completeGoogleRegistration);
+    public void forgotPassword(View view) {
+        startActivity(new Intent(MainActivity.this, ForgotPasswordActivity.class));
+        finish();
+    }
+
+    public void userSignUp(View view){
+        Intent intent = new Intent (this, Register1Activity.class);
+        startActivity(intent);
     }
 }

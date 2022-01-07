@@ -33,6 +33,7 @@
         <activity android:name=".SelectContactActivity" />
         <activity android:name=".UpdateContactActivity" />
         <activity android:name=".ChangePasswordActivity" />
+        <activity android:name=".ForgotPasswordActivity" />
 
         <activity android:name=".MenuActivity" />
         <activity
