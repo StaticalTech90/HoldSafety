@@ -36,6 +36,7 @@ public class AddContactActivity extends AppCompatActivity {
     private EditText etContactFirstName;
     private EditText etContactMobileNumber;
     private EditText etContactEmail;
+    private Spinner etRelation;
     private String selectedRelation;
 
 
@@ -54,6 +55,7 @@ public class AddContactActivity extends AppCompatActivity {
         etContactFirstName = findViewById(R.id.txtContactFirstName);
         etContactMobileNumber = findViewById(R.id.txtContactMobileNumber);
         etContactEmail = findViewById(R.id.txtContactEmail);
+        etRelation = findViewById(R.id.txtRelationWithContact);
 
     }
 
@@ -85,14 +87,19 @@ public class AddContactActivity extends AppCompatActivity {
             etContactFirstName.setHint("please enter contact first name");
             etContactFirstName.setError("please enter contact first name");
         } else if(TextUtils.isEmpty(etContactMobileNumber.getText())){
-            etContactMobileNumber.setHint("please enter contacy mobile number");
-            etContactMobileNumber.setError("please enter mobile number");
+            etContactMobileNumber.setHint("please enter contact mobile number");
+            etContactMobileNumber.setError("please enter contact mobile number");
         } else if(TextUtils.isEmpty(etContactEmail.getText())){
-            etContactEmail.setHint("please enter latitude");
-            etContactEmail.setError("please enter latitude");
+            etContactEmail.setHint("please enter contact email");
+            etContactEmail.setError("please enter contact email");
         } else {
             db.collection("emergencyContacts").document(userID).collection("contacts").add(docContacts).addOnCompleteListener(this, task -> {
                 if (task.isSuccessful()) {
+                    etContactLastName.getText().clear();
+                    etContactFirstName.getText().clear();
+                    etContactMobileNumber.getText().clear();
+                    etContactEmail.getText().clear();
+                    etContactEmail.getText().clear();
 
                     Toast.makeText(getApplicationContext(),
                             "Successfully Added Contact",
