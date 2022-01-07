@@ -2,9 +2,11 @@ package com.example.holdsafety;
 
 import static android.content.ContentValues.TAG;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.DatePickerDialog;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
@@ -21,13 +23,23 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -42,12 +54,13 @@ import java.util.Map;
 
 public class RegisterActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
+
     FirebaseFirestore db = FirebaseFirestore.getInstance();
-    StorageReference fStorage = FirebaseStorage.getInstance().getReference();
     FirebaseUser user;
-    Intent intent;
 
     final Calendar calendar = Calendar.getInstance();
+
+    TextView lblLink;
 
     private EditText etLastName;
     private EditText etFirstName;
@@ -60,8 +73,9 @@ public class RegisterActivity extends AppCompatActivity {
     private EditText etConPassword;
 
     Button btnRegister;
-    //idk how to dis properly
-    private Uri imageURI;
+    Button btnUpload;
+
+    private static final int EXTERNAL_STORAGE_REQ_CODE = 1000;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,6 +83,8 @@ public class RegisterActivity extends AppCompatActivity {
         setContentView(R.layout.activity_register);
 
         mAuth = FirebaseAuth.getInstance();
+
+        lblLink = findViewById(R.id.txtImageLink);
 
         etLastName = findViewById(R.id.txtLastName);
         etFirstName = findViewById(R.id.txtFirstName);
@@ -80,6 +96,8 @@ public class RegisterActivity extends AppCompatActivity {
         etPassword = findViewById(R.id.txtPassword);
         etConPassword = findViewById(R.id.txtConfirmPassword);
         btnRegister = findViewById(R.id.registerButton);
+
+        btnUpload = findViewById(R.id.btnUploadID);
 
         String[] sex = new String[]{"Sex *", "M", "F"};
         List<String> sexList = new ArrayList<>(Arrays.asList(sex));
@@ -147,6 +165,9 @@ public class RegisterActivity extends AppCompatActivity {
                 calendar.get(Calendar.DAY_OF_MONTH)).show()
         );
 
+        //Upload Image
+        btnUpload.setOnClickListener(v -> { pickImage(); });
+
         btnRegister.setOnClickListener(v -> {
             try {
                 userRegister(v);
@@ -170,7 +191,7 @@ public class RegisterActivity extends AppCompatActivity {
         String cPassword = etConPassword.getText().toString().trim();
 
         @SuppressLint("SimpleDateFormat") SimpleDateFormat dateFormat = new SimpleDateFormat("MM-dd-yyyy");
-        String valid = "01-01-2002"; //age restriction
+        String valid = "01-01-2004"; //age restriction 18
         Date validDate = dateFormat.parse(valid);
 
         //put data in hashmap to insert to db
@@ -228,6 +249,9 @@ public class RegisterActivity extends AppCompatActivity {
                                 docUsers.put("isVerified", false);
 
                                 //TODO: Ung URL ng image i-sasave sa document ng user
+                                if(!lblLink.getText().equals("")){
+                                    uploadPhotoToStorage();
+                                }
                                 //uploadImage();
 
                                 //insert to db with success/failure listeners
@@ -265,5 +289,96 @@ public class RegisterActivity extends AppCompatActivity {
         String myFormat="MM-dd-yyyy";
         SimpleDateFormat dateFormat=new SimpleDateFormat(myFormat, Locale.US);
         etBirthdate.setText(dateFormat.format(calendar.getTime()));
+    }
+
+    //PUT IMAGE UPLOAD HERE
+    private void uploadPhotoToStorage() {
+        if (!lblLink.getText().equals("")) {
+            //UPLOAD TO FIREBASE STORAGE
+            FirebaseStorage.getInstance()
+                    .getReference("id")
+                    .child(user.getUid())
+                    .putFile(Uri.parse(lblLink.getText().toString()))
+                    .addOnSuccessListener(taskSnapshot -> Toast.makeText(RegisterActivity.this,
+                            "Upload successful",
+                            Toast.LENGTH_SHORT).show()).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+
+                    Toast.makeText(RegisterActivity.this, "Upload failed.", Toast.LENGTH_SHORT).show();
+                }
+            }).addOnProgressListener(snapshot -> {
+
+                double progress = (100.0 * snapshot.getBytesTransferred() / snapshot.getTotalByteCount());
+
+            });
+
+        }
+
+    }
+
+    private void pickImage() {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
+                == PackageManager.PERMISSION_DENIED) {
+            //DENIED PERMISSION
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
+                    EXTERNAL_STORAGE_REQ_CODE);
+            return;
+        }
+
+        //PICK IMAGE
+        //PERMISSION GRANTED
+        //OPEN IMAGE PICKER
+        Intent imagePickIntent = new Intent();
+        imagePickIntent.setType("image/*");
+        imagePickIntent.setAction(Intent.ACTION_GET_CONTENT);
+
+        activityResultLauncher.launch(imagePickIntent);
+    }
+
+    //ACTIVITY RESULT
+    ActivityResultLauncher<Intent> activityResultLauncher = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            new ActivityResultCallback<ActivityResult>() {
+                @Override
+                public void onActivityResult(ActivityResult result) {
+
+                    if (result.getResultCode() == RESULT_OK) {
+
+                        Intent data = result.getData();
+                        if (data != null) {
+                            if (data.getData() != null) {
+
+                                Uri imageUri = data.getData();
+                                lblLink.setText(imageUri.toString());
+
+                            }
+                        }
+
+                    }
+                }
+            });
+
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        if (requestCode == EXTERNAL_STORAGE_REQ_CODE) {
+
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.READ_EXTERNAL_STORAGE)) {
+                //DENIED ONCE
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
+                        EXTERNAL_STORAGE_REQ_CODE);
+            } else if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
+                    == PackageManager.PERMISSION_GRANTED) {
+                //PERMISSION GRANTED
+                pickImage();
+            }
+
+        }
+
     }
 }
