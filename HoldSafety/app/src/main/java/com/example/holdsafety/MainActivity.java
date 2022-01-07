@@ -271,11 +271,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
             }
         });
     }
-
-    public void userSignUp(View view){
-        Intent intent = new Intent (this, RegisterActivity.class);
-        startActivity(intent);
-    }
     
     private void checkUserAccount(FirebaseUser user) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -394,13 +389,15 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
 
         Intent completeGoogleRegistration = new Intent(this, RegisterGoogleActivity.class);
         startActivity(completeGoogleRegistration);
+    }
+
     public void forgotPassword(View view) {
         startActivity(new Intent(MainActivity.this, ForgotPasswordActivity.class));
         finish();
     }
 
     public void userSignUp(View view){
-        Intent intent = new Intent (this, Register1Activity.class);
+        Intent intent = new Intent (this, RegisterActivity.class);
         startActivity(intent);
     }
 }

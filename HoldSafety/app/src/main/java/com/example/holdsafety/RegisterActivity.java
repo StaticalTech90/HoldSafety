@@ -219,7 +219,6 @@ public class RegisterActivity extends AppCompatActivity {
                     if(!password.equals(cPassword)){
                         Toast.makeText(getApplicationContext(), "Passwords must be the same.", Toast.LENGTH_SHORT).show();
                     } else {
-                        Toast.makeText(RegisterActivity.this, "HELO", Toast.LENGTH_LONG).show();
                         mAuth.createUserWithEmailAndPassword(email,password).addOnCompleteListener(this, task -> {
                             if (task.isSuccessful()) {
                                 // Sign up success
@@ -236,7 +235,6 @@ public class RegisterActivity extends AppCompatActivity {
                                         .addOnSuccessListener(aVoid -> Log.d(TAG, "User successfully registered!"))
                                         .addOnFailureListener(e -> Log.w(TAG, "error", e));
 
-                                Toast.makeText(getApplicationContext(), "Passwords must be the same.", Toast.LENGTH_SHORT).show();
                                 startActivity(new Intent(getApplicationContext(), MenuActivity.class));
                             } else {
                                 // If sign up fails, display a message to the user.
