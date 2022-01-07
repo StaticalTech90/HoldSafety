@@ -86,8 +86,6 @@ public class LandingActivity extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
         userID = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
-        Intent intent = new Intent(LandingActivity.this, RecordingCountdownActivity.class);
-
         //FLPC DECLARATION
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
 
@@ -110,9 +108,8 @@ public class LandingActivity extends AppCompatActivity {
                 public void onFinish() {
                     //Toast.makeText(getApplicationContext(), "2 seconds finished", Toast.LENGTH_SHORT).show();
                     getCurrentLocation();
-
-                    sendAlertMessage();
-                    //startActivity(intent);
+                    finish();
+                    startActivity(new Intent(LandingActivity.this, RecordingCountdownActivity.class));
                 }
             };
 
@@ -382,6 +379,8 @@ public class LandingActivity extends AppCompatActivity {
 
                         Toast.makeText(LandingActivity.this, "Nearest: " + nearestBrgySnap.getString("Barangay"), Toast.LENGTH_SHORT).show();
                         //sendLocationToContacts(location, address);
+                        sendAlertMessage();
+
                     }
                 });
     }
@@ -452,6 +451,7 @@ public class LandingActivity extends AppCompatActivity {
                                         SEND_SMS_REQ_CODE, new Intent("SMS_SENT"), 0);
 
                                 manager.sendTextMessage(mobileNumber, null, message, sentPI, null);
+                                Toast.makeText(getApplicationContext(), "SMS Sent", Toast.LENGTH_LONG).show();
 
                             }
 
@@ -466,8 +466,6 @@ public class LandingActivity extends AppCompatActivity {
                                 new MailTask(LandingActivity.this).execute(username, password, recipients, subject, message);
 
                                 Toast.makeText(getApplicationContext(), "Email Sent", Toast.LENGTH_LONG).show();
-
-
                             }
                         }
                     }

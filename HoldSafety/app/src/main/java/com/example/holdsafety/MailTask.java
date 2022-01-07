@@ -27,7 +27,7 @@ public class MailTask extends AsyncTask {
         statusDialog.setMessage("Getting ready...");
         statusDialog.setIndeterminate(false);
         statusDialog.setCancelable(false);
-        statusDialog.show();
+        //statusDialog.show();
     }
 
     @Override
