@@ -259,7 +259,8 @@ public class RegisterActivity extends AppCompatActivity {
                                         .addOnSuccessListener(aVoid -> Log.d(TAG, "User successfully registered!"))
                                         .addOnFailureListener(e -> Log.w(TAG, "error", e));
 
-                                startActivity(new Intent(getApplicationContext(), MenuActivity.class));
+                                finish();
+                                startActivity(new Intent(RegisterActivity.this, LandingActivity.class));
                             } else {
                                 // If sign up fails, display a message to the user.
                                 Log.w(TAG, "signUpWithEmailPassword:failure", task.getException());

@@ -108,7 +108,6 @@ public class LandingActivity extends AppCompatActivity {
                 public void onFinish() {
                     //Toast.makeText(getApplicationContext(), "2 seconds finished", Toast.LENGTH_SHORT).show();
                     getCurrentLocation();
-                    finish();
                     startActivity(new Intent(LandingActivity.this, RecordingCountdownActivity.class));
                 }
             };
@@ -380,7 +379,6 @@ public class LandingActivity extends AppCompatActivity {
                         Toast.makeText(LandingActivity.this, "Nearest: " + nearestBrgySnap.getString("Barangay"), Toast.LENGTH_SHORT).show();
                         //sendLocationToContacts(location, address);
                         sendAlertMessage();
-
                     }
                 });
     }
