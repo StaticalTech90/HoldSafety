@@ -38,6 +38,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class RegisterGoogleActivity extends AppCompatActivity {
     EditText etLastName, etFirstName, etMiddleName, etMobileNo;
@@ -148,6 +150,8 @@ public class RegisterGoogleActivity extends AppCompatActivity {
     public void userRegister(View view){
         user = mAuth.getCurrentUser();
         Map<String, Object> docUsers = new HashMap<>();
+        String mobileNumberRegex = "^[0-9]";
+        Pattern mobileNumberPattern = Pattern.compile(mobileNumberRegex);
 
         String userId = user.getUid();
         String uEmail = user.getEmail();
@@ -157,6 +161,8 @@ public class RegisterGoogleActivity extends AppCompatActivity {
         String mobileNo = etMobileNo.getText().toString();
         String sex = spinnerSex.getSelectedItem().toString();
 
+        Matcher mobileNumberMatcher = mobileNumberPattern.matcher(etMobileNo.getText());
+
         if(TextUtils.isEmpty(etLastName.getText())) {
             etLastName.setError("Enter Last Name");
         } else if(TextUtils.isEmpty(etFirstName.getText())) {
@@ -165,6 +171,8 @@ public class RegisterGoogleActivity extends AppCompatActivity {
             ((TextView)spinnerSex.getSelectedView()).setError("please select sex");
         } else if(TextUtils.isEmpty(etMobileNo.getText())) {
             etMobileNo.setError("Enter Mobile number");
+        } else if (!mobileNumberMatcher.matches()) {
+            etMobileNo.setError("Please enter a valid mobile number");
         } else if(etMobileNo.getText().length() != 11) {
             etMobileNo.setError("Please enter a valid mobile number");
         } else {
@@ -176,6 +184,7 @@ public class RegisterGoogleActivity extends AppCompatActivity {
             docUsers.put("BirthDate", birthDate); // currently empty
             docUsers.put("MobileNumber", mobileNo);
             docUsers.put("Email", uEmail);
+            docUsers.put("profileComplete", true);
             docUsers.put("isVerified", false);
 
             db.collection("users").document(userId).set(docUsers)
