@@ -158,13 +158,16 @@ public class RegisterActivity extends AppCompatActivity {
         });
     }
 
+    //TODO: turn this back into an onClickListener
     public void userRegister(View view) throws ParseException {
         Map<String, Object> docUsers = new HashMap<>();
 
         String emailRegex = "^(.+)@(.+)$";
         String passRegex = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=\\S+$).{8,}$";
+        String mobileNumberRegex = "^[0-9]";
         Pattern emailPattern = Pattern.compile(emailRegex);
         Pattern passPattern = Pattern.compile(passRegex);
+        Pattern mobileNumberPattern = Pattern.compile(mobileNumberRegex);
 
         String lastName = etLastName.getText().toString().trim();
         String firstName = etFirstName.getText().toString().trim();
@@ -188,6 +191,7 @@ public class RegisterActivity extends AppCompatActivity {
         docUsers.put("BirthDate", birthDate);
         docUsers.put("MobileNumber", mobileNumber);
         docUsers.put("Email", email);
+        docUsers.put("profileComplete", false);
 
         //Data validation and register
         try{
@@ -195,6 +199,7 @@ public class RegisterActivity extends AppCompatActivity {
             assert parsedDate != null;
             Matcher emailMatcher = emailPattern.matcher(etEmail.getText());
             Matcher passMatcher = passPattern.matcher(etPassword.getText());
+            Matcher mobileNumberMatcher = mobileNumberPattern.matcher(etMobileNumber.getText());
 
             if(parsedDate.after(validDate)){
                 etBirthdate.setError("Please enter valid birthdate (mm-dd-yyyy)");
@@ -209,6 +214,8 @@ public class RegisterActivity extends AppCompatActivity {
                     ((TextView)spinnerSex.getSelectedView()).setError("please select sex");
                 } else if(TextUtils.isEmpty(etMobileNumber.getText())) {
                     etMobileNumber.setError("Please enter mobile number");
+                } else if (!mobileNumberMatcher.matches()) {
+                    etMobileNumber.setError("Please enter a valid mobile number");
                 } else if(etMobileNumber.getText().length() != 11) {
                     etMobileNumber.setError("Please enter a valid mobile number");
                 } else if(TextUtils.isEmpty(etEmail.getText())) {
@@ -236,6 +243,7 @@ public class RegisterActivity extends AppCompatActivity {
                             Log.d(TAG, "signUpWithEmailPassword:success");
                             user = mAuth.getCurrentUser();
                             docUsers.put("ID", user.getUid());
+                            docUsers.put("profileComplete", true);
                             docUsers.put("isVerified", false);
 
                             //TODO: Ung URL ng image i-sasave sa document ng user

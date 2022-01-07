@@ -127,16 +127,16 @@
             android:id="@+id/txtMiddleName"
             android:layout_width="180dp"
             android:layout_height="wrap_content"
-            android:background="@null"
             android:layout_alignParentStart="true"
             android:layout_alignParentEnd="true"
-
             android:layout_marginStart="20dp"
+
             android:layout_marginEnd="20dp"
+            android:background="@null"
 
-            android:hint="Middle Name"
+            android:fontFamily="sans-serif"
 
-            android:fontFamily="sans-serif"/>
+            android:hint="Middle Name" />
     </RelativeLayout>
 
     <RelativeLayout
@@ -191,8 +191,8 @@
             android:background="@null"
 
             android:fontFamily="sans-serif"
-            android:hint="Mobile Number *" />
-
+            android:hint="Mobile Number *"
+            android:inputType="phone" />
 
     </RelativeLayout>
 

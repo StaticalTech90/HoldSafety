@@ -63,20 +63,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     private GoogleApiClient googleApiClient;
     private static final int SIGN_IN_REQUEST_CODE = 1000;
 
-    
-    @Override
-    protected void onStart() {
-        super.onStart();
-
-        // check if user is already logged in
-        user = mAuth.getCurrentUser();
-        if(user != null) {
-            // TODO: Home screen for already logged-in users
-            //Intent intent = new Intent(getApplicationContext(), MenuActivity.java)
-            //startActivity(intent);
-        }
-    }
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -85,13 +71,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
         //Declare authentication
         mAuth = FirebaseAuth.getInstance();
         createRequest();
-
-        findViewById(R.id.btnLoginWithGoogle).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                userLoginWithGoogle(v);
-            }
-        });
 
         txtEmailOrMobileNum = findViewById(R.id.txtEmailOrMobileNum);
         txtPassword = findViewById(R.id.txtCurrentPassword);
@@ -226,19 +205,13 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                 @Override
                 public void onSuccess(DocumentSnapshot documentSnapshot) {
                     if(documentSnapshot.exists()) {
-                        String lastName = documentSnapshot.getString("LastName");
-                        String firstName = documentSnapshot.getString("FirstName");
-                        String sex = documentSnapshot.getString("Sex");
-                        String currentMobileNumber = documentSnapshot.getString("MobileNumber");
-
-                        if(lastName != "" && firstName != "" && sex != "" && currentMobileNumber != "") { //Account is complete in db
-                            Intent landingPage = new Intent (MainActivity.this, LandingActivity.class);
-                            startActivity(landingPage);
-                        } else { // Account needs to be completed
+                        if(documentSnapshot.getBoolean("profileComplete") == null || documentSnapshot.getBoolean("profileComplete") == false) { //Account is new
                             Intent completeGoogleRegistration = new Intent(MainActivity.this, RegisterGoogleActivity.class);
                             startActivity(completeGoogleRegistration);
+                        } else if(documentSnapshot.getBoolean("profileComplete") == true) { // Account complete
+                            Intent landingPage = new Intent (MainActivity.this, LandingActivity.class);
+                            startActivity(landingPage);
                         }
-
                     }
                 }
             });
@@ -254,14 +227,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
 
         // Build a GoogleSignInClient with the options specified by gso.
         mGoogleSignInClient = GoogleSignIn.getClient(getApplicationContext(), gso);
-    }
-
-    public void userLoginWithGoogle(View view) {
-        Toast.makeText(getApplicationContext(), "Login With Google", Toast.LENGTH_LONG).show();
-
-        Intent signInIntent = mGoogleSignInClient.getSignInIntent();
-        startActivityIfNeeded(signInIntent, RC_SIGN_IN);
-
     }
 
     public void loginUser(String email,String password){
@@ -304,46 +269,51 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                             @Override
                             public void onComplete(@NonNull Task<AuthResult> task) {
                                 if (task.isSuccessful()) {
-                                    Toast.makeText(getApplicationContext(), "Successful", Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(getApplicationContext(), "Task Successful", Toast.LENGTH_SHORT).show();
                                     // Sign in success, update UI with the signed-in user's information
                                     Log.d(TAG, "signInWithCredential:success");
                                     FirebaseUser user = mAuth.getCurrentUser();
-                                    updateUI(user);
 
-                                    //Display Google Data
-                                    Toast.makeText(getApplicationContext(), "Login With Google Success: " + user.getDisplayName(), Toast.LENGTH_SHORT).show();
+                                    //Create a new account if it doesn't exist, otherwise continue
+                                    docRef = db.collection("users").document(user.getUid());
 
-                                    //Put Google Data in Firestore
-                                    GoogleSignInAccount account;
-                                    account = GoogleSignIn.getLastSignedInAccount(MainActivity.this);
+                                    docRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                                        @Override
+                                        public void onSuccess(DocumentSnapshot documentSnapshot) {
+                                            if(!documentSnapshot.exists()) {
+                                                Map < String, Object > docUsers = new HashMap<>();
+                                                String email = user.getEmail();
+                                                docUsers.put("ID", user.getUid());
+                                                docUsers.put("isVerified", false);
+                                                docUsers.put("LastName", account.getFamilyName());
+                                                docUsers.put("FirstName", account.getGivenName());
+                                                docUsers.put("MiddleName", "");
+                                                docUsers.put("Sex", "");
+                                                docUsers.put("BirthDate", "");
+                                                docUsers.put("MobileNumber", "");
+                                                docUsers.put("Email", account.getEmail());
+                                                docUsers.put("profileComplete", false);
 
-                                    Map<String, Object> docUsers = new HashMap<>();
-                                    String email = user.getEmail();
-                                    docUsers.put("ID", user.getUid());
-                                    docUsers.put("isVerified", false);
-                                    docUsers.put("LastName", account.getFamilyName());
-                                    docUsers.put("FirstName", account.getGivenName());
-                                    docUsers.put("MiddleName", "");
-                                    docUsers.put("Sex", "");
-                                    docUsers.put("BirthDate", "");
-                                    docUsers.put("MobileNumber", "");
-                                    docUsers.put("Email", account.getEmail()); // the only thing we get from the db for RegisterGoogleActivity
+                                                db.collection("users").document(user.getUid()).set(docUsers)
+                                                        .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                            @Override
+                                                            public void onSuccess(Void unused) {
+                                                                Toast.makeText(getApplicationContext(), "Successful db input", Toast.LENGTH_SHORT).show();
+                                                                //Log.d(TAG, "DocumentSnapshot successfully written!");
+                                                            }
+                                                        })
+                                                        .addOnFailureListener(new OnFailureListener() {
+                                                            @Override
+                                                            public void onFailure(@NonNull Exception e) {
+                                                                Toast.makeText(getApplicationContext(), "Unsuccessful", Toast.LENGTH_SHORT).show();
+                                                                //Log.w(TAG, "Error writing document", e);
+                                                            }
+                                                        });
+                                            }
+                                            updateUI(user);
+                                        }
+                                    });
 
-                                    db.collection("users").document(user.getUid()).set(docUsers)
-                                            .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                                @Override
-                                                public void onSuccess(Void unused) {
-                                                    Toast.makeText(getApplicationContext(), "Successful db input", Toast.LENGTH_SHORT).show();
-                                                    //Log.d(TAG, "DocumentSnapshot successfully written!");
-                                                }
-                                            })
-                                            .addOnFailureListener(new OnFailureListener() {
-                                                @Override
-                                                public void onFailure(@NonNull Exception e) {
-                                                    Toast.makeText(getApplicationContext(), "Unsuccessful", Toast.LENGTH_SHORT).show();
-                                                    //Log.w(TAG, "Error writing document", e);
-                                                }
-                                            });
                                 } else {
                                     // If sign in fails, display a message to the user.
                                     Toast.makeText(getApplicationContext(), "Failed", Toast.LENGTH_SHORT).show();
@@ -352,8 +322,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                                     updateUI(null);
                                     Toast.makeText(getApplicationContext(), "Login With Google Failed", Toast.LENGTH_SHORT).show();
                                 }
-
-                                // ...
                             }
                         });
 
