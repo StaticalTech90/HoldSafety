@@ -51,6 +51,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class RegisterActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
@@ -180,6 +182,11 @@ public class RegisterActivity extends AppCompatActivity {
     public void userRegister(View view) throws ParseException {
         Map<String, Object> docUsers = new HashMap<>();
 
+        String emailRegex = "^(.+)@(.+)$";
+        String passRegex = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=\\S+$).{8,}$";
+        Pattern emailPattern = Pattern.compile(emailRegex);
+        Pattern passPattern = Pattern.compile(passRegex);
+
         String lastName = etLastName.getText().toString().trim();
         String firstName = etFirstName.getText().toString().trim();
         String middleName = etMiddleName.getText().toString().trim();
@@ -203,73 +210,75 @@ public class RegisterActivity extends AppCompatActivity {
         docUsers.put("MobileNumber", mobileNumber);
         docUsers.put("Email", email);
 
-        //validate then register user
+        //Data validation and register
         try{
             Date parsedDate = dateFormat.parse(birthDate);
             assert parsedDate != null;
+            Matcher emailMatcher = emailPattern.matcher(etEmail.getText());
+            Matcher passMatcher = passPattern.matcher(etPassword.getText());
+
             if(parsedDate.after(validDate)){
-                etBirthdate.setHint("Please enter valid birthdate (mm-dd-yyyy)");
                 etBirthdate.setError("Please enter valid birthdate (mm-dd-yyyy)");
             } else {
-                if(TextUtils.isEmpty(etLastName.getText())){
-                    etLastName.setHint("please enter last name");
-                    etLastName.setError("please enter last name");
-                } else if(TextUtils.isEmpty(etFirstName.getText())){
-                    etFirstName.setHint("please enter first name");
-                    etFirstName.setError("please enter first name");
-                } else if(TextUtils.isEmpty(etBirthdate.getText())){
-                    etBirthdate.setHint("please enter birthdate (mm-dd-yyyy)");
-                    etBirthdate.setError("please enter birthdate (mm-dd-yyyy)");
-                } else if(spinnerSex.getSelectedItem().equals("Sex")){
+                if(TextUtils.isEmpty(etLastName.getText())) {
+                    etLastName.setError("Please enter last name");
+                } else if(TextUtils.isEmpty(etFirstName.getText())) {
+                    etFirstName.setError("Please enter first name");
+                } else if(TextUtils.isEmpty(etBirthdate.getText())) {
+                    etBirthdate.setError("Please enter birthdate (mm-dd-yyyy)");
+                } else if(spinnerSex.getSelectedItem().equals("Sex")) {
                     ((TextView)spinnerSex.getSelectedView()).setError("please select sex");
-                } else if(TextUtils.isEmpty(etMobileNumber.getText())){
-                    etMobileNumber.setHint("please enter mobile number");
-                    etMobileNumber.setError("please enter mobile number");
-                } else if(TextUtils.isEmpty(etEmail.getText())){
-                    etEmail.setHint("please enter email");
-                    etEmail.setError("please enter email");
-                } else if(TextUtils.isEmpty(etPassword.getText())){
-                    etPassword.setHint("please enter password");
-                    etPassword.setError("please enter password");
-                } else if(TextUtils.isEmpty(etConPassword.getText())){
-                    etConPassword.setHint("please re-enter password");
-                    etConPassword.setError("please re-enter password");
+                } else if(TextUtils.isEmpty(etMobileNumber.getText())) {
+                    etMobileNumber.setError("Please enter mobile number");
+                } else if(etMobileNumber.getText().length() != 11) {
+                    etMobileNumber.setError("Please enter a valid mobile number");
+                } else if(TextUtils.isEmpty(etEmail.getText())) {
+                    etEmail.setError("Please enter email");
+                } else if (!emailMatcher.matches()) {
+                    etEmail.setError("Please enter valid email");
+                } else if(TextUtils.isEmpty(etPassword.getText())) {
+                    etPassword.setError("Please enter password");
+                } else if(!passMatcher.matches()) {
+                    etPassword.setError("Password must contain the following: " +
+                            "\n - At least 8 characters" +
+                            "\n - At least 1 digit" +
+                            "\n - At least one upper and lower case letter" +
+                            "\n - A special character (such as @, #, etc.)" +
+                            "\n - No spaces or tabs");
+                } else if(TextUtils.isEmpty(etConPassword.getText())) {
+                    etConPassword.setError("Please re-enter password");
+                } else if(!password.equals(cPassword)) {
+                    etConPassword.setError("Passwords don't match");
                 } else {
+                    Toast.makeText(RegisterActivity.this, "HELO", Toast.LENGTH_LONG).show();
+                    mAuth.createUserWithEmailAndPassword(email,password).addOnCompleteListener(this, task -> {
+                        if (task.isSuccessful()) {
+                            // Sign up success
+                            Log.d(TAG, "signUpWithEmailPassword:success");
+                            user = mAuth.getCurrentUser();
+                            docUsers.put("ID", user.getUid());
+                            docUsers.put("isVerified", false);
 
-                    //register
-                    if(!password.equals(cPassword)){
-                        Toast.makeText(getApplicationContext(), "Passwords must be the same.", Toast.LENGTH_SHORT).show();
-                    } else {
-                        mAuth.createUserWithEmailAndPassword(email,password).addOnCompleteListener(this, task -> {
-                            if (task.isSuccessful()) {
-                                // Sign up success
-                                Log.d(TAG, "signUpWithEmailPassword:success");
-                                user = mAuth.getCurrentUser();
-                                docUsers.put("ID", user.getUid());
-                                docUsers.put("isVerified", false);
-
-                                //TODO: Ung URL ng image i-sasave sa document ng user
-                                if(!lblLink.getText().equals("")){
-                                    uploadPhotoToStorage();
-                                }
-                                //uploadImage();
-
-                                //insert to db with success/failure listeners
-                                db.collection("users").document(user.getUid()).set(docUsers)
-                                        .addOnSuccessListener(aVoid -> Log.d(TAG, "User successfully registered!"))
-                                        .addOnFailureListener(e -> Log.w(TAG, "error", e));
-
-                                finish();
-                                startActivity(new Intent(RegisterActivity.this, LandingActivity.class));
-                            } else {
-                                // If sign up fails, display a message to the user.
-                                Log.w(TAG, "signUpWithEmailPassword:failure", task.getException());
-                                Toast.makeText(getApplicationContext(),
-                                        "Signup Failed",
-                                        Toast.LENGTH_SHORT).show();
+                            //TODO: Ung URL ng image i-sasave sa document ng user
+                            if(!lblLink.getText().equals("")){
+                                uploadPhotoToStorage();
                             }
-                        });
-                    }
+
+                            //insert to db with success/failure listeners
+                            db.collection("users").document(user.getUid()).set(docUsers)
+                                    .addOnSuccessListener(aVoid -> Log.d(TAG, "User successfully registered!"))
+                                    .addOnFailureListener(e -> Log.w(TAG, "error", e));
+
+                            finish();
+                            startActivity(new Intent(getApplicationContext(), MenuActivity.class));
+                        } else {
+                            // If sign up fails, display a message to the user.
+                            Log.w(TAG, "signUpWithEmailPassword:failure", task.getException());
+                            Toast.makeText(getApplicationContext(),
+                                    "Signup Failed",
+                                    Toast.LENGTH_SHORT).show();
+                        }
+                    });
                 }
             }
         } catch(ParseException pe){

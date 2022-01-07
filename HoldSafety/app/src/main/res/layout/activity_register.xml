@@ -213,10 +213,11 @@
 
                 android:layout_marginEnd="20dp"
                 android:background="@null"
-
                 android:fontFamily="sans-serif"
 
-                android:hint="Mobile Number *" />
+                android:hint="Mobile Number *"
+
+                android:inputType="phone" />
         </RelativeLayout>
 
         <RelativeLayout
@@ -242,10 +243,11 @@
 
                 android:layout_marginEnd="20dp"
                 android:background="@null"
-
                 android:fontFamily="sans-serif"
 
-                android:hint="Email *" />
+                android:hint="Email *"
+
+                android:inputType="textEmailAddress" />
         </RelativeLayout>
 
         <RelativeLayout

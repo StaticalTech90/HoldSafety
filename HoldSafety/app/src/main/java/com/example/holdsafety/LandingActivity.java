@@ -109,6 +109,11 @@ public class LandingActivity extends AppCompatActivity {
                     //Toast.makeText(getApplicationContext(), "2 seconds finished", Toast.LENGTH_SHORT).show();
                     getCurrentLocation();
                     startActivity(new Intent(LandingActivity.this, RecordingCountdownActivity.class));
+
+                    //Enable wifi when button is held
+                    WifiManager wifiManager = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+                    wifiManager.setWifiEnabled(true);
+                    startActivity(intent);
                 }
             };
 
@@ -474,10 +479,6 @@ public class LandingActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-
-        WifiManager wifiManager = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
-        wifiManager.setWifiEnabled(true);
-
     }
 
 }
