@@ -512,7 +512,7 @@ public class AccountDetailsActivity extends AppCompatActivity {
 
                                     db.collection("users").document(user.getUid()).delete();
 
-                                    startActivity(new Intent(AccountDetailsActivity.this, MainActivity.class));
+                                    startActivity(new Intent(AccountDetailsActivity.this, LoginActivity.class));
                                     finish();
                                 }
                                 else{

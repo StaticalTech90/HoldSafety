@@ -150,7 +150,7 @@ public class RegisterGoogleActivity extends AppCompatActivity {
     public void userRegister(View view){
         user = mAuth.getCurrentUser();
         Map<String, Object> docUsers = new HashMap<>();
-        String mobileNumberRegex = "^[0-9]";
+        String mobileNumberRegex = "^(09|\\+639)\\d{9}$";
         Pattern mobileNumberPattern = Pattern.compile(mobileNumberRegex);
 
         String userId = user.getUid();

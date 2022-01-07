@@ -181,7 +181,7 @@ public class RegisterActivity extends AppCompatActivity {
 
         String emailRegex = "^(.+)@(.+)$";
         String passRegex = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=\\S+$).{8,}$";
-        String mobileNumberRegex = "^[0-9]";
+        String mobileNumberRegex = "^(09|\\+639)\\d{9}$";
         Pattern emailPattern = Pattern.compile(emailRegex);
         Pattern passPattern = Pattern.compile(passRegex);
         Pattern mobileNumberPattern = Pattern.compile(mobileNumberRegex);
@@ -273,8 +273,9 @@ public class RegisterActivity extends AppCompatActivity {
                                     .addOnSuccessListener(aVoid -> Log.d(TAG, "User successfully registered!"))
                                     .addOnFailureListener(e -> Log.w(TAG, "error", e));
 
+
                             finish();
-                            startActivity(new Intent(getApplicationContext(), MenuActivity.class));
+                            startActivity(new Intent(RegisterActivity.this, LandingActivity.class));
                         } else {
                             // If sign up fails, display a message to the user.
                             Log.w(TAG, "signUpWithEmailPassword:failure", task.getException());
@@ -292,7 +293,7 @@ public class RegisterActivity extends AppCompatActivity {
     }
 
     public void goBack(View view){
-        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+        Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
         finish();
         startActivity(intent);
     }

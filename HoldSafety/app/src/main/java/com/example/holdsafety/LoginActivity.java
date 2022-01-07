@@ -43,10 +43,11 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import java.util.HashMap;
 import java.util.Map;
 
-public class MainActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener {
+public class LoginActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener {
 
     private FirebaseAuth mAuth;
     FirebaseUser user;
+
     private GoogleSignInClient mGoogleSignInClient;
     private final static int RC_SIGN_IN = 308;
     EditText txtEmailOrMobileNum, txtPassword;
@@ -193,10 +194,10 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                 public void onSuccess(DocumentSnapshot documentSnapshot) {
                     if(documentSnapshot.exists()) {
                         if(documentSnapshot.getBoolean("profileComplete") == null || documentSnapshot.getBoolean("profileComplete") == false) { //Account is new
-                            Intent completeGoogleRegistration = new Intent(MainActivity.this, RegisterGoogleActivity.class);
+                            Intent completeGoogleRegistration = new Intent(LoginActivity.this, RegisterGoogleActivity.class);
                             startActivity(completeGoogleRegistration);
                         } else if(documentSnapshot.getBoolean("profileComplete") == true) { // Account complete
-                            Intent landingPage = new Intent (MainActivity.this, LandingActivity.class);
+                            Intent landingPage = new Intent (LoginActivity.this, LandingActivity.class);
                             startActivity(landingPage);
                         }
                     }
@@ -230,7 +231,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
                     checkUserAccount(user);
                 }
                 else{
-                    Toast.makeText(MainActivity.this, "Error: " + task.getException().getMessage(), Toast.LENGTH_LONG).show();
+                    Toast.makeText(LoginActivity.this, "Error: " + task.getException().getMessage(), Toast.LENGTH_LONG).show();
                 }
             }
         });
@@ -245,14 +246,14 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
             @Override
             public void onSuccess(DocumentSnapshot documentSnapshot) {
                 if(documentSnapshot.exists()){
-                    Toast.makeText(MainActivity.this, "Login Successful!", Toast.LENGTH_SHORT).show();
-                    startActivity(new Intent(MainActivity.this, LandingActivity.class));
+                    Toast.makeText(LoginActivity.this, "Login Successful!", Toast.LENGTH_SHORT).show();
+                    startActivity(new Intent(LoginActivity.this, LandingActivity.class));
                     finish();
                 }
                 else {
                     //account does not exist in users table = you are not a registered user/ you are an admin
                     FirebaseAuth.getInstance().signOut();
-                    Toast.makeText(MainActivity.this, "You are registered as admin. Login via the ADMIN app.", Toast.LENGTH_LONG).show();
+                    Toast.makeText(LoginActivity.this, "You are registered as admin. Login via the ADMIN app.", Toast.LENGTH_LONG).show();
                     finish();
                     startActivity(getIntent());
                 }
@@ -359,7 +360,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.O
     }
 
     public void forgotPassword(View view) {
-        startActivity(new Intent(MainActivity.this, ForgotPasswordActivity.class));
+        startActivity(new Intent(LoginActivity.this, ForgotPasswordActivity.class));
         finish();
     }
 

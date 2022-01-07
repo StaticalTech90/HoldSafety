@@ -13,9 +13,11 @@ import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
+import android.net.Uri;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.provider.Settings;
 import android.telephony.SmsManager;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -65,9 +67,7 @@ public class LandingActivity extends AppCompatActivity {
     private static final int GPS_REQ_CODE = 1001;
     private static final int SEND_SMS_REQ_CODE = 1002;
 
-
     @SuppressLint("ClickableViewAccessibility")
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -98,11 +98,6 @@ public class LandingActivity extends AppCompatActivity {
                 public void onFinish() {
                     //Toast.makeText(getApplicationContext(), "2 seconds finished", Toast.LENGTH_SHORT).show();
                     getCurrentLocation();
-
-                    //Enable wifi when button is held
-                    WifiManager wifiManager = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
-                    wifiManager.setWifiEnabled(true);
-                    startActivity(new Intent(LandingActivity.this, RecordingCountdownActivity.class));
                 }
             };
 
@@ -133,11 +128,9 @@ public class LandingActivity extends AppCompatActivity {
         });
     }
 
-
     public void menuRedirect(View view) {
         startActivity(new Intent(LandingActivity.this, MenuActivity.class));
     }
-
 
     //cancel timer
     public void cancelTimer(CountDownTimer cTimer) {
@@ -147,7 +140,8 @@ public class LandingActivity extends AppCompatActivity {
         }
     }
 
-    private void getCurrentLocation() {
+    //checks required permissions
+    private void setPermissions(){
         if (ActivityCompat.checkSelfPermission(this,
                 Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_DENIED) {
             //DENIED LOCATION PERMISSION
@@ -156,26 +150,20 @@ public class LandingActivity extends AppCompatActivity {
             ActivityCompat.requestPermissions(this,
                     new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
                     LOCATION_REQ_CODE);
-            return;
+        } else if (ActivityCompat.checkSelfPermission(this,
+                Manifest.permission.SEND_SMS) == PackageManager.PERMISSION_DENIED) {
+            //DENIED LOCATION PERMISSION
+            Log.d("location permission", "Please Grant SMS Permission");
+            //SHOW PERMISSION
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.SEND_SMS},
+                    SEND_SMS_REQ_CODE);
         }
-//        else if (ActivityCompat.checkSelfPermission(this,
-//                Manifest.permission.SEND_SMS) == PackageManager.PERMISSION_DENIED) {
-//            //DENIED LOCATION PERMISSION
-//            Log.d("location permission", "Please Grant SMS Permission");
-//            //SHOW PERMISSION
-//            ActivityCompat.requestPermissions(this,
-//                    new String[]{Manifest.permission.SEND_SMS},
-//                    SEND_SMS_REQ_CODE);
-//            return;
-//        }
+    }
 
-//        if (ActivityCompat.checkSelfPermission(this,
-//                Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-//            Toast.makeText(this, "Please Grant Location Permission", Toast.LENGTH_SHORT).show();
-//            return;
-//        }
+    @SuppressLint("MissingPermission")
+    private void getCurrentLocation() {
 
-        //PERMISSION GRANTED
         fusedLocationProviderClient.getLastLocation()
                 .addOnCompleteListener(task -> {
 
@@ -217,36 +205,33 @@ public class LandingActivity extends AppCompatActivity {
                         LOCATION_REQ_CODE);
             } else if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
                     == PackageManager.PERMISSION_GRANTED) {
-                getCurrentLocation();
+                setPermissions();
             }
-//            else {
-//                Intent settingsIntent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-//                Uri uri = Uri.fromParts("package", getPackageName(), null);
-//                settingsIntent.setData(uri);
-//                startActivity(settingsIntent);
-//                Toast.makeText(this, "Please Grant Location Permission.", Toast.LENGTH_SHORT).show();
-//            }
+            else {
+                Intent settingsIntent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                Uri uri = Uri.fromParts("package", getPackageName(), null);
+                settingsIntent.setData(uri);
+                startActivity(settingsIntent);
+                Toast.makeText(this, "Please Grant Location Permission.", Toast.LENGTH_SHORT).show();
+            }
+        } else if (requestCode == SEND_SMS_REQ_CODE) {
 
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.SEND_SMS)) {
+                //DENIED ONCE
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.SEND_SMS},
+                        SEND_SMS_REQ_CODE);
+            } else if (ActivityCompat.checkSelfPermission(this, Manifest.permission.SEND_SMS)
+                    == PackageManager.PERMISSION_GRANTED) {
+                Toast.makeText(this, "Permissions granted.", Toast.LENGTH_SHORT).show();
+            } else {
+                Intent settingsIntent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                Uri uri = Uri.fromParts("package", getPackageName(), null);
+                settingsIntent.setData(uri);
+                startActivity(settingsIntent);
+                Toast.makeText(this, "Please Grant SMS Permission.", Toast.LENGTH_SHORT).show();
+            }
         }
-//        else if (requestCode == SEND_SMS_REQ_CODE) {
-//
-//            if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.SEND_SMS)) {
-//                //DENIED ONCE
-//                ActivityCompat.requestPermissions(this,
-//                        new String[]{Manifest.permission.SEND_SMS},
-//                        SEND_SMS_REQ_CODE);
-//            } else if (ActivityCompat.checkSelfPermission(this, Manifest.permission.SEND_SMS)
-//                    == PackageManager.PERMISSION_GRANTED) {
-//                getCurrentLocation();
-//            } else {
-//                Intent settingsIntent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-//                Uri uri = Uri.fromParts("package", getPackageName(), null);
-//                settingsIntent.setData(uri);
-//                startActivity(settingsIntent);
-//                Toast.makeText(this, "Please Grant SMS Permission.", Toast.LENGTH_SHORT).show();
-//            }
-//
-//        }
     }
 
     private void showGPSDialog() {
@@ -370,8 +355,13 @@ public class LandingActivity extends AppCompatActivity {
                             }
                         }
 
+                        //Enable wifi when button is held
+                        WifiManager wifiManager = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+                        wifiManager.setWifiEnabled(true);
+
                         Toast.makeText(LandingActivity.this, "Nearest: " + nearestBrgySnap.getString("Barangay"), Toast.LENGTH_SHORT).show();
                         //sendLocationToContacts(location, address);
+
                         sendAlertMessage();
                     }
                 });
@@ -444,7 +434,6 @@ public class LandingActivity extends AppCompatActivity {
 
                                 manager.sendTextMessage(mobileNumber, null, message, sentPI, null);
                                 Toast.makeText(getApplicationContext(), "SMS Sent", Toast.LENGTH_LONG).show();
-
                             }
 
                             if(email!=null){
@@ -457,17 +446,22 @@ public class LandingActivity extends AppCompatActivity {
                                 //email of sender, password of sender, list of recipients, email subject, email body
                                 new MailTask(LandingActivity.this).execute(username, password, recipients, subject, message);
 
-                                Toast.makeText(getApplicationContext(), "Email Sent", Toast.LENGTH_LONG).show();
+                                Toast.makeText(LandingActivity.this, "Email Sent", Toast.LENGTH_LONG).show();
                             }
                         }
                     }
                 });
+
+        startActivity(new Intent(LandingActivity.this, RecordingCountdownActivity.class));
     }
 
 
     @Override
     protected void onStart() {
         super.onStart();
+
+        //Asks for permissions on activity start
+        setPermissions();
     }
 
 }

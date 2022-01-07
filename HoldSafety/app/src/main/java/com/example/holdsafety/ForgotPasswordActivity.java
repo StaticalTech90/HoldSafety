@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -41,7 +40,7 @@ public class ForgotPasswordActivity extends AppCompatActivity {
                         if(task.isSuccessful()) {
                             //email exists
                             Toast.makeText(ForgotPasswordActivity.this, "Recovery link is sent to your email", Toast.LENGTH_LONG).show();
-                            startActivity(new Intent(ForgotPasswordActivity.this, MainActivity.class));
+                            startActivity(new Intent(ForgotPasswordActivity.this, LoginActivity.class));
                             finish();
                         } else {
                             //email does not exist
@@ -53,7 +52,7 @@ public class ForgotPasswordActivity extends AppCompatActivity {
     }
 
     public void goBack(View view){
-        startActivity(new Intent(ForgotPasswordActivity.this, MainActivity.class));
+        startActivity(new Intent(ForgotPasswordActivity.this, LoginActivity.class));
         finish();
     }
 }

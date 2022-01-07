@@ -186,7 +186,7 @@ public class ChangePasswordActivity extends AppCompatActivity {
                                         FirebaseAuth.getInstance().signOut();
                                         Toast.makeText(ChangePasswordActivity.this, "Password Changed", Toast.LENGTH_SHORT).show();
 
-                                        startActivity(new Intent(ChangePasswordActivity.this, MainActivity.class));
+                                        startActivity(new Intent(ChangePasswordActivity.this, LoginActivity.class));
                                         finish();
                                     } else {
                                         Log.d(TAG, "Error password not updated");
