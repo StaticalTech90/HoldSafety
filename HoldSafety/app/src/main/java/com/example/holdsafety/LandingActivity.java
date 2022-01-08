@@ -55,7 +55,7 @@ import java.util.Locale;
 
 public class LandingActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
-    String userID;
+    String userID, isFromWidget;
     
     Button btnSafetyButton;
     TextView seconds, description;
@@ -68,6 +68,7 @@ public class LandingActivity extends AppCompatActivity {
     private static final int GPS_REQ_CODE = 1001;
     private static final int SEND_SMS_REQ_CODE = 1002;
 
+
     @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,6 +77,8 @@ public class LandingActivity extends AppCompatActivity {
 
         mAuth = FirebaseAuth.getInstance();
         userID = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        isFromWidget = getIntent().getStringExtra("isFromWidget");
+        Toast.makeText(getApplicationContext(), "isFromWidget: " + isFromWidget, Toast.LENGTH_SHORT).show();
 
         //Check if there's a logged in user
         if(mAuth.getCurrentUser() == null){
@@ -132,6 +135,13 @@ public class LandingActivity extends AppCompatActivity {
                 return false;
             }
         });
+
+
+        //handle method for holdsafety widget
+        if(isFromWidget!=null && isFromWidget.equals("true")){
+            getCurrentLocation();
+            //Toast.makeText(getApplicationContext(), "Inside IF" , Toast.LENGTH_SHORT).show();
+        }
     }
 
     public void menuRedirect(View view) {
