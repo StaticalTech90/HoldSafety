@@ -205,7 +205,7 @@ public class LandingActivity extends AppCompatActivity {
                         LOCATION_REQ_CODE);
             } else if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
                     == PackageManager.PERMISSION_GRANTED) {
-                setPermissions();
+                setPermissions(); //getcurrent
             }
             else {
                 Intent settingsIntent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
