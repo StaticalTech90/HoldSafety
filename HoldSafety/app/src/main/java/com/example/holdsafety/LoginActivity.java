@@ -44,11 +44,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class LoginActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener {
-
     private FirebaseAuth mAuth;
-    FirebaseUser user;
 
-    private GoogleSignInClient mGoogleSignInClient;
     private final static int RC_SIGN_IN = 308;
     EditText txtEmailOrMobileNum, txtPassword;
     Button btnLogin;
@@ -143,11 +140,11 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
             }
         });
 
-        //redirects user to landing page if already logged in
-        if(mAuth.getCurrentUser() != null){
-            startActivity(new Intent(getApplicationContext(), LandingActivity.class));
-            finish();
-        }
+//        //redirects user to landing page if already logged in
+//        if(mAuth.getCurrentUser() != null){
+//            startActivity(new Intent(getApplicationContext(), LandingActivity.class));
+//            finish();
+//        }
 
         btnLogin.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -181,12 +178,8 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
     private void updateUI(FirebaseUser user){
         Toast.makeText(getApplicationContext(), "Update UI", Toast.LENGTH_SHORT).show();
         if(user!=null){
-            //Login with Google Successful, There's an account present
-            //setContentView(R.layout.activity_landing);
-            //Toast.makeText(getApplicationContext(), "User: " + user.getDisplayName(), Toast.LENGTH_SHORT).show();
 
-
-            //TODO: User is sent to landing activity directly if account already exists
+            //User is sent to landing activity directly if account already exists
             docRef = db.collection("users").document(user.getUid());
 
             docRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
@@ -200,6 +193,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                             Intent landingPage = new Intent (LoginActivity.this, LandingActivity.class);
                             startActivity(landingPage);
                         }
+                        finish();
                     }
                 }
             });
@@ -214,7 +208,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                 .build();
 
         // Build a GoogleSignInClient with the options specified by gso.
-        mGoogleSignInClient = GoogleSignIn.getClient(getApplicationContext(), gso);
+        GoogleSignInClient mGoogleSignInClient = GoogleSignIn.getClient(getApplicationContext(), gso);
     }
 
     public void loginUser(String email,String password){
@@ -266,7 +260,6 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
         super.onActivityResult(requestCode, resultCode, data);
         Toast.makeText(getApplicationContext(), "On Activity Result", Toast.LENGTH_SHORT).show();
 
-        //The real Google SignIn method. idk what the if-statement above does.
         if (requestCode == SIGN_IN_REQUEST_CODE) {
             Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
             Toast.makeText(getApplicationContext(), "123", Toast.LENGTH_SHORT).show();

@@ -53,7 +53,6 @@ import java.util.List;
 import java.util.Locale;
 
 public class LandingActivity extends AppCompatActivity {
-    private FirebaseAuth mAuth;
     String userID;
     
     Button btnSafetyButton;
@@ -73,7 +72,6 @@ public class LandingActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_landing);
 
-        mAuth = FirebaseAuth.getInstance();
         userID = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
         //FLPC DECLARATION

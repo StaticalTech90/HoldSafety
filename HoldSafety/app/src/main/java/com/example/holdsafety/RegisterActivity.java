@@ -260,7 +260,7 @@ public class RegisterActivity extends AppCompatActivity {
                             Log.d(TAG, "signUpWithEmailPassword:success");
                             user = mAuth.getCurrentUser();
                             docUsers.put("ID", user.getUid());
-                            docUsers.put("profileComplete", true);
+                            docUsers.put("profileComplete", false);
                             docUsers.put("isVerified", false);
 
                             //TODO: Ung URL ng image i-sasave sa document ng user
@@ -273,9 +273,12 @@ public class RegisterActivity extends AppCompatActivity {
                                     .addOnSuccessListener(aVoid -> Log.d(TAG, "User successfully registered!"))
                                     .addOnFailureListener(e -> Log.w(TAG, "error", e));
 
-
+                            //TODO: Redirect to RegisterOTPActivity
+                            //startActivity(new Intent(RegisterActivity.this, LandingActivity.class));
+                            Intent otp = new Intent(RegisterActivity.this, RegisterOTPActivity.class);
+                            otp.putExtra("Email", etEmail.getText().toString());
+                            startActivity(otp);
                             finish();
-                            startActivity(new Intent(RegisterActivity.this, LandingActivity.class));
                         } else {
                             // If sign up fails, display a message to the user.
                             Log.w(TAG, "signUpWithEmailPassword:failure", task.getException());
@@ -292,11 +295,11 @@ public class RegisterActivity extends AppCompatActivity {
         }
     }
 
-    public void goBack(View view){
-        Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
-        finish();
-        startActivity(intent);
-    }
+//    public void goBack(View view){
+//        Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
+//        finish();
+//        startActivity(intent);
+//    }
 
     //update edittext value
     private void updateDate(){
@@ -375,7 +378,6 @@ public class RegisterActivity extends AppCompatActivity {
                 }
             });
 
-
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
@@ -392,8 +394,7 @@ public class RegisterActivity extends AppCompatActivity {
                 //PERMISSION GRANTED
                 pickImage();
             }
-
         }
-
     }
+
 }
