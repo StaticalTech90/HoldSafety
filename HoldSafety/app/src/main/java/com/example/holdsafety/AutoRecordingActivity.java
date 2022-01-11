@@ -78,10 +78,10 @@ public class AutoRecordingActivity extends AppCompatActivity {
 
     private void checkAllPermissions() {
         if(ActivityCompat.checkSelfPermission(this, permissions[0]) == PackageManager.PERMISSION_DENIED //camera permission
-            || ActivityCompat.checkSelfPermission(this, permissions[1]) == PackageManager.PERMISSION_DENIED //audio permission
-            || ActivityCompat.checkSelfPermission(this, permissions[2]) == PackageManager.PERMISSION_DENIED){ //storage permission
-                ActivityCompat.requestPermissions(this, permissions, RECORDING_REQ_CODE);
-                return;
+                || ActivityCompat.checkSelfPermission(this, permissions[1]) == PackageManager.PERMISSION_DENIED //audio permission
+                || ActivityCompat.checkSelfPermission(this, permissions[2]) == PackageManager.PERMISSION_DENIED){ //storage permission
+            ActivityCompat.requestPermissions(this, permissions, RECORDING_REQ_CODE);
+            return;
         }
 
         camera = getCameraInstance();
@@ -92,16 +92,18 @@ public class AutoRecordingActivity extends AppCompatActivity {
         new CountDownTimer(1000, 1000){
             @Override
             public void onTick(long l) {
-                long timeRemaining = (1/1000)+1;
+                long timeRemaining = (l/1000)+1;
             }
 
             @Override
             public void onFinish() {
+                btnRecord.setEnabled(true);
                 btnRecord.performClick();
             }
         }.start();
 
-        btnRecord.performClick();
+        //btnRecord.setEnabled(true);
+        //btnRecord.performClick();
     }
 
     public void updateButtonUI(){
@@ -208,12 +210,12 @@ public class AutoRecordingActivity extends AppCompatActivity {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if(requestCode == RECORDING_REQ_CODE){
             if(ActivityCompat.shouldShowRequestPermissionRationale(this, permissions[0])
-            || ActivityCompat.shouldShowRequestPermissionRationale(this, permissions[1])
-            || ActivityCompat.shouldShowRequestPermissionRationale(this, permissions[2])){
+                    || ActivityCompat.shouldShowRequestPermissionRationale(this, permissions[1])
+                    || ActivityCompat.shouldShowRequestPermissionRationale(this, permissions[2])){
                 ActivityCompat.requestPermissions(this, permissions, RECORDING_REQ_CODE);
             } else if (grantResults[0] == PackageManager.PERMISSION_GRANTED
-            && grantResults[2] == PackageManager.PERMISSION_GRANTED
-            && grantResults[3] == PackageManager.PERMISSION_GRANTED){//returns true
+                    && grantResults[2] == PackageManager.PERMISSION_GRANTED
+                    && grantResults[3] == PackageManager.PERMISSION_GRANTED){//returns true
                 //all permission granted
                 checkAllPermissions();
             } else{

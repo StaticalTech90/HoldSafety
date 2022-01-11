@@ -59,8 +59,8 @@ public class RecordingCountdownActivity extends AppCompatActivity {
         countdownTimer = findViewById(R.id.countdown);
         cTimer = new CountDownTimer(3000, 1000) {
             public void onTick(long millisUntilFinished) {
-                long remainTime = millisUntilFinished/1000;
-                countdownTimer.setText(Long.toString(remainTime+2));
+                long remainTime = (millisUntilFinished/1000)+1;
+                countdownTimer.setText(Long.toString(remainTime));
             }
             public void onFinish() {
                 //Toast.makeText(getApplicationContext(), "2 seconds finished", Toast.LENGTH_SHORT).show();
