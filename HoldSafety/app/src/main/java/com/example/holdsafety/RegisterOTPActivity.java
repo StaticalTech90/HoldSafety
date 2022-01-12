@@ -55,18 +55,18 @@ public class RegisterOTPActivity extends AppCompatActivity {
                     DialogEmailVerify dialog = new DialogEmailVerify(this);
 
                     //Countdown timer
-                    new CountDownTimer(60000, 1000) {
-                        @Override
-                        public void onTick(long millisUntilFinished) {
-                            long timeRemaining = millisUntilFinished / 1000;
-                            dialog.timeRemaining.setText("Time Remaining: " + timeRemaining);
-                        }
-
-                        @Override
-                        public void onFinish() {
-                            dialog.dismissDialog();
-                        }
-                    }.start();
+//                    new CountDownTimer(60000, 1000) {
+//                        @Override
+//                        public void onTick(long millisUntilFinished) {
+//                            long timeRemaining = millisUntilFinished / 1000;
+//                            dialog.timeRemaining.setText("Time Remaining: " + timeRemaining);
+//                        }
+//
+//                        @Override
+//                        public void onFinish() {
+//                            dialog.dismissDialog();
+//                        }
+//                    }.start();
 
                     sendVerification(etEmail.getText().toString(), dialog);
                 }

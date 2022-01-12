@@ -81,14 +81,6 @@ public class LandingActivity extends AppCompatActivity {
         isFromWidget = getIntent().getStringExtra("isFromWidget");
         Toast.makeText(getApplicationContext(), "isFromWidget: " + isFromWidget, Toast.LENGTH_SHORT).show();
 
-        //Check if there's a logged in user
-        if(mAuth.getCurrentUser() == null){
-            Toast.makeText(LandingActivity.this, "NO Logged In Account", Toast.LENGTH_SHORT).show();
-            startActivity(new Intent(LandingActivity.this, LoginActivity.class));finish();
-            finish();
-
-        }
-
         //FLPC DECLARATION
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
 
