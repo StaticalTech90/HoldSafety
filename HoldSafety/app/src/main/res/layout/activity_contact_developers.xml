@@ -33,17 +33,48 @@
         app:layout_constraintTop_toBottomOf="@+id/backArrow" />
 
     <RelativeLayout
-        android:id="@+id/containerAction"
+        android:id="@+id/containerEmail"
         android:layout_width="340dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="30dp"
-        android:paddingTop="5dp"
-        android:paddingBottom="5dp"
+        android:layout_marginTop="35dp"
+
+        android:paddingTop="15dp"
+        android:paddingBottom="15dp"
 
         android:background="@drawable/white_container"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/lblContactDev"
+        app:layout_constraintTop_toBottomOf="@+id/lblContactDev">
+
+        <EditText
+
+            android:id="@+id/txtEmail"
+            android:layout_width="180dp"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentEnd="true"
+            android:layout_marginStart="20dp"
+
+            android:layout_marginEnd="20dp"
+            android:background="@null"
+
+            android:fontFamily="sans-serif"
+            android:hint="Email" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/containerAction"
+        android:layout_width="340dp"
+        android:layout_height="wrap_content"
+        android:paddingTop="5dp"
+        android:paddingBottom="5dp"
+
+        android:layout_marginTop="20dp"
+
+        android:background="@drawable/white_container"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/containerEmail"
         android:orientation="horizontal">
 
         <Spinner
@@ -65,7 +96,7 @@
         android:background="@drawable/white_container"
         android:gravity="top|left"
         android:inputType="textMultiLine"
-        android:lines="12"
+        android:lines="10"
         android:scrollbars="vertical"
 
         android:fontFamily="sans-serif"

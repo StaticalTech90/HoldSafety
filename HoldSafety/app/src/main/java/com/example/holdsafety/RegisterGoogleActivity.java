@@ -125,6 +125,7 @@ public class RegisterGoogleActivity extends AppCompatActivity {
         String uEmail = user.getEmail();
         //String firstName = etFirstName.getText().toString();
         String middleName = etMiddleName.getText().toString();
+        String birthDate = etBirthDate.getText().toString().trim();
         String mobileNo = etMobileNo.getText().toString();
         String sex = spinnerSex.getSelectedItem().toString();
 
@@ -273,8 +274,8 @@ public class RegisterGoogleActivity extends AppCompatActivity {
         );
     }
 
-    private void goBack(View view){
+    public void goBack(View view){
+        startActivity(new Intent(getApplicationContext(), LoginActivity.class));
         finish();
-        startActivity(new Intent(getApplicationContext(), MenuActivity.class));
     }
 }

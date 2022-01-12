@@ -33,6 +33,8 @@ public class MenuActivity extends AppCompatActivity {
 
     public void contactDevelopers(View view){
         Toast.makeText(getApplicationContext(), "Contact Developers", Toast.LENGTH_SHORT).show();
+        Intent intent = new Intent (getApplicationContext(), ContactDevelopersActivity.class);
+        startActivity(intent);
     }
 
     public void userManual(View view){
