@@ -82,7 +82,10 @@ public class LandingActivity extends AppCompatActivity {
 
         //Check if there's a logged in user
         if(mAuth.getCurrentUser() == null){
-            startActivity(new Intent(LandingActivity.this, LoginActivity.class));
+            Toast.makeText(LandingActivity.this, "NO Logged In Account", Toast.LENGTH_SHORT).show();
+            startActivity(new Intent(LandingActivity.this, LoginActivity.class));finish();
+            finish();
+
         }
 
         //FLPC DECLARATION
@@ -179,7 +182,6 @@ public class LandingActivity extends AppCompatActivity {
 
     @SuppressLint("MissingPermission")
     private void getCurrentLocation() {
-
         fusedLocationProviderClient.getLastLocation()
                 .addOnCompleteListener(task -> {
 

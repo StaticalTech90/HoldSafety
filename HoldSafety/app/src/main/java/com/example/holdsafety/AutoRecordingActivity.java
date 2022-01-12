@@ -9,6 +9,7 @@ import android.content.pm.PackageManager;
 import android.hardware.Camera;
 import android.media.CamcorderProfile;
 import android.media.MediaRecorder;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Environment;
@@ -18,8 +19,15 @@ import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.OnProgressListener;
+import com.google.firebase.storage.UploadTask;
 
 import java.io.File;
 import java.io.IOException;
@@ -32,6 +40,7 @@ public class AutoRecordingActivity extends AppCompatActivity {
     FrameLayout cameraLayout;
     File recordingFile;
     final String tag = "AUTORECORD";
+    FirebaseAuth mAuth;
 
     FloatingActionButton btnRecord;
     boolean isRecording = false;
@@ -50,6 +59,7 @@ public class AutoRecordingActivity extends AppCompatActivity {
         txtIsRecording = findViewById(R.id.txtIsRecording);
         progressBar = findViewById(R.id.progressBar);
         cameraLayout = findViewById(R.id.camera_preview);
+        mAuth = FirebaseAuth.getInstance();
 
 
         btnRecord.setOnClickListener(new View.OnClickListener() {
@@ -60,6 +70,9 @@ public class AutoRecordingActivity extends AppCompatActivity {
                     //stop option
                     mediaRecorder.stop();
                     camera.lock();
+
+                    //add file to db
+                    addFileToFirebase();
                 } else {
                     //user is not recording
                     //play option
@@ -76,6 +89,41 @@ public class AutoRecordingActivity extends AppCompatActivity {
         checkAllPermissions();
     }
 
+    private void addFileToFirebase() {
+        //show progress bar
+        progressBar.setVisibility(View.VISIBLE);
+
+        //add to firebase
+        FirebaseStorage.getInstance()
+                .getReference("emergencyVideos")
+                .child(mAuth.getCurrentUser().getUid())
+                .child(recordingFile.getName())
+                .putFile(Uri.fromFile(recordingFile))
+                .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                    @Override
+                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                        Toast.makeText(AutoRecordingActivity.this, "Upload successful", Toast.LENGTH_SHORT).show();
+                        setHandler();
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+
+                        Toast.makeText(AutoRecordingActivity.this, "Upload failed.", Toast.LENGTH_SHORT).show();
+                        setHandler();
+
+                    }
+                })
+                .addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
+                    @Override
+                    public void onProgress(@NonNull UploadTask.TaskSnapshot snapshot) {
+                        double progress = (100.0 * snapshot.getBytesTransferred() / snapshot.getTotalByteCount());
+                        progressBar.setProgress((int) progress);
+                    }
+                });
+    }
+
     private void checkAllPermissions() {
         if(ActivityCompat.checkSelfPermission(this, permissions[0]) == PackageManager.PERMISSION_DENIED //camera permission
                 || ActivityCompat.checkSelfPermission(this, permissions[1]) == PackageManager.PERMISSION_DENIED //audio permission
@@ -86,24 +134,22 @@ public class AutoRecordingActivity extends AppCompatActivity {
 
         camera = getCameraInstance();
         cameraPreview = new CameraPreview(this, camera);
-        mediaRecorder = new MediaRecorder();
+        mediaRecorder = new MediaRecorder(); // responsible on passing whatever the user is recording
         cameraLayout.addView(cameraPreview);
 
+        //needs time for camera to process
         new CountDownTimer(1000, 1000){
             @Override
             public void onTick(long l) {
                 long timeRemaining = (l/1000)+1;
+                Log.d("TAG", "Time Remaining before recording: " + timeRemaining);
             }
-
             @Override
             public void onFinish() {
                 btnRecord.setEnabled(true);
                 btnRecord.performClick();
             }
         }.start();
-
-        //btnRecord.setEnabled(true);
-        //btnRecord.performClick();
     }
 
     public void updateButtonUI(){
@@ -122,6 +168,7 @@ public class AutoRecordingActivity extends AppCompatActivity {
     private boolean prepareVideoRecorder() {
         // Step 1: Unlock and set camera to MediaRecorder
         camera.unlock();
+        mediaRecorder.setOrientationHint(90);
         mediaRecorder.setCamera(camera);
 
         // Step 2: Set sources
@@ -209,18 +256,29 @@ public class AutoRecordingActivity extends AppCompatActivity {
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if(requestCode == RECORDING_REQ_CODE){
-            if(ActivityCompat.shouldShowRequestPermissionRationale(this, permissions[0])
-                    || ActivityCompat.shouldShowRequestPermissionRationale(this, permissions[1])
-                    || ActivityCompat.shouldShowRequestPermissionRationale(this, permissions[2])){
+            if(ActivityCompat.shouldShowRequestPermissionRationale(this, permissions[0])//camera
+                    || ActivityCompat.shouldShowRequestPermissionRationale(this, permissions[1])//audio
+                    || ActivityCompat.shouldShowRequestPermissionRationale(this, permissions[2])){//write storage
                 ActivityCompat.requestPermissions(this, permissions, RECORDING_REQ_CODE);
             } else if (grantResults[0] == PackageManager.PERMISSION_GRANTED
-                    && grantResults[2] == PackageManager.PERMISSION_GRANTED
-                    && grantResults[3] == PackageManager.PERMISSION_GRANTED){//returns true
+                    && grantResults[1] == PackageManager.PERMISSION_GRANTED
+                    && grantResults[2] == PackageManager.PERMISSION_GRANTED){//returns true
                 //all permission granted
                 checkAllPermissions();
             } else{
                 //user denied
             }
         }
+    }
+
+    private void setHandler() {
+        Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                progressBar.setVisibility(View.INVISIBLE);
+                progressBar.setProgress(0);
+            }
+        }, 2000);
     }
 }
