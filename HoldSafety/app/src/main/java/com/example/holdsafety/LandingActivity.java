@@ -77,7 +77,6 @@ public class LandingActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_landing);
 
-        mAuth = FirebaseAuth.getInstance();
         userID = FirebaseAuth.getInstance().getCurrentUser().getUid();
         isFromWidget = getIntent().getStringExtra("isFromWidget");
         Toast.makeText(getApplicationContext(), "isFromWidget: " + isFromWidget, Toast.LENGTH_SHORT).show();
