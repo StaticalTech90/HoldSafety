@@ -10,10 +10,14 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.google.firebase.auth.FirebaseAuth;
 
 public class MenuActivity extends AppCompatActivity {
+    FirebaseAuth mAuth;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_menu);
+
+        mAuth = FirebaseAuth.getInstance();
     }
 
     public void userAccount(View view){
@@ -50,7 +54,7 @@ public class MenuActivity extends AppCompatActivity {
     }
 
     public void logoutUser(View view){
-        FirebaseAuth.getInstance().signOut();
+        mAuth.signOut();
         Toast.makeText(MenuActivity.this, "Logged Out", Toast.LENGTH_SHORT).show();
         startActivity(new Intent(MenuActivity.this, LoginActivity.class));
         finish();

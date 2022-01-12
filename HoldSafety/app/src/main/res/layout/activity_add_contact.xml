@@ -27,7 +27,7 @@
         android:layout_marginEnd="40dp"
 
         android:fontFamily="sans-serif"
-        android:text="Number of Contacts: 2/5"
+        android:text=""
         android:textColor="@color/gray"
         android:textSize="15sp"
         app:layout_constraintEnd_toEndOf="parent"

@@ -19,7 +19,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <ImageView
-        android:id="@+id/menu"
+        android:id="@+id/menuButton"
         android:layout_width="30dp"
         android:layout_height="35dp"
 
@@ -29,7 +29,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         android:clickable="true"
-        android:onClick="menuRedirect"
         />
 
     <RelativeLayout

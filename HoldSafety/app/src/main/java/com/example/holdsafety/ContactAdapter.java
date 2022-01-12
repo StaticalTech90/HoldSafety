@@ -1,5 +1,6 @@
 package com.example.holdsafety;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.view.LayoutInflater;
@@ -12,10 +13,10 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
 public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ContactHolder> {
-    String contactName[];
+    String[] contactName;
     Context context;
 
-    public ContactAdapter(Context ct, String name[]){
+    public ContactAdapter(Context ct, String[] name){
         context = ct;
         contactName = name;
     }
@@ -29,7 +30,7 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ContactH
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ContactAdapter.ContactHolder holder, int position) {
+    public void onBindViewHolder(@NonNull ContactAdapter.ContactHolder holder, @SuppressLint("RecyclerView") int position) {
         holder.textViewContactName.setText(contactName[position]);
 
         holder.contactLayout.setOnClickListener(new View.OnClickListener() {

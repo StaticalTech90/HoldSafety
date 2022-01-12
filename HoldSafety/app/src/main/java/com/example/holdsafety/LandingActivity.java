@@ -23,6 +23,7 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -57,6 +58,7 @@ public class LandingActivity extends AppCompatActivity {
     String userID;
     
     Button btnSafetyButton;
+    ImageView btnMenu;
     TextView seconds, description;
     private int timer;
     long remainTime;
@@ -81,6 +83,10 @@ public class LandingActivity extends AppCompatActivity {
 
         seconds = findViewById(R.id.countdown);
         btnSafetyButton = findViewById(R.id.btnSafetyButton);
+        btnMenu = findViewById(R.id.menuButton);
+
+        btnMenu.setOnClickListener(v -> startActivity(new Intent(LandingActivity.this,
+                MenuActivity.class)));
 
         //handle method for holdsafety button
         btnSafetyButton.setOnTouchListener(new View.OnTouchListener() {
@@ -126,10 +132,6 @@ public class LandingActivity extends AppCompatActivity {
                 return false;
             }
         });
-    }
-
-    public void menuRedirect(View view) {
-        startActivity(new Intent(LandingActivity.this, MenuActivity.class));
     }
 
     //cancel timer

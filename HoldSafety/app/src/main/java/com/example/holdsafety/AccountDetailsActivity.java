@@ -38,6 +38,7 @@ import com.google.firebase.storage.StorageReference;
 
 public class AccountDetailsActivity extends AppCompatActivity {
     public Uri imageURI;
+    FirebaseAuth mAuth;
     FirebaseUser user;
     FirebaseFirestore db;
     StorageReference fStorage;
@@ -50,11 +51,11 @@ public class AccountDetailsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_account_details);
 
-        user = FirebaseAuth.getInstance().getCurrentUser();
+        mAuth = FirebaseAuth.getInstance();
+        user = mAuth.getCurrentUser();
         db = FirebaseFirestore.getInstance();
-        fStorage = FirebaseStorage.getInstance().getReference();
 
-        Toast.makeText(AccountDetailsActivity.this, "Current User: " + user.getUid(), Toast.LENGTH_SHORT).show();
+        Toast.makeText(AccountDetailsActivity.this, user.getUid(), Toast.LENGTH_SHORT).show();
 
         TextView txtLastName, txtFirstName, txtMiddleName, txtBirthDate, txtSex;
         EditText txtMobileNumber, txtEmail;
@@ -72,202 +73,187 @@ public class AccountDetailsActivity extends AppCompatActivity {
         //show details
         docRef = db.collection("users").document(user.getUid());
 
-        docRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-            @Override
-            public void onSuccess(DocumentSnapshot documentSnapshot) {
-                if(documentSnapshot.exists()){
-                    String lastName = documentSnapshot.getString("LastName");
-                    String firstName = documentSnapshot.getString("FirstName");
-                    String middleName = documentSnapshot.getString("MiddleName");
-                    String birthDate = documentSnapshot.getString("BirthDate");
-                    String sex = documentSnapshot.getString("Sex");
-                    String currentMobileNumber = documentSnapshot.getString("MobileNumber");
-                    String currentEmail = documentSnapshot.getString("Email");
+        docRef.get().addOnSuccessListener(documentSnapshot -> {
+            if(documentSnapshot.exists()){
+                String lastName = documentSnapshot.getString("LastName");
+                String firstName = documentSnapshot.getString("FirstName");
+                String middleName = documentSnapshot.getString("MiddleName");
+                String birthDate = documentSnapshot.getString("BirthDate");
+                String sex = documentSnapshot.getString("Sex");
+                String currentMobileNumber = documentSnapshot.getString("MobileNumber");
+                String currentEmail = documentSnapshot.getString("Email");
 
-                    txtLastName.setText(lastName);
-                    txtFirstName.setText(firstName);
-                    txtMiddleName.setText(middleName);
-                    txtBirthDate.setText(birthDate);
-                    txtSex.setText(sex);
-                    txtMobileNumber.setText(currentMobileNumber);
-                    txtEmail.setText(currentEmail);
+                txtLastName.setText(lastName);
+                txtFirstName.setText(firstName);
+                txtMiddleName.setText(middleName);
+                txtBirthDate.setText(birthDate);
+                txtSex.setText(sex);
+                txtMobileNumber.setText(currentMobileNumber);
+                txtEmail.setText(currentEmail);
 
-                    //compares current saved data to new input
-                    txtMobileNumber.addTextChangedListener(new TextWatcher() {
-                        String newNumber;
-                        @Override
-                        public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                //compares current saved data to new input
+                txtMobileNumber.addTextChangedListener(new TextWatcher() {
+                    String newNumber;
+                    @Override
+                    public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                    }
+
+                    @Override
+                    public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                        newNumber = txtMobileNumber.getText().toString().trim();
+                    }
+
+                    @Override
+                    public void afterTextChanged(Editable editable) {
+                        if(currentMobileNumber.equals(newNumber)){
+                            isNumberChanged = false;
+                            Toast.makeText(AccountDetailsActivity.this, "No Changes", Toast.LENGTH_SHORT).show();
+                        } else{
+                            isNumberChanged = true;
+                            Toast.makeText(AccountDetailsActivity.this, "New Number", Toast.LENGTH_SHORT).show();
                         }
+                    }
+                });
 
-                        @Override
-                        public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                            newNumber = txtMobileNumber.getText().toString().trim();
-                        }
+                txtEmail.addTextChangedListener(new TextWatcher() {
+                    String newEmail;
+                    @Override
+                    public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                    }
 
-                        @Override
-                        public void afterTextChanged(Editable editable) {
-                            if(currentMobileNumber.equals(newNumber)){
-                                isNumberChanged = false;
-                                Toast.makeText(AccountDetailsActivity.this, "No Changes", Toast.LENGTH_SHORT).show();
-                            } else{
-                                isNumberChanged = true;
-                                Toast.makeText(AccountDetailsActivity.this, "New Number", Toast.LENGTH_SHORT).show();
-                            }
-                        }
-                    });
+                    @Override
+                    public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                        newEmail = txtEmail.getText().toString().trim();
+                    }
 
-                    txtEmail.addTextChangedListener(new TextWatcher() {
-                        String newEmail;
-                        @Override
-                        public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                    @Override
+                    public void afterTextChanged(Editable editable) {
+                        if(currentEmail.equals(newEmail)){
+                            isEmailChanged = false;
+                            Toast.makeText(AccountDetailsActivity.this, "No Changes", Toast.LENGTH_SHORT).show();
+                        } else{
+                            isEmailChanged = true;
+                            Toast.makeText(AccountDetailsActivity.this, "New Email", Toast.LENGTH_SHORT).show();
                         }
-
-                        @Override
-                        public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                            newEmail = txtEmail.getText().toString().trim();
-                        }
-
-                        @Override
-                        public void afterTextChanged(Editable editable) {
-                            if(currentEmail.equals(newEmail)){
-                                isEmailChanged = false;
-                                Toast.makeText(AccountDetailsActivity.this, "No Changes", Toast.LENGTH_SHORT).show();
-                            } else{
-                                isEmailChanged = true;
-                                Toast.makeText(AccountDetailsActivity.this, "New Email", Toast.LENGTH_SHORT).show();
-                            }
-                        }
-                    });
-                }
-                else {
-                    Toast.makeText(AccountDetailsActivity.this, "Details not found. Please contact developer.", Toast.LENGTH_SHORT).show();
-                }
+                    }
+                });
+            }
+            else {
+                Toast.makeText(AccountDetailsActivity.this, "Details not found. Please contact developer.", Toast.LENGTH_SHORT).show();
             }
         });
 
-        btnSave.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                String newMobileNumber, newEmail;
+        btnSave.setOnClickListener(view -> {
+            String newMobileNumber, newEmail;
 
-                newMobileNumber = txtMobileNumber.getText().toString().trim();
-                newEmail = txtEmail.getText().toString().trim();
+            newMobileNumber = txtMobileNumber.getText().toString().trim();
+            newEmail = txtEmail.getText().toString().trim();
 
-                //checks if fields are empty
-                if (TextUtils.isEmpty(newMobileNumber) && TextUtils.isEmpty(newEmail)) {
-                    txtMobileNumber.setError("Email is required");
-                    txtEmail.setError("Password is required");
-                    return;
+            //checks if fields are empty
+            if (TextUtils.isEmpty(newMobileNumber) && TextUtils.isEmpty(newEmail)) {
+                txtMobileNumber.setError("Email is required");
+                txtEmail.setError("Password is required");
+                return;
+            }
+
+            if (TextUtils.isEmpty(newMobileNumber)) {
+                txtMobileNumber.setError("Mobile Number is required");
+                return;
+            }
+
+            if (TextUtils.isEmpty(newEmail)) {
+                txtEmail.setError("Email is required");
+                return;
+            }
+
+            //not empty fields, no changes
+            if (!isEmailChanged && !isNumberChanged) {
+                Toast.makeText(AccountDetailsActivity.this, "No Changes Made", Toast.LENGTH_LONG).show();
+            }
+            else if (isEmailChanged || isNumberChanged){
+                //pop up for re-enter password
+                EditText txtInputPassword;
+
+                AlertDialog.Builder dialogSaveChanges;
+                dialogSaveChanges = new AlertDialog.Builder(AccountDetailsActivity.this);
+                dialogSaveChanges.setTitle("Save Changes");
+
+                //if only number is changed
+                if (isNumberChanged && !isEmailChanged){
+                    dialogSaveChanges.setMessage("Re-enter password to save changes:");
                 }
 
-                if (TextUtils.isEmpty(newMobileNumber)) {
-                    txtMobileNumber.setError("Mobile Number is required");
-                    return;
+                //if both
+                if (isEmailChanged){
+                    dialogSaveChanges.setMessage("Note: Upon changing your email, you will not be able to save recordings until the new email is verified." +
+                            "\n\nRe-enter password to save changes:");
                 }
 
-                if (TextUtils.isEmpty(newEmail)) {
-                    txtEmail.setError("Email is required");
-                    return;
-                }
+                txtInputPassword = new EditText(AccountDetailsActivity.this);
+                dialogSaveChanges.setView(txtInputPassword);
 
-                //not empty fields, no changes
-                if (!isEmailChanged && !isNumberChanged) {
-                    Toast.makeText(AccountDetailsActivity.this, "No Changes Made", Toast.LENGTH_LONG).show();
-                }
-                else if (isEmailChanged || isNumberChanged){
-                    //pop up for re-enter password
-                    EditText txtInputPassword;
+                txtInputPassword.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
 
-                    AlertDialog.Builder dialogSaveChanges;
-                    dialogSaveChanges = new AlertDialog.Builder(AccountDetailsActivity.this);
-                    dialogSaveChanges.setTitle("Save Changes");
-
-                    //if only number is changed
-                    if (isNumberChanged && !isEmailChanged){
-                        dialogSaveChanges.setMessage("Re-enter password to save changes:");
+                //saves user input if not empty
+                txtInputPassword.addTextChangedListener(new TextWatcher() {
+                    @Override
+                    public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
                     }
 
-                    //if both
-                    if (isEmailChanged){
-                        dialogSaveChanges.setMessage("Note: Upon changing your email, you will not be able to save recordings until the new email is verified." +
-                                "\n\nRe-enter password to save changes:");
+                    @Override
+                    public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                        userPassword = txtInputPassword.getText().toString().trim();
                     }
 
-                    txtInputPassword = new EditText(AccountDetailsActivity.this);
-                    dialogSaveChanges.setView(txtInputPassword);
+                    @Override
+                    public void afterTextChanged(Editable editable) {
+                    }
+                });
 
-                    txtInputPassword.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+                dialogSaveChanges.setPositiveButton("Done", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        //Do nothing here, override this button later to change the close behaviour
+                    }
+                });
 
-                    //saves user input if not empty
-                    txtInputPassword.addTextChangedListener(new TextWatcher() {
-                        @Override
-                        public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                        }
+                dialogSaveChanges.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        dialogInterface.dismiss();
 
-                        @Override
-                        public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                            userPassword = txtInputPassword.getText().toString().trim();
-                        }
+                        //reset values
+                        isEmailChanged = false;
+                        isNumberChanged = false;
+                        userPassword = "";
 
-                        @Override
-                        public void afterTextChanged(Editable editable) {
-                        }
-                    });
+                        finish();
+                        startActivity(getIntent());
+                    }
+                });
 
-                    dialogSaveChanges.setPositiveButton("Done", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialogInterface, int i) {
-                            //Do nothing here, override this button later to change the close behaviour
-                        }
-                    });
+                AlertDialog changeEmailDialog = dialogSaveChanges.create();
+                changeEmailDialog.show();
 
-                    dialogSaveChanges.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialogInterface, int i) {
-                            dialogInterface.dismiss();
+                //Override
+                changeEmailDialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if (TextUtils.isEmpty(userPassword)) {
+                            txtInputPassword.setError("Password is required");
+                        } else {
+                            userPassword = txtInputPassword.getText().toString();
 
-                            //reset values
-                            isEmailChanged = false;
-                            isNumberChanged = false;
-                            userPassword = "";
+                            if (isNumberChanged) {
+                                changeNumber(newMobileNumber);
+                            }
 
-                            finish();
-                            startActivity(getIntent());
-                        }
-                    });
-
-                    AlertDialog changeEmailDialog = dialogSaveChanges.create();
-                    changeEmailDialog.show();
-
-                    //Override
-                    changeEmailDialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            if (TextUtils.isEmpty(userPassword)) {
-                                txtInputPassword.setError("Password is required");
-                            } else {
-                                userPassword = txtInputPassword.getText().toString();
-
-                                if (isNumberChanged) {
-                                    changeNumber(newMobileNumber);
-                                }
-
-                                if (isEmailChanged) {
-                                    changeEmail(newEmail);
-                                }
+                            if (isEmailChanged) {
+                                changeEmail(newEmail);
                             }
                         }
-                    }); //end of dialog code
-                }
-                //if there are new changes
-//                if(isNumberChanged && !isEmailChanged){
-//                    //if email is not changed - proceed to save and reload activity
-//                    reAuthenticate(newEmail, newMobileNumber);
-//                }
-//
-//                if(isEmailChanged) {
-//                    reAuthenticate(newEmail, newMobileNumber);
-//                }
+                    }
+                }); //end of dialog code
             }
         });
     }
@@ -302,48 +288,42 @@ public class AccountDetailsActivity extends AppCompatActivity {
                 .getCredential(user.getEmail(),userPassword);
 
         user.reauthenticate(credential)
-                .addOnCompleteListener(new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        if (task.isSuccessful()) {
-                            //updates email in Auth
-                            user.updateEmail(newEmail)
-                                    .addOnCompleteListener(new OnCompleteListener<Void>() {
-                                        @Override
-                                        public void onComplete(@NonNull Task<Void> task) {
-                                            if (task.isSuccessful()) {
-                                                Log.d(TAG, "User email address updated.");
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        //updates email in Auth
+                        user.updateEmail(newEmail)
+                                .addOnCompleteListener(task1 -> {
+                                    if (task1.isSuccessful()) {
+                                        Log.d(TAG, "User email address updated.");
 
-                                                //updates email in document
-                                                docRef.update("Email", newEmail);
+                                        //updates email in document
+                                        docRef.update("Email", newEmail);
 
-                                                //reset values
-                                                isEmailChanged = false;
-                                                userPassword = "";
+                                        //reset values
+                                        isEmailChanged = false;
+                                        userPassword = "";
 
-                                                Toast.makeText(AccountDetailsActivity.this, "Changes Saved", Toast.LENGTH_LONG).show();
+                                        Toast.makeText(AccountDetailsActivity.this, "Changes Saved", Toast.LENGTH_LONG).show();
 
-                                                //insert email verification here
+                                        //insert email verification here
 
-                                                finish();
-                                                startActivity(getIntent());
-                                            }
-                                        }
-                                    })
-                                    .addOnFailureListener(new OnFailureListener() {
-                                        @Override
-                                        public void onFailure(@NonNull Exception e) {
-                                            isNumberChanged = false;
-                                            isEmailChanged = false;
-                                            userPassword = "";
+                                        finish();
+                                        startActivity(getIntent());
+                                    }
+                                })
+                                .addOnFailureListener(new OnFailureListener() {
+                                    @Override
+                                    public void onFailure(@NonNull Exception e) {
+                                        isNumberChanged = false;
+                                        isEmailChanged = false;
+                                        userPassword = "";
 
-                                            Toast.makeText(AccountDetailsActivity.this, "Update Email Failed" + "\nChanges not Saved", Toast.LENGTH_LONG).show();
+                                        Toast.makeText(AccountDetailsActivity.this, "Update Email Failed" + "\nChanges not Saved", Toast.LENGTH_LONG).show();
 
-                                            finish();
-                                            startActivity(getIntent());
-                                        }
-                                    });
-                        }
+                                        finish();
+                                        startActivity(getIntent());
+                                    }
+                                });
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
@@ -366,22 +346,19 @@ public class AccountDetailsActivity extends AppCompatActivity {
                 .getCredential(user.getEmail(),userPassword);
 
         user.reauthenticate(credential)
-                .addOnCompleteListener(new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        if (task.isSuccessful()) {
-                            docRef.update("MobileNumber", newMobileNumber);
-                            isNumberChanged = false;
-                            Toast.makeText(AccountDetailsActivity.this, "Mobile Number Successfully Changed", Toast.LENGTH_LONG).show();
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        docRef.update("MobileNumber", newMobileNumber);
+                        isNumberChanged = false;
+                        Toast.makeText(AccountDetailsActivity.this, "Mobile Number Successfully Changed", Toast.LENGTH_LONG).show();
 
-                            isNumberChanged = false;
+                        isNumberChanged = false;
 
-                            if(!isEmailChanged){
-                                userPassword = "";
+                        if(!isEmailChanged){
+                            userPassword = "";
 
-                                finish();
-                                startActivity(getIntent());
-                            }
+                            finish();
+                            startActivity(getIntent());
                         }
                     }
                 })
@@ -466,23 +443,19 @@ public class AccountDetailsActivity extends AppCompatActivity {
         changeEmailDialog.show();
 
         //Override  - only continues if there is a password input
-        changeEmailDialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(new View.OnClickListener()
-        {
-            @Override
-            public void onClick(View v) {
-                if(TextUtils.isEmpty(userPassword)){
-                    txtInputPassword.setError("Password is required");
+        changeEmailDialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(v -> {
+            if(TextUtils.isEmpty(userPassword)){
+                txtInputPassword.setError("Password is required");
+            }
+            else {
+                userPassword = txtInputPassword.getText().toString();
+
+                if (isNumberChanged){
+                    changeNumber(newMobileNumber);
                 }
-                else {
-                    userPassword = txtInputPassword.getText().toString();
 
-                    if (isNumberChanged){
-                        changeNumber(newMobileNumber);
-                    }
-
-                    if (isEmailChanged){
-                        changeEmail(newEmail);
-                    }
+                if (isEmailChanged){
+                    changeEmail(newEmail);
                 }
             }
         });
@@ -498,30 +471,27 @@ public class AccountDetailsActivity extends AppCompatActivity {
         dialogRemoveAccount.setMessage("Are you sure you want to delete your account? " +
                 "Keep in mind that all information and files would be deleted from the system.");
 
-        dialogRemoveAccount.setPositiveButton("Delete", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
+        dialogRemoveAccount.setPositiveButton("Delete", (dialogInterface, i) ->
+                user.delete().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                //DELETE IMAGE
+                FirebaseStorage.getInstance().getReference("id").child(user.getUid()).delete()
+                .addOnSuccessListener(v -> {
+                    Toast.makeText(AccountDetailsActivity.this, "Deleted Image", Toast.LENGTH_LONG).show();
+                }).addOnFailureListener(v1 -> {
+                    Toast.makeText(AccountDetailsActivity.this, "Failed", Toast.LENGTH_LONG).show();
+                });
 
-                user.delete().addOnCompleteListener(new OnCompleteListener<Void>() {
-                            @Override
-                            public void onComplete(@NonNull Task<Void> task) {
-                                if (task.isSuccessful()) {
-                                    //not working
-                                    fStorage.child("id/"+user.getUid()).delete();
-                                    Toast.makeText(AccountDetailsActivity.this, user.getUid(), Toast.LENGTH_LONG).show();
+                db.collection("users").document(user.getUid()).delete();
+                db.collection("emergencyContacts").document(user.getUid()).delete();
 
-                                    db.collection("users").document(user.getUid()).delete();
-
-                                    startActivity(new Intent(AccountDetailsActivity.this, LoginActivity.class));
-                                    finish();
-                                }
-                                else{
-                                    Toast.makeText(AccountDetailsActivity.this, "Error: " + task.getException().getMessage(), Toast.LENGTH_LONG).show();
-                                }
-                            }
-                        });
+                startActivity(new Intent(AccountDetailsActivity.this, LoginActivity.class));
+                finish();
             }
-        });
+            else{
+                Toast.makeText(AccountDetailsActivity.this, "Error: " + task.getException().getMessage(), Toast.LENGTH_LONG).show();
+            }
+        }));
 
         dialogRemoveAccount.setNegativeButton("Dismiss", new DialogInterface.OnClickListener() {
             @Override

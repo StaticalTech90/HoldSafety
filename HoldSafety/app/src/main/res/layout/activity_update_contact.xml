@@ -95,10 +95,10 @@
 
                 android:layout_below="@+id/lblLastName"
 
+                android:backgroundTint="@color/white"
                 android:fontFamily="sans-serif-black"
-                android:text="David"
-                android:textColor="@color/white"
-                android:backgroundTint="@color/white"/>
+                android:text=""
+                android:textColor="@color/white" />
         </RelativeLayout>
 
         <RelativeLayout
@@ -127,10 +127,10 @@
 
                 android:layout_below="@+id/lblFirstName"
 
+                android:backgroundTint="@color/white"
                 android:fontFamily="sans-serif-black"
-                android:text="Danielle"
-                android:textColor="@color/white"
-                android:backgroundTint="@color/white"/>
+                android:text=""
+                android:textColor="@color/white" />
         </RelativeLayout>
 
         <RelativeLayout
@@ -161,10 +161,10 @@
 
                 android:layout_below="@+id/lblRelation"
 
+                android:backgroundTint="@color/white"
                 android:fontFamily="sans-serif-black"
-                android:text="Friend"
-                android:textColor="@color/white"
-                android:backgroundTint="@color/white"/>
+                android:text=""
+                android:textColor="@color/white" />
         </RelativeLayout>
 
 
@@ -196,10 +196,10 @@
 
                 android:layout_below="@+id/lblMobileNumber"
 
+                android:backgroundTint="@color/white"
                 android:fontFamily="sans-serif-black"
-                android:text="09125784903"
-                android:textColor="@color/white"
-                android:backgroundTint="@color/white"/>
+                android:text=""
+                android:textColor="@color/white" />
         </RelativeLayout>
 
 
@@ -224,16 +224,16 @@
 
             <EditText
 
-                android:id="@+id/txtCurrentPassword"
+                android:id="@+id/txtEmailUpdate"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
 
                 android:layout_below="@+id/lblEmail"
 
+                android:backgroundTint="@color/white"
                 android:fontFamily="sans-serif-black"
-                android:text="danielle.david@gmail.com"
-                android:textColor="@color/white"
-                android:backgroundTint="@color/white"/>
+                android:text=""
+                android:textColor="@color/white" />
         </RelativeLayout>
 
     </RelativeLayout>
@@ -245,7 +245,6 @@
         android:layout_marginTop="50dp"
         android:background="@drawable/blue_button"
         android:fontFamily="sans-serif-black"
-        android:onClick="updateContact"
         android:padding="10dp"
         android:text="UPDATE CONTACT"
         android:textColor="@color/dark_blue"

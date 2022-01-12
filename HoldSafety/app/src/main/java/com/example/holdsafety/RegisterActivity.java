@@ -273,7 +273,6 @@ public class RegisterActivity extends AppCompatActivity {
                                     .addOnSuccessListener(aVoid -> Log.d(TAG, "User successfully registered!"))
                                     .addOnFailureListener(e -> Log.w(TAG, "error", e));
 
-
                             finish();
                             startActivity(new Intent(RegisterActivity.this, LandingActivity.class));
                         } else {

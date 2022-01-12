@@ -16,13 +16,11 @@ public class DesignateContactActivity extends AppCompatActivity {
 
     public void addContact(View view){
         //Toast.makeText(getApplicationContext(), "Add Contact", Toast.LENGTH_LONG).show();
-        Intent intent = new Intent (getApplicationContext(), AddContactActivity.class);
-        startActivity(intent);
+        startActivity(new Intent (DesignateContactActivity.this, AddContactActivity.class));
     }
 
     public void updateContact(View view){
         //Toast.makeText(getApplicationContext(), "Update Contact", Toast.LENGTH_SHORT).show();
-        Intent intent = new Intent (getApplicationContext(), SelectContactActivity.class);
-        startActivity(intent);
+        startActivity(new Intent (DesignateContactActivity.this, SelectContactActivity.class));
     }
 }
