@@ -1,15 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     android:name="android.permission.READ_EXTERNAL_STORAGE"
-    android:configChanges = "orientation|screenSize"
-    package="com.example.holdsafety">
+    package="com.example.holdsafety"
+    android:configChanges="orientation|screenSize">
 
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-    <uses-permission android:name="android.permission.INTERNET"/>
-    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE"/>
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.SEND_SMS"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.SEND_SMS" />
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+
+    <uses-feature
+        android:name="android.hardware.camera2"
+        android:required="true" />
+    <uses-feature android:name="android.hardware.camera.autofocus" />
 
     <application
         android:allowBackup="true"
@@ -19,6 +27,9 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.HoldSafety">
+        <activity
+            android:name=".AutoRecordingActivity"
+            android:exported="true" />
         <activity
             android:name=".ContactDevelopersActivity"
             android:exported="true" />
@@ -30,7 +41,7 @@
             android:exported="true" />
         <activity
             android:name=".LandingActivity"
-            android:exported="true"/>
+            android:exported="true" />
         <activity android:name=".RegisterActivity" />
         <activity android:name=".AccountDetailsActivity" />
         <activity android:name=".AddContactActivity" />
@@ -41,29 +52,28 @@
         <activity android:name=".UpdateContactActivity" />
         <activity android:name=".ChangePasswordActivity" />
         <activity android:name=".ForgotPasswordActivity" />
-
         <activity android:name=".MenuActivity" />
         <activity
             android:name=".LoginActivity"
             android:exported="true"
             android:launchMode="singleTop">
-
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        
-        <receiver android:name=".HoldSafetyWidget"
+
+        <receiver
+            android:name=".HoldSafetyWidget"
             android:exported="true">
             <intent-filter>
-                <action android:name="android.appwidget.action.APPWIDGET_UPDATE"/>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
             </intent-filter>
 
             <meta-data
                 android:name="android.appwidget.provider"
-                android:resource="@xml/holdsafety_widget_info"/>
+                android:resource="@xml/holdsafety_widget_info" />
         </receiver>
     </application>
 

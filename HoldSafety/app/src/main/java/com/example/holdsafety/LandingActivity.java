@@ -48,6 +48,7 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -55,7 +56,7 @@ import java.util.Locale;
 
 public class LandingActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
-    String userID;
+    String userID, isFromWidget;
     
     Button btnSafetyButton;
     ImageView btnMenu;
@@ -69,6 +70,7 @@ public class LandingActivity extends AppCompatActivity {
     private static final int GPS_REQ_CODE = 1001;
     private static final int SEND_SMS_REQ_CODE = 1002;
 
+
     @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,6 +79,16 @@ public class LandingActivity extends AppCompatActivity {
 
         mAuth = FirebaseAuth.getInstance();
         userID = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        isFromWidget = getIntent().getStringExtra("isFromWidget");
+        Toast.makeText(getApplicationContext(), "isFromWidget: " + isFromWidget, Toast.LENGTH_SHORT).show();
+
+        //Check if there's a logged in user
+        if(mAuth.getCurrentUser() == null){
+            Toast.makeText(LandingActivity.this, "NO Logged In Account", Toast.LENGTH_SHORT).show();
+            startActivity(new Intent(LandingActivity.this, LoginActivity.class));finish();
+            finish();
+
+        }
 
         //FLPC DECLARATION
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
@@ -132,6 +144,17 @@ public class LandingActivity extends AppCompatActivity {
                 return false;
             }
         });
+
+
+        //handle method for holdsafety widget
+        if(isFromWidget!=null && isFromWidget.equals("true")){
+            getCurrentLocation();
+            //Toast.makeText(getApplicationContext(), "Inside IF" , Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    public void menuRedirect(View view) {
+        startActivity(new Intent(LandingActivity.this, MenuActivity.class));
     }
 
     //cancel timer
@@ -292,6 +315,7 @@ public class LandingActivity extends AppCompatActivity {
 
     }
 
+
     private void getEstablishmentsLocations(Location location, String address) {
         //GET ESTABLISHMENTS LOCATIONS
         FirebaseFirestore.getInstance()
@@ -361,27 +385,21 @@ public class LandingActivity extends AppCompatActivity {
                         WifiManager wifiManager = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
                         wifiManager.setWifiEnabled(true);
 
-                        Toast.makeText(LandingActivity.this, "Nearest: " + nearestBrgySnap.getString("Barangay"), Toast.LENGTH_SHORT).show();
+                        //Toast.makeText(LandingActivity.this, "Nearest: " + nearestBrgySnap.getString("Barangay"), Toast.LENGTH_SHORT).show();
                         //sendLocationToContacts(location, address);
-
-                        sendAlertMessage();
+                        Toast.makeText(LandingActivity.this, "Geolocation: " + address, Toast.LENGTH_SHORT).show();
+                        sendAlertMessage(location, address);
                     }
                 });
     }
 
-    private void sendAlertMessage(){
-        //SMS Permission
-        //TODO: Put to different func
-        if (ActivityCompat.checkSelfPermission(LandingActivity.this,
-                Manifest.permission.SEND_SMS) == PackageManager.PERMISSION_DENIED) {
-            //DENIED LOCATION PERMISSION
-            Log.d("location permission", "Please Grant SMS Permission");
-            //SHOW PERMISSION
-            ActivityCompat.requestPermissions(LandingActivity.this,
-                    new String[]{Manifest.permission.SEND_SMS},
-                    SEND_SMS_REQ_CODE);
-            return;
-        }
+    private void sendAlertMessage(Location location, String address){
+        //Declare and initialize alert message contents
+        String googleMapLink = "https://maps.google.com/?q=" + location.getLatitude() + "," + location.getLongitude();
+        String message = "User Details:" +
+                "\nFull Name: " + userID +
+                "\nAddress: " + address +
+                "\nPlease go here immediately: " + googleMapLink;
 
         //Get user's emergency contacts
         FirebaseFirestore.getInstance()
@@ -400,9 +418,6 @@ public class LandingActivity extends AppCompatActivity {
                             String firstName = snapshot.getString("firstName");
                             String lastName = snapshot.getString("lastName");
                             String email = snapshot.getString("email");
-
-                            String fullName = firstName + " " + lastName;
-                            String message = "Hello " + fullName;
 
                             //Toast.makeText(getApplicationContext(), message, Toast.LENGTH_LONG).show();
 
@@ -428,14 +443,36 @@ public class LandingActivity extends AppCompatActivity {
                                     }
                                 }, new IntentFilter("SMS_SENT"));
 
+                                ArrayList<PendingIntent> sentPendingIntents = new ArrayList<PendingIntent>();
+                                PendingIntent sentPI = PendingIntent.getBroadcast(LandingActivity.this,
+                                        SEND_SMS_REQ_CODE, new Intent("SMS_SENT"), 0);
+
+                                //Send SMS
+                                try {
+                                    SmsManager manager = SmsManager.getDefault();
+                                    //For long messages to work
+                                    ArrayList<String> msgArray = manager.divideMessage(message);
+
+                                    for (int i = 0; i < msgArray.size(); i++) {
+                                        sentPendingIntents.add(i, sentPI);
+                                    }
+                                    manager.sendMultipartTextMessage(mobileNumber, null, msgArray, sentPendingIntents, null);
+                                    Toast.makeText(getApplicationContext(), "Message Sent",Toast.LENGTH_LONG).show();
+                                } catch (Exception ex) {
+                                    Toast.makeText(getApplicationContext(), ex.getMessage().toString(), Toast.LENGTH_LONG).show();
+                                    ex.printStackTrace();
+                                }
 
                                 //SEND SMS
+                                /*
                                 SmsManager manager = SmsManager.getDefault();
                                 PendingIntent sentPI = PendingIntent.getBroadcast(LandingActivity.this,
                                         SEND_SMS_REQ_CODE, new Intent("SMS_SENT"), 0);
 
                                 manager.sendTextMessage(mobileNumber, null, message, sentPI, null);
                                 Toast.makeText(getApplicationContext(), "SMS Sent", Toast.LENGTH_LONG).show();
+                                Toast.makeText(getApplicationContext(), "SMS Sent to: " + mobileNumber, Toast.LENGTH_LONG).show();
+                                */
                             }
 
                             if(email!=null){
@@ -461,7 +498,6 @@ public class LandingActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-
         //Asks for permissions on activity start
         setPermissions();
     }

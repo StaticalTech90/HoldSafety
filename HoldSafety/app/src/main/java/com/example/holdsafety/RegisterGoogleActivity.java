@@ -2,6 +2,8 @@ package com.example.holdsafety;
 
 import static android.content.ContentValues.TAG;
 
+import android.annotation.SuppressLint;
+import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.graphics.Color;
 import android.net.Uri;
@@ -13,6 +15,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -32,17 +35,21 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class RegisterGoogleActivity extends AppCompatActivity {
-    EditText etLastName, etFirstName, etMiddleName, etMobileNo;
+    EditText etLastName, etFirstName, etMiddleName, etMobileNo, etBirthDate;
     Button btnProceed;
     Spinner spinnerSex;
     public Uri imageURI;
@@ -52,7 +59,9 @@ public class RegisterGoogleActivity extends AppCompatActivity {
     FirebaseFirestore db = FirebaseFirestore.getInstance();
     DocumentReference docRef;
 
-    String email;
+    final Calendar calendar = Calendar.getInstance();
+
+    String firstName, lastName, email, selectedSex;
     Date birthDate;
 
     @Override
@@ -64,6 +73,7 @@ public class RegisterGoogleActivity extends AppCompatActivity {
         etFirstName = findViewById(R.id.txtFirstName);
         etMiddleName = findViewById(R.id.txtMiddleName);
         etMobileNo = findViewById(R.id.txtMobileNumber);
+        etBirthDate = findViewById(R.id.txtBirthDate);
         btnProceed = findViewById(R.id.btnProceed);
         spinnerSex = findViewById(R.id.txtSex);
 
@@ -117,6 +127,7 @@ public class RegisterGoogleActivity extends AppCompatActivity {
                     Toast.makeText
                             (getApplicationContext(), "Selected : " + selectedItemText, Toast.LENGTH_SHORT)
                             .show();
+                    selectedSex = (String) spinnerSex.getSelectedItem().toString().trim();
                 }
             }
 
@@ -223,6 +234,14 @@ public class RegisterGoogleActivity extends AppCompatActivity {
             Toast.makeText(getApplicationContext(), "Selected " + imageURI, Toast.LENGTH_SHORT).show();
             //uploadPicture();
         }
+    }
+
+    //update edittext value
+    private void updateDate(){
+        //matched with line 174
+        String myFormat="MM-dd-yyyy";
+        SimpleDateFormat dateFormat=new SimpleDateFormat(myFormat, Locale.US);
+        etBirthDate.setText(dateFormat.format(calendar.getTime()));
     }
 
     public void goBack(View view){

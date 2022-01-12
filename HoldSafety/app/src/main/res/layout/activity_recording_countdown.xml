@@ -73,7 +73,7 @@
         app:layout_constraintStart_toStartOf="parent" />
 
     <Button
-        android:id="@+id/btnLogin"
+        android:id="@+id/btnCancel"
         android:layout_width="200dp"
         android:layout_height="55dp"
         android:background="@drawable/gray_button"

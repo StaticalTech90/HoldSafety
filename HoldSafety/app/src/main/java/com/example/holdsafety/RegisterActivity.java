@@ -10,6 +10,7 @@ import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
@@ -37,6 +38,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 
+import java.io.File;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -359,7 +361,6 @@ public class RegisterActivity extends AppCompatActivity {
                 public void onActivityResult(ActivityResult result) {
 
                     if (result.getResultCode() == RESULT_OK) {
-
                         Intent data = result.getData();
                         if (data != null) {
                             if (data.getData() != null) {
