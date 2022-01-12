@@ -49,7 +49,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class RegisterGoogleActivity extends AppCompatActivity {
-    EditText etLastName, etFirstName, etMiddleName, etMobileNo, etBirthDate;
+    EditText etMiddleName, etMobileNo, etBirthDate;
+    TextView lblName;
     Button btnProceed;
     Spinner spinnerSex;
     public Uri imageURI;
@@ -69,13 +70,16 @@ public class RegisterGoogleActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register_google);
 
-        etLastName = findViewById(R.id.txtLastName);
-        etFirstName = findViewById(R.id.txtFirstName);
+        //Get data from db and auto-input in the form
+        mAuth = FirebaseAuth.getInstance();
+        user = mAuth.getCurrentUser();
+
         etMiddleName = findViewById(R.id.txtMiddleName);
         etMobileNo = findViewById(R.id.txtMobileNumber);
         etBirthDate = findViewById(R.id.txtBirthDate);
         btnProceed = findViewById(R.id.btnProceed);
         spinnerSex = findViewById(R.id.txtSex);
+        lblName = findViewById(R.id.lblGoogleName);
 
         // check if a user is signed in
         GoogleSignInAccount signInAccount = GoogleSignIn.getLastSignedInAccount(this);
@@ -84,8 +88,109 @@ public class RegisterGoogleActivity extends AppCompatActivity {
             email = signInAccount.getEmail();
         }
 
+        dropdownSex();
+        selectBirthdate();
+
+        if(user != null) {
+            docRef = db.collection("users").document(user.getUid());
+            docRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                @Override
+                public void onSuccess(DocumentSnapshot documentSnapshot) {
+                    if(documentSnapshot.exists()) {
+
+                        //REFACTORED FUNCTIONALITY TO SHOW ACCOUNT NAME AS LABEL
+                        firstName = (documentSnapshot.getString("FirstName"));
+                        lastName = documentSnapshot.getString("LastName");
+                        String username =  lastName + ", " + firstName;
+                        //etLastName.setText(documentSnapshot.getString("LastName"));
+                        //etFirstName.setText(documentSnapshot.getString("FirstName"));
+                        //etLastName.setFocusable(false);
+                        //etFirstName.setFocusable(false);
+                        lblName.setText(username);
+                    }
+                }
+            });
+        }
+    }
+
+    //refactored userRegister onClickListener into independent function
+    //TODO: turn this back into an onClickListener
+    public void userRegister(View view){
+        user = mAuth.getCurrentUser();
+        Map<String, Object> docUsers = new HashMap<>();
+        String mobileNumberRegex = "^(09|\\+639)\\d{9}$";
+        Pattern mobileNumberPattern = Pattern.compile(mobileNumberRegex);
+
+        String userId = user.getUid();
+        String uEmail = user.getEmail();
+        //String firstName = etFirstName.getText().toString();
+        String middleName = etMiddleName.getText().toString();
+        String mobileNo = etMobileNo.getText().toString();
+        String sex = spinnerSex.getSelectedItem().toString();
+
+        Matcher mobileNumberMatcher = mobileNumberPattern.matcher(etMobileNo.getText());
+
+        if(spinnerSex.getSelectedItem().equals("Sex")) {
+            ((TextView)spinnerSex.getSelectedView()).setError("please select sex");
+        } else if(TextUtils.isEmpty(etMobileNo.getText())) {
+            etMobileNo.setError("Enter Mobile number");
+        } else if (!mobileNumberMatcher.matches()) {
+            etMobileNo.setError("Please enter a valid mobile number");
+        } else if(etMobileNo.getText().length() != 11) {
+            etMobileNo.setError("Please enter a valid mobile number");
+        } else {
+            docUsers.put("ID", user.getUid());
+            docUsers.put("LastName", lastName);
+            docUsers.put("FirstName", firstName);
+            docUsers.put("MiddleName", middleName);
+            docUsers.put("Sex", sex);
+            //TODO: PLS NOT EMPTY BIRTHDATE
+            docUsers.put("BirthDate", birthDate); // currently empty
+            docUsers.put("MobileNumber", mobileNo);
+            docUsers.put("Email", uEmail);
+            docUsers.put("profileComplete", true);
+            docUsers.put("isVerified", false);
+
+            db.collection("users").document(userId).set(docUsers)
+                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void aVoid) {
+                            Toast.makeText(getApplicationContext(), "DocumentSnapshot successfully written!", Toast.LENGTH_SHORT).show();
+                            Log.d(TAG, "DocumentSnapshot successfully written!");
+
+                            Intent landing = new Intent(RegisterGoogleActivity.this, LandingActivity.class);
+                            startActivity(landing);
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            Toast.makeText(getApplicationContext(), "Error writing document", Toast.LENGTH_SHORT).show();
+                            Log.w(TAG, "Error writing document", e);
+                        }
+                    });
+        }
+    }
+
+    public void uploadID(View view){
+        Intent intent = new Intent();
+        intent.setType("image/*");
+        intent.setAction(Intent.ACTION_GET_CONTENT);
+        startActivityIfNeeded(intent, 1);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(requestCode==1 && resultCode==RESULT_OK && data!=null && data.getData()!=null){
+            imageURI = data.getData();
+            Toast.makeText(getApplicationContext(), "Selected " + imageURI, Toast.LENGTH_SHORT).show();
+            //uploadPicture();
+        }
+    }
+
+    public String dropdownSex(){
         //Sex selector spinner
-        spinnerSex = findViewById(R.id.txtSex);
         String[] sex = new String[]{"Sex", "M", "F"};
         List<String> sexList = new ArrayList<>(Arrays.asList(sex));
 
@@ -136,104 +241,7 @@ public class RegisterGoogleActivity extends AppCompatActivity {
 
             }
         });
-
-        //Get data from db and auto-input in the form
-        mAuth = FirebaseAuth.getInstance();
-        user = mAuth.getCurrentUser();
-        if(user != null) {
-            docRef = db.collection("users").document(user.getUid());
-            docRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                @Override
-                public void onSuccess(DocumentSnapshot documentSnapshot) {
-                    if(documentSnapshot.exists()) {
-                        etLastName.setText(documentSnapshot.getString("LastName"));
-                        etFirstName.setText(documentSnapshot.getString("FirstName"));
-                        etLastName.setFocusable(false);
-                        etFirstName.setFocusable(false);
-                    }
-                }
-            });
-        }
-    }
-
-    //refactored userRegister onClickListener into independent function
-    //TODO: turn this back into an onClickListener
-    public void userRegister(View view){
-        user = mAuth.getCurrentUser();
-        Map<String, Object> docUsers = new HashMap<>();
-        String mobileNumberRegex = "^(09|\\+639)\\d{9}$";
-        Pattern mobileNumberPattern = Pattern.compile(mobileNumberRegex);
-
-        String userId = user.getUid();
-        String uEmail = user.getEmail();
-        String lastName = etLastName.getText().toString();
-        String firstName = etFirstName.getText().toString();
-        String middleName = etMiddleName.getText().toString();
-        String mobileNo = etMobileNo.getText().toString();
-        String sex = spinnerSex.getSelectedItem().toString();
-
-        Matcher mobileNumberMatcher = mobileNumberPattern.matcher(etMobileNo.getText());
-
-        if(TextUtils.isEmpty(etLastName.getText())) {
-            etLastName.setError("Enter Last Name");
-        } else if(TextUtils.isEmpty(etFirstName.getText())) {
-            etFirstName.setError("Enter First Name");
-        } else if(spinnerSex.getSelectedItem().equals("Sex")) {
-            ((TextView)spinnerSex.getSelectedView()).setError("please select sex");
-        } else if(TextUtils.isEmpty(etMobileNo.getText())) {
-            etMobileNo.setError("Enter Mobile number");
-        } else if (!mobileNumberMatcher.matches()) {
-            etMobileNo.setError("Please enter a valid mobile number");
-        } else if(etMobileNo.getText().length() != 11) {
-            etMobileNo.setError("Please enter a valid mobile number");
-        } else {
-            docUsers.put("ID", user.getUid());
-            docUsers.put("LastName", lastName);
-            docUsers.put("FirstName", firstName);
-            docUsers.put("MiddleName", middleName);
-            docUsers.put("Sex", sex);
-            docUsers.put("BirthDate", birthDate); // currently empty
-            docUsers.put("MobileNumber", mobileNo);
-            docUsers.put("Email", uEmail);
-            docUsers.put("profileComplete", true);
-            docUsers.put("isVerified", false);
-
-            db.collection("users").document(userId).set(docUsers)
-                    .addOnSuccessListener(new OnSuccessListener<Void>() {
-                        @Override
-                        public void onSuccess(Void aVoid) {
-                            Toast.makeText(getApplicationContext(), "DocumentSnapshot successfully written!", Toast.LENGTH_SHORT).show();
-                            Log.d(TAG, "DocumentSnapshot successfully written!");
-
-                            Intent landing = new Intent(RegisterGoogleActivity.this, LandingActivity.class);
-                            startActivity(landing);
-                        }
-                    })
-                    .addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception e) {
-                            Toast.makeText(getApplicationContext(), "Error writing document", Toast.LENGTH_SHORT).show();
-                            Log.w(TAG, "Error writing document", e);
-                        }
-                    });
-        }
-    }
-
-    public void uploadID(View view){
-        Intent intent = new Intent();
-        intent.setType("image/*");
-        intent.setAction(Intent.ACTION_GET_CONTENT);
-        startActivityIfNeeded(intent, 1);
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if(requestCode==1 && resultCode==RESULT_OK && data!=null && data.getData()!=null){
-            imageURI = data.getData();
-            Toast.makeText(getApplicationContext(), "Selected " + imageURI, Toast.LENGTH_SHORT).show();
-            //uploadPicture();
-        }
+        return selectedSex;
     }
 
     //update edittext value
@@ -244,9 +252,29 @@ public class RegisterGoogleActivity extends AppCompatActivity {
         etBirthDate.setText(dateFormat.format(calendar.getTime()));
     }
 
-    public void goBack(View view){
-        Intent intent = new Intent(getApplicationContext(), MenuActivity.class);
+    private void selectBirthdate(){
+        DatePickerDialog.OnDateSetListener date =new DatePickerDialog.OnDateSetListener() {
+            @Override
+            public void onDateSet(DatePicker view, int year, int month, int day) {
+                calendar.set(Calendar.YEAR, year);
+                calendar.set(Calendar.MONTH,month);
+                calendar.set(Calendar.DAY_OF_MONTH,day);
+                updateDate();
+            }
+        };
+
+        //show DatePickerDialog using this listener
+        etBirthDate.setOnClickListener(view -> new DatePickerDialog(
+                RegisterGoogleActivity.this,
+                date,
+                calendar.get(Calendar.YEAR),
+                calendar.get(Calendar.MONTH),
+                calendar.get(Calendar.DAY_OF_MONTH)).show()
+        );
+    }
+
+    private void goBack(View view){
         finish();
-        startActivity(intent);
+        startActivity(new Intent(getApplicationContext(), MenuActivity.class));
     }
 }
