@@ -28,6 +28,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.HoldSafety">
         <activity
+            android:name=".AudioRecording"
+            android:exported="true" />
+        <activity
             android:name=".AutoRecordingActivity"
             android:exported="true" />
         <activity

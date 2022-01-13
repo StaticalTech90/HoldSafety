@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.hardware.Camera;
 import android.media.CamcorderProfile;
@@ -110,7 +111,7 @@ public class AutoRecordingActivity extends AppCompatActivity {
                     @Override
                     public void onFailure(@NonNull Exception e) {
 
-                        Toast.makeText(AutoRecordingActivity.this, "Upload failed.", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(AutoRecordingActivity.this, "Upload failed: " +e.getMessage(), Toast.LENGTH_SHORT).show();
                         setHandler();
 
                     }
@@ -265,8 +266,13 @@ public class AutoRecordingActivity extends AppCompatActivity {
                     && grantResults[2] == PackageManager.PERMISSION_GRANTED){//returns true
                 //all permission granted
                 checkAllPermissions();
-            } else{
-                //user denied
+            } else if (grantResults[1] == PackageManager.PERMISSION_GRANTED
+                    && grantResults[2] == PackageManager.PERMISSION_GRANTED){
+                //user only accepts audio and storage
+                Intent audio = new Intent(AutoRecordingActivity.this, AudioRecording.class);
+                startActivity(audio);
+            } else {
+
             }
         }
     }
