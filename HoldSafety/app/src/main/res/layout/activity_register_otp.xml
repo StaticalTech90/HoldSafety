@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ForgotPasswordActivity"
+    tools:context=".RegisterOTPActivity"
     android:background="@color/dark_blue">
 
     <ImageView
@@ -21,31 +21,31 @@
 
 
     <TextView
-        android:id="@+id/lblForgotPassword"
+        android:id="@+id/lblVerifyEmail"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
 
         android:layout_marginTop="150dp"
         android:fontFamily="sans-serif-black"
-        android:text="Forgot Password"
-        android:layout_marginLeft="35dp"
+        android:text="VerifyEmail"
+        android:layout_marginStart="35dp"
         android:textColor="@color/white"
         android:textSize="35sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/backArrow" />
 
     <TextView
-        android:id="@+id/lblRegisterDesc"
-        android:layout_width="wrap_content"
+        android:id="@+id/lblVerifyDesc"
+        android:layout_width="300dp"
         android:layout_height="wrap_content"
-
         android:fontFamily="sans-serif"
         android:layout_marginLeft="40dp"
-        android:text="Enter your email to recover your account."
+        android:text="Please enter the OTP that will be sent to your email to verify your entered email."
         android:textColor="@color/gray"
         android:textSize="16sp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/lblForgotPassword" />
+        app:layout_constraintTop_toBottomOf="@+id/lblVerifyEmail" />
+
 
     <RelativeLayout
         android:id="@+id/containerEmail"
@@ -59,7 +59,7 @@
         android:background="@drawable/white_container"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/lblRegisterDesc">
+        app:layout_constraintTop_toBottomOf="@+id/lblVerifyDesc">
 
         <EditText
 
@@ -79,20 +79,34 @@
     </RelativeLayout>
 
     <Button
-        android:id="@+id/btnSendRecoveryLink"
+        android:id="@+id/btnSendCode"
         android:layout_width="280dp"
         android:layout_height="55dp"
         android:layout_marginTop="36dp"
         android:background="@drawable/blue_button"
         android:fontFamily="sans-serif-black"
-        android:onClick="recoverAccount"
         android:padding="10dp"
-        android:text="SEND RECOVERY LINK"
+        android:text="SEND VERIFICATON CODE"
         android:textColor="@color/dark_blue"
         android:textSize="20sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/containerEmail" />
+
+    <TextView
+        android:id="@+id/txtTimeRemaining"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Time Remaining"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/btnSendCode"
+        android:layout_marginTop="15dp"
+        android:fontFamily="sans-serif-black"
+        android:textColor="@color/white"
+        android:textSize="12sp"
+        />
+
 
     <TextView
         android:id="@+id/textView"
@@ -107,5 +121,7 @@
         android:textSize="130sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
+
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -2,11 +2,14 @@ package com.example.holdsafety;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.cardview.widget.CardView;
 import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.PorterDuff;
 import android.hardware.Camera;
 import android.media.CamcorderProfile;
 import android.media.MediaRecorder;
@@ -45,7 +48,7 @@ public class AutoRecordingActivity extends AppCompatActivity {
 
     FloatingActionButton btnRecord;
     boolean isRecording = false;
-    TextView txtIsRecording;
+    CardView txtIsRecording;
 
     ProgressBar progressBar;
     String[] permissions = new String[]{Manifest.permission.CAMERA, Manifest.permission.RECORD_AUDIO, Manifest.permission.WRITE_EXTERNAL_STORAGE};
@@ -57,7 +60,7 @@ public class AutoRecordingActivity extends AppCompatActivity {
         setContentView(R.layout.activity_auto_recording);
 
         btnRecord = findViewById(R.id.btnRecord);
-        txtIsRecording = findViewById(R.id.txtIsRecording);
+        txtIsRecording = findViewById(R.id.cardIsRecording);
         progressBar = findViewById(R.id.progressBar);
         cameraLayout = findViewById(R.id.camera_preview);
         mAuth = FirebaseAuth.getInstance();
@@ -110,7 +113,6 @@ public class AutoRecordingActivity extends AppCompatActivity {
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
-
                         Toast.makeText(AutoRecordingActivity.this, "Upload failed: " +e.getMessage(), Toast.LENGTH_SHORT).show();
                         setHandler();
 
@@ -120,6 +122,7 @@ public class AutoRecordingActivity extends AppCompatActivity {
                     @Override
                     public void onProgress(@NonNull UploadTask.TaskSnapshot snapshot) {
                         double progress = (100.0 * snapshot.getBytesTransferred() / snapshot.getTotalByteCount());
+                        progressBar.getProgressDrawable().setColorFilter(ContextCompat.getColor(AutoRecordingActivity.this,R.color.light_blue), PorterDuff.Mode.MULTIPLY);
                         progressBar.setProgress((int) progress);
                     }
                 });
@@ -156,7 +159,6 @@ public class AutoRecordingActivity extends AppCompatActivity {
     public void updateButtonUI(){
         if(isRecording){
             txtIsRecording.setVisibility(View.VISIBLE);
-            txtIsRecording.setText("Recording");
             btnRecord.setImageResource(R.drawable.recording_shape);
         } else{
             //txtIsRecording.setText("Not Recording");

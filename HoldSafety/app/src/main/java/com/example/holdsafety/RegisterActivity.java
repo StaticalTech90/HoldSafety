@@ -11,7 +11,10 @@ import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.text.Editable;
+import android.text.InputType;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -72,6 +75,8 @@ public class RegisterActivity extends AppCompatActivity {
     private EditText etPassword;
     private EditText etConPassword;
 
+    TextView txtTogglePass, txtToggleConfirmPass;
+
     Button btnRegister;
     Button btnUpload;
 
@@ -96,6 +101,14 @@ public class RegisterActivity extends AppCompatActivity {
         etPassword = findViewById(R.id.txtPassword);
         etConPassword = findViewById(R.id.txtConfirmPassword);
         btnRegister = findViewById(R.id.registerButton);
+
+        txtTogglePass = findViewById(R.id.txtTogglePass);
+        txtToggleConfirmPass = findViewById(R.id.txtToggleConfirmPass);
+
+        txtTogglePass.setVisibility(View.GONE);
+        txtToggleConfirmPass.setVisibility(View.GONE);
+        etPassword.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+        etConPassword.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
 
         btnUpload = findViewById(R.id.btnUploadID);
 
@@ -173,6 +186,82 @@ public class RegisterActivity extends AppCompatActivity {
                 userRegister(v);
             } catch (ParseException e) {
                 e.printStackTrace();
+            }
+        });
+
+
+        //masking pass
+        etPassword.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                if(etPassword.getText().length() > 0){
+                    txtTogglePass.setVisibility(View.VISIBLE);
+                }
+                else{
+                    txtTogglePass.setVisibility(View.GONE);
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
+            }
+        });
+        txtTogglePass.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(txtTogglePass.getText() == "SHOW"){
+                    txtTogglePass.setText("HIDE");
+                    etPassword.setInputType(InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
+                }
+                else{
+                    txtTogglePass.setText("SHOW");
+                    etPassword.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+                }
+                etPassword.setSelection(etPassword.length());
+            }
+        });
+
+
+        //masking confirm pass
+        etConPassword.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                if(etConPassword.getText().length() > 0){
+                    txtToggleConfirmPass.setVisibility(View.VISIBLE);
+                }
+                else{
+                    txtToggleConfirmPass.setVisibility(View.GONE);
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
+            }
+        });
+        txtToggleConfirmPass.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(txtToggleConfirmPass.getText() == "SHOW"){
+                    txtToggleConfirmPass.setText("HIDE");
+                    etConPassword.setInputType(InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
+                }
+                else{
+                    txtToggleConfirmPass.setText("SHOW");
+                    etConPassword.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+                }
+                etConPassword.setSelection(etConPassword.length());
             }
         });
     }

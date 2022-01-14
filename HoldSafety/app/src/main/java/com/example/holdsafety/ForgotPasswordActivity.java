@@ -24,13 +24,11 @@ public class ForgotPasswordActivity extends AppCompatActivity {
         setContentView(R.layout.activity_forgot_password);
 
         txtEmail = findViewById(R.id.txtEmail);
-
         mAuth = FirebaseAuth.getInstance();
     }
 
     public void recoverAccount(View view){
         String email = txtEmail.getText().toString().trim();
-
         if(TextUtils.isEmpty(email)) {
             txtEmail.setError("Enter Email");
         } else {

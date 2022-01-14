@@ -3,7 +3,9 @@ package com.example.holdsafety;
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 
+import android.graphics.PorterDuff;
 import android.media.MediaRecorder;
 import android.net.Uri;
 import android.os.Build;
@@ -154,6 +156,7 @@ public class AudioRecording extends AppCompatActivity {
                     @Override
                     public void onProgress(@NonNull UploadTask.TaskSnapshot snapshot) {
                         double progress = (100.0 * snapshot.getBytesTransferred() / snapshot.getTotalByteCount());
+                        progressBar.getProgressDrawable().setColorFilter(ContextCompat.getColor(AudioRecording.this,R.color.light_blue), PorterDuff.Mode.MULTIPLY);
                         progressBar.setProgress((int) progress);
                     }
                 });
