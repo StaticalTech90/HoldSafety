@@ -1,5 +1,7 @@
 package com.example.holdsafety;
 
+import static android.content.ContentValues.TAG;
+
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -43,26 +45,35 @@ import com.google.android.gms.location.LocationSettingsStatusCodes;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 public class LandingActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
-    String userID, isFromWidget;
+    FirebaseFirestore db;
+    FirebaseUser user;
+    String userID, isFromWidget, nearestBrgy;
+    String coordsLon, coordsLat;
     
     Button btnSafetyButton;
     ImageView btnMenu;
     TextView seconds, description;
     private int timer;
     long remainTime;
+    Map<String, Object> docDetails = new HashMap<>(); // for reports in db
 
     FusedLocationProviderClient fusedLocationProviderClient;
 
@@ -70,14 +81,15 @@ public class LandingActivity extends AppCompatActivity {
     private static final int GPS_REQ_CODE = 1001;
     private static final int SEND_SMS_REQ_CODE = 1002;
 
-
     @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_landing);
 
-        userID = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        mAuth = FirebaseAuth.getInstance();
+        user = mAuth.getCurrentUser();
+        userID = user.getUid();
         isFromWidget = getIntent().getStringExtra("isFromWidget");
         Toast.makeText(getApplicationContext(), "isFromWidget: " + isFromWidget, Toast.LENGTH_SHORT).show();
 
@@ -196,8 +208,12 @@ public class LandingActivity extends AppCompatActivity {
                                     location.getLatitude(), location.getLongitude(), 2);
                             String address = addresses.get(1).getAddressLine(0);
 
-                            Toast.makeText(this, "Current Location: "+location.getLatitude() + "," + location.getLatitude(), Toast.LENGTH_SHORT).show();
+                            Toast.makeText(this, "Current Location: " + location.getLatitude() + "," + location.getLongitude(), Toast.LENGTH_SHORT).show();
 
+                            coordsLat = Double.toString(location.getLatitude());
+                            coordsLon = Double.toString(location.getLongitude());
+                            docDetails.put("Lat", coordsLat);
+                            docDetails.put("Lon", coordsLon);
                             getEstablishmentsLocations(location, address);
                             //TODO COMPARE LOCATION TO CONTACTS
                         } catch (IOException e) {
@@ -364,11 +380,13 @@ public class LandingActivity extends AppCompatActivity {
                                     //FIRST KEY
                                     nearestDistance = distance;
                                     nearestBrgySnap = brgySnap;
+
                                 } else if(distance < nearestDistance){
                                     nearestDistance = distance;
                                     nearestBrgySnap = brgySnap;
                                 }
-
+                                nearestBrgy = nearestBrgySnap.getString("Barangay");
+                                docDetails.put("Barangay", nearestBrgy);
                             }
                         }
 
@@ -378,7 +396,7 @@ public class LandingActivity extends AppCompatActivity {
 
                         //Toast.makeText(LandingActivity.this, "Nearest: " + nearestBrgySnap.getString("Barangay"), Toast.LENGTH_SHORT).show();
                         //sendLocationToContacts(location, address);
-                        Toast.makeText(LandingActivity.this, "Geolocation: " + address, Toast.LENGTH_SHORT).show();
+                        //Toast.makeText(LandingActivity.this, "Geolocation: " + address, Toast.LENGTH_SHORT).show();
                         sendAlertMessage(location, address);
                     }
                 });
@@ -479,12 +497,30 @@ public class LandingActivity extends AppCompatActivity {
                                 Toast.makeText(LandingActivity.this, "Email Sent", Toast.LENGTH_LONG).show();
                             }
                         }
+                        saveToDB(user);
                     }
                 });
 
         startActivity(new Intent(LandingActivity.this, RecordingCountdownActivity.class));
     }
 
+    private void saveToDB(FirebaseUser user) {
+        Date currentDate = Calendar.getInstance().getTime();
+        System.out.println("Current time => " + currentDate);
+
+        SimpleDateFormat dateFormat = new SimpleDateFormat("MM-dd-yyyy");
+        String formattedDate = dateFormat.format(currentDate);
+
+        docDetails.put("Barangay", nearestBrgy);
+        docDetails.put("Report Date", formattedDate);
+        //docDetails.put("Location", coords);
+        //TODO: PUT VIDEO LINK IN DB
+
+        db = FirebaseFirestore.getInstance();
+        db.collection("reports").document(user.getUid()).collection("reportDetails").add(docDetails)
+                .addOnSuccessListener(aVoid -> Log.d(TAG, "Report saved to DB!"))
+                .addOnFailureListener(e -> Log.w(TAG, "Report saving to Error!!", e));
+    }
 
     @Override
     protected void onStart() {
