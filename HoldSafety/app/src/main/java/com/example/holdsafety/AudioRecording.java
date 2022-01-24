@@ -89,8 +89,8 @@ public class AudioRecording extends AppCompatActivity {
             btnAudio.setText("Stop Recording");
             Toast.makeText(AudioRecording.this, "Audio Recording Started", Toast.LENGTH_SHORT).show();
 
-            /*
-            //2. SET TIMER (5 SECONDS)
+
+            //2. SET TIMER (5 SECONDS) - Limit of the recording
             new CountDownTimer(5000, 1000){
 
                 @Override
@@ -102,11 +102,12 @@ public class AudioRecording extends AppCompatActivity {
                 @Override
                 public void onFinish() {
                     //3. STOP RECORDING
+                    txtAudioRecording.setText("");
                     stopRecording();
                 }
 
             }.start();
-             */
+
         } catch (Exception e){
             Toast.makeText(AudioRecording.this, e.getMessage(), Toast.LENGTH_SHORT).show();
             e.printStackTrace();

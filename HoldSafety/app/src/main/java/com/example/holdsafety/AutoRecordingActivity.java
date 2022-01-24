@@ -82,6 +82,21 @@ public class AutoRecordingActivity extends AppCompatActivity {
                     //play option
                     if(prepareVideoRecorder()){
                         mediaRecorder.start();
+                        //2. SET TIMER (5 SECONDS) - Limit of the recording
+                        new CountDownTimer(5000, 1000){
+                            @Override
+                            public void onTick(long l) {
+                                long timeRemaining = (l/1000) + 1;
+                                //txtAudioRecording.setText("Recording will stop in " + timeRemaining + " seconds");
+                            }
+
+                            @Override
+                            public void onFinish() {
+                                //3. STOP RECORDING
+                                btnRecord.performClick();
+                            }
+
+                        }.start();
                     } else {
                         releaseMediaRecorder();
                     }

@@ -20,20 +20,6 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 public class RecordingCountdownActivity extends AppCompatActivity {
     TextView countdownTimer;
     Button btnCancel;
-    CountDownTimer cTimer = null;
-
-    Camera camera;
-    MediaRecorder mediaRecorder;
-    FrameLayout cameraLayout;
-    final String tag = "AUTORECORD";
-
-    FloatingActionButton btnRecord;
-    boolean isRecording;
-    TextView txtIsRecording;
-
-    ProgressBar progressBar;
-    String[] permissions = new String[]{Manifest.permission.CAMERA, Manifest.permission.RECORD_AUDIO, Manifest.permission.WRITE_EXTERNAL_STORAGE};
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,44 +27,35 @@ public class RecordingCountdownActivity extends AppCompatActivity {
         setContentView(R.layout.activity_recording_countdown);
 
         btnCancel = findViewById(R.id.btnCancel);
-
-
-        btnCancel.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Toast.makeText(getApplicationContext(), "Cancel", Toast.LENGTH_SHORT).show();
-                cancelTimer(cTimer);
-            }
-        });
-
-        startTimer(cTimer);
-    }
-
-    //start timer function
-    public void startTimer(CountDownTimer cTimer) {
         countdownTimer = findViewById(R.id.countdown);
-        cTimer = new CountDownTimer(3000, 1000) {
+
+        CountDownTimer timer = new CountDownTimer(3000, 1000)
+        {
             public void onTick(long millisUntilFinished) {
                 long remainTime = (millisUntilFinished/1000)+1;
                 countdownTimer.setText(Long.toString(remainTime));
             }
+
             public void onFinish() {
                 //Toast.makeText(getApplicationContext(), "2 seconds finished", Toast.LENGTH_SHORT).show();
-                countdownTimer.setText("3");
+                //countdownTimer.setText("3");
                 Toast.makeText(getApplicationContext(), "Done Countdown" , Toast.LENGTH_SHORT).show();
                 startActivity(new Intent(RecordingCountdownActivity.this, AutoRecordingActivity.class));
             }
+
         };
-        cTimer.start();
+
+        btnCancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                timer.cancel();
+                Toast.makeText(getApplicationContext(), "Cancel", Toast.LENGTH_SHORT).show();
+                startActivity(new Intent(RecordingCountdownActivity.this, LandingActivity.class));
+                finish();
+
+            }
+        });
+
+        timer.start();
     }
-
-    //cancel timer
-    public void cancelTimer(CountDownTimer cTimer) {
-        if(cTimer!=null){
-            Toast.makeText(getApplicationContext(), "Cancel", Toast.LENGTH_SHORT).show();
-            cTimer.cancel();
-        }
-    }
-
-
 }
