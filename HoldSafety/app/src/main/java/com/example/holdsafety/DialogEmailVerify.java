@@ -10,7 +10,6 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-//NOTE: Ginawa ko design neto para reusable by other activities just in case, para d lang pang OTP
 public class DialogEmailVerify {
     private Context context;
     private Dialog dialog;
