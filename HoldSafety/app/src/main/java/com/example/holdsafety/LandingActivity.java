@@ -177,6 +177,7 @@ public class LandingActivity extends AppCompatActivity {
         }
     }
 
+    //GET USER CURRENT LOCATION
     @SuppressLint("MissingPermission")
     private void getCurrentLocation() {
 
@@ -251,7 +252,6 @@ public class LandingActivity extends AppCompatActivity {
     }
 
     private void showGPSDialog() {
-
         LocationRequest locationRequest = LocationRequest.create();
         locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
         locationRequest.setInterval(30000);
@@ -303,7 +303,6 @@ public class LandingActivity extends AppCompatActivity {
             }
 
         }
-
     }
 
 
@@ -484,7 +483,6 @@ public class LandingActivity extends AppCompatActivity {
 
         startActivity(new Intent(LandingActivity.this, RecordingCountdownActivity.class));
     }
-
 
     @Override
     protected void onStart() {
