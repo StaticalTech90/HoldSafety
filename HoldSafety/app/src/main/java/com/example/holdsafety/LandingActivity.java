@@ -513,29 +513,40 @@ public class LandingActivity extends AppCompatActivity {
         SimpleDateFormat dateFormat = new SimpleDateFormat("MM-dd-yyyy");
         String formattedDate = dateFormat.format(currentDate);
 
-        //docRef = db.collection("users").document(userID);
+        docRef = db.collection("users").document(user.getUid());
         docRef.get().addOnSuccessListener(documentSnapshot -> {
             if(documentSnapshot.exists()) {
                 String firstName = documentSnapshot.getString("FirstName");
                 String lastName = documentSnapshot.getString("LastName");
+
                 docDetails.put("FirstName", firstName);
                 docDetails.put("LastName", lastName);
+                docDetails.put("Barangay", nearestBrgy);
+                docDetails.put("Report Date", formattedDate);
+                //docDetails.put("Location", coords);
+
+                //TODO: PUT VIDEO LINK IN DB
+                db = FirebaseFirestore.getInstance();
+                //REFACTOR TO NEAREST BARANGAY
+                db.collection("reports").document(nearestBrgy).collection("reportDetails").add(docDetails)
+                        .addOnSuccessListener(aVoid -> Log.d(TAG, "Report saved to DB!"))
+                        .addOnFailureListener(e -> Log.w(TAG, "Report saving to Error!!", e));
             }
         })
         .addOnFailureListener(documentSnapshot -> {
-            docDetails.put("FirstName", "?");
-            docDetails.put("LastName", "?");
+                docDetails.put("FirstName", "?");
+                docDetails.put("LastName", "?");
+                docDetails.put("Barangay", nearestBrgy);
+                docDetails.put("Report Date", formattedDate);
+                //docDetails.put("Location", coords);
+
+                //TODO: PUT VIDEO LINK IN DB
+                db = FirebaseFirestore.getInstance();
+                //REFACTOR TO NEAREST BARANGAY
+                db.collection("reports").document(nearestBrgy).collection("reportDetails").add(docDetails)
+                        .addOnSuccessListener(aVoid -> Log.d(TAG, "Report saved to DB!"))
+                        .addOnFailureListener(e -> Log.w(TAG, "Report saving to Error!!", e));
         });
-
-        docDetails.put("Barangay", nearestBrgy);
-        docDetails.put("Report Date", formattedDate);
-        //docDetails.put("Location", coords);
-        //TODO: PUT VIDEO LINK IN DB
-
-        db = FirebaseFirestore.getInstance();
-        db.collection("reports").document(user.getUid()).collection("reportDetails").add(docDetails)
-                .addOnSuccessListener(aVoid -> Log.d(TAG, "Report saved to DB!"))
-                .addOnFailureListener(e -> Log.w(TAG, "Report saving to Error!!", e));
     }
 
     @Override
