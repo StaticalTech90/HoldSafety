@@ -53,8 +53,8 @@ public class MainActivity extends AppCompatActivity {
         // check if user is already logged in
         user = mAuth.getCurrentUser();
         if(user != null) {
-            //Intent intent = new Intent(getApplicationContext(), MenuActivity.java)
-            //startActivity(intent);
+            Intent intent = new Intent(getApplicationContext(), LandingActivity.java)
+            startActivity(intent);
         }
     }
 
