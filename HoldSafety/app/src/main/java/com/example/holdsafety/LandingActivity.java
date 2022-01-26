@@ -46,6 +46,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
@@ -74,6 +75,7 @@ public class LandingActivity extends AppCompatActivity {
     private int timer;
     long remainTime;
     Map<String, Object> docDetails = new HashMap<>(); // for reports in db
+    DocumentReference docRef;
 
     FusedLocationProviderClient fusedLocationProviderClient;
 
@@ -90,6 +92,9 @@ public class LandingActivity extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
         user = mAuth.getCurrentUser();
         userID = user.getUid();
+        db = FirebaseFirestore.getInstance();
+        docRef = db.collection("users").document(userID);
+
         isFromWidget = getIntent().getStringExtra("isFromWidget");
         Toast.makeText(getApplicationContext(), "isFromWidget: " + isFromWidget, Toast.LENGTH_SHORT).show();
 
@@ -506,10 +511,22 @@ public class LandingActivity extends AppCompatActivity {
 
     private void saveToDB(FirebaseUser user) {
         Date currentDate = Calendar.getInstance().getTime();
-        System.out.println("Current time => " + currentDate);
-
         SimpleDateFormat dateFormat = new SimpleDateFormat("MM-dd-yyyy");
         String formattedDate = dateFormat.format(currentDate);
+
+        //docRef = db.collection("users").document(userID);
+        docRef.get().addOnSuccessListener(documentSnapshot -> {
+            if(documentSnapshot.exists()) {
+                String firstName = documentSnapshot.getString("FirstName");
+                String lastName = documentSnapshot.getString("LastName");
+                docDetails.put("FirstName", firstName);
+                docDetails.put("LastName", lastName);
+            }
+        })
+        .addOnFailureListener(documentSnapshot -> {
+            docDetails.put("FirstName", "?");
+            docDetails.put("LastName", "?");
+        });
 
         docDetails.put("Barangay", nearestBrgy);
         docDetails.put("Report Date", formattedDate);
