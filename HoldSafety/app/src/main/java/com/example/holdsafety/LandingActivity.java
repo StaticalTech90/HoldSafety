@@ -93,7 +93,6 @@ public class LandingActivity extends AppCompatActivity {
         user = mAuth.getCurrentUser();
         userID = user.getUid();
         db = FirebaseFirestore.getInstance();
-        docRef = db.collection("users").document(userID);
 
         isFromWidget = getIntent().getStringExtra("isFromWidget");
         Toast.makeText(getApplicationContext(), "isFromWidget: " + isFromWidget, Toast.LENGTH_SHORT).show();
@@ -327,7 +326,6 @@ public class LandingActivity extends AppCompatActivity {
 
     }
 
-
     private void getEstablishmentsLocations(Location location, String address) {
         //GET ESTABLISHMENTS LOCATIONS
         FirebaseFirestore.getInstance()
@@ -502,40 +500,47 @@ public class LandingActivity extends AppCompatActivity {
                                 Toast.makeText(LandingActivity.this, "Email Sent", Toast.LENGTH_LONG).show();
                             }
                         }
-                        saveToDB(user);
+                        saveToDB();
                     }
                 });
 
         startActivity(new Intent(LandingActivity.this, RecordingCountdownActivity.class));
     }
 
-    private void saveToDB(FirebaseUser user) {
+    private void saveToDB() {
         Date currentDate = Calendar.getInstance().getTime();
         SimpleDateFormat dateFormat = new SimpleDateFormat("MM-dd-yyyy");
         String formattedDate = dateFormat.format(currentDate);
 
-        //docRef = db.collection("users").document(userID);
+        docRef = db.collection("users").document(userID);
+
+        docDetails.put("Barangay", nearestBrgy);        //THIS WORKS
+        docDetails.put("Report Date", formattedDate);
+
         docRef.get().addOnSuccessListener(documentSnapshot -> {
             if(documentSnapshot.exists()) {
                 String firstName = documentSnapshot.getString("FirstName");
                 String lastName = documentSnapshot.getString("LastName");
-                docDetails.put("FirstName", firstName);
-                docDetails.put("LastName", lastName);
+                docDetails.put("FirstName", firstName); //THIS DOES NOT WORK
+                docDetails.put("LastName", lastName);   //FOR ME :')
             }
         })
         .addOnFailureListener(documentSnapshot -> {
-            docDetails.put("FirstName", "?");
-            docDetails.put("LastName", "?");
+            docDetails.put("FirstName", "");            //ETO RIN, EWAN KO BKT
+            docDetails.put("LastName", "");             //PERO SAINYO GUMAGANA
         });
 
-        docDetails.put("Barangay", nearestBrgy);
-        docDetails.put("Report Date", formattedDate);
-        //docDetails.put("Location", coords);
         //TODO: PUT VIDEO LINK IN DB
 
         db = FirebaseFirestore.getInstance();
-        db.collection("reports").document(user.getUid()).collection("reportDetails").add(docDetails)
-                .addOnSuccessListener(aVoid -> Log.d(TAG, "Report saved to DB!"))
+        //ADD TO USER-SORTED COLLECTION
+        db.collection("reportUser").document(userID).collection("reportDetails").add(docDetails)
+                .addOnSuccessListener(aVoid -> Log.d(TAG, "Report saved to user-sorted DB!"))
+                .addOnFailureListener(e -> Log.w(TAG, "Report saving to Error!!", e));
+
+        //ADD TO BRGY-SORTED COLLECTION
+        db.collection("reportAdmin").document(nearestBrgy).collection("reportDetails").add(docDetails)
+                .addOnSuccessListener(aVoid -> Log.d(TAG, "Report saved to brgy-sorted DB!"))
                 .addOnFailureListener(e -> Log.w(TAG, "Report saving to Error!!", e));
     }
 
