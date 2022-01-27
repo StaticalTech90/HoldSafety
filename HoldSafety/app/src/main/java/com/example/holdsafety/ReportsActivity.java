@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -21,25 +22,72 @@ public class ReportsActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
     FirebaseUser user;
     String userID;
-    FirebaseFirestore db = FirebaseFirestore.getInstance();
+    FirebaseFirestore db;
 
-    RecyclerView recyclerViewReports;
-    String[] reportID;
+    LinearLayout reportView;
+    String reportID, location, date, barangay, evidence;
+    Boolean isCoordinated;
+//    RecyclerView recyclerViewReports;
+//    String[] reportID;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_reports);
 
-        recyclerViewReports = findViewById(R.id.recyclerviewReports);
-        reportID = getResources().getStringArray(R.array.reportID);
+        mAuth = FirebaseAuth.getInstance();
+        user = mAuth.getCurrentUser();
+        userID = user.getUid();
+        db = FirebaseFirestore.getInstance();
 
-        ReportAdapter reportAdapter = new ReportAdapter(this, reportID);
-        recyclerViewReports.setAdapter(reportAdapter);
-        recyclerViewReports.setLayoutManager(new LinearLayoutManager(this));
+        reportView = findViewById(R.id.linearReportList);
+
+//        recyclerViewReports = findViewById(R.id.recyclerviewReports);
+//        reportID = getResources().getStringArray(R.array.reportID);
+//
+//        ReportAdapter reportAdapter = new ReportAdapter(this, reportID);
+//        recyclerViewReports.setAdapter(reportAdapter);
+//        recyclerViewReports.setLayoutManager(new LinearLayoutManager(this));
+
+        listMyReports();
     }
 
+    public void listMyReports() {
+        db.collection("reportUser").document(userID).collection("reportDetails").get().addOnCompleteListener(task -> {
+            if(task.isSuccessful()) {
+                for(QueryDocumentSnapshot reportSnap : task.getResult()) {
+                    reportID = reportSnap.getId();
+                    location = reportSnap.getString("Lat") + ", " + reportSnap.getString("Lon");
+                    date = reportSnap.getString("Report Date");
+                    barangay = reportSnap.getString("Barangay");
+                    //currently hardcoded values
+                    isCoordinated = false;
+//                    evidence = reportSnap.getString("");
 
+                    View displayReportView = getLayoutInflater().inflate(R.layout.report_row, null, false);
+
+                    TextView txtReportID = displayReportView.findViewById(R.id.txtReportID);
+                    TextView txtReportLocation = displayReportView.findViewById(R.id.txtReportLocation);
+                    TextView txtDateAndTime = displayReportView.findViewById(R.id.txtDateAndTime);
+                    TextView txtBarangay = displayReportView.findViewById(R.id.txtBarangay);
+                    TextView txtCoordinated = displayReportView.findViewById(R.id.txtCoordinated);
+                    TextView txtEvidence = displayReportView.findViewById(R.id.txtEvidence);
+
+                    txtReportID.setText(reportID);
+                    txtReportLocation.setText(location);
+                    txtDateAndTime.setText(date);
+                    txtBarangay.setText(barangay);
+                    txtCoordinated.setText(isCoordinated.toString());
+//                    txtEvidence.setText(evidence);
+
+                    //TODO: DI KO PARIN ALAM PANO KUNIN VID LINK SA STORAGE HELP PLES
+
+                    reportView.addView(displayReportView);
+                }
+            }
+        });
+    }
+    
 //    public void place(){
 //        FirebaseFirestore.getInstance()
 //                .collection("emergencyContacts")
