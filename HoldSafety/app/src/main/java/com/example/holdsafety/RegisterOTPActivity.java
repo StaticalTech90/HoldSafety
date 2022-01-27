@@ -2,10 +2,8 @@ package com.example.holdsafety;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.CountDownTimer;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -25,7 +23,7 @@ public class RegisterOTPActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_register_otpactivity);
+        setContentView(R.layout.activity_register_otp);
 
         btnSendCode = findViewById(R.id.btnSendCode);
         etEmail = findViewById(R.id.txtEmail);
@@ -38,6 +36,7 @@ public class RegisterOTPActivity extends AppCompatActivity {
         if(userEmail == null) {
             userEmail = "placeholdertext";
         }
+
         Toast.makeText(this, "Email: " + userEmail, Toast.LENGTH_LONG).show();
         etEmail.setText(userEmail);
 
@@ -53,7 +52,6 @@ public class RegisterOTPActivity extends AppCompatActivity {
                     etEmail.setError("Please enter valid email");
                 } else { //User must input code before timer ends
                     DialogEmailVerify dialog = new DialogEmailVerify(this);
-
                     //Countdown timer
 //                    new CountDownTimer(60000, 1000) {
 //                        @Override

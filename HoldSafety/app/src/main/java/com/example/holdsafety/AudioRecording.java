@@ -3,7 +3,9 @@ package com.example.holdsafety;
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 
+import android.graphics.PorterDuff;
 import android.media.MediaRecorder;
 import android.net.Uri;
 import android.os.Build;
@@ -87,8 +89,8 @@ public class AudioRecording extends AppCompatActivity {
             btnAudio.setText("Stop Recording");
             Toast.makeText(AudioRecording.this, "Audio Recording Started", Toast.LENGTH_SHORT).show();
 
-            /*
-            //2. SET TIMER (5 SECONDS)
+
+            //2. SET TIMER (5 SECONDS) - Limit of the recording
             new CountDownTimer(5000, 1000){
 
                 @Override
@@ -100,11 +102,12 @@ public class AudioRecording extends AppCompatActivity {
                 @Override
                 public void onFinish() {
                     //3. STOP RECORDING
+                    txtAudioRecording.setText("");
                     stopRecording();
                 }
 
             }.start();
-             */
+
         } catch (Exception e){
             Toast.makeText(AudioRecording.this, e.getMessage(), Toast.LENGTH_SHORT).show();
             e.printStackTrace();
@@ -154,6 +157,7 @@ public class AudioRecording extends AppCompatActivity {
                     @Override
                     public void onProgress(@NonNull UploadTask.TaskSnapshot snapshot) {
                         double progress = (100.0 * snapshot.getBytesTransferred() / snapshot.getTotalByteCount());
+                        progressBar.getProgressDrawable().setColorFilter(ContextCompat.getColor(AudioRecording.this,R.color.light_blue), PorterDuff.Mode.MULTIPLY);
                         progressBar.setProgress((int) progress);
                     }
                 });

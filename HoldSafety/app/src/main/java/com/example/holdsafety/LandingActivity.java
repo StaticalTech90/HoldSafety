@@ -43,9 +43,12 @@ import com.google.android.gms.location.LocationSettingsRequest;
 import com.google.android.gms.location.LocationSettingsResponse;
 import com.google.android.gms.location.LocationSettingsStatusCodes;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
@@ -62,11 +65,16 @@ import java.util.Locale;
 import java.util.Map;
 
 public class LandingActivity extends AppCompatActivity {
-    private FirebaseAuth mAuth;
-    FirebaseFirestore db;
-    FirebaseUser user;
-    String userID, isFromWidget, nearestBrgy;
+
     String coordsLon, coordsLat;
+    FirebaseAuth mAuth;
+    FirebaseFirestore db;
+    DocumentReference docRef;
+    CollectionReference docRefBrgy;
+    FirebaseUser user;
+    String userID, isFromWidget;
+    String lastName, firstName, mobileNumber, googleMapLink, message;
+    String brgyName, brgyCity, brgyEmail, brgyMobileNumber;
     
     Button btnSafetyButton;
     ImageView btnMenu;
@@ -87,9 +95,16 @@ public class LandingActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_landing);
 
+
+        //Get logged in user
         mAuth = FirebaseAuth.getInstance();
         user = mAuth.getCurrentUser();
         userID = user.getUid();
+        db = FirebaseFirestore.getInstance();
+        userID = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        docRef = db.collection("users").document(userID);
+        docRefBrgy = db.collection("barangay");
+
         isFromWidget = getIntent().getStringExtra("isFromWidget");
         Toast.makeText(getApplicationContext(), "isFromWidget: " + isFromWidget, Toast.LENGTH_SHORT).show();
 
@@ -394,21 +409,111 @@ public class LandingActivity extends AppCompatActivity {
                         WifiManager wifiManager = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
                         wifiManager.setWifiEnabled(true);
 
-                        //Toast.makeText(LandingActivity.this, "Nearest: " + nearestBrgySnap.getString("Barangay"), Toast.LENGTH_SHORT).show();
+                        String nearestBrgyID = nearestBrgySnap.getId();
+                        Toast.makeText(LandingActivity.this, "Nearest Brgyv ID: " + nearestBrgySnap.getId(), Toast.LENGTH_SHORT).show();
+                        //Toast.makeText(LandingActivity.this, "Nearest Brgy: " + nearestBrgySnap.getString("Barangay"), Toast.LENGTH_SHORT).show();
                         //sendLocationToContacts(location, address);
                         //Toast.makeText(LandingActivity.this, "Geolocation: " + address, Toast.LENGTH_SHORT).show();
-                        sendAlertMessage(location, address);
+                        sendAlertMessage(location, address, nearestBrgyID);
                     }
                 });
     }
 
-    private void sendAlertMessage(Location location, String address){
-        //Declare and initialize alert message contents
-        String googleMapLink = "https://maps.google.com/?q=" + location.getLatitude() + "," + location.getLongitude();
-        String message = "User Details:" +
-                "\nFull Name: " + userID +
-                "\nAddress: " + address +
-                "\nPlease go here immediately: " + googleMapLink;
+    private void sendAlertMessage(Location location, String address, String nearestBrgyID){
+        //Get User Info
+        docRef.get().addOnSuccessListener(documentSnapshot -> {
+            if(documentSnapshot.exists()){
+                lastName = documentSnapshot.getString("LastName");
+                firstName = documentSnapshot.getString("FirstName");
+                mobileNumber = documentSnapshot.getString("MobileNumber");
+
+                //Declare and initialize alert message contents
+                googleMapLink = "https://maps.google.com/?q=" + location.getLatitude() + "," + location.getLongitude();
+                message = "User Details:" +
+                        "\nFull Name: " + lastName + ", " + firstName +
+                        "\nPhone Number: " + mobileNumber +
+                        "\nLocation: " + address +
+                        "\nPlease go here immediately: " + googleMapLink;
+
+            }
+            else{
+                Toast.makeText(getApplicationContext(), "No current user", Toast.LENGTH_LONG).show();
+                finish();
+            }
+        });
+
+        //get nearest brgy details
+        docRefBrgy.document(nearestBrgyID).get().addOnSuccessListener(documentSnapshot -> {
+            //Toast.makeText(getApplicationContext(), "Inside Doc Ref", Toast.LENGTH_LONG).show();
+            if(documentSnapshot.exists()){
+                brgyName = documentSnapshot.getString("Barangay");
+                brgyCity = documentSnapshot.getString("City");
+                brgyEmail = documentSnapshot.getString("Email");
+                brgyMobileNumber = documentSnapshot.getString("MobileNumber");
+                //Toast.makeText(getApplicationContext(), "Brgy Name [Inside docRefBrgy]: " + brgyName, Toast.LENGTH_LONG).show();
+
+                if (brgyMobileNumber != null) {
+                    registerReceiver(new BroadcastReceiver() {
+                        @Override
+                        public void onReceive(Context context, Intent intent) {
+                            switch (getResultCode()) {
+                                case Activity.RESULT_OK:
+                                    //MESSAGE SENT
+                                    break;
+                                case SmsManager.RESULT_ERROR_GENERIC_FAILURE:
+                                    break;
+                                case SmsManager.RESULT_ERROR_NO_SERVICE:
+                                    break;
+                                case SmsManager.RESULT_ERROR_NULL_PDU:
+                                    break;
+                                case SmsManager.RESULT_ERROR_RADIO_OFF:
+                                    break;
+                            }
+                        }
+                    }, new IntentFilter("SMS_SENT"));
+
+                    ArrayList<PendingIntent> sentPendingIntents = new ArrayList<PendingIntent>();
+                    PendingIntent sentPI = PendingIntent.getBroadcast(LandingActivity.this,
+                            SEND_SMS_REQ_CODE, new Intent("SMS_SENT"), 0);
+
+                    //Send SMS
+                    try {
+                        SmsManager manager = SmsManager.getDefault();
+                        //For long messages to work
+                        ArrayList<String> msgArray = manager.divideMessage(message);
+
+                        for (int i = 0; i < msgArray.size(); i++) {
+                            sentPendingIntents.add(i, sentPI);
+                        }
+                        manager.sendMultipartTextMessage(brgyMobileNumber, null, msgArray, sentPendingIntents, null);
+                        //Toast.makeText(getApplicationContext(), "Message Sent to Brgy", Toast.LENGTH_LONG).show();
+                    } catch (Exception ex) {
+                        Toast.makeText(getApplicationContext(), ex.getMessage().toString(), Toast.LENGTH_LONG).show();
+                        ex.printStackTrace();
+                    }
+                }
+
+                if (brgyEmail != null) {
+                    //Send Email
+                    String username = "holdsafety.ph@gmail.com";
+                    String password = "HoldSafety@4qmag";
+                    String subject = "[EMERGENCY] Alert Message - HoldSafety";
+
+                    List<String> recipients = Collections.singletonList(brgyEmail);
+                    //email of sender, password of sender, list of recipients, email subject, email body
+                    new MailTask(LandingActivity.this).execute(username, password, recipients, subject, message);
+
+                    Toast.makeText(LandingActivity.this, "Email Sent to Brgy", Toast.LENGTH_LONG).show();
+                }
+
+
+
+            }
+            else{
+                Toast.makeText(getApplicationContext(), "No barangay", Toast.LENGTH_LONG).show();
+                finish();
+            }
+        });
 
         //Get user's emergency contacts
         FirebaseFirestore.getInstance()
@@ -420,7 +525,7 @@ public class LandingActivity extends AppCompatActivity {
                     @Override
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
                         //Get each contact details
-                        for(QueryDocumentSnapshot snapshot : task.getResult()){
+                        for (QueryDocumentSnapshot snapshot : task.getResult()) {
                             String contactID = snapshot.getId();
 
                             String mobileNumber = snapshot.getString("mobileNumber");
@@ -466,25 +571,25 @@ public class LandingActivity extends AppCompatActivity {
                                         sentPendingIntents.add(i, sentPI);
                                     }
                                     manager.sendMultipartTextMessage(mobileNumber, null, msgArray, sentPendingIntents, null);
-                                    Toast.makeText(getApplicationContext(), "Message Sent",Toast.LENGTH_LONG).show();
+                                    Toast.makeText(getApplicationContext(), "Message Sent", Toast.LENGTH_LONG).show();
                                 } catch (Exception ex) {
                                     Toast.makeText(getApplicationContext(), ex.getMessage().toString(), Toast.LENGTH_LONG).show();
                                     ex.printStackTrace();
                                 }
 
                                 //SEND SMS
-                                /*
-                                SmsManager manager = SmsManager.getDefault();
-                                PendingIntent sentPI = PendingIntent.getBroadcast(LandingActivity.this,
-                                        SEND_SMS_REQ_CODE, new Intent("SMS_SENT"), 0);
+                        /*
+                        SmsManager manager = SmsManager.getDefault();
+                        PendingIntent sentPI = PendingIntent.getBroadcast(LandingActivity.this,
+                                SEND_SMS_REQ_CODE, new Intent("SMS_SENT"), 0);
 
-                                manager.sendTextMessage(mobileNumber, null, message, sentPI, null);
-                                Toast.makeText(getApplicationContext(), "SMS Sent", Toast.LENGTH_LONG).show();
-                                Toast.makeText(getApplicationContext(), "SMS Sent to: " + mobileNumber, Toast.LENGTH_LONG).show();
-                                */
+                        manager.sendTextMessage(mobileNumber, null, message, sentPI, null);
+                        Toast.makeText(getApplicationContext(), "SMS Sent", Toast.LENGTH_LONG).show();
+                        Toast.makeText(getApplicationContext(), "SMS Sent to: " + mobileNumber, Toast.LENGTH_LONG).show();
+                        */
                             }
 
-                            if(email!=null){
+                            if (email != null) {
                                 //Send Email
                                 String username = "holdsafety.ph@gmail.com";
                                 String password = "HoldSafety@4qmag";
