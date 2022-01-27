@@ -82,6 +82,7 @@ public class LandingActivity extends AppCompatActivity {
     private int timer;
     long remainTime;
     Map<String, Object> docDetails = new HashMap<>(); // for reports in db
+    DocumentReference docRef;
 
     FusedLocationProviderClient fusedLocationProviderClient;
 
@@ -204,6 +205,7 @@ public class LandingActivity extends AppCompatActivity {
         }
     }
 
+    //GET USER CURRENT LOCATION
     @SuppressLint("MissingPermission")
     private void getCurrentLocation() {
 
@@ -282,7 +284,6 @@ public class LandingActivity extends AppCompatActivity {
     }
 
     private void showGPSDialog() {
-
         LocationRequest locationRequest = LocationRequest.create();
         locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
         locationRequest.setInterval(30000);
@@ -334,7 +335,6 @@ public class LandingActivity extends AppCompatActivity {
             }
 
         }
-
     }
 
 
@@ -611,20 +611,43 @@ public class LandingActivity extends AppCompatActivity {
 
     private void saveToDB(FirebaseUser user) {
         Date currentDate = Calendar.getInstance().getTime();
-        System.out.println("Current time => " + currentDate);
-
         SimpleDateFormat dateFormat = new SimpleDateFormat("MM-dd-yyyy");
         String formattedDate = dateFormat.format(currentDate);
 
-        docDetails.put("Barangay", nearestBrgy);
-        docDetails.put("Report Date", formattedDate);
-        //docDetails.put("Location", coords);
-        //TODO: PUT VIDEO LINK IN DB
+        docRef = db.collection("users").document(user.getUid());
+        docRef.get().addOnSuccessListener(documentSnapshot -> {
+            if(documentSnapshot.exists()) {
+                String firstName = documentSnapshot.getString("FirstName");
+                String lastName = documentSnapshot.getString("LastName");
 
-        db = FirebaseFirestore.getInstance();
-        db.collection("reports").document(user.getUid()).collection("reportDetails").add(docDetails)
-                .addOnSuccessListener(aVoid -> Log.d(TAG, "Report saved to DB!"))
-                .addOnFailureListener(e -> Log.w(TAG, "Report saving to Error!!", e));
+                docDetails.put("FirstName", firstName);
+                docDetails.put("LastName", lastName);
+                docDetails.put("Barangay", nearestBrgy);
+                docDetails.put("Report Date", formattedDate);
+                //docDetails.put("Location", coords);
+
+                //TODO: PUT VIDEO LINK IN DB
+                db = FirebaseFirestore.getInstance();
+                //REFACTOR TO NEAREST BARANGAY
+                db.collection("reports").document(nearestBrgy).collection("reportDetails").add(docDetails)
+                        .addOnSuccessListener(aVoid -> Log.d(TAG, "Report saved to DB!"))
+                        .addOnFailureListener(e -> Log.w(TAG, "Report saving to Error!!", e));
+            }
+        })
+        .addOnFailureListener(documentSnapshot -> {
+                docDetails.put("FirstName", "?");
+                docDetails.put("LastName", "?");
+                docDetails.put("Barangay", nearestBrgy);
+                docDetails.put("Report Date", formattedDate);
+                //docDetails.put("Location", coords);
+
+                //TODO: PUT VIDEO LINK IN DB
+                db = FirebaseFirestore.getInstance();
+                //REFACTOR TO NEAREST BARANGAY
+                db.collection("reports").document(nearestBrgy).collection("reportDetails").add(docDetails)
+                        .addOnSuccessListener(aVoid -> Log.d(TAG, "Report saved to DB!"))
+                        .addOnFailureListener(e -> Log.w(TAG, "Report saving to Error!!", e));
+        });
     }
 
     @Override

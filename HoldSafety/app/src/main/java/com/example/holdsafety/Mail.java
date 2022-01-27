@@ -22,7 +22,6 @@ public class Mail {
     final String starttls = "true";
     final String emailHost = "smtp.gmail.com";
 
-
     String fromEmail;
     String fromPassword;
     List<String> toEmailList;
