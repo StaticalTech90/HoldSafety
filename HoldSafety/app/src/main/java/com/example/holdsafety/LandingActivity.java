@@ -612,8 +612,6 @@ public class LandingActivity extends AppCompatActivity {
 
         docRef = db.collection("users").document(userID);
 
-        docDetails.put("Barangay", nearestBrgy);        //THIS WORKS
-        docDetails.put("Report Date", formattedDate);
 
         docRef.get().addOnSuccessListener(documentSnapshot -> {
             if(documentSnapshot.exists()) {
@@ -621,25 +619,57 @@ public class LandingActivity extends AppCompatActivity {
                 String lastName = documentSnapshot.getString("LastName");
                 docDetails.put("FirstName", firstName); //THIS DOES NOT WORK
                 docDetails.put("LastName", lastName);   //FOR ME :')
+
+                        
+                docDetails.put("Barangay", nearestBrgy);        //THIS WORKS
+                docDetails.put("Report Date", formattedDate);
+
+                //TODO: PUT VIDEO LINK IN DB
+
+                db = FirebaseFirestore.getInstance();
+                //ADD TO USER-SORTED COLLECTION
+                db.collection("reportUser").document(userID).collection("reportDetails").add(docDetails)
+                        .addOnSuccessListener(aVoid -> Log.d(TAG, "Report saved to user-sorted DB!"))
+                        .addOnFailureListener(e -> Log.w(TAG, "Report saving to Error!!", e));
+
+                //ADD TO BRGY-SORTED COLLECTION
+                db.collection("reportAdmin").document(nearestBrgy).collection("reportDetails").add(docDetails)
+                        .addOnSuccessListener(aVoid -> Log.d(TAG, "Report saved to brgy-sorted DB!"))
+                        .addOnFailureListener(e -> Log.w(TAG, "Report saving to Error!!", e));
             }
         })
         .addOnFailureListener(documentSnapshot -> {
             docDetails.put("FirstName", "");            //ETO RIN, EWAN KO BKT
             docDetails.put("LastName", "");             //PERO SAINYO GUMAGANA
+
+            docDetails.put("Barangay", nearestBrgy);        //THIS WORKS
+            docDetails.put("Report Date", formattedDate);
+
+            //TODO: PUT VIDEO LINK IN DB
+
+            db = FirebaseFirestore.getInstance();
+            //ADD TO USER-SORTED COLLECTION
+            db.collection("reportUser").document(userID).collection("reportDetails").add(docDetails)
+                    .addOnSuccessListener(aVoid -> Log.d(TAG, "Report saved to user-sorted DB!"))
+                    .addOnFailureListener(e -> Log.w(TAG, "Report saving to Error!!", e));
+
+            //ADD TO BRGY-SORTED COLLECTION
+            db.collection("reportAdmin").document(nearestBrgy).collection("reportDetails").add(docDetails)
+                    .addOnSuccessListener(aVoid -> Log.d(TAG, "Report saved to brgy-sorted DB!"))
+                    .addOnFailureListener(e -> Log.w(TAG, "Report saving to Error!!", e));
         });
 
         //TODO: PUT VIDEO LINK IN DB
-
-        db = FirebaseFirestore.getInstance();
+        //db = FirebaseFirestore.getInstance();
         //ADD TO USER-SORTED COLLECTION
-        db.collection("reportUser").document(userID).collection("reportDetails").add(docDetails)
-                .addOnSuccessListener(aVoid -> Log.d(TAG, "Report saved to user-sorted DB!"))
-                .addOnFailureListener(e -> Log.w(TAG, "Report saving to Error!!", e));
+        //db.collection("reportUser").document(userID).collection("reportDetails").add(docDetails)
+        //        .addOnSuccessListener(aVoid -> Log.d(TAG, "Report saved to user-sorted DB!"))
+        //        .addOnFailureListener(e -> Log.w(TAG, "Report saving to Error!!", e));
 
         //ADD TO BRGY-SORTED COLLECTION
-        db.collection("reportAdmin").document(nearestBrgy).collection("reportDetails").add(docDetails)
-                .addOnSuccessListener(aVoid -> Log.d(TAG, "Report saved to brgy-sorted DB!"))
-                .addOnFailureListener(e -> Log.w(TAG, "Report saving to Error!!", e));
+        //db.collection("reportAdmin").document(nearestBrgy).collection("reportDetails").add(docDetails)
+        //        .addOnSuccessListener(aVoid -> Log.d(TAG, "Report saved to brgy-sorted DB!"))
+        //        .addOnFailureListener(e -> Log.w(TAG, "Report saving to Error!!", e));
     }
 
     @Override
