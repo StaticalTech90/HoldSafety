@@ -266,7 +266,6 @@ public class RegisterActivity extends AppCompatActivity {
         });
     }
 
-    //TODO: turn this back into an onClickListener
     public void userRegister(View view) throws ParseException {
         Map<String, Object> docUsers = new HashMap<>();
 
@@ -364,8 +363,7 @@ public class RegisterActivity extends AppCompatActivity {
                                     .addOnSuccessListener(aVoid -> Log.d(TAG, "User successfully registered!"))
                                     .addOnFailureListener(e -> Log.w(TAG, "error", e));
 
-                            //TODO: Redirect to RegisterOTPActivity
-                            //startActivity(new Intent(RegisterActivity.this, LandingActivity.class));
+                            //Verify user's email
                             Intent otp = new Intent(RegisterActivity.this, RegisterOTPActivity.class);
                             otp.putExtra("Email", etEmail.getText().toString());
                             startActivity(otp);

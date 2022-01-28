@@ -161,6 +161,7 @@ public class RegisterGoogleActivity extends AppCompatActivity {
 
                             Intent landing = new Intent(RegisterGoogleActivity.this, LandingActivity.class);
                             startActivity(landing);
+                            finish();
                         }
                     })
                     .addOnFailureListener(new OnFailureListener() {

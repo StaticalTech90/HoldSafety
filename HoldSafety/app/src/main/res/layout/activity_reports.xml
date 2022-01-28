@@ -34,8 +34,8 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/backArrow" />
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerviewReports"
+    <LinearLayout
+        android:id="@+id/linearReportList"
         android:layout_width="340dp"
         android:layout_height="0dp"
 
@@ -45,7 +45,21 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/lblReports"/>
+        app:layout_constraintTop_toBottomOf="@+id/lblReports"
+        android:orientation="horizontal" />
+
+<!--    <androidx.recyclerview.widget.RecyclerView-->
+<!--        android:id="@+id/recyclerviewReports"-->
+<!--        android:layout_width="340dp"-->
+<!--        android:layout_height="0dp"-->
+
+<!--        android:layout_marginTop="15dp"-->
+<!--        android:layout_marginBottom="15dp"-->
+
+<!--        app:layout_constraintEnd_toEndOf="parent"-->
+<!--        app:layout_constraintStart_toStartOf="parent"-->
+<!--        app:layout_constraintBottom_toBottomOf="parent"-->
+<!--        app:layout_constraintTop_toBottomOf="@+id/lblReports"/>-->
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
