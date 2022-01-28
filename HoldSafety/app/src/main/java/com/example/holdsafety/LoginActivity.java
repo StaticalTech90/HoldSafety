@@ -51,8 +51,10 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
     Button btnLogin;
     TextView txtToggle, txtForgotPassword;
     SignInButton btnGoogle;
+    String isFromWidget;
 
     FirebaseFirestore db = FirebaseFirestore.getInstance();
+    FirebaseUser user;
     DocumentReference docRef;
 
     GoogleSignInClient gsc;
@@ -60,6 +62,23 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
 
     private GoogleApiClient googleApiClient;
     private static final int SIGN_IN_REQUEST_CODE = 1000;
+
+    protected void onStart(){
+        super.onStart();
+        //check if user is already logged in
+        user = mAuth.getCurrentUser();
+        if(user!=null){
+            Intent intent = new Intent(LoginActivity.this, LandingActivity.class);
+            isFromWidget = getIntent().getStringExtra("isFromWidget");
+            //handle method for holdsafety widget
+            if(isFromWidget!=null && isFromWidget.equals("true")){
+                intent.putExtra("isFromWidget", "true");
+                Toast.makeText(getApplicationContext(), "Inside IF Widget" , Toast.LENGTH_SHORT).show();
+            }
+            startActivity(intent);
+        }
+
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

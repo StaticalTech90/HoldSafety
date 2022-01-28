@@ -72,7 +72,7 @@ public class LandingActivity extends AppCompatActivity {
     DocumentReference docRef;
     CollectionReference docRefBrgy;
     FirebaseUser user;
-    String userID, isFromWidget;
+    String userID, isFromWidget, nearestBrgy;
     String lastName, firstName, mobileNumber, googleMapLink, message;
     String brgyName, brgyCity, brgyEmail, brgyMobileNumber;
     
@@ -82,7 +82,6 @@ public class LandingActivity extends AppCompatActivity {
     private int timer;
     long remainTime;
     Map<String, Object> docDetails = new HashMap<>(); // for reports in db
-    DocumentReference docRef;
 
     FusedLocationProviderClient fusedLocationProviderClient;
 
@@ -102,9 +101,11 @@ public class LandingActivity extends AppCompatActivity {
         user = mAuth.getCurrentUser();
         userID = user.getUid();
         db = FirebaseFirestore.getInstance();
+        docRef = db.collection("users").document(userID);
+        docRefBrgy = db.collection("barangay");
 
         isFromWidget = getIntent().getStringExtra("isFromWidget");
-        Toast.makeText(getApplicationContext(), "isFromWidget: " + isFromWidget, Toast.LENGTH_SHORT).show();
+        //Toast.makeText(getApplicationContext(), "isFromWidget: " + isFromWidget, Toast.LENGTH_SHORT).show();
 
         //FLPC DECLARATION
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
@@ -176,7 +177,7 @@ public class LandingActivity extends AppCompatActivity {
     //cancel timer
     public void cancelTimer(CountDownTimer cTimer) {
         if (cTimer != null) {
-            Toast.makeText(getApplicationContext(), "Cancel", Toast.LENGTH_SHORT).show();
+            //Toast.makeText(getApplicationContext(), "Cancel", Toast.LENGTH_SHORT).show();
             cTimer.cancel();
         }
     }
@@ -222,7 +223,7 @@ public class LandingActivity extends AppCompatActivity {
                                     location.getLatitude(), location.getLongitude(), 2);
                             String address = addresses.get(1).getAddressLine(0);
 
-                            Toast.makeText(this, "Current Location: " + location.getLatitude() + "," + location.getLongitude(), Toast.LENGTH_SHORT).show();
+                            //Toast.makeText(this, "Current Location: " + location.getLatitude() + "," + location.getLongitude(), Toast.LENGTH_SHORT).show();
 
                             coordsLat = Double.toString(location.getLatitude());
                             coordsLon = Double.toString(location.getLongitude());
@@ -406,7 +407,7 @@ public class LandingActivity extends AppCompatActivity {
                         wifiManager.setWifiEnabled(true);
 
                         String nearestBrgyID = nearestBrgySnap.getId();
-                        Toast.makeText(LandingActivity.this, "Nearest Brgyv ID: " + nearestBrgySnap.getId(), Toast.LENGTH_SHORT).show();
+                        //Toast.makeText(LandingActivity.this, "Nearest Brgyv ID: " + nearestBrgySnap.getId(), Toast.LENGTH_SHORT).show();
                         //Toast.makeText(LandingActivity.this, "Nearest Brgy: " + nearestBrgySnap.getString("Barangay"), Toast.LENGTH_SHORT).show();
                         //sendLocationToContacts(location, address);
                         //Toast.makeText(LandingActivity.this, "Geolocation: " + address, Toast.LENGTH_SHORT).show();
@@ -482,9 +483,9 @@ public class LandingActivity extends AppCompatActivity {
                             sentPendingIntents.add(i, sentPI);
                         }
                         manager.sendMultipartTextMessage(brgyMobileNumber, null, msgArray, sentPendingIntents, null);
-                        //Toast.makeText(getApplicationContext(), "Message Sent to Brgy", Toast.LENGTH_LONG).show();
+                        Toast.makeText(getApplicationContext(), "Text Sent to Brgy", Toast.LENGTH_LONG).show();
                     } catch (Exception ex) {
-                        Toast.makeText(getApplicationContext(), ex.getMessage().toString(), Toast.LENGTH_LONG).show();
+                        Toast.makeText(getApplicationContext(), "SMS Error: " + ex.getMessage().toString(), Toast.LENGTH_LONG).show();
                         ex.printStackTrace();
                     }
                 }
@@ -567,9 +568,9 @@ public class LandingActivity extends AppCompatActivity {
                                         sentPendingIntents.add(i, sentPI);
                                     }
                                     manager.sendMultipartTextMessage(mobileNumber, null, msgArray, sentPendingIntents, null);
-                                    Toast.makeText(getApplicationContext(), "Message Sent", Toast.LENGTH_LONG).show();
+                                    //Toast.makeText(getApplicationContext(), "Message Sent", Toast.LENGTH_LONG).show();
                                 } catch (Exception ex) {
-                                    Toast.makeText(getApplicationContext(), ex.getMessage().toString(), Toast.LENGTH_LONG).show();
+                                    Toast.makeText(getApplicationContext(), "SMS Error: " + ex.getMessage().toString(), Toast.LENGTH_LONG).show();
                                     ex.printStackTrace();
                                 }
 
@@ -595,7 +596,7 @@ public class LandingActivity extends AppCompatActivity {
                                 //email of sender, password of sender, list of recipients, email subject, email body
                                 new MailTask(LandingActivity.this).execute(username, password, recipients, subject, message);
 
-                                Toast.makeText(LandingActivity.this, "Email Sent", Toast.LENGTH_LONG).show();
+                                //Toast.makeText(LandingActivity.this, "Email Sent", Toast.LENGTH_LONG).show();
                             }
                         }
                         saveToDB();

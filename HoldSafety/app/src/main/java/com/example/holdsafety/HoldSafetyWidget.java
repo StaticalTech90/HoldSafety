@@ -13,7 +13,7 @@ public class HoldSafetyWidget extends AppWidgetProvider {
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
 
         for (int appWidgetId: appWidgetIds){ //user can put multiple widgets
-            Intent intent = new Intent(context, LandingActivity.class);
+            Intent intent = new Intent(context, LoginActivity.class);
             intent.putExtra("isFromWidget", "true");
 
             PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent,0);
