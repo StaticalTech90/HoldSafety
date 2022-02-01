@@ -75,6 +75,7 @@ public class LandingActivity extends AppCompatActivity {
     String userID, isFromWidget, nearestBrgy;
     String lastName, firstName, mobileNumber, googleMapLink, message;
     String brgyName, brgyCity, brgyEmail, brgyMobileNumber;
+    String reportID;
     
     Button btnSafetyButton;
     ImageView btnMenu;
@@ -618,59 +619,59 @@ public class LandingActivity extends AppCompatActivity {
             if(documentSnapshot.exists()) {
                 String firstName = documentSnapshot.getString("FirstName");
                 String lastName = documentSnapshot.getString("LastName");
-                docDetails.put("FirstName", firstName); //THIS DOES NOT WORK
-                docDetails.put("LastName", lastName);   //FOR ME :')
+                docDetails.put("FirstName", firstName);
+                docDetails.put("LastName", lastName);
 
                         
-                docDetails.put("Barangay", nearestBrgy);        //THIS WORKS
+                docDetails.put("Barangay", nearestBrgy);
                 docDetails.put("Report Date", formattedDate);
 
                 //TODO: PUT VIDEO LINK IN DB
 
                 db = FirebaseFirestore.getInstance();
+
+                //GET THE ID OF THE REPORT TO BE SAVED IN DB
+                DocumentReference docRefDetails = db.collection("reportUser").document(userID).collection("reportDetails").document();
+                reportID = docRefDetails.getId();
+                Log.d("DocID", "documentId: " + reportID);
+
                 //ADD TO USER-SORTED COLLECTION
-                db.collection("reportUser").document(userID).collection("reportDetails").add(docDetails)
+                docRefDetails.set(docDetails)
                         .addOnSuccessListener(aVoid -> Log.d(TAG, "Report saved to user-sorted DB!"))
                         .addOnFailureListener(e -> Log.w(TAG, "Report saving to Error!!", e));
 
-                //ADD TO BRGY-SORTED COLLECTION
-                db.collection("reportAdmin").document(nearestBrgy).collection("reportDetails").add(docDetails)
+                //ADD TO BRGY-SORTED COLLECTION USING THE SAME ID
+                db.collection("reportAdmin").document(nearestBrgy).collection("reportDetails").document(reportID).set(docDetails)
                         .addOnSuccessListener(aVoid -> Log.d(TAG, "Report saved to brgy-sorted DB!"))
                         .addOnFailureListener(e -> Log.w(TAG, "Report saving to Error!!", e));
             }
         })
         .addOnFailureListener(documentSnapshot -> {
-            docDetails.put("FirstName", "");            //ETO RIN, EWAN KO BKT
-            docDetails.put("LastName", "");             //PERO SAINYO GUMAGANA
+            docDetails.put("FirstName", "");
+            docDetails.put("LastName", "");
 
-            docDetails.put("Barangay", nearestBrgy);        //THIS WORKS
+            docDetails.put("Barangay", nearestBrgy);
             docDetails.put("Report Date", formattedDate);
 
             //TODO: PUT VIDEO LINK IN DB
 
             db = FirebaseFirestore.getInstance();
+
+            //GET THE ID OF THE REPORT TO BE SAVED IN DB
+            DocumentReference docRefDetails = db.collection("reportUser").document(userID).collection("reportDetails").document();
+            reportID = docRefDetails.getId();
+            Log.d("DocID", "documentId: " + reportID);
+
             //ADD TO USER-SORTED COLLECTION
-            db.collection("reportUser").document(userID).collection("reportDetails").add(docDetails)
+            docRefDetails.set(docDetails)
                     .addOnSuccessListener(aVoid -> Log.d(TAG, "Report saved to user-sorted DB!"))
                     .addOnFailureListener(e -> Log.w(TAG, "Report saving to Error!!", e));
 
-            //ADD TO BRGY-SORTED COLLECTION
-            db.collection("reportAdmin").document(nearestBrgy).collection("reportDetails").add(docDetails)
+            //ADD TO BRGY-SORTED COLLECTION USING THE SAME ID
+            db.collection("reportAdmin").document(nearestBrgy).collection("reportDetails").document(reportID).set(docDetails)
                     .addOnSuccessListener(aVoid -> Log.d(TAG, "Report saved to brgy-sorted DB!"))
                     .addOnFailureListener(e -> Log.w(TAG, "Report saving to Error!!", e));
         });
-
-        //TODO: PUT VIDEO LINK IN DB
-        //db = FirebaseFirestore.getInstance();
-        //ADD TO USER-SORTED COLLECTION
-        //db.collection("reportUser").document(userID).collection("reportDetails").add(docDetails)
-        //        .addOnSuccessListener(aVoid -> Log.d(TAG, "Report saved to user-sorted DB!"))
-        //        .addOnFailureListener(e -> Log.w(TAG, "Report saving to Error!!", e));
-
-        //ADD TO BRGY-SORTED COLLECTION
-        //db.collection("reportAdmin").document(nearestBrgy).collection("reportDetails").add(docDetails)
-        //        .addOnSuccessListener(aVoid -> Log.d(TAG, "Report saved to brgy-sorted DB!"))
-        //        .addOnFailureListener(e -> Log.w(TAG, "Report saving to Error!!", e));
     }
 
     @Override
