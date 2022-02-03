@@ -267,7 +267,7 @@ public class RegisterActivity extends AppCompatActivity {
     }
 
     public void userRegister(View view) throws ParseException {
-        Map<String, Object> docUsers = new HashMap<>();
+        HashMap<String, Object> docUsers = new HashMap<>();
 
         String emailRegex = "^(.+)@(.+)$";
         String passRegex = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=\\S+$).{8,}$";
@@ -354,18 +354,12 @@ public class RegisterActivity extends AppCompatActivity {
                             docUsers.put("isVerified", false);
 
                             //TODO: Ung URL ng image i-sasave sa document ng user
-                            if(!lblLink.getText().equals("")){
-                                uploadPhotoToStorage();
-                            }
-
-                            //insert to db with success/failure listeners
-                            db.collection("users").document(user.getUid()).set(docUsers)
-                                    .addOnSuccessListener(aVoid -> Log.d(TAG, "User successfully registered!"))
-                                    .addOnFailureListener(e -> Log.w(TAG, "error", e));
+                            if(!lblLink.getText().equals("")){ uploadPhotoToStorage(); }
 
                             //Verify user's email
                             Intent otp = new Intent(RegisterActivity.this, RegisterOTPActivity.class);
                             otp.putExtra("Email", etEmail.getText().toString());
+                            otp.putExtra("UserDetails", docUsers);
                             startActivity(otp);
                             finish();
                         } else {
