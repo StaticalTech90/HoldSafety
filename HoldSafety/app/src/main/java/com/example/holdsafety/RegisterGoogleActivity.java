@@ -2,9 +2,11 @@ package com.example.holdsafety;
 
 import static android.content.ContentValues.TAG;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.DatePickerDialog;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
@@ -21,9 +23,14 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
@@ -34,6 +41,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.storage.FirebaseStorage;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -51,7 +59,7 @@ import java.util.regex.Pattern;
 public class RegisterGoogleActivity extends AppCompatActivity {
     EditText etMiddleName, etMobileNo, etBirthDate;
     TextView lblName;
-    Button btnProceed;
+    Button btnProceed, btnUpload;
     Spinner spinnerSex;
     public Uri imageURI;
 
@@ -62,8 +70,11 @@ public class RegisterGoogleActivity extends AppCompatActivity {
 
     final Calendar calendar = Calendar.getInstance();
 
+    TextView lblLink;
     String firstName, lastName, email, selectedSex;
     Date birthDate;
+
+    private static final int EXTERNAL_STORAGE_REQ_CODE = 1000;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,10 +85,12 @@ public class RegisterGoogleActivity extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
         user = mAuth.getCurrentUser();
 
+        lblLink = findViewById(R.id.txtImageLink);
         etMiddleName = findViewById(R.id.txtMiddleName);
         etMobileNo = findViewById(R.id.txtMobileNumber);
         etBirthDate = findViewById(R.id.txtBirthDate);
         btnProceed = findViewById(R.id.btnProceed);
+        btnUpload = findViewById(R.id.btnUploadID);
         spinnerSex = findViewById(R.id.txtSex);
         lblName = findViewById(R.id.lblGoogleName);
 
@@ -90,6 +103,9 @@ public class RegisterGoogleActivity extends AppCompatActivity {
 
         dropdownSex();
         selectBirthdate();
+
+        //Upload Image
+        btnUpload.setOnClickListener(v -> { pickImage(); });
 
         if(user != null) {
             docRef = db.collection("users").document(user.getUid());
@@ -114,7 +130,6 @@ public class RegisterGoogleActivity extends AppCompatActivity {
     }
 
     //refactored userRegister onClickListener into independent function
-    //TODO: turn this back into an onClickListener
     public void userRegister(View view){
         user = mAuth.getCurrentUser();
         Map<String, Object> docUsers = new HashMap<>();
@@ -145,12 +160,13 @@ public class RegisterGoogleActivity extends AppCompatActivity {
             docUsers.put("FirstName", firstName);
             docUsers.put("MiddleName", middleName);
             docUsers.put("Sex", sex);
-            //TODO: PLS NOT EMPTY BIRTHDATE
-            docUsers.put("BirthDate", birthDate); // currently empty
+            docUsers.put("BirthDate", birthDate);
             docUsers.put("MobileNumber", mobileNo);
             docUsers.put("Email", uEmail);
             docUsers.put("profileComplete", true);
             docUsers.put("isVerified", false);
+
+            if(!lblLink.getText().equals("")){ uploadPhotoToStorage(); }
 
             db.collection("users").document(userId).set(docUsers)
                     .addOnSuccessListener(new OnSuccessListener<Void>() {
@@ -174,12 +190,95 @@ public class RegisterGoogleActivity extends AppCompatActivity {
         }
     }
 
-    public void uploadID(View view){
-        Intent intent = new Intent();
-        intent.setType("image/*");
-        intent.setAction(Intent.ACTION_GET_CONTENT);
-        startActivityIfNeeded(intent, 1);
+    //PUT IMAGE UPLOAD HERE
+    private void uploadPhotoToStorage() {
+        if (!lblLink.getText().equals("")) {
+            //UPLOAD TO FIREBASE STORAGE
+            FirebaseStorage.getInstance()
+                    .getReference("id")
+                    .child(user.getUid())
+                    .putFile(Uri.parse(lblLink.getText().toString()))
+                    .addOnSuccessListener(taskSnapshot -> Toast.makeText(RegisterGoogleActivity.this,
+                            "Upload successful",
+                            Toast.LENGTH_SHORT).show()).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+
+                    Toast.makeText(RegisterGoogleActivity.this, "Upload failed.", Toast.LENGTH_SHORT).show();
+                }
+            }).addOnProgressListener(snapshot -> {
+
+                double progress = (100.0 * snapshot.getBytesTransferred() / snapshot.getTotalByteCount());
+
+            });
+        }
     }
+
+    private void pickImage() {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
+                == PackageManager.PERMISSION_DENIED) {
+            //DENIED PERMISSION
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
+                    EXTERNAL_STORAGE_REQ_CODE);
+            return;
+        }
+
+        //PICK IMAGE
+        //PERMISSION GRANTED
+        //OPEN IMAGE PICKER
+        Intent imagePickIntent = new Intent();
+        imagePickIntent.setType("image/*");
+        imagePickIntent.setAction(Intent.ACTION_GET_CONTENT);
+
+        activityResultLauncher.launch(imagePickIntent);
+    }
+
+    //ACTIVITY RESULT
+    ActivityResultLauncher<Intent> activityResultLauncher = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            new ActivityResultCallback<ActivityResult>() {
+                @Override
+                public void onActivityResult(ActivityResult result) {
+
+                    if (result.getResultCode() == RESULT_OK) {
+                        Intent data = result.getData();
+                        if (data != null) {
+                            if (data.getData() != null) {
+
+                                Uri imageUri = data.getData();
+                                lblLink.setText(imageUri.toString());
+                            }
+                        }
+                    }
+                }
+            });
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        if (requestCode == EXTERNAL_STORAGE_REQ_CODE) {
+
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.READ_EXTERNAL_STORAGE)) {
+                //DENIED ONCE
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
+                        EXTERNAL_STORAGE_REQ_CODE);
+            } else if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
+                    == PackageManager.PERMISSION_GRANTED) {
+                //PERMISSION GRANTED
+                pickImage();
+            }
+        }
+    }
+
+//    public void uploadID(View view){
+//        Intent intent = new Intent();
+//        intent.setType("image/*");
+//        intent.setAction(Intent.ACTION_GET_CONTENT);
+//        startActivityIfNeeded(intent, 1);
+//    }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
@@ -191,7 +290,7 @@ public class RegisterGoogleActivity extends AppCompatActivity {
         }
     }
 
-    public String dropdownSex(){
+    public String dropdownSex() {
         //Sex selector spinner
         String[] sex = new String[]{"Sex", "M", "F"};
         List<String> sexList = new ArrayList<>(Arrays.asList(sex));
@@ -246,6 +345,8 @@ public class RegisterGoogleActivity extends AppCompatActivity {
         return selectedSex;
     }
 
+
+
     //update edittext value
     private void updateDate(){
         //matched with line 174
@@ -254,7 +355,7 @@ public class RegisterGoogleActivity extends AppCompatActivity {
         etBirthDate.setText(dateFormat.format(calendar.getTime()));
     }
 
-    private void selectBirthdate(){
+    private void selectBirthdate() {
         DatePickerDialog.OnDateSetListener date =new DatePickerDialog.OnDateSetListener() {
             @Override
             public void onDateSet(DatePicker view, int year, int month, int day) {

@@ -413,9 +413,7 @@ public class RegisterActivity extends AppCompatActivity {
                 double progress = (100.0 * snapshot.getBytesTransferred() / snapshot.getTotalByteCount());
 
             });
-
         }
-
     }
 
     private void pickImage() {
