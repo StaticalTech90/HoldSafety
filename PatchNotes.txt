@@ -1,11 +1,13 @@
 Feb 3, 2022
 + Fixed Google Registration image upload
 + Registration details save to DB after OTP
++ Added filler fields in report DB for visibility in queries and snapshots
+
 - Timer for OTP not working
 - Can't fetch video/image links from storage to display in certain activities
 
 ----------------------------------------------------
 
 Edit this file when you do something.
-+ for fixes, additions, etc.
-- for removals, bugs, etc.
++ for fixes, additions, etc. (any progress/cleanups)
+- for removals, bugs, etc. (any setbacks/blocks)

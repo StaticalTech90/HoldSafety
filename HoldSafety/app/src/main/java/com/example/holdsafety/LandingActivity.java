@@ -614,7 +614,6 @@ public class LandingActivity extends AppCompatActivity {
 
         docRef = db.collection("users").document(userID);
 
-
         docRef.get().addOnSuccessListener(documentSnapshot -> {
             if(documentSnapshot.exists()) {
                 String firstName = documentSnapshot.getString("FirstName");
@@ -629,6 +628,11 @@ public class LandingActivity extends AppCompatActivity {
                 //TODO: PUT VIDEO LINK IN DB
 
                 db = FirebaseFirestore.getInstance();
+
+                //MAKE THE USER ID VISIBLE FOR QUERIES BY ADDING FIELD
+                Map<String, Object> fillerField = new HashMap<>();
+                fillerField.put("ID", userID);
+                db.collection("reportUser").document(userID).set(fillerField);
 
                 //GET THE ID OF THE REPORT TO BE SAVED IN DB
                 DocumentReference docRefDetails = db.collection("reportUser").document(userID).collection("reportDetails").document();
@@ -656,9 +660,17 @@ public class LandingActivity extends AppCompatActivity {
             //TODO: PUT VIDEO LINK IN DB
 
             db = FirebaseFirestore.getInstance();
+            DocumentReference reportUserDetails = db.collection("reportUser").document(userID);
+            DocumentReference reportAdminDetails = db.collection("reportAdmin").document(nearestBrgy);
+
+            //MAKE THE ID VISIBLE FOR QUERIES BY ADDING FIELD
+            Map<String, Object> fillerField = new HashMap<>();
+            fillerField.put("Field", "filler_for_visibility");
+            reportUserDetails.set(fillerField);
+            reportAdminDetails.set(fillerField);
 
             //GET THE ID OF THE REPORT TO BE SAVED IN DB
-            DocumentReference docRefDetails = db.collection("reportUser").document(userID).collection("reportDetails").document();
+            DocumentReference docRefDetails = reportUserDetails.collection("reportDetails").document();
             reportID = docRefDetails.getId();
             Log.d("DocID", "documentId: " + reportID);
 
@@ -668,7 +680,7 @@ public class LandingActivity extends AppCompatActivity {
                     .addOnFailureListener(e -> Log.w(TAG, "Report saving to Error!!", e));
 
             //ADD TO BRGY-SORTED COLLECTION USING THE SAME ID
-            db.collection("reportAdmin").document(nearestBrgy).collection("reportDetails").document(reportID).set(docDetails)
+            reportAdminDetails.collection("reportDetails").document(reportID).set(docDetails)
                     .addOnSuccessListener(aVoid -> Log.d(TAG, "Report saved to brgy-sorted DB!"))
                     .addOnFailureListener(e -> Log.w(TAG, "Report saving to Error!!", e));
         });
