@@ -51,7 +51,6 @@ public class AutoRecordingActivity extends AppCompatActivity {
     CardView txtIsRecording;
 
     ProgressBar progressBar;
-    String[] permissions = new String[]{Manifest.permission.CAMERA, Manifest.permission.RECORD_AUDIO, Manifest.permission.WRITE_EXTERNAL_STORAGE};
     private final int RECORDING_REQ_CODE = 1000;
 
     @Override
@@ -105,7 +104,7 @@ public class AutoRecordingActivity extends AppCompatActivity {
                 updateButtonUI();
             }
         });
-        checkAllPermissions();
+        setCamera();
     }
 
     private void addFileToFirebase() {
@@ -143,14 +142,7 @@ public class AutoRecordingActivity extends AppCompatActivity {
                 });
     }
 
-    private void checkAllPermissions() {
-        if(ActivityCompat.checkSelfPermission(this, permissions[0]) == PackageManager.PERMISSION_DENIED //camera permission
-                || ActivityCompat.checkSelfPermission(this, permissions[1]) == PackageManager.PERMISSION_DENIED //audio permission
-                || ActivityCompat.checkSelfPermission(this, permissions[2]) == PackageManager.PERMISSION_DENIED){ //storage permission
-            ActivityCompat.requestPermissions(this, permissions, RECORDING_REQ_CODE);
-            return;
-        }
-
+    private void setCamera() {
         camera = getCameraInstance();
         cameraPreview = new CameraPreview(this, camera);
         mediaRecorder = new MediaRecorder(); // responsible on passing whatever the user is recording
@@ -267,31 +259,6 @@ public class AutoRecordingActivity extends AppCompatActivity {
 
         recordingFile = mediaFile;
         return mediaFile;
-    }
-
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if(requestCode == RECORDING_REQ_CODE){
-            if(ActivityCompat.shouldShowRequestPermissionRationale(this, permissions[0])//camera
-                    || ActivityCompat.shouldShowRequestPermissionRationale(this, permissions[1])//audio
-                    || ActivityCompat.shouldShowRequestPermissionRationale(this, permissions[2])){//write storage
-                ActivityCompat.requestPermissions(this, permissions, RECORDING_REQ_CODE);
-            } else if (grantResults[0] == PackageManager.PERMISSION_GRANTED
-                    && grantResults[1] == PackageManager.PERMISSION_GRANTED
-                    && grantResults[2] == PackageManager.PERMISSION_GRANTED){//returns true
-                //all permission granted
-                checkAllPermissions();
-            } else if (grantResults[1] == PackageManager.PERMISSION_GRANTED
-                    && grantResults[2] == PackageManager.PERMISSION_GRANTED){
-                //user only accepts audio and storage
-                Intent audio = new Intent(AutoRecordingActivity.this, AudioRecording.class);
-                startActivity(audio);
-            } else {
-
-            }
-        }
     }
 
     private void setHandler() {

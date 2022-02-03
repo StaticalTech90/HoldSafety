@@ -89,6 +89,10 @@ public class LandingActivity extends AppCompatActivity {
     private static final int LOCATION_REQ_CODE = 1000;
     private static final int GPS_REQ_CODE = 1001;
     private static final int SEND_SMS_REQ_CODE = 1002;
+    private final int CAMERA_REQ_CODE = 1003;
+    private final int AUDIO_REQ_CODE = 1004;
+    private final int STORAGE_WRITE_REQ_CODE = 1005;
+
 
     @SuppressLint("ClickableViewAccessibility")
     @Override
@@ -183,7 +187,7 @@ public class LandingActivity extends AppCompatActivity {
         }
     }
 
-    //checks required permissions
+    //checks required permissions onStart()
     private void setPermissions(){
         if (ActivityCompat.checkSelfPermission(this,
                 Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_DENIED) {
@@ -201,6 +205,124 @@ public class LandingActivity extends AppCompatActivity {
             ActivityCompat.requestPermissions(this,
                     new String[]{Manifest.permission.SEND_SMS},
                     SEND_SMS_REQ_CODE);
+        } else if(ActivityCompat.checkSelfPermission(this,
+                Manifest.permission.CAMERA) == PackageManager.PERMISSION_DENIED ){
+            //DENIED CAMERA PERMISSION
+            Log.d("camera permission", "Please Grant Camera Permission");
+            //SHOW PERMISSION
+            ActivityCompat.requestPermissions(this,
+                    new String[] {Manifest.permission.CAMERA}, CAMERA_REQ_CODE);
+        } else if(ActivityCompat.checkSelfPermission(this,
+                Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_DENIED){
+            //DENIED AUDIO PERMISSION
+            Log.d("audio permission", "Please Grant Audio Permission");
+            //SHOW PERMISSION
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.RECORD_AUDIO}, AUDIO_REQ_CODE);
+        } else if(ActivityCompat.checkSelfPermission(this,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_DENIED){
+            //DENIED STORAGE PERMISSION
+            Log.d("storage permission", "Please Grant Storage Permission");
+            //SHOW PERMISSION
+            ActivityCompat.requestPermissions(this,
+                    new String[] {Manifest.permission.WRITE_EXTERNAL_STORAGE}, STORAGE_WRITE_REQ_CODE);
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        if (requestCode == LOCATION_REQ_CODE) {
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_FINE_LOCATION)) {
+                //DENIED ONCE
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                        LOCATION_REQ_CODE);
+            } else if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+                    == PackageManager.PERMISSION_GRANTED) {
+                setPermissions();
+            }
+            else {
+                Intent settingsIntent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                Uri uri = Uri.fromParts("package", getPackageName(), null);
+                settingsIntent.setData(uri);
+                startActivity(settingsIntent);
+                Toast.makeText(this, "Please Grant Location Permission.", Toast.LENGTH_SHORT).show();
+            }
+        } else if (requestCode == SEND_SMS_REQ_CODE) {
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.SEND_SMS)) {
+                //DENIED ONCE
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.SEND_SMS},
+                        SEND_SMS_REQ_CODE);
+            } else if (ActivityCompat.checkSelfPermission(this, Manifest.permission.SEND_SMS)
+                    == PackageManager.PERMISSION_GRANTED) {
+                setPermissions();
+            } else {
+                Intent settingsIntent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                Uri uri = Uri.fromParts("package", getPackageName(), null);
+                settingsIntent.setData(uri);
+                startActivity(settingsIntent);
+                Toast.makeText(this, "Please Grant SMS Permission.", Toast.LENGTH_SHORT).show();
+            }
+        } else if(requestCode == CAMERA_REQ_CODE){
+            if(ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.CAMERA)){
+                ActivityCompat.requestPermissions(this, permissions, CAMERA_REQ_CODE);
+            } else if (ActivityCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
+                    == PackageManager.PERMISSION_GRANTED){
+                setPermissions();
+            } else {
+                Intent settingsIntent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                Uri uri = Uri.fromParts("package", getPackageName(), null);
+                settingsIntent.setData(uri);
+                startActivity(settingsIntent);
+                Toast.makeText(this, "Please Grant Camera Permission.", Toast.LENGTH_SHORT).show();
+            }
+        } else if(requestCode == AUDIO_REQ_CODE){
+            if(ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.CAMERA)){
+                ActivityCompat.requestPermissions(this, permissions, AUDIO_REQ_CODE);
+            } else if (ActivityCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO)
+                    == PackageManager.PERMISSION_GRANTED){
+                setPermissions();
+            } else {
+                Intent settingsIntent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                Uri uri = Uri.fromParts("package", getPackageName(), null);
+                settingsIntent.setData(uri);
+                startActivity(settingsIntent);
+                Toast.makeText(this, "Please Grant Audio Permission.", Toast.LENGTH_SHORT).show();
+            }
+        } else if(requestCode == STORAGE_WRITE_REQ_CODE){
+            if(ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.CAMERA)){
+                ActivityCompat.requestPermissions(this, permissions, STORAGE_WRITE_REQ_CODE);
+            } else if (ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                    == PackageManager.PERMISSION_GRANTED){
+                Toast.makeText(this, "Permissions granted.", Toast.LENGTH_SHORT).show();
+            } else {
+                Intent settingsIntent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                Uri uri = Uri.fromParts("package", getPackageName(), null);
+                settingsIntent.setData(uri);
+                startActivity(settingsIntent);
+                Toast.makeText(this, "Please Grant Storage Permission.", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == GPS_REQ_CODE) {
+
+            if (resultCode == RESULT_OK) {
+                //USER PRESSED OK
+                getCurrentLocation();
+
+            } else {
+                //USER PRESSED NO THANKS
+                showGPSDialog();
+            }
+
         }
     }
 
@@ -241,47 +363,6 @@ public class LandingActivity extends AppCompatActivity {
                 });
     }
 
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-
-        if (requestCode == LOCATION_REQ_CODE) {
-            if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_FINE_LOCATION)) {
-                //DENIED ONCE
-                ActivityCompat.requestPermissions(this,
-                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-                        LOCATION_REQ_CODE);
-            } else if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
-                    == PackageManager.PERMISSION_GRANTED) {
-                setPermissions(); //getcurrent
-            }
-            else {
-                Intent settingsIntent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-                Uri uri = Uri.fromParts("package", getPackageName(), null);
-                settingsIntent.setData(uri);
-                startActivity(settingsIntent);
-                Toast.makeText(this, "Please Grant Location Permission.", Toast.LENGTH_SHORT).show();
-            }
-        } else if (requestCode == SEND_SMS_REQ_CODE) {
-
-            if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.SEND_SMS)) {
-                //DENIED ONCE
-                ActivityCompat.requestPermissions(this,
-                        new String[]{Manifest.permission.SEND_SMS},
-                        SEND_SMS_REQ_CODE);
-            } else if (ActivityCompat.checkSelfPermission(this, Manifest.permission.SEND_SMS)
-                    == PackageManager.PERMISSION_GRANTED) {
-                Toast.makeText(this, "Permissions granted.", Toast.LENGTH_SHORT).show();
-            } else {
-                Intent settingsIntent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-                Uri uri = Uri.fromParts("package", getPackageName(), null);
-                settingsIntent.setData(uri);
-                startActivity(settingsIntent);
-                Toast.makeText(this, "Please Grant SMS Permission.", Toast.LENGTH_SHORT).show();
-            }
-        }
-    }
-
     private void showGPSDialog() {
         LocationRequest locationRequest = LocationRequest.create();
         locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
@@ -316,24 +397,6 @@ public class LandingActivity extends AppCompatActivity {
                     }
                 }
         );
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        if (requestCode == GPS_REQ_CODE) {
-
-            if (resultCode == RESULT_OK) {
-                //USER PRESSED OK
-                getCurrentLocation();
-
-            } else {
-                //USER PRESSED NO THANKS
-                showGPSDialog();
-            }
-
-        }
     }
 
     private void getEstablishmentsLocations(Location location, String address) {

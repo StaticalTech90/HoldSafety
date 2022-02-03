@@ -34,14 +34,18 @@ import androidx.core.app.ActivityCompat;
 
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -62,10 +66,12 @@ public class RegisterGoogleActivity extends AppCompatActivity {
     Button btnProceed, btnUpload;
     Spinner spinnerSex;
     public Uri imageURI;
+    String idUri;
 
     FirebaseUser user;
     FirebaseAuth mAuth;
     FirebaseFirestore db = FirebaseFirestore.getInstance();
+    StorageReference imageRef = FirebaseStorage.getInstance().getReference("id");
     DocumentReference docRef;
 
     final Calendar calendar = Calendar.getInstance();
@@ -166,7 +172,11 @@ public class RegisterGoogleActivity extends AppCompatActivity {
             docUsers.put("profileComplete", true);
             docUsers.put("isVerified", false);
 
-            if(!lblLink.getText().equals("")){ uploadPhotoToStorage(); }
+            if(!lblLink.getText().equals("")){
+                uploadPhotoToStorage();
+            }
+
+            docUsers.put("imageId", idUri);
 
             db.collection("users").document(userId).set(docUsers)
                     .addOnSuccessListener(new OnSuccessListener<Void>() {
@@ -194,17 +204,28 @@ public class RegisterGoogleActivity extends AppCompatActivity {
     private void uploadPhotoToStorage() {
         if (!lblLink.getText().equals("")) {
             //UPLOAD TO FIREBASE STORAGE
-            FirebaseStorage.getInstance()
-                    .getReference("id")
-                    .child(user.getUid())
+            imageRef.child(user.getUid())
                     .putFile(Uri.parse(lblLink.getText().toString()))
-                    .addOnSuccessListener(taskSnapshot -> Toast.makeText(RegisterGoogleActivity.this,
-                            "Upload successful",
-                            Toast.LENGTH_SHORT).show()).addOnFailureListener(new OnFailureListener() {
+                    .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                              @Override
+                              public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                                  Toast.makeText(RegisterGoogleActivity.this,
+                                          "Upload successful",
+                                          Toast.LENGTH_SHORT).show();
+
+                                  imageRef.child(user.getUid()+".jpg").getDownloadUrl()
+                                          .addOnCompleteListener(new OnCompleteListener<Uri>() {
+                                      @Override
+                                      public void onComplete(@NonNull Task<Uri> task) {
+                                          idUri = task.getResult().toString();
+                                      }
+                                  });
+                              }
+                          }).addOnFailureListener(new OnFailureListener() {
                 @Override
                 public void onFailure(@NonNull Exception e) {
-
-                    Toast.makeText(RegisterGoogleActivity.this, "Upload failed.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(RegisterGoogleActivity.this, "Upload failed.",
+                            Toast.LENGTH_SHORT).show();
                 }
             }).addOnProgressListener(snapshot -> {
 
@@ -245,9 +266,8 @@ public class RegisterGoogleActivity extends AppCompatActivity {
                         Intent data = result.getData();
                         if (data != null) {
                             if (data.getData() != null) {
-
-                                Uri imageUri = data.getData();
-                                lblLink.setText(imageUri.toString());
+                                imageURI = data.getData();
+                                lblLink.setText(imageURI.toString());
                             }
                         }
                     }
@@ -272,13 +292,6 @@ public class RegisterGoogleActivity extends AppCompatActivity {
             }
         }
     }
-
-//    public void uploadID(View view){
-//        Intent intent = new Intent();
-//        intent.setType("image/*");
-//        intent.setAction(Intent.ACTION_GET_CONTENT);
-//        startActivityIfNeeded(intent, 1);
-//    }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
@@ -344,8 +357,6 @@ public class RegisterGoogleActivity extends AppCompatActivity {
         });
         return selectedSex;
     }
-
-
 
     //update edittext value
     private void updateDate(){
