@@ -42,13 +42,6 @@ public class ReportsActivity extends AppCompatActivity {
 
         reportView = findViewById(R.id.linearReportList);
 
-//        recyclerViewReports = findViewById(R.id.recyclerviewReports);
-//        reportID = getResources().getStringArray(R.array.reportID);
-//
-//        ReportAdapter reportAdapter = new ReportAdapter(this, reportID);
-//        recyclerViewReports.setAdapter(reportAdapter);
-//        recyclerViewReports.setLayoutManager(new LinearLayoutManager(this));
-
         listMyReports();
     }
 
@@ -56,13 +49,16 @@ public class ReportsActivity extends AppCompatActivity {
         db.collection("reportUser").document(userID).collection("reportDetails").get().addOnCompleteListener(task -> {
             if(task.isSuccessful()) {
                 for(QueryDocumentSnapshot reportSnap : task.getResult()) {
+
                     reportID = reportSnap.getId();
+                    Toast.makeText(this, reportID, Toast.LENGTH_SHORT).show();
                     location = reportSnap.getString("Lat") + ", " + reportSnap.getString("Lon");
                     date = reportSnap.getString("Report Date");
                     barangay = reportSnap.getString("Barangay");
                     //currently hardcoded values
                     isCoordinated = false;
-//                    evidence = reportSnap.getString("");
+                    evidence = "";
+                            //reportSnap.getString("");
 
                     View displayReportView = getLayoutInflater().inflate(R.layout.report_row, null, false);
 
@@ -78,11 +74,11 @@ public class ReportsActivity extends AppCompatActivity {
                     txtDateAndTime.setText(date);
                     txtBarangay.setText(barangay);
                     txtCoordinated.setText(isCoordinated.toString());
-//                    txtEvidence.setText(evidence);
+                    txtEvidence.setText(evidence);
 
                     //TODO: DI KO PARIN ALAM PANO KUNIN VID LINK SA STORAGE HELP PLES
-
                     reportView.addView(displayReportView);
+
                 }
             }
         });

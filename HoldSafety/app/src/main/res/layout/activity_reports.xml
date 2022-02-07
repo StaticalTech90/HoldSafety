@@ -46,7 +46,8 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/lblReports"
-        android:orientation="horizontal" />
+        android:orientation="vertical" >
+    <!--VERTICAL PUTANGINA-->
 
 <!--    <androidx.recyclerview.widget.RecyclerView-->
 <!--        android:id="@+id/recyclerviewReports"-->
@@ -60,6 +61,6 @@
 <!--        app:layout_constraintStart_toStartOf="parent"-->
 <!--        app:layout_constraintBottom_toBottomOf="parent"-->
 <!--        app:layout_constraintTop_toBottomOf="@+id/lblReports"/>-->
-
+    </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

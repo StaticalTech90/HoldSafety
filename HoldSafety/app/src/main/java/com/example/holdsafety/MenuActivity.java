@@ -3,14 +3,27 @@ package com.example.holdsafety;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.android.gms.auth.api.Auth;
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 
 public class MenuActivity extends AppCompatActivity {
     FirebaseAuth mAuth;
+    private GoogleApiClient googleApiClient;
+    GoogleSignInClient gsc;
+
+    GoogleSignInOptions gso;
+    TextView btnLogout;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -18,6 +31,26 @@ public class MenuActivity extends AppCompatActivity {
         setContentView(R.layout.activity_menu);
 
         mAuth = FirebaseAuth.getInstance();
+        btnLogout = findViewById(R.id.txtLogout);
+
+        /*
+        gso = new GoogleSignInOptions
+                .Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestIdToken("233680747912-m8q45hor79go5n8aqfkuneklnkshudqs.apps.googleusercontent.com")
+                .requestEmail()
+                .build();
+
+        gsc = GoogleSignIn.getClient(this, gso);
+
+
+        googleApiClient = new GoogleApiClient.Builder(this)
+                .enableAutoManage(this, null)
+                .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
+                .build();
+
+         */
+
+        btnLogout.setOnClickListener(this::logoutUser);
     }
 
     public void userAccount(View view){
@@ -56,9 +89,26 @@ public class MenuActivity extends AppCompatActivity {
     }
 
     public void logoutUser(View view){
-        mAuth.signOut();
-        Toast.makeText(MenuActivity.this, "Logged Out", Toast.LENGTH_SHORT).show();
-        startActivity(new Intent(MenuActivity.this, LoginActivity.class));
-        finish();
+            //========SIGN OUT
+            GoogleSignInOptions gso = new GoogleSignInOptions
+                    .Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                    .requestIdToken("233680747912-m8q45hor79go5n8aqfkuneklnkshudqs.apps.googleusercontent.com")
+                    .requestEmail()
+                    .build();
+
+            mAuth.signOut();
+
+            GoogleSignInClient gsc = GoogleSignIn.getClient(MenuActivity.this, gso);
+            gsc.signOut().addOnSuccessListener(new OnSuccessListener<Void>() {
+                @Override
+                public void onSuccess(Void unused) {
+                    Toast.makeText(MenuActivity.this, "Sign Out", Toast.LENGTH_SHORT).show();
+                    startActivity(new Intent(MenuActivity.this, LoginActivity.class));
+                    finish();
+                }
+            });
+            //========END OF SIGN OUT
+
+
     }
 }

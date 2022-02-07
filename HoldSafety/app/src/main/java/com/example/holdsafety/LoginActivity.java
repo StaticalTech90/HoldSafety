@@ -117,6 +117,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
         btnGoogle.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                gsc.signOut();
                 //Display list of google accounts
                 Intent GoogleSignIntent = Auth.GoogleSignInApi.getSignInIntent(googleApiClient);
                 startActivityForResult(GoogleSignIntent, SIGN_IN_REQUEST_CODE);
@@ -234,22 +235,22 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
         //authentication
         mAuth.signInWithEmailAndPassword(email,password)
                 .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-            @Override
-            public void onComplete(@NonNull Task<AuthResult> task) {
-                if(task.isSuccessful()){
-                    mAuth = FirebaseAuth.getInstance();
-                    FirebaseUser user = mAuth.getCurrentUser();
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if(task.isSuccessful()){
+                            mAuth = FirebaseAuth.getInstance();
+                            FirebaseUser user = mAuth.getCurrentUser();
 
-                    //pass user to check if it exists in user table
-                    checkUserAccount(user);
-                }
-                else{
-                    Toast.makeText(LoginActivity.this, "Error: " + task.getException().getMessage(), Toast.LENGTH_LONG).show();
-                }
-            }
-        });
+                            //pass user to check if it exists in user table
+                            checkUserAccount(user);
+                        }
+                        else{
+                            Toast.makeText(LoginActivity.this, "Error: " + task.getException().getMessage(), Toast.LENGTH_LONG).show();
+                        }
+                    }
+                });
     }
-    
+
     private void checkUserAccount(FirebaseUser user) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
