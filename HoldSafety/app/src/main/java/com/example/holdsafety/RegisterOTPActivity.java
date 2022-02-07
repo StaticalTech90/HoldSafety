@@ -1,41 +1,59 @@
 package com.example.holdsafety;
 
+import static android.content.ContentValues.TAG;
+
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.FirebaseFirestore;
+
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class RegisterOTPActivity extends AppCompatActivity {
+    private FirebaseAuth mAuth;
+    FirebaseFirestore db;
+    FirebaseUser user;
+
     Button btnSendCode;
     EditText etEmail;
     TextView txtTimeRemaining;
+
+    String userEmail;
+    HashMap<String, Object> docUsers;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register_otp);
 
+        //Firebase
+        mAuth = FirebaseAuth.getInstance();
+        user = mAuth.getCurrentUser();
+        db = FirebaseFirestore.getInstance();
+
         btnSendCode = findViewById(R.id.btnSendCode);
         etEmail = findViewById(R.id.txtEmail);
         txtTimeRemaining = findViewById(R.id.txtTimeRemaining);
 
-        //Get email from user input in previous activity
-        String userEmail;
+        //Get extras
         userEmail = getIntent().getStringExtra("Email");
+        docUsers = (HashMap<String, Object>) getIntent().getSerializableExtra("UserDetails");
 
-        if(userEmail == null) {
-            userEmail = "placeholdertext";
-        }
+        if(userEmail == null) { userEmail = "placeholdertext"; }
 
         Toast.makeText(this, "Email: " + userEmail, Toast.LENGTH_LONG).show();
         etEmail.setText(userEmail);
@@ -95,6 +113,12 @@ public class RegisterOTPActivity extends AppCompatActivity {
                 Toast.makeText(this, "Verification Success", Toast.LENGTH_LONG).show();
                 //Head to landing page and close dialog box
                 dialog.dismissDialog();
+
+                //insert to db with success/failure listeners
+                db.collection("users").document(user.getUid()).set(docUsers)
+                        .addOnSuccessListener(aVoid -> Log.d(TAG, "User successfully registered!"))
+                        .addOnFailureListener(e -> Log.w(TAG, "error", e));
+
                 startActivity(new Intent(this, LandingActivity.class));
                 finish();
             }

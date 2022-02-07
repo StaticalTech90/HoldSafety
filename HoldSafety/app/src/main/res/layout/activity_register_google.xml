@@ -216,4 +216,14 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/btnUploadID" />
 
+    <TextView
+        android:id="@+id/txtImageLink"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="TextView"
+        app:layout_constraintBottom_toTopOf="@+id/btnProceed"
+        app:layout_constraintEnd_toStartOf="@+id/btnUploadID"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/containerMobileNumber" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

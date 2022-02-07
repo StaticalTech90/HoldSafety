@@ -38,8 +38,10 @@ import androidx.core.app.ActivityCompat;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import java.io.File;
 import java.text.ParseException;
@@ -59,6 +61,7 @@ public class RegisterActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
 
     FirebaseFirestore db = FirebaseFirestore.getInstance();
+    StorageReference imageRef = FirebaseStorage.getInstance().getReference("id");
     FirebaseUser user;
 
     final Calendar calendar = Calendar.getInstance();
@@ -267,7 +270,7 @@ public class RegisterActivity extends AppCompatActivity {
     }
 
     public void userRegister(View view) throws ParseException {
-        Map<String, Object> docUsers = new HashMap<>();
+        HashMap<String, Object> docUsers = new HashMap<>();
 
         String emailRegex = "^(.+)@(.+)$";
         String passRegex = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=\\S+$).{8,}$";
@@ -354,18 +357,13 @@ public class RegisterActivity extends AppCompatActivity {
                             docUsers.put("isVerified", false);
 
                             //TODO: Ung URL ng image i-sasave sa document ng user
-                            if(!lblLink.getText().equals("")){
-                                uploadPhotoToStorage();
-                            }
-
-                            //insert to db with success/failure listeners
-                            db.collection("users").document(user.getUid()).set(docUsers)
-                                    .addOnSuccessListener(aVoid -> Log.d(TAG, "User successfully registered!"))
-                                    .addOnFailureListener(e -> Log.w(TAG, "error", e));
+                            if(!lblLink.getText().equals("")){ uploadPhotoToStorage(); }
+                            docUsers.put("image-id", imageRef.getPath());
 
                             //Verify user's email
                             Intent otp = new Intent(RegisterActivity.this, RegisterOTPActivity.class);
                             otp.putExtra("Email", etEmail.getText().toString());
+                            otp.putExtra("UserDetails", docUsers);
                             startActivity(otp);
                             finish();
                         } else {
@@ -402,9 +400,7 @@ public class RegisterActivity extends AppCompatActivity {
     private void uploadPhotoToStorage() {
         if (!lblLink.getText().equals("")) {
             //UPLOAD TO FIREBASE STORAGE
-            FirebaseStorage.getInstance()
-                    .getReference("id")
-                    .child(user.getUid())
+            imageRef.child(user.getUid())
                     .putFile(Uri.parse(lblLink.getText().toString()))
                     .addOnSuccessListener(taskSnapshot -> Toast.makeText(RegisterActivity.this,
                             "Upload successful",
@@ -419,9 +415,7 @@ public class RegisterActivity extends AppCompatActivity {
                 double progress = (100.0 * snapshot.getBytesTransferred() / snapshot.getTotalByteCount());
 
             });
-
         }
-
     }
 
     private void pickImage() {
