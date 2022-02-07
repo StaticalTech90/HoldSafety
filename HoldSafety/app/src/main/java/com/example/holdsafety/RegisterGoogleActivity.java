@@ -121,13 +121,9 @@ public class RegisterGoogleActivity extends AppCompatActivity {
                     if(documentSnapshot.exists()) {
 
                         //REFACTORED FUNCTIONALITY TO SHOW ACCOUNT NAME AS LABEL
-                        firstName = (documentSnapshot.getString("FirstName"));
+                        firstName = documentSnapshot.getString("FirstName");
                         lastName = documentSnapshot.getString("LastName");
                         String username =  lastName + ", " + firstName;
-                        //etLastName.setText(documentSnapshot.getString("LastName"));
-                        //etFirstName.setText(documentSnapshot.getString("FirstName"));
-                        //etLastName.setFocusable(false);
-                        //etFirstName.setFocusable(false);
                         lblName.setText(username);
                     }
                 }
@@ -143,8 +139,7 @@ public class RegisterGoogleActivity extends AppCompatActivity {
         Pattern mobileNumberPattern = Pattern.compile(mobileNumberRegex);
 
         String userId = user.getUid();
-        String uEmail = user.getEmail();
-        //String firstName = etFirstName.getText().toString();
+//        String uEmail = user.getEmail();
         String middleName = etMiddleName.getText().toString();
         String birthDate = etBirthDate.getText().toString().trim();
         String mobileNo = etMobileNo.getText().toString();
@@ -161,16 +156,17 @@ public class RegisterGoogleActivity extends AppCompatActivity {
         } else if(etMobileNo.getText().length() != 11) {
             etMobileNo.setError("Please enter a valid mobile number");
         } else {
-            docUsers.put("ID", user.getUid());
-            docUsers.put("LastName", lastName);
-            docUsers.put("FirstName", firstName);
+//            docUsers.put("ID", user.getUid());
+//            docUsers.put("LastName", lastName);
+//            docUsers.put("FirstName", firstName);
+//            docUsers.put("Email", uEmail);
+//            docUsers.put("isVerified", false);
+
             docUsers.put("MiddleName", middleName);
-            docUsers.put("Sex", sex);
             docUsers.put("BirthDate", birthDate);
+            docUsers.put("Sex", sex);
             docUsers.put("MobileNumber", mobileNo);
-            docUsers.put("Email", uEmail);
             docUsers.put("profileComplete", true);
-            docUsers.put("isVerified", false);
 
             if(!lblLink.getText().equals("")){
                 uploadPhotoToStorage();
@@ -178,7 +174,7 @@ public class RegisterGoogleActivity extends AppCompatActivity {
 
             docUsers.put("imageId", idUri);
 
-            db.collection("users").document(userId).set(docUsers)
+            db.collection("users").document(userId).update(docUsers)
                     .addOnSuccessListener(new OnSuccessListener<Void>() {
                         @Override
                         public void onSuccess(Void aVoid) {

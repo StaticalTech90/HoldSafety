@@ -1,3 +1,7 @@
+Feb 7, 2022
++ No longer goes directly to Landing if account details arent complete
+
+----------------------------------------------------
 Feb 3, 2022
 + Fixed Google Registration image upload
 + Registration details save to DB after OTP
