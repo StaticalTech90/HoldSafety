@@ -35,7 +35,9 @@ import com.google.firebase.storage.UploadTask;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 
 public class AutoRecordingActivity extends AppCompatActivity {
     CameraPreview cameraPreview;
@@ -253,9 +255,12 @@ public class AutoRecordingActivity extends AppCompatActivity {
         }
 
         // Create a media file name
-        Date date = new Date();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd_HH:mma", Locale.getDefault());
+        String currentDateandTime = sdf.format(new Date());
+//        Date date = new Date();
+
         File mediaFile = new File(mediaStorageDir.getPath() + File.separator +
-                "VID_" + date.getTime() + ".mp4");
+                "VID_" + currentDateandTime + ".mp4");
 
         recordingFile = mediaFile;
         return mediaFile;
@@ -263,12 +268,9 @@ public class AutoRecordingActivity extends AppCompatActivity {
 
     private void setHandler() {
         Handler handler = new Handler();
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                progressBar.setVisibility(View.INVISIBLE);
-                progressBar.setProgress(0);
-            }
+        handler.postDelayed(() -> {
+            progressBar.setVisibility(View.INVISIBLE);
+            progressBar.setProgress(0);
         }, 2000);
     }
 }

@@ -1,3 +1,9 @@
+Feb 8, 2022
++ Changed video/audio filename to include date and time
+
+- Need to run async task in isAccountComplete (LoginActivity) before returning boolean. Once finished, this should fix most of the Google signin/reg problems
+
+----------------------------------------------------
 Feb 7, 2022
 + No longer goes directly to Landing if account details arent complete
 
