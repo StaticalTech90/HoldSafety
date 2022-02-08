@@ -1,5 +1,7 @@
 package com.example.holdsafety;
 
+import static android.content.ContentValues.TAG;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
@@ -29,13 +31,18 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.OnProgressListener;
+import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 public class AutoRecordingActivity extends AppCompatActivity {
     CameraPreview cameraPreview;
@@ -45,6 +52,12 @@ public class AutoRecordingActivity extends AppCompatActivity {
     File recordingFile;
     final String tag = "AUTORECORD";
     FirebaseAuth mAuth;
+    FirebaseUser user;
+
+    FirebaseFirestore db = FirebaseFirestore.getInstance();
+    Map<String, Object> docUsers = new HashMap<>();
+    StorageReference videoRef;
+    String idUri;
 
     FloatingActionButton btnRecord;
     boolean isRecording = false;
@@ -57,6 +70,9 @@ public class AutoRecordingActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_auto_recording);
+
+        videoRef = FirebaseStorage.getInstance().getReference("emergencyVideos/");
+        user = mAuth.getCurrentUser();
 
         btnRecord = findViewById(R.id.btnRecord);
         txtIsRecording = findViewById(R.id.cardIsRecording);
@@ -122,6 +138,35 @@ public class AutoRecordingActivity extends AppCompatActivity {
                     public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                         Toast.makeText(AutoRecordingActivity.this, "Upload successful", Toast.LENGTH_SHORT).show();
                         setHandler();
+
+                        videoRef.child(user.getUid()).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                            @Override
+                            public void onSuccess(Uri uri) {
+                                idUri = String.valueOf(uri);
+                                docUsers.put("video", idUri);
+                                Log.i("URI gDUrl()", idUri);
+
+                                db.collection("users").document(user.getUid()).set(docUsers)
+                                        .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                            @Override
+                                            public void onSuccess(Void aVoid) {
+                                                Toast.makeText(getApplicationContext(),
+                                                        "pushed video to document",
+                                                        Toast.LENGTH_SHORT).show();
+                                                Log.i(TAG, "Video pushed");
+                                            }
+                                        })
+                                        .addOnFailureListener(new OnFailureListener() {
+                                            @Override
+                                            public void onFailure(@NonNull Exception e) {
+                                                Toast.makeText(getApplicationContext(),
+                                                        "Error writing document",
+                                                        Toast.LENGTH_SHORT).show();
+                                                Log.w(TAG, "Error writing document", e);
+                                            }
+                                        });
+                            }
+                        });
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {

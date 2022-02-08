@@ -1,5 +1,7 @@
 package com.example.holdsafety;
 
+import static android.content.ContentValues.TAG;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
@@ -24,20 +26,32 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.OnProgressListener;
+import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
 import java.io.File;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 public class AudioRecording extends AppCompatActivity {
 
     Button btnAudio;
     boolean isRecording = false;
     MediaRecorder mediaRecorder;
+
+    FirebaseUser user;
     FirebaseAuth mAuth;
     ProgressBar progressBar;
+    FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+    Map<String, Object> docUsers = new HashMap<>();
+    StorageReference audioRef;
+    String idUri;
+
 
     TextView txtAudioRecording;
     File recordingFile;
@@ -47,6 +61,9 @@ public class AudioRecording extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_audio_recording);
 
+        audioRef = FirebaseStorage.getInstance().getReference("emergencyAudios/");
+
+        user = mAuth.getCurrentUser();
         btnAudio = findViewById(R.id.btnRecordAudio);
         mAuth = FirebaseAuth.getInstance();
         progressBar = findViewById(R.id.audioProgressBar);
@@ -142,15 +159,42 @@ public class AudioRecording extends AppCompatActivity {
                     public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                         Toast.makeText(AudioRecording.this, "Upload successful", Toast.LENGTH_SHORT).show();
                         setHandler();
+
+                        audioRef.child(user.getUid()).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                            @Override
+                            public void onSuccess(Uri uri) {
+                                idUri = String.valueOf(uri);
+                                docUsers.put("audioUri", idUri);
+                                Log.i("URI gDUrl()", idUri);
+
+                                db.collection("users").document(user.getUid()).set(docUsers)
+                                        .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                            @Override
+                                            public void onSuccess(Void aVoid) {
+                                                Toast.makeText(getApplicationContext(),
+                                                        "pushed image to document",
+                                                        Toast.LENGTH_SHORT).show();
+                                                Log.i(TAG, "Audio pushed");
+                                            }
+                                        })
+                                        .addOnFailureListener(new OnFailureListener() {
+                                            @Override
+                                            public void onFailure(@NonNull Exception e) {
+                                                Toast.makeText(getApplicationContext(),
+                                                        "Error writing document",
+                                                        Toast.LENGTH_SHORT).show();
+                                                Log.w(TAG, "Error writing document", e);
+                                            }
+                                        });
+                            }
+                        });
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
-
                         Toast.makeText(AudioRecording.this, "Upload failed.", Toast.LENGTH_SHORT).show();
                         setHandler();
-
                     }
                 })
                 .addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {

@@ -672,8 +672,8 @@ public class LandingActivity extends AppCompatActivity {
 
     private void saveToDB() {
         Date currentDate = Calendar.getInstance().getTime();
-        SimpleDateFormat dateFormat = new SimpleDateFormat("MM-dd-yyyy");
-        String formattedDate = dateFormat.format(currentDate);
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mma", Locale.getDefault());
+        String currentDateandTime = sdf.format(new Date());
 
         docRef = db.collection("users").document(userID);
 
@@ -686,7 +686,7 @@ public class LandingActivity extends AppCompatActivity {
 
                         
                 docDetails.put("Barangay", nearestBrgy);
-                docDetails.put("Report Date", formattedDate);
+                docDetails.put("Report Date", currentDateandTime);
 
                 //TODO: PUT VIDEO LINK IN DB
 
@@ -718,10 +718,9 @@ public class LandingActivity extends AppCompatActivity {
             docDetails.put("LastName", "");
 
             docDetails.put("Barangay", nearestBrgy);
-            docDetails.put("Report Date", formattedDate);
+            docDetails.put("Report Date", currentDateandTime);
 
             //TODO: PUT VIDEO LINK IN DB
-
             db = FirebaseFirestore.getInstance();
             DocumentReference reportUserDetails = db.collection("reportUser").document(userID);
             DocumentReference reportAdminDetails = db.collection("reportAdmin").document(nearestBrgy);
