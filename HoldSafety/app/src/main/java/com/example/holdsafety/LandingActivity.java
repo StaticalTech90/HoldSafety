@@ -720,7 +720,6 @@ public class LandingActivity extends AppCompatActivity {
             docDetails.put("Report Date", currentDateandTime);
 
             //TODO: PUT VIDEO LINK IN DB
-
             db = FirebaseFirestore.getInstance();
             DocumentReference reportUserDetails = db.collection("reportUser").document(userID);
             DocumentReference reportAdminDetails = db.collection("reportAdmin").document(nearestBrgy);
