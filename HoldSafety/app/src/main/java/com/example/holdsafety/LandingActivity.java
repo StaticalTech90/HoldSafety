@@ -100,10 +100,10 @@ public class LandingActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_landing);
 
-
         //Get logged in user
         mAuth = FirebaseAuth.getInstance();
         user = mAuth.getCurrentUser();
+        assert user != null;
         userID = user.getUid();
         db = FirebaseFirestore.getInstance();
         docRef = db.collection("users").document(userID);
@@ -166,7 +166,6 @@ public class LandingActivity extends AppCompatActivity {
                 return false;
             }
         });
-
 
         //handle method for holdsafety widget
         if(isFromWidget!=null && isFromWidget.equals("true")){

@@ -1,3 +1,7 @@
+Feb 9, 2022
++ Google Registration works as intended (?)
+
+----------------------------------------------------
 Feb 8, 2022
 + Changed video/audio filename to include date and time
 

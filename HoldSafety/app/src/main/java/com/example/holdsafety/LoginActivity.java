@@ -28,6 +28,7 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.FirebaseAuth;
@@ -35,6 +36,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
@@ -61,25 +63,30 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
     GoogleSignInClient gsc;
     GoogleSignInOptions gso;
 
+    static Boolean isExisting = false;
+    static Boolean isComplete = false;
+
+    CollectionReference colRef;
+
     private GoogleApiClient googleApiClient;
     private static final int SIGN_IN_REQUEST_CODE = 1000;
 
-    protected void onStart(){
+    protected void onStart() {
         super.onStart();
         //check if user is already logged in
-        Log.d("userSnap", user.getEmail());
-        if(user != null && isAccountComplete(user.getEmail())){
-            Log.d("isAccountComplete", "onStart(): Result: " + isAccountComplete(user.getEmail()));
-            Intent intent = new Intent(LoginActivity.this, LandingActivity.class);
-            isFromWidget = getIntent().getStringExtra("isFromWidget");
-
-            //handle method for holdsafety widget
-            if(isFromWidget!=null && isFromWidget.equals("true")){
-                intent.putExtra("isFromWidget", "true");
-                Toast.makeText(getApplicationContext(), "Inside IF Widget" , Toast.LENGTH_SHORT).show();
-            }
-            startActivity(intent);
-        }
+//        Log.d("userSnap", user.getEmail());
+//        if(user != null) {
+//            determineNextActivity(user.getUid(), user.getEmail());
+//            Intent intent = new Intent(LoginActivity.this, LandingActivity.class);
+//            isFromWidget = getIntent().getStringExtra("isFromWidget");
+//
+//            //handle method for holdsafety widget
+//            if(isFromWidget != null && isFromWidget.equals("true")) {
+//                intent.putExtra("isFromWidget", "true");
+//                Toast.makeText(getApplicationContext(), "Inside IF Widget" , Toast.LENGTH_SHORT).show();
+//            }
+//            startActivity(intent);
+//        }
     }
 
     @Override
@@ -91,6 +98,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
         mAuth = FirebaseAuth.getInstance();
         user = mAuth.getCurrentUser();
         db = FirebaseFirestore.getInstance();
+        colRef = db.collection("users");
         createRequest();
 
         txtEmailOrMobileNum = findViewById(R.id.txtEmailOrMobileNum);
@@ -132,7 +140,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
 
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                if(txtPassword.getText().length() > 0){
+                if(txtPassword.getText().length() > 0) {
                     txtToggle.setVisibility(View.VISIBLE);
                 }
                 else{
@@ -147,7 +155,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
         });
 
         txtToggle.setOnClickListener(view -> {
-            if(txtToggle.getText() == "SHOW"){
+            if(txtToggle.getText() == "SHOW") {
                 txtToggle.setText("HIDE");
                 txtPassword.setInputType(InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
             }
@@ -166,18 +174,18 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                 email = txtEmailOrMobileNum.getText().toString().trim();
                 password = txtPassword.getText().toString();
 
-                if(TextUtils.isEmpty(email) && TextUtils.isEmpty(password)){
+                if(TextUtils.isEmpty(email) && TextUtils.isEmpty(password)) {
                     txtEmailOrMobileNum.setError("Email is required");
                     txtPassword.setError("Password is required");
                     return;
                 }
 
-                if(TextUtils.isEmpty(email)){
+                if(TextUtils.isEmpty(email)) {
                     txtEmailOrMobileNum.setError("Email is required");
                     return;
                 }
 
-                if(TextUtils.isEmpty(password)){
+                if(TextUtils.isEmpty(password)) {
                     txtPassword.setError("Password is required");
                     return;
                 }
@@ -187,17 +195,28 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
         });
     }
 
-    private void updateUI(FirebaseUser user){
-        if(user!=null){
-            if(isAccountComplete(user.getEmail())) { //ACCOUNT EXISTS AND COMPLETE, GO TO LANDING
-                Log.d("isAccountComplete", "updateUI(): if(): Result: " + isAccountComplete(user.getEmail()));
-                Intent landingPage = new Intent (LoginActivity.this, LandingActivity.class);
-                startActivity(landingPage);
-            } else if (!isAccountComplete(user.getEmail())) { //ACCOUNT DOES NOT EXIST OR INCOMPLETE, COMPLETE REGISTRATION
-                Log.d("updateUI:elseif()", "user data: " + user.getEmail());
-                Log.d("isAccountComplete", "updateUI(): else if(): Result: " + isAccountComplete(user.getEmail()));
-                completeGoogleProfile();
-            }
+    private void updateUI(FirebaseUser user) {
+        if(user != null) {
+            colRef.document(user.getUid()).get().addOnSuccessListener(documentSnapshot -> {
+               if(documentSnapshot.exists()) {
+                   Boolean isProfileComplete = documentSnapshot.getBoolean("profileComplete");
+
+                   if(isProfileComplete) { //ACCOUNT EXISTS AND COMPLETE
+                       Log.d("isAccountComplete", "updateUI(): if(): Result: Profile Complete");
+                       Intent landingPage = new Intent (LoginActivity.this, LandingActivity.class);
+                       startActivity(landingPage);
+                   } else { //ACCOUNT EXISTS, BUT INCOMPLETE
+                       Log.d("updateUI:elseif()", "user data: " + user.getEmail());
+                       Log.d("isAccountComplete", "updateUI(): else if(): Result: Profile exists, incomplete details");
+                       completeGoogleProfile();
+                   }
+               } else { //ACCOUNT DOES NOT EXIST
+                   Log.d("updateUI:elseif()", "user data: " + user.getEmail());
+                   Log.d("isAccountComplete", "updateUI(): else if(): Result: Profile does not exist, creating...");
+                   completeGoogleProfile();
+               }
+
+            });
             finish();
         }
     }
@@ -214,7 +233,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
 //        GoogleSignInClient mGoogleSignInClient = GoogleSignIn.getClient(getApplicationContext(), gso);
     }
 
-    public void loginUser(String email, String password){
+    public void loginUser(String email, String password) {
         mAuth.signInWithEmailAndPassword(email,password)
                 .addOnCompleteListener(task -> {
                     if(task.isSuccessful()) {
@@ -230,13 +249,13 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                 });
     }
     
-    private void checkUserAccount(FirebaseUser user) {
+    private void checkUserAccount(@NonNull FirebaseUser user) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
         docRef = db.collection("users").document(user.getUid());
 
         docRef.get().addOnSuccessListener(documentSnapshot -> {
-            if(documentSnapshot.exists()){
+            if(documentSnapshot.exists()) {
                 Toast.makeText(LoginActivity.this, "Login Successful!", Toast.LENGTH_SHORT).show();
                 startActivity(new Intent(LoginActivity.this, LandingActivity.class));
                 finish();
@@ -259,65 +278,79 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
         //GOOGLE SIGN IN
         if (requestCode == SIGN_IN_REQUEST_CODE) {
             Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
-            if(!isAccountExisting(user.getEmail())) {
-                try {
-                    GoogleSignInAccount account = task.getResult(ApiException.class);
-                    AuthCredential credential = GoogleAuthProvider.getCredential(account.getIdToken(), null);
-                    mAuth.signInWithCredential(credential)
-                            .addOnCompleteListener(this, task1 -> {
-                                if (task1.isSuccessful()) {
-                                    Toast.makeText(getApplicationContext(), "Task Successful", Toast.LENGTH_SHORT).show();
-                                    // Sign in success, update UI with the signed-in user's information
-                                    Log.d(TAG, "signInWithCredential:success");
-                                    FirebaseUser user = mAuth.getCurrentUser();
 
-                                    //Create a new account if it doesn't exist, otherwise continue
-                                    docRef = db.collection("users").document(user.getUid());
+            try {
+                GoogleSignInAccount account = task.getResult(ApiException.class);
+                AuthCredential credential = GoogleAuthProvider.getCredential(account.getIdToken(), null);
+                mAuth.signInWithCredential(credential)
+                        .addOnCompleteListener(this, task1 -> {
+                            if (task1.isSuccessful()) {
+                                Toast.makeText(getApplicationContext(), "Task Successful", Toast.LENGTH_SHORT).show();
+                                // Sign in success, update UI with the signed-in user's information
+                                Log.d("googlesignin", "signInWithCredential:success");
+                                FirebaseUser user = mAuth.getCurrentUser();
+                                Log.d("googlesignin", "user acc: " + user.getEmail());
 
-                                    docRef.get().addOnSuccessListener(documentSnapshot -> {
-                                        if(!documentSnapshot.exists()) {
-                                            Map < String, Object > docUsers = new HashMap<>();
-                                            String email = user.getEmail();
-                                            docUsers.put("ID", user.getUid());
-                                            docUsers.put("isVerified", false);
-                                            docUsers.put("LastName", account.getFamilyName());
-                                            docUsers.put("FirstName", account.getGivenName());
-                                            docUsers.put("MiddleName", "");
-                                            docUsers.put("Sex", "");
-                                            docUsers.put("BirthDate", "");
-                                            docUsers.put("MobileNumber", "");
-                                            docUsers.put("Email", account.getEmail());
-                                            docUsers.put("profileComplete", false);
+                                //Create a new account if it doesn't exist, otherwise continue
+                                assert user != null;
+                                docRef = colRef.document(user.getUid());
 
-                                            db.collection("users").document(user.getUid()).set(docUsers)
-                                                    .addOnSuccessListener(unused -> {
-                                                        Toast.makeText(getApplicationContext(), "Successful db input", Toast.LENGTH_SHORT).show();
-                                                        //Log.d(TAG, "DocumentSnapshot successfully written!");
-                                                    })
-                                                    .addOnFailureListener(e -> {
-                                                        Toast.makeText(getApplicationContext(), "Unsuccessful", Toast.LENGTH_SHORT).show();
-                                                        //Log.w(TAG, "Error writing document", e);
-                                                    });
-                                        }
+                                docRef.get().addOnSuccessListener(documentSnapshot -> {
+                                    if(!documentSnapshot.exists()) {
+                                        //ADD KNOWN AND PLACEHOLDER VALUES
+                                        Map < String, Object > docUsers = new HashMap<>();
+                                        String email = user.getEmail();
+                                        docUsers.put("ID", user.getUid());
+                                        docUsers.put("isVerified", false);
+                                        docUsers.put("LastName", account.getFamilyName());
+                                        docUsers.put("FirstName", account.getGivenName());
+                                        docUsers.put("MiddleName", "");
+                                        docUsers.put("Sex", "");
+                                        docUsers.put("BirthDate", "");
+                                        docUsers.put("MobileNumber", "");
+                                        docUsers.put("Email", account.getEmail());
+                                        docUsers.put("profileComplete", false);
+
+                                        //ADD TO DB
+                                        db.collection("users").document(user.getUid()).set(docUsers)
+                                                .addOnSuccessListener(unused -> {
+                                                    Toast.makeText(getApplicationContext(), "Successful db input", Toast.LENGTH_SHORT).show();
+                                                    //Log.d(TAG, "DocumentSnapshot successfully written!");
+                                                })
+                                                .addOnFailureListener(e -> {
+                                                    Toast.makeText(getApplicationContext(), "Unsuccessful", Toast.LENGTH_SHORT).show();
+                                                    //Log.w(TAG, "Error writing document", e);
+                                                });
                                         updateUI(user);
-                                    });
+                                    } else { //ACCOUNT EXISTS, COMPLETE THE PROFILE
+                                        colRef.document(user.getUid()).get().addOnSuccessListener(existingDocumentSnapshot -> {
+                                            Boolean isComplete = documentSnapshot.getBoolean("profileComplete");
 
-                                } else {
-                                    // If sign in fails, display a message to the user.
-                                    Toast.makeText(getApplicationContext(), "Failed to sign in w/goog", Toast.LENGTH_SHORT).show();
-                                    Log.w(TAG, "signInWithCredential:failure", task1.getException());
-                                    //Snackbar.make(mBinding.mainLayout, "Authentication Failed.", Snackbar.LENGTH_SHORT).show();
-                                    updateUI(null);
-                                }
-                            });
+                                            while(isComplete == null) {
+                                                isComplete = documentSnapshot.getBoolean("profileComplete");
+                                            }
 
-                } catch (ApiException e) {
-                    Toast.makeText(getApplicationContext(), "Catch", Toast.LENGTH_SHORT).show();
-                    e.printStackTrace();
-                }
-            } else if(!isAccountComplete(user.getEmail())) {
-                Log.d("isAccountComplete", "onActivityResult(): else if(): Result: " + isAccountComplete(user.getEmail()));
-                completeGoogleProfile();
+                                            if(!isComplete) { //IF PROFILE INCOMPLETE, FILL UP FORM
+                                                Log.d("isAccountComplete", "onActivityResult(): else if(): Result: Account exists");
+                                                completeGoogleProfile();
+                                            } else { //PROFILE COMPLETE, GO TO LANDING
+                                                Intent landingPage = new Intent (LoginActivity.this, LandingActivity.class);
+                                                startActivity(landingPage);
+                                            }
+                                        });
+                                    }
+                                });
+                            } else {
+                                // If sign in fails, display a message to the user.
+                                Toast.makeText(getApplicationContext(), "Failed to sign in w/goog", Toast.LENGTH_SHORT).show();
+                                Log.w(TAG, "signInWithCredential:failure", task1.getException());
+                                //Snackbar.make(mBinding.mainLayout, "Authentication Failed.", Snackbar.LENGTH_SHORT).show();
+                                updateUI(null);
+                            }
+                        });
+            } catch (ApiException e) {
+                Toast.makeText(getApplicationContext(), "Catch", Toast.LENGTH_SHORT).show();
+                e.printStackTrace();
             }
         }
     }
@@ -342,48 +375,27 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
         finish();
     }
 
-    public boolean isAccountExisting(String email) {
-        AtomicBoolean exists = new AtomicBoolean(false);
-
-        db.collection("users").get().addOnCompleteListener(task -> {
-            if(task.isSuccessful()) {
-                for(QueryDocumentSnapshot userSnap : task.getResult()) {
-                    if(userSnap.getString("Email").equals(email)) { //EMAIL IN DB
-                        exists.set(true);
-                    }
-                }
-            } else {
-                Log.d("isAccountComplete", "Failed to fetch in DB");
-            }
-        });
-
-        Handler handler = new Handler();
-        handler.postDelayed(new Runnable() {
-            public void run() {
-                // Actions to do after 5 seconds
-//                Log.d("userSnap", "isAccountComplete result outside if: " + complete.get());
-                exists.get();
-            }
-        }, 5000);
-
-        return exists.get();
-    }
-
-    public boolean isAccountComplete(String email) {
-        AtomicBoolean complete = new AtomicBoolean(false);
-        CollectionReference colRef = db.collection("users");
-
+    public void determineNextActivity(String uid, String email) {
         colRef.get().addOnCompleteListener(task -> {
             if(task.isSuccessful()) {
                 for(QueryDocumentSnapshot userSnap : task.getResult()) {
-                    if(email.equals(userSnap.getString("Email"))) { //EMAIL IN DB
+                    if(userSnap.getString("Email").equals(email)) { //EMAIL IN DB
                         Log.d("userSnap", "userSnap.getString = " + userSnap.getString("Email"));
                         Log.d("userSnap", "user's email to match = " + email);
                         Log.d("userSnap", "Are they equal? Answer: " + userSnap.getString("Email").equals(email));
-                        if(userSnap.getBoolean("profileComplete")) {
-                            Log.d("userSnap", "is profile complete? = " + userSnap.getBoolean("profileComplete"));
-                            complete.set(true);
-                            Log.d("userSnap", "isAccountComplete result inside if: " + complete.get());
+                        Boolean isComplete = userSnap.getBoolean("profileComplete");
+
+                        while(isComplete == null) {
+                            isComplete = userSnap.getBoolean("profileComplete");
+                        }
+
+                        if(isComplete != null) {
+                            if(isComplete) { //PROFILE IS COMPLETE, GO TO LANDING ON STARTUP
+                                Log.d("userSnap", "is profile complete? = " + userSnap.getBoolean("profileComplete"));
+                                Intent landingPage = new Intent (LoginActivity.this, LandingActivity.class);
+                                startActivity(landingPage);
+                                Log.d("userSnap", "isAccountComplete result inside if: " + isComplete);
+                            }
                         }
                     }
                 }
@@ -391,16 +403,6 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                 Log.d("isAccountComplete", "Failed to fetch in DB");
             }
         });
-
-        Handler handler = new Handler();
-        handler.postDelayed(new Runnable() {
-            public void run() {
-                // Actions to do after 5 seconds
-                Log.d("userSnap", "isAccountComplete result outside if: " + complete.get());
-                complete.get();
-            }
-        }, 5000);
-        return complete.get();
     }
 
     public void userSignUp(View view) {
