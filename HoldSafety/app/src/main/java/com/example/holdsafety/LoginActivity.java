@@ -4,6 +4,7 @@ import static android.content.ContentValues.TAG;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.TextUtils;
@@ -66,7 +67,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
     protected void onStart(){
         super.onStart();
         //check if user is already logged in
-        user = mAuth.getCurrentUser();
+        Log.d("userSnap", user.getEmail());
         if(user != null && isAccountComplete(user.getEmail())){
             Log.d("isAccountComplete", "onStart(): Result: " + isAccountComplete(user.getEmail()));
             Intent intent = new Intent(LoginActivity.this, LandingActivity.class);
@@ -356,6 +357,15 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
             }
         });
 
+        Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            public void run() {
+                // Actions to do after 5 seconds
+//                Log.d("userSnap", "isAccountComplete result outside if: " + complete.get());
+                exists.get();
+            }
+        }, 5000);
+
         return exists.get();
     }
 
@@ -366,11 +376,11 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
         colRef.get().addOnCompleteListener(task -> {
             if(task.isSuccessful()) {
                 for(QueryDocumentSnapshot userSnap : task.getResult()) {
-                    if(userSnap.getString("Email").equals(email)) { //EMAIL IN DB
+                    if(email.equals(userSnap.getString("Email"))) { //EMAIL IN DB
                         Log.d("userSnap", "userSnap.getString = " + userSnap.getString("Email"));
                         Log.d("userSnap", "user's email to match = " + email);
                         Log.d("userSnap", "Are they equal? Answer: " + userSnap.getString("Email").equals(email));
-                        if(userSnap.getBoolean("profileComplete") == true) {
+                        if(userSnap.getBoolean("profileComplete")) {
                             Log.d("userSnap", "is profile complete? = " + userSnap.getBoolean("profileComplete"));
                             complete.set(true);
                             Log.d("userSnap", "isAccountComplete result inside if: " + complete.get());
@@ -382,11 +392,18 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
             }
         });
 
-        Log.d("userSnap", "isAccountComplete result outside if: " + complete.get());
+        Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            public void run() {
+                // Actions to do after 5 seconds
+                Log.d("userSnap", "isAccountComplete result outside if: " + complete.get());
+                complete.get();
+            }
+        }, 5000);
         return complete.get();
     }
 
-    public void userSignUp(View view){
+    public void userSignUp(View view) {
         Intent intent = new Intent (this, RegisterActivity.class);
         startActivity(intent);
     }

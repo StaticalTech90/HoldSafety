@@ -140,7 +140,7 @@ public class RegisterGoogleActivity extends AppCompatActivity {
         Pattern mobileNumberPattern = Pattern.compile(mobileNumberRegex);
 
         String userId = user.getUid();
-//        String uEmail = user.getEmail();
+        String uEmail = user.getEmail();
         String middleName = etMiddleName.getText().toString();
         String birthDate = etBirthDate.getText().toString().trim();
         String mobileNo = etMobileNo.getText().toString();
@@ -162,12 +162,14 @@ public class RegisterGoogleActivity extends AppCompatActivity {
             }
 
             docUsers.put("ID", user.getUid());
+            docUsers.put("Email", uEmail);
             docUsers.put("LastName", lastName);
             docUsers.put("FirstName", firstName);
             docUsers.put("MiddleName", middleName);
             docUsers.put("BirthDate", birthDate);
             docUsers.put("Sex", sex);
             docUsers.put("MobileNumber", mobileNo);
+            docUsers.put("isVerified", false);
             docUsers.put("profileComplete", true);
 
             db.collection("users").document(userId).set(docUsers)
