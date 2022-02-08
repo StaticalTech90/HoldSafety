@@ -3,7 +3,6 @@ package com.example.holdsafety;
 import static android.content.ContentValues.TAG;
 
 import android.Manifest;
-import android.annotation.SuppressLint;
 import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -47,7 +46,6 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -65,13 +63,13 @@ public class RegisterGoogleActivity extends AppCompatActivity {
     TextView lblName;
     Button btnProceed, btnUpload;
     Spinner spinnerSex;
-    public Uri imageURI;
+    static Uri imageURI;
     String idUri;
 
     FirebaseUser user;
     FirebaseAuth mAuth;
     FirebaseFirestore db = FirebaseFirestore.getInstance();
-    StorageReference imageRef = FirebaseStorage.getInstance().getReference("id");
+    StorageReference imageRef;
     DocumentReference docRef;
 
     final Calendar calendar = Calendar.getInstance();
@@ -79,6 +77,7 @@ public class RegisterGoogleActivity extends AppCompatActivity {
     TextView lblLink;
     String firstName, lastName, email, selectedSex;
     Date birthDate;
+    Map<String, Object> docUsers = new HashMap<>();
 
     private static final int EXTERNAL_STORAGE_REQ_CODE = 1000;
 
@@ -90,6 +89,7 @@ public class RegisterGoogleActivity extends AppCompatActivity {
         //Get data from db and auto-input in the form
         mAuth = FirebaseAuth.getInstance();
         user = mAuth.getCurrentUser();
+        imageRef = FirebaseStorage.getInstance().getReference("id");
 
         lblLink = findViewById(R.id.txtImageLink);
         etMiddleName = findViewById(R.id.txtMiddleName);
@@ -113,6 +113,8 @@ public class RegisterGoogleActivity extends AppCompatActivity {
         //Upload Image
         btnUpload.setOnClickListener(v -> { pickImage(); });
 
+        btnProceed.setOnClickListener(this::userRegister);
+
         if(user != null) {
             docRef = db.collection("users").document(user.getUid());
             docRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
@@ -134,7 +136,6 @@ public class RegisterGoogleActivity extends AppCompatActivity {
     //refactored userRegister onClickListener into independent function
     public void userRegister(View view){
         user = mAuth.getCurrentUser();
-        Map<String, Object> docUsers = new HashMap<>();
         String mobileNumberRegex = "^(09|\\+639)\\d{9}$";
         Pattern mobileNumberPattern = Pattern.compile(mobileNumberRegex);
 
@@ -156,32 +157,29 @@ public class RegisterGoogleActivity extends AppCompatActivity {
         } else if(etMobileNo.getText().length() != 11) {
             etMobileNo.setError("Please enter a valid mobile number");
         } else {
-//            docUsers.put("ID", user.getUid());
-//            docUsers.put("LastName", lastName);
-//            docUsers.put("FirstName", firstName);
-//            docUsers.put("Email", uEmail);
-//            docUsers.put("isVerified", false);
+            if (!lblLink.getText().equals("")) {
+                uploadPhotoToStorage();
+            }
 
+            docUsers.put("ID", user.getUid());
+            docUsers.put("LastName", lastName);
+            docUsers.put("FirstName", firstName);
             docUsers.put("MiddleName", middleName);
             docUsers.put("BirthDate", birthDate);
             docUsers.put("Sex", sex);
             docUsers.put("MobileNumber", mobileNo);
             docUsers.put("profileComplete", true);
 
-            if(!lblLink.getText().equals("")){
-                uploadPhotoToStorage();
-            }
-
-            docUsers.put("imageId", idUri);
-
-            db.collection("users").document(userId).update(docUsers)
+            db.collection("users").document(userId).set(docUsers)
                     .addOnSuccessListener(new OnSuccessListener<Void>() {
                         @Override
                         public void onSuccess(Void aVoid) {
-                            Toast.makeText(getApplicationContext(), "DocumentSnapshot successfully written!", Toast.LENGTH_SHORT).show();
-                            Log.d(TAG, "DocumentSnapshot successfully written!");
 
-                            Intent landing = new Intent(RegisterGoogleActivity.this, LandingActivity.class);
+//                            Toast.makeText(getApplicationContext(), "DocumentSnapshot successfully written!", Toast.LENGTH_SHORT).show();
+//                            Log.i("passed", "url"+idUri);
+
+                            Intent landing = new Intent(RegisterGoogleActivity.this,
+                                    LandingActivity.class);
                             startActivity(landing);
                             finish();
                         }
@@ -189,46 +187,61 @@ public class RegisterGoogleActivity extends AppCompatActivity {
                     .addOnFailureListener(new OnFailureListener() {
                         @Override
                         public void onFailure(@NonNull Exception e) {
-                            Toast.makeText(getApplicationContext(), "Error writing document", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getApplicationContext(),
+                                    "Error writing document",
+                                    Toast.LENGTH_SHORT).show();
                             Log.w(TAG, "Error writing document", e);
                         }
                     });
-        }
+            }
     }
 
-    //PUT IMAGE UPLOAD HERE
+    //Since the methods here are async, set this value ahead of the rest of the document fields
     private void uploadPhotoToStorage() {
-        if (!lblLink.getText().equals("")) {
-            //UPLOAD TO FIREBASE STORAGE
             imageRef.child(user.getUid())
                     .putFile(Uri.parse(lblLink.getText().toString()))
                     .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                              @Override
-                              public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                                  Toast.makeText(RegisterGoogleActivity.this,
-                                          "Upload successful",
-                                          Toast.LENGTH_SHORT).show();
+                        @Override
+                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+//                            Toast.makeText(RegisterGoogleActivity.this,
+//                                    "Upload successful: " + taskSnapshot.toString(),
+//                                    Toast.LENGTH_SHORT).show();
+                            imageRef.child(user.getUid()).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                                @Override
+                                public void onSuccess(Uri uri) {
+                                    idUri = String.valueOf(uri);
+                                    docUsers.put("imgUri", idUri);
+                                    Log.i("URI gDUrl()", idUri);
 
-                                  imageRef.child(user.getUid()+".jpg").getDownloadUrl()
-                                          .addOnCompleteListener(new OnCompleteListener<Uri>() {
-                                      @Override
-                                      public void onComplete(@NonNull Task<Uri> task) {
-                                          idUri = task.getResult().toString();
-                                      }
-                                  });
-                              }
-                          }).addOnFailureListener(new OnFailureListener() {
+                                    db.collection("users").document(user.getUid()).set(docUsers)
+                                            .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                @Override
+                                                public void onSuccess(Void aVoid) {
+                                                    Toast.makeText(getApplicationContext(),
+                                                            "pushed image to document",
+                                                            Toast.LENGTH_SHORT).show();
+                                                    Log.i(TAG, "Image pushed");
+                                                }
+                                            })
+                                            .addOnFailureListener(new OnFailureListener() {
+                                                @Override
+                                                public void onFailure(@NonNull Exception e) {
+                                                    Toast.makeText(getApplicationContext(),
+                                                            "Error writing document",
+                                                            Toast.LENGTH_SHORT).show();
+                                                    Log.w(TAG, "Error writing document", e);
+                                                }
+                                            });
+                                }
+                            });
+                        }
+                    }).addOnFailureListener(new OnFailureListener() {
                 @Override
                 public void onFailure(@NonNull Exception e) {
                     Toast.makeText(RegisterGoogleActivity.this, "Upload failed.",
                             Toast.LENGTH_SHORT).show();
                 }
-            }).addOnProgressListener(snapshot -> {
-
-                double progress = (100.0 * snapshot.getBytesTransferred() / snapshot.getTotalByteCount());
-
             });
-        }
     }
 
     private void pickImage() {
@@ -262,6 +275,7 @@ public class RegisterGoogleActivity extends AppCompatActivity {
                         Intent data = result.getData();
                         if (data != null) {
                             if (data.getData() != null) {
+
                                 imageURI = data.getData();
                                 lblLink.setText(imageURI.toString());
                             }
@@ -294,7 +308,7 @@ public class RegisterGoogleActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         if(requestCode==1 && resultCode==RESULT_OK && data!=null && data.getData()!=null){
             imageURI = data.getData();
-            Toast.makeText(getApplicationContext(), "Selected " + imageURI, Toast.LENGTH_SHORT).show();
+            //Toast.makeText(getApplicationContext(), "Selected " + imageURI, Toast.LENGTH_SHORT).show();
             //uploadPicture();
         }
     }
@@ -339,10 +353,8 @@ public class RegisterGoogleActivity extends AppCompatActivity {
                 // First item is disable and it is used for hint
                 if(position > 0){
                     // Notify the selected item text
-                    Toast.makeText
-                            (getApplicationContext(), "Selected : " + selectedItemText, Toast.LENGTH_SHORT)
-                            .show();
-                    selectedSex = (String) spinnerSex.getSelectedItem().toString().trim();
+                    //Toast.makeText(getApplicationContext(), "Selected : " + selectedItemText, Toast.LENGTH_SHORT).show();
+                    selectedSex = spinnerSex.getSelectedItem().toString().trim();
                 }
             }
 
@@ -363,7 +375,7 @@ public class RegisterGoogleActivity extends AppCompatActivity {
     }
 
     private void selectBirthdate() {
-        DatePickerDialog.OnDateSetListener date =new DatePickerDialog.OnDateSetListener() {
+        DatePickerDialog.OnDateSetListener date = new DatePickerDialog.OnDateSetListener() {
             @Override
             public void onDateSet(DatePicker view, int year, int month, int day) {
                 calendar.set(Calendar.YEAR, year);

@@ -36,12 +36,14 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
 import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
 import java.io.File;
 import java.text.ParseException;
@@ -64,7 +66,10 @@ public class RegisterActivity extends AppCompatActivity {
     StorageReference imageRef = FirebaseStorage.getInstance().getReference("id");
     FirebaseUser user;
 
+    HashMap<String, Object> docUsers = new HashMap<>();
+
     final Calendar calendar = Calendar.getInstance();
+    String idUri;
 
     TextView lblLink;
 
@@ -270,7 +275,6 @@ public class RegisterActivity extends AppCompatActivity {
     }
 
     public void userRegister(View view) throws ParseException {
-        HashMap<String, Object> docUsers = new HashMap<>();
 
         String emailRegex = "^(.+)@(.+)$";
         String passRegex = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=\\S+$).{8,}$";
@@ -357,8 +361,9 @@ public class RegisterActivity extends AppCompatActivity {
                             docUsers.put("isVerified", false);
 
                             //TODO: Ung URL ng image i-sasave sa document ng user
-                            if(!lblLink.getText().equals("")){ uploadPhotoToStorage(); }
-                            docUsers.put("image-id", imageRef.getPath());
+                            if (!lblLink.getText().equals("")) {
+                                uploadPhotoToStorage();
+                            }
 
                             //Verify user's email
                             Intent otp = new Intent(RegisterActivity.this, RegisterOTPActivity.class);
@@ -398,24 +403,50 @@ public class RegisterActivity extends AppCompatActivity {
 
     //PUT IMAGE UPLOAD HERE
     private void uploadPhotoToStorage() {
-        if (!lblLink.getText().equals("")) {
-            //UPLOAD TO FIREBASE STORAGE
-            imageRef.child(user.getUid())
-                    .putFile(Uri.parse(lblLink.getText().toString()))
-                    .addOnSuccessListener(taskSnapshot -> Toast.makeText(RegisterActivity.this,
-                            "Upload successful",
-                            Toast.LENGTH_SHORT).show()).addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception e) {
+        imageRef.child(user.getUid())
+                .putFile(Uri.parse(lblLink.getText().toString()))
+                .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                    @Override
+                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+//                            Toast.makeText(RegisterGoogleActivity.this,
+//                                    "Upload successful: " + taskSnapshot.toString(),
+//                                    Toast.LENGTH_SHORT).show();
+                        imageRef.child(user.getUid()).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                            @Override
+                            public void onSuccess(Uri uri) {
+                                idUri = String.valueOf(uri);
+                                docUsers.put("imgUri", idUri);
+                                Log.i("URI gDUrl()", idUri);
 
-                    Toast.makeText(RegisterActivity.this, "Upload failed.", Toast.LENGTH_SHORT).show();
-                }
-            }).addOnProgressListener(snapshot -> {
-
-                double progress = (100.0 * snapshot.getBytesTransferred() / snapshot.getTotalByteCount());
-
-            });
-        }
+                                db.collection("users").document(user.getUid()).set(docUsers)
+                                        .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                            @Override
+                                            public void onSuccess(Void aVoid) {
+                                                Toast.makeText(getApplicationContext(),
+                                                        "pushed image to document",
+                                                        Toast.LENGTH_SHORT).show();
+                                                Log.i(TAG, "Image pushed");
+                                            }
+                                        })
+                                        .addOnFailureListener(new OnFailureListener() {
+                                            @Override
+                                            public void onFailure(@NonNull Exception e) {
+                                                Toast.makeText(getApplicationContext(),
+                                                        "Error writing document",
+                                                        Toast.LENGTH_SHORT).show();
+                                                Log.w(TAG, "Error writing document", e);
+                                            }
+                                        });
+                            }
+                        });
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Toast.makeText(RegisterActivity.this, "Upload failed.",
+                        Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     private void pickImage() {
