@@ -687,8 +687,6 @@ public class LandingActivity extends AppCompatActivity {
                 docDetails.put("Barangay", nearestBrgy);
                 docDetails.put("Report Date", currentDateandTime);
 
-                //TODO: PUT VIDEO LINK IN DB
-
                 db = FirebaseFirestore.getInstance();
 
                 //MAKE THE USER ID VISIBLE FOR QUERIES BY ADDING FIELD
@@ -700,6 +698,17 @@ public class LandingActivity extends AppCompatActivity {
                 DocumentReference docRefDetails = db.collection("reportUser").document(userID).collection("reportDetails").document();
                 reportID = docRefDetails.getId();
                 Log.d("DocID", "documentId: " + reportID);
+
+                //TODO: PUT VIDEO LINK IN reportUser DB
+                //putExtras for evidence push to reportId
+                Intent audioRecordIntent = new Intent(this, AudioRecording.class);
+                audioRecordIntent.putExtra("reportId", reportID);
+                audioRecordIntent.putExtra("userId", userID);
+
+                Intent videoRecordIntent = new Intent(this, AutoRecordingActivity.class);
+                videoRecordIntent.putExtra("reportId", reportID);
+                videoRecordIntent.putExtra("userId", userID);
+
 
                 //ADD TO USER-SORTED COLLECTION
                 docRefDetails.set(docDetails)

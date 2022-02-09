@@ -7,6 +7,7 @@ import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
+import android.content.Intent;
 import android.graphics.PorterDuff;
 import android.media.MediaRecorder;
 import android.net.Uri;
@@ -26,6 +27,7 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.OnProgressListener;
@@ -45,15 +47,19 @@ public class AudioRecording extends AppCompatActivity {
     boolean isRecording = false;
     MediaRecorder mediaRecorder;
 
+    Intent intent = getIntent();
+    String userID = intent.getStringExtra("userId");
+    String reportID = intent.getStringExtra("reportId");
+    String idUri;
+
     FirebaseUser user;
     FirebaseAuth mAuth;
     ProgressBar progressBar;
     FirebaseFirestore db = FirebaseFirestore.getInstance();
+    DocumentReference userReportDB = db.collection("reportUser").document(userID).collection("reportDetails").document(reportID);
 
     Map<String, Object> docUsers = new HashMap<>();
     StorageReference audioRef;
-    String idUri;
-
 
     TextView txtAudioRecording;
     File recordingFile;
@@ -63,7 +69,7 @@ public class AudioRecording extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_audio_recording);
 
-        audioRef = FirebaseStorage.getInstance().getReference("emergencyAudios/");
+        audioRef = FirebaseStorage.getInstance().getReference("emergencyAudios");
 
         user = mAuth.getCurrentUser();
         btnAudio = findViewById(R.id.btnRecordAudio);
@@ -153,7 +159,7 @@ public class AudioRecording extends AppCompatActivity {
         //add to firebase
         FirebaseStorage.getInstance()
                 .getReference("emergencyAudios")
-                .child(mAuth.getCurrentUser().getUid())
+                .child(userID)
                 .child(recordingFile.getName())
                 .putFile(Uri.fromFile(recordingFile))
                 .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
@@ -162,19 +168,19 @@ public class AudioRecording extends AppCompatActivity {
                         Toast.makeText(AudioRecording.this, "Upload successful", Toast.LENGTH_SHORT).show();
                         setHandler();
 
-                        audioRef.child(user.getUid()).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                        audioRef.child(user.getUid()).child(recordingFile.getName()).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                             @Override
                             public void onSuccess(Uri uri) {
                                 idUri = String.valueOf(uri);
-                                docUsers.put("audioUri", idUri);
+                                docUsers.put("Evidence", idUri);
                                 Log.i("URI gDUrl()", idUri);
 
-                                db.collection("users").document(user.getUid()).set(docUsers)
+                                userReportDB.set(docUsers)
                                         .addOnSuccessListener(new OnSuccessListener<Void>() {
                                             @Override
                                             public void onSuccess(Void aVoid) {
                                                 Toast.makeText(getApplicationContext(),
-                                                        "pushed image to document",
+                                                        "pushed audio to report",
                                                         Toast.LENGTH_SHORT).show();
                                                 Log.i(TAG, "Audio pushed");
                                             }

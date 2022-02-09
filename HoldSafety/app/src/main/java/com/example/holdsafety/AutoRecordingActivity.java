@@ -32,6 +32,7 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.OnProgressListener;
@@ -53,10 +54,17 @@ public class AutoRecordingActivity extends AppCompatActivity {
     FrameLayout cameraLayout;
     File recordingFile;
     final String tag = "AUTORECORD";
+
+    Intent intent = getIntent();
+    String userID = intent.getStringExtra("userId");
+    String reportID = intent.getStringExtra("reportId");
+
     FirebaseAuth mAuth;
     FirebaseUser user;
 
     FirebaseFirestore db = FirebaseFirestore.getInstance();
+    DocumentReference userReportDB = db.collection("reportUser").document(userID).collection("reportDetails").document(reportID);
+
     Map<String, Object> docUsers = new HashMap<>();
     StorageReference videoRef;
     String idUri;
@@ -73,9 +81,9 @@ public class AutoRecordingActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_auto_recording);
 
-        videoRef = FirebaseStorage.getInstance().getReference("emergencyVideos/");
-        user = mAuth.getCurrentUser();
+        videoRef = FirebaseStorage.getInstance().getReference("emergencyVideos");
 
+        user = mAuth.getCurrentUser();
         btnRecord = findViewById(R.id.btnRecord);
         txtIsRecording = findViewById(R.id.cardIsRecording);
         progressBar = findViewById(R.id.progressBar);
@@ -132,7 +140,7 @@ public class AutoRecordingActivity extends AppCompatActivity {
         //add to firebase
         FirebaseStorage.getInstance()
                 .getReference("emergencyVideos")
-                .child(mAuth.getCurrentUser().getUid())
+                .child(userID)
                 .child(recordingFile.getName())
                 .putFile(Uri.fromFile(recordingFile))
                 .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
@@ -141,14 +149,14 @@ public class AutoRecordingActivity extends AppCompatActivity {
                         Toast.makeText(AutoRecordingActivity.this, "Upload successful", Toast.LENGTH_SHORT).show();
                         setHandler();
 
-                        videoRef.child(user.getUid()).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                        videoRef.child(user.getUid()).child(recordingFile.getName()).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                             @Override
                             public void onSuccess(Uri uri) {
                                 idUri = String.valueOf(uri);
-                                docUsers.put("video", idUri);
+                                docUsers.put("Evidence", idUri);
                                 Log.i("URI gDUrl()", idUri);
 
-                                db.collection("users").document(user.getUid()).set(docUsers)
+                                userReportDB.set(docUsers)
                                         .addOnSuccessListener(new OnSuccessListener<Void>() {
                                             @Override
                                             public void onSuccess(Void aVoid) {
