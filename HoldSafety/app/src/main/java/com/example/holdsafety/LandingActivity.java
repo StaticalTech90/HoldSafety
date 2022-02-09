@@ -116,6 +116,8 @@ public class LandingActivity extends AppCompatActivity {
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
 
         seconds = findViewById(R.id.countdown);
+        description = findViewById(R.id.description);
+
         btnSafetyButton = findViewById(R.id.btnSafetyButton);
         btnMenu = findViewById(R.id.menuButton);
 
@@ -131,7 +133,9 @@ public class LandingActivity extends AppCompatActivity {
                 //wait for timer to countdown
                 public void onTick(long millisUntilFinished) {
                     remainTime = millisUntilFinished / 1000;
-                    seconds.setText(Long.toString(remainTime));
+                    description.setVisibility(View.INVISIBLE);
+                    seconds.setVisibility(View.VISIBLE);
+                    seconds.setText(Long.toString(remainTime+1));
                 }
 
                 //timer executes this code once finished
@@ -153,6 +157,8 @@ public class LandingActivity extends AppCompatActivity {
                     cTimer.start();
                 } else if (event.getAction() == MotionEvent.ACTION_UP) { //button released
                     int timer = (int) (System.currentTimeMillis() - this.firstTouchTS) / 1000; //2 second timer
+                    description.setVisibility(View.VISIBLE);
+                    seconds.setVisibility(View.INVISIBLE);
 
                     //for debug
                     //Toast.makeText(getApplicationContext(), "Time Pressed: " + timer, Toast.LENGTH_SHORT).show();
@@ -161,7 +167,7 @@ public class LandingActivity extends AppCompatActivity {
                     cTimer.cancel();
 
                     //reset seconds
-                    seconds.setText(Long.toString(remainTime));
+                    seconds.setText(Long.toString(timer));
                 }
                 return false;
             }
