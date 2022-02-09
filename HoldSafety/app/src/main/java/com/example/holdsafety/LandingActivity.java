@@ -83,6 +83,7 @@ public class LandingActivity extends AppCompatActivity {
     private int timer;
     long remainTime;
     Map<String, Object> docDetails = new HashMap<>(); // for reports in db
+    HashMap<String, String> vidLinkRequirements = new HashMap<>(); // for vid in db
 
     FusedLocationProviderClient fusedLocationProviderClient;
 
@@ -665,12 +666,6 @@ public class LandingActivity extends AppCompatActivity {
                         saveToDB();
                     }
                 });
-
-        HashMap<String, String> vidLinkRequirements = new HashMap<>();
-        vidLinkRequirements.put("nearestBrgy", nearestBrgy);
-        vidLinkRequirements.put("userID", userID);
-        vidLinkRequirements.put("reportID", reportID);
-
         Intent recordingCountdown = new Intent(LandingActivity.this, RecordingCountdownActivity.class);
         recordingCountdown.putExtra("vidLinkRequirements", vidLinkRequirements);
         startActivity(recordingCountdown);
@@ -692,7 +687,7 @@ public class LandingActivity extends AppCompatActivity {
                 docDetails.put("Barangay", nearestBrgy);
                 docDetails.put("Report Date", currentDateandTime);
                 //TODO: PUT VIDEO LINK IN DB
-                docDetails.put("Video Link", "");
+                docDetails.put("Evidence", "");
 
                 db = FirebaseFirestore.getInstance();
 
@@ -705,6 +700,10 @@ public class LandingActivity extends AppCompatActivity {
                 DocumentReference docRefDetails = db.collection("reportUser").document(userID).collection("reportDetails").document();
                 reportID = docRefDetails.getId();
                 Log.d("DocID", "documentId: " + reportID);
+
+                vidLinkRequirements.put("userID", userID);
+                vidLinkRequirements.put("nearestBrgy", nearestBrgy);
+                vidLinkRequirements.put("reportID", reportID);
 
                 //ADD TO USER-SORTED COLLECTION
                 docRefDetails.set(docDetails)

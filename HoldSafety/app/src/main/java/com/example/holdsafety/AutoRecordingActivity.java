@@ -141,50 +141,52 @@ public class AutoRecordingActivity extends AppCompatActivity {
                 .child(recordingFile.getName())
                 .putFile(Uri.fromFile(recordingFile))
                 .addOnSuccessListener(taskSnapshot -> {
+                    Log.d("VidUpload", "Vid Uploaded to storage");
                     Toast.makeText(AutoRecordingActivity.this, "Upload successful", Toast.LENGTH_SHORT).show();
                     setHandler();
 
                     //FETCH VIDEO LINK
-                    videoRef.child(user.getUid()).getDownloadUrl().addOnSuccessListener(uri -> {
-                        Log.d("Video to Document", "Fetching video URI success");
-                        idUri = String.valueOf(uri);
-                        docUsers.put("video", idUri);
-                        Log.i("URI gDUrl()", idUri);
+                    videoRef.child(user.getUid() + "/" + recordingFile.getName()).getDownloadUrl()
+                            .addOnSuccessListener(uri -> {
+                                Log.d("Video to Document", "Fetching video URI success");
+                                idUri = String.valueOf(uri);
+                                docUsers.put("Evidence", idUri);
+                                Log.i("URI gDUrl()", idUri);
 
-//                            db.collection("users").document(user.getUid()).set(docUsers)
-//                                    .addOnSuccessListener(aVoid -> {
-//                                        Toast.makeText(getApplicationContext(),
-//                                                "pushed video to document",
-//                                                Toast.LENGTH_SHORT).show();
-//                                        Log.i(TAG, "Video pushed");
-//                                    })
-//                                    .addOnFailureListener(e -> {
-//                                        Toast.makeText(getApplicationContext(),
-//                                                "Error writing document",
-//                                                Toast.LENGTH_SHORT).show();
-//                                        Log.w(TAG, "Error writing document", e);
-//                                    });
+        //                            db.collection("users").document(user.getUid()).set(docUsers)
+        //                                    .addOnSuccessListener(aVoid -> {
+        //                                        Toast.makeText(getApplicationContext(),
+        //                                                "pushed video to document",
+        //                                                Toast.LENGTH_SHORT).show();
+        //                                        Log.i(TAG, "Video pushed");
+        //                                    })
+        //                                    .addOnFailureListener(e -> {
+        //                                        Toast.makeText(getApplicationContext(),
+        //                                                "Error writing document",
+        //                                                Toast.LENGTH_SHORT).show();
+        //                                        Log.w(TAG, "Error writing document", e);
+        //                                    });
 
-                        //UPDATE THE "Video Link" FIELD IN REPORT DB (USER)
-                        db.collection("reportUser").document(userID).update(docUsers)
-                                .addOnSuccessListener(unused -> {
-                                    Log.d("Video to Document", "Success! pushed to reportUser, id " + userID + " w/vid ID " + idUri);
-                                })
-                                .addOnFailureListener(e -> {
-                                    Log.d("Video to Document", "Failed to save to reportUser");
-                                });
-                        //UPDATE THE "Video Link" FIELD IN REPORT DB (ADMIN)
-                        db.collection("reportAdmin").document(nearestBrgy).update(docUsers)
-                                .addOnSuccessListener(unused -> {
-                                    Log.d("Video to Document", "Success! pushed to reportAdmin, id " + nearestBrgy + " w/vid ID " + idUri);
-                                })
-                                .addOnFailureListener(e -> {
-                                    Log.d("Video to Document", "Failed to save to reportAdmin");
-                                });
-                    })
-                    .addOnFailureListener(e -> {
-                        Log.d("Video to Document", "Fetching video URI failed. Log: " + e.getMessage());
-                    });
+                                //UPDATE THE "Video Link" FIELD IN REPORT DB (USER)
+                                db.collection("reportUser").document(userID).collection("reportDetails").document(reportID).update(docUsers)
+                                        .addOnSuccessListener(unused -> {
+                                            Log.d("Video to Document", "Success! pushed to reportUser, id " + userID + " w/vid ID " + idUri);
+                                        })
+                                        .addOnFailureListener(e -> {
+                                            Log.d("Video to Document", "Failed to save to reportUser");
+                                        });
+                                //UPDATE THE "Video Link" FIELD IN REPORT DB (ADMIN)
+                                db.collection("reportAdmin").document(nearestBrgy).collection("reportDetails").document(reportID).update(docUsers)
+                                        .addOnSuccessListener(unused -> {
+                                            Log.d("Video to Document", "Success! pushed to reportAdmin, id " + nearestBrgy + " w/vid ID " + idUri);
+                                        })
+                                        .addOnFailureListener(e -> {
+                                            Log.d("Video to Document", "Failed to save to reportAdmin");
+                                        });
+                            })
+                            .addOnFailureListener(e -> {
+                                Log.d("Video to Document", "Fetching video URI failed. Log: " + e.getMessage());
+                            });
                 })
                 .addOnFailureListener(e -> {
                     Toast.makeText(AutoRecordingActivity.this, "Upload failed: " + e.getMessage(), Toast.LENGTH_SHORT).show();

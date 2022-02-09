@@ -74,7 +74,7 @@ public class ReportsActivity extends AppCompatActivity {
                     txtBarangay.setText(barangay);
                     txtCoordinated.setText(isCoordinated.toString());
                     txtEvidence.setText(evidence);
-                    
+
                     reportView.addView(displayReportView);
 
                 }
