@@ -666,7 +666,14 @@ public class LandingActivity extends AppCompatActivity {
                     }
                 });
 
-        startActivity(new Intent(LandingActivity.this, RecordingCountdownActivity.class));
+        HashMap<String, String> vidLinkRequirements = new HashMap<>();
+        vidLinkRequirements.put("nearestBrgy", nearestBrgy);
+        vidLinkRequirements.put("userID", userID);
+        vidLinkRequirements.put("reportID", reportID);
+
+        Intent recordingCountdown = new Intent(LandingActivity.this, RecordingCountdownActivity.class);
+        recordingCountdown.putExtra("vidLinkRequirements", vidLinkRequirements);
+        startActivity(recordingCountdown);
     }
 
     private void saveToDB() {
@@ -682,18 +689,16 @@ public class LandingActivity extends AppCompatActivity {
                 String lastName = documentSnapshot.getString("LastName");
                 docDetails.put("FirstName", firstName);
                 docDetails.put("LastName", lastName);
-
-                        
                 docDetails.put("Barangay", nearestBrgy);
                 docDetails.put("Report Date", currentDateandTime);
-
                 //TODO: PUT VIDEO LINK IN DB
+                docDetails.put("Video Link", "");
 
                 db = FirebaseFirestore.getInstance();
 
-                //MAKE THE USER ID VISIBLE FOR QUERIES BY ADDING FIELD
+                //MAKE THE USER ID VISIBLE TO QUERIES BY ADDING FIELD
                 Map<String, Object> fillerField = new HashMap<>();
-                fillerField.put("ID", userID);
+                fillerField.put("Field", "filler_for_visibility");
                 db.collection("reportUser").document(userID).set(fillerField);
 
                 //GET THE ID OF THE REPORT TO BE SAVED IN DB

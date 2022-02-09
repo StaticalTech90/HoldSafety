@@ -57,8 +57,7 @@ public class ReportsActivity extends AppCompatActivity {
                     barangay = reportSnap.getString("Barangay");
                     //currently hardcoded values
                     isCoordinated = false;
-                    evidence = "";
-                            //reportSnap.getString("");
+                    evidence = reportSnap.getString("Video Link");
 
                     View displayReportView = getLayoutInflater().inflate(R.layout.report_row, null, false);
 
@@ -75,8 +74,7 @@ public class ReportsActivity extends AppCompatActivity {
                     txtBarangay.setText(barangay);
                     txtCoordinated.setText(isCoordinated.toString());
                     txtEvidence.setText(evidence);
-
-                    //TODO: DI KO PARIN ALAM PANO KUNIN VID LINK SA STORAGE HELP PLES
+                    
                     reportView.addView(displayReportView);
 
                 }

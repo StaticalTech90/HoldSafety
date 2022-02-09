@@ -2,15 +2,7 @@ package com.example.holdsafety;
 
 import static android.content.ContentValues.TAG;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.cardview.widget.CardView;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-
-import android.Manifest;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.graphics.PorterDuff;
 import android.hardware.Camera;
 import android.media.CamcorderProfile;
@@ -24,8 +16,12 @@ import android.util.Log;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ProgressBar;
-import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.cardview.widget.CardView;
+import androidx.core.content.ContextCompat;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -42,8 +38,8 @@ import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Locale;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 public class AutoRecordingActivity extends AppCompatActivity {
@@ -61,6 +57,9 @@ public class AutoRecordingActivity extends AppCompatActivity {
     StorageReference videoRef;
     String idUri;
 
+    HashMap<String, String> vidLinkRequirements;
+    String userID, nearestBrgy, reportID;
+
     FloatingActionButton btnRecord;
     boolean isRecording = false;
     CardView txtIsRecording;
@@ -74,14 +73,20 @@ public class AutoRecordingActivity extends AppCompatActivity {
         setContentView(R.layout.activity_auto_recording);
 
         videoRef = FirebaseStorage.getInstance().getReference("emergencyVideos/");
+        mAuth = FirebaseAuth.getInstance();
         user = mAuth.getCurrentUser();
 
         btnRecord = findViewById(R.id.btnRecord);
         txtIsRecording = findViewById(R.id.cardIsRecording);
         progressBar = findViewById(R.id.progressBar);
         cameraLayout = findViewById(R.id.camera_preview);
-        mAuth = FirebaseAuth.getInstance();
 
+        //FOR VID LINK SAVE TO DB
+        Intent intent = getIntent();
+        vidLinkRequirements = (HashMap<String, String>) intent.getSerializableExtra("vidLinkRequirements");
+        userID = vidLinkRequirements.get("userID");
+        nearestBrgy = vidLinkRequirements.get("nearestBrgy");
+        reportID = vidLinkRequirements.get("reportID");
 
         btnRecord.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -132,60 +137,64 @@ public class AutoRecordingActivity extends AppCompatActivity {
         //add to firebase
         FirebaseStorage.getInstance()
                 .getReference("emergencyVideos")
-                .child(mAuth.getCurrentUser().getUid())
+                .child(user.getUid())
                 .child(recordingFile.getName())
                 .putFile(Uri.fromFile(recordingFile))
-                .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                    @Override
-                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                        Toast.makeText(AutoRecordingActivity.this, "Upload successful", Toast.LENGTH_SHORT).show();
-                        setHandler();
+                .addOnSuccessListener(taskSnapshot -> {
+                    Toast.makeText(AutoRecordingActivity.this, "Upload successful", Toast.LENGTH_SHORT).show();
+                    setHandler();
 
-                        videoRef.child(user.getUid()).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-                            @Override
-                            public void onSuccess(Uri uri) {
-                                idUri = String.valueOf(uri);
-                                docUsers.put("video", idUri);
-                                Log.i("URI gDUrl()", idUri);
+                    //FETCH VIDEO LINK
+                    videoRef.child(user.getUid()).getDownloadUrl().addOnSuccessListener(uri -> {
+                        Log.d("Video to Document", "Fetching video URI success");
+                        idUri = String.valueOf(uri);
+                        docUsers.put("video", idUri);
+                        Log.i("URI gDUrl()", idUri);
 
-                                db.collection("users").document(user.getUid()).set(docUsers)
-                                        .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                            @Override
-                                            public void onSuccess(Void aVoid) {
-                                                Toast.makeText(getApplicationContext(),
-                                                        "pushed video to document",
-                                                        Toast.LENGTH_SHORT).show();
-                                                Log.i(TAG, "Video pushed");
-                                            }
-                                        })
-                                        .addOnFailureListener(new OnFailureListener() {
-                                            @Override
-                                            public void onFailure(@NonNull Exception e) {
-                                                Toast.makeText(getApplicationContext(),
-                                                        "Error writing document",
-                                                        Toast.LENGTH_SHORT).show();
-                                                Log.w(TAG, "Error writing document", e);
-                                            }
-                                        });
-                            }
-                        });
-                    }
+//                            db.collection("users").document(user.getUid()).set(docUsers)
+//                                    .addOnSuccessListener(aVoid -> {
+//                                        Toast.makeText(getApplicationContext(),
+//                                                "pushed video to document",
+//                                                Toast.LENGTH_SHORT).show();
+//                                        Log.i(TAG, "Video pushed");
+//                                    })
+//                                    .addOnFailureListener(e -> {
+//                                        Toast.makeText(getApplicationContext(),
+//                                                "Error writing document",
+//                                                Toast.LENGTH_SHORT).show();
+//                                        Log.w(TAG, "Error writing document", e);
+//                                    });
+
+                        //UPDATE THE "Video Link" FIELD IN REPORT DB (USER)
+                        db.collection("reportUser").document(userID).update(docUsers)
+                                .addOnSuccessListener(unused -> {
+                                    Log.d("Video to Document", "Success! pushed to reportUser, id " + userID + " w/vid ID " + idUri);
+                                })
+                                .addOnFailureListener(e -> {
+                                    Log.d("Video to Document", "Failed to save to reportUser");
+                                });
+                        //UPDATE THE "Video Link" FIELD IN REPORT DB (ADMIN)
+                        db.collection("reportAdmin").document(nearestBrgy).update(docUsers)
+                                .addOnSuccessListener(unused -> {
+                                    Log.d("Video to Document", "Success! pushed to reportAdmin, id " + nearestBrgy + " w/vid ID " + idUri);
+                                })
+                                .addOnFailureListener(e -> {
+                                    Log.d("Video to Document", "Failed to save to reportAdmin");
+                                });
+                    })
+                    .addOnFailureListener(e -> {
+                        Log.d("Video to Document", "Fetching video URI failed. Log: " + e.getMessage());
+                    });
                 })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Toast.makeText(AutoRecordingActivity.this, "Upload failed: " +e.getMessage(), Toast.LENGTH_SHORT).show();
-                        setHandler();
+                .addOnFailureListener(e -> {
+                    Toast.makeText(AutoRecordingActivity.this, "Upload failed: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                    setHandler();
 
-                    }
                 })
-                .addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
-                    @Override
-                    public void onProgress(@NonNull UploadTask.TaskSnapshot snapshot) {
-                        double progress = (100.0 * snapshot.getBytesTransferred() / snapshot.getTotalByteCount());
-                        progressBar.getProgressDrawable().setColorFilter(ContextCompat.getColor(AutoRecordingActivity.this,R.color.light_blue), PorterDuff.Mode.MULTIPLY);
-                        progressBar.setProgress((int) progress);
-                    }
+                .addOnProgressListener(snapshot -> {
+                    double progress = (100.0 * snapshot.getBytesTransferred() / snapshot.getTotalByteCount());
+                    progressBar.getProgressDrawable().setColorFilter(ContextCompat.getColor(AutoRecordingActivity.this,R.color.light_blue), PorterDuff.Mode.MULTIPLY);
+                    progressBar.setProgress((int) progress);
                 });
     }
 

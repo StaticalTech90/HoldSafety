@@ -17,9 +17,12 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import java.util.HashMap;
+
 public class RecordingCountdownActivity extends AppCompatActivity {
     TextView countdownTimer;
     Button btnCancel;
+    HashMap<String, String> vidLinkRequirements;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,6 +31,9 @@ public class RecordingCountdownActivity extends AppCompatActivity {
 
         btnCancel = findViewById(R.id.btnCancel);
         countdownTimer = findViewById(R.id.countdown);
+
+        Intent intent = getIntent();
+        vidLinkRequirements = (HashMap<String, String>) intent.getSerializableExtra("vidLinkRequirements");
 
         CountDownTimer timer = new CountDownTimer(3000, 1000)
         {
@@ -40,7 +46,10 @@ public class RecordingCountdownActivity extends AppCompatActivity {
                 //Toast.makeText(getApplicationContext(), "2 seconds finished", Toast.LENGTH_SHORT).show();
                 //countdownTimer.setText("3");
                 Toast.makeText(getApplicationContext(), "Done Countdown" , Toast.LENGTH_SHORT).show();
-                startActivity(new Intent(RecordingCountdownActivity.this, AutoRecordingActivity.class));
+
+                Intent recordVideo = new Intent(RecordingCountdownActivity.this, AutoRecordingActivity.class);
+                recordVideo.putExtra("vidLinkRequirements", vidLinkRequirements);
+                startActivity(recordVideo);
             }
 
         };
