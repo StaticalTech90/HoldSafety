@@ -20,13 +20,12 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 public class ReportsActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
-    FirebaseUser user;
+    private FirebaseUser user;
     String userID;
     FirebaseFirestore db;
 
     LinearLayout reportView;
     String reportID, location, date, barangay, evidence;
-    Boolean isCoordinated;
 //    RecyclerView recyclerViewReports;
 //    String[] reportID;
 
@@ -37,6 +36,7 @@ public class ReportsActivity extends AppCompatActivity {
 
         mAuth = FirebaseAuth.getInstance();
         user = mAuth.getCurrentUser();
+        assert user != null;
         userID = user.getUid();
         db = FirebaseFirestore.getInstance();
 
@@ -49,15 +49,12 @@ public class ReportsActivity extends AppCompatActivity {
         db.collection("reportUser").document(userID).collection("reportDetails").get().addOnCompleteListener(task -> {
             if(task.isSuccessful()) {
                 for(QueryDocumentSnapshot reportSnap : task.getResult()) {
-
                     reportID = reportSnap.getId();
                     Toast.makeText(this, reportID, Toast.LENGTH_SHORT).show();
                     location = reportSnap.getString("Lat") + ", " + reportSnap.getString("Lon");
                     date = reportSnap.getString("Report Date");
                     barangay = reportSnap.getString("Barangay");
-                    //currently hardcoded values
-                    isCoordinated = false;
-                    evidence = reportSnap.getString("Video Link");
+                    evidence = reportSnap.getString("Evidence");
 
                     View displayReportView = getLayoutInflater().inflate(R.layout.report_row, null, false);
 
@@ -65,18 +62,15 @@ public class ReportsActivity extends AppCompatActivity {
                     TextView txtReportLocation = displayReportView.findViewById(R.id.txtReportLocation);
                     TextView txtDateAndTime = displayReportView.findViewById(R.id.txtDateAndTime);
                     TextView txtBarangay = displayReportView.findViewById(R.id.txtBarangay);
-                    TextView txtCoordinated = displayReportView.findViewById(R.id.txtCoordinated);
                     TextView txtEvidence = displayReportView.findViewById(R.id.txtEvidence);
 
                     txtReportID.setText(reportID);
                     txtReportLocation.setText(location);
                     txtDateAndTime.setText(date);
                     txtBarangay.setText(barangay);
-                    txtCoordinated.setText(isCoordinated.toString());
                     txtEvidence.setText(evidence);
 
                     reportView.addView(displayReportView);
-
                 }
             }
         });

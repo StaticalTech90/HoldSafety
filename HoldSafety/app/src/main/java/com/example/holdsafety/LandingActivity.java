@@ -672,8 +672,7 @@ public class LandingActivity extends AppCompatActivity {
     }
 
     private void saveToDB() {
-        Date currentDate = Calendar.getInstance().getTime();
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mma", Locale.getDefault());
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault());
         String currentDateandTime = sdf.format(new Date());
 
         docRef = db.collection("users").document(userID);
@@ -695,6 +694,7 @@ public class LandingActivity extends AppCompatActivity {
                 Map<String, Object> fillerField = new HashMap<>();
                 fillerField.put("Field", "filler_for_visibility");
                 db.collection("reportUser").document(userID).set(fillerField);
+                db.collection("reportAdmin").document(nearestBrgy).set(fillerField);
 
                 //GET THE ID OF THE REPORT TO BE SAVED IN DB
                 DocumentReference docRefDetails = db.collection("reportUser").document(userID).collection("reportDetails").document();

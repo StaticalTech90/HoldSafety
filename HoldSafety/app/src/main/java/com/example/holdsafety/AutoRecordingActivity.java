@@ -88,44 +88,41 @@ public class AutoRecordingActivity extends AppCompatActivity {
         nearestBrgy = vidLinkRequirements.get("nearestBrgy");
         reportID = vidLinkRequirements.get("reportID");
 
-        btnRecord.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if(isRecording){
-                    //user is currently recording
-                    //stop option
-                    mediaRecorder.stop();
-                    camera.lock();
+        btnRecord.setOnClickListener(view -> {
+            if(isRecording){
+                //user is currently recording
+                //stop option
+                mediaRecorder.stop();
+                camera.lock();
 
-                    //add file to db
-                    addFileToFirebase();
+                //add file to db
+                addFileToFirebase();
+            } else {
+                //user is not recording
+                //play option
+                if(prepareVideoRecorder()){
+                    mediaRecorder.start();
+                    //2. SET TIMER (5 SECONDS) - Limit of the recording
+                    new CountDownTimer(5000, 1000){
+                        @Override
+                        public void onTick(long l) {
+                            long timeRemaining = (l/1000) + 1;
+                            //txtAudioRecording.setText("Recording will stop in " + timeRemaining + " seconds");
+                        }
+
+                        @Override
+                        public void onFinish() {
+                            //3. STOP RECORDING
+                            btnRecord.performClick();
+                        }
+
+                    }.start();
                 } else {
-                    //user is not recording
-                    //play option
-                    if(prepareVideoRecorder()){
-                        mediaRecorder.start();
-                        //2. SET TIMER (5 SECONDS) - Limit of the recording
-                        new CountDownTimer(5000, 1000){
-                            @Override
-                            public void onTick(long l) {
-                                long timeRemaining = (l/1000) + 1;
-                                //txtAudioRecording.setText("Recording will stop in " + timeRemaining + " seconds");
-                            }
-
-                            @Override
-                            public void onFinish() {
-                                //3. STOP RECORDING
-                                btnRecord.performClick();
-                            }
-
-                        }.start();
-                    } else {
-                        releaseMediaRecorder();
-                    }
+                    releaseMediaRecorder();
                 }
-                isRecording = !isRecording;
-                updateButtonUI();
             }
+            isRecording = !isRecording;
+            updateButtonUI();
         });
         setCamera();
     }
@@ -145,29 +142,19 @@ public class AutoRecordingActivity extends AppCompatActivity {
                     Toast.makeText(AutoRecordingActivity.this, "Upload successful", Toast.LENGTH_SHORT).show();
                     setHandler();
 
+                    Log.d("Video to Document", recordingFile.getName());
+
                     //FETCH VIDEO LINK
                     videoRef.child(user.getUid() + "/" + recordingFile.getName()).getDownloadUrl()
                             .addOnSuccessListener(uri -> {
                                 Log.d("Video to Document", "Fetching video URI success");
                                 idUri = String.valueOf(uri);
                                 docUsers.put("Evidence", idUri);
-                                Log.i("URI gDUrl()", idUri);
+                                Log.d("Video to Document", idUri); // WORKING. FETCHES CORRECT VID. JUST NEED TO PUT IT IN THE DB
+//                                Log.i("URI gDUrl()", idUri);
 
-        //                            db.collection("users").document(user.getUid()).set(docUsers)
-        //                                    .addOnSuccessListener(aVoid -> {
-        //                                        Toast.makeText(getApplicationContext(),
-        //                                                "pushed video to document",
-        //                                                Toast.LENGTH_SHORT).show();
-        //                                        Log.i(TAG, "Video pushed");
-        //                                    })
-        //                                    .addOnFailureListener(e -> {
-        //                                        Toast.makeText(getApplicationContext(),
-        //                                                "Error writing document",
-        //                                                Toast.LENGTH_SHORT).show();
-        //                                        Log.w(TAG, "Error writing document", e);
-        //                                    });
-
-                                //UPDATE THE "Video Link" FIELD IN REPORT DB (USER)
+                                //TODO: make this part work
+                                //UPDATE THE "Evidence" FIELD IN REPORT DB (USER)
                                 db.collection("reportUser").document(userID).collection("reportDetails").document(reportID).update(docUsers)
                                         .addOnSuccessListener(unused -> {
                                             Log.d("Video to Document", "Success! pushed to reportUser, id " + userID + " w/vid ID " + idUri);
@@ -175,7 +162,7 @@ public class AutoRecordingActivity extends AppCompatActivity {
                                         .addOnFailureListener(e -> {
                                             Log.d("Video to Document", "Failed to save to reportUser");
                                         });
-                                //UPDATE THE "Video Link" FIELD IN REPORT DB (ADMIN)
+                                //UPDATE THE "Evidence" FIELD IN REPORT DB (ADMIN)
                                 db.collection("reportAdmin").document(nearestBrgy).collection("reportDetails").document(reportID).update(docUsers)
                                         .addOnSuccessListener(unused -> {
                                             Log.d("Video to Document", "Success! pushed to reportAdmin, id " + nearestBrgy + " w/vid ID " + idUri);
