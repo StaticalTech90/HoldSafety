@@ -1,7 +1,5 @@
 package com.example.holdsafety;
 
-import static android.content.ContentValues.TAG;
-
 import android.content.Intent;
 import android.graphics.PorterDuff;
 import android.hardware.Camera;
@@ -18,21 +16,16 @@ import android.widget.FrameLayout;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
 import androidx.core.content.ContextCompat;
 
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
-import com.google.firebase.storage.UploadTask;
 
 import java.io.File;
 import java.io.IOException;
@@ -156,24 +149,14 @@ public class AutoRecordingActivity extends AppCompatActivity {
                                 //TODO: make this part work
                                 //UPDATE THE "Evidence" FIELD IN REPORT DB (USER)
                                 db.collection("reportUser").document(userID).collection("reportDetails").document(reportID).update(docUsers)
-                                        .addOnSuccessListener(unused -> {
-                                            Log.d("Video to Document", "Success! pushed to reportUser, id " + userID + " w/vid ID " + idUri);
-                                        })
-                                        .addOnFailureListener(e -> {
-                                            Log.d("Video to Document", "Failed to save to reportUser");
-                                        });
+                                        .addOnSuccessListener(unused -> Log.d("Video to Document", "Success! pushed to reportUser, id " + userID + " w/vid ID " + idUri))
+                                        .addOnFailureListener(e -> Log.d("Video to Document", "Failed to save to reportUser"));
                                 //UPDATE THE "Evidence" FIELD IN REPORT DB (ADMIN)
                                 db.collection("reportAdmin").document(nearestBrgy).collection("reportDetails").document(reportID).update(docUsers)
-                                        .addOnSuccessListener(unused -> {
-                                            Log.d("Video to Document", "Success! pushed to reportAdmin, id " + nearestBrgy + " w/vid ID " + idUri);
-                                        })
-                                        .addOnFailureListener(e -> {
-                                            Log.d("Video to Document", "Failed to save to reportAdmin");
-                                        });
+                                        .addOnSuccessListener(unused -> Log.d("Video to Document", "Success! pushed to reportAdmin, id " + nearestBrgy + " w/vid ID " + idUri))
+                                        .addOnFailureListener(e -> Log.d("Video to Document", "Failed to save to reportAdmin"));
                             })
-                            .addOnFailureListener(e -> {
-                                Log.d("Video to Document", "Fetching video URI failed. Log: " + e.getMessage());
-                            });
+                            .addOnFailureListener(e -> Log.d("Video to Document", "Fetching video URI failed. Log: " + e.getMessage()));
                 })
                 .addOnFailureListener(e -> {
                     Toast.makeText(AutoRecordingActivity.this, "Upload failed: " + e.getMessage(), Toast.LENGTH_SHORT).show();

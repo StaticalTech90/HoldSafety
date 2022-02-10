@@ -35,7 +35,6 @@ import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -46,7 +45,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
     private final static int RC_SIGN_IN = 308;
     EditText txtEmailOrMobileNum, txtPassword;
     Button btnLogin;
-    TextView txtToggle, txtForgotPassword;
+    TextView txtToggle;
     SignInButton btnGoogle;
     String isFromWidget;
 
@@ -56,9 +55,6 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
 
     GoogleSignInClient gsc;
     GoogleSignInOptions gso;
-
-    static Boolean isExisting = false;
-    static Boolean isComplete = false;
 
     CollectionReference colRef;
 
@@ -367,35 +363,35 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
         finish();
     }
 
-    public void determineNextActivity(String uid, String email) {
-        colRef.get().addOnCompleteListener(task -> {
-            if(task.isSuccessful()) {
-                for(QueryDocumentSnapshot userSnap : task.getResult()) {
-                    if(userSnap.getString("Email").equals(email)) { //EMAIL IN DB
-                        Log.d("userSnap", "userSnap.getString = " + userSnap.getString("Email"));
-                        Log.d("userSnap", "user's email to match = " + email);
-                        Log.d("userSnap", "Are they equal? Answer: " + userSnap.getString("Email").equals(email));
-                        Boolean isComplete = userSnap.getBoolean("profileComplete");
-
-                        while(isComplete == null) {
-                            isComplete = userSnap.getBoolean("profileComplete");
-                        }
-
-                        if(isComplete != null) {
-                            if(isComplete) { //PROFILE IS COMPLETE, GO TO LANDING ON STARTUP
-                                Log.d("userSnap", "is profile complete? = " + userSnap.getBoolean("profileComplete"));
-                                Intent landingPage = new Intent (LoginActivity.this, LandingActivity.class);
-                                startActivity(landingPage);
-                                Log.d("userSnap", "isAccountComplete result inside if: " + isComplete);
-                            }
-                        }
-                    }
-                }
-            } else {
-                Log.d("isAccountComplete", "Failed to fetch in DB");
-            }
-        });
-    }
+//    public void determineNextActivity(String uid, String email) {
+//        colRef.get().addOnCompleteListener(task -> {
+//            if(task.isSuccessful()) {
+//                for(QueryDocumentSnapshot userSnap : task.getResult()) {
+//                    if(userSnap.getString("Email").equals(email)) { //EMAIL IN DB
+//                        Log.d("userSnap", "userSnap.getString = " + userSnap.getString("Email"));
+//                        Log.d("userSnap", "user's email to match = " + email);
+//                        Log.d("userSnap", "Are they equal? Answer: " + userSnap.getString("Email").equals(email));
+//                        Boolean isComplete = userSnap.getBoolean("profileComplete");
+//
+//                        while(isComplete == null) {
+//                            isComplete = userSnap.getBoolean("profileComplete");
+//                        }
+//
+//                        if(isComplete != null) {
+//                            if(isComplete) { //PROFILE IS COMPLETE, GO TO LANDING ON STARTUP
+//                                Log.d("userSnap", "is profile complete? = " + userSnap.getBoolean("profileComplete"));
+//                                Intent landingPage = new Intent (LoginActivity.this, LandingActivity.class);
+//                                startActivity(landingPage);
+//                                Log.d("userSnap", "isAccountComplete result inside if: " + isComplete);
+//                            }
+//                        }
+//                    }
+//                }
+//            } else {
+//                Log.d("isAccountComplete", "Failed to fetch in DB");
+//            }
+//        });
+//    }
 
     public void userSignUp(View view) {
         Intent intent = new Intent (this, RegisterActivity.class);

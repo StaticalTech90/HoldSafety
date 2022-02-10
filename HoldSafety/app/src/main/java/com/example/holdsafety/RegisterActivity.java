@@ -375,7 +375,8 @@ public class RegisterActivity extends AppCompatActivity {
                     etBirthdate.setError("Please enter valid birthdate");
                 }
             } else { //ACCOUNT EXISTS, DISPLAY ERROR
-                etEmail.setError("This email is already registered");
+                Toast.makeText(RegisterActivity.this, "Email already in use", Toast.LENGTH_LONG).show();
+                etEmail.setError("This email is already in use");
             }
         });
     }
@@ -459,10 +460,8 @@ public class RegisterActivity extends AppCompatActivity {
 
                                 Uri imageUri = data.getData();
                                 lblLink.setText(imageUri.toString());
-
                             }
                         }
-
                     }
                 }
             });
@@ -485,5 +484,4 @@ public class RegisterActivity extends AppCompatActivity {
             }
         }
     }
-
 }

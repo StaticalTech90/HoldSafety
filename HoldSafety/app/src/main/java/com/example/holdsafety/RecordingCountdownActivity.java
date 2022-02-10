@@ -1,21 +1,14 @@
 package com.example.holdsafety;
 
-import android.Manifest;
 import android.content.Intent;
-import android.graphics.Camera;
-import android.media.MediaRecorder;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.view.View;
 import android.widget.Button;
-import android.widget.FrameLayout;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
-
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.HashMap;
 
@@ -54,15 +47,12 @@ public class RecordingCountdownActivity extends AppCompatActivity {
 
         };
 
-        btnCancel.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                timer.cancel();
-                Toast.makeText(getApplicationContext(), "Cancel", Toast.LENGTH_SHORT).show();
-                startActivity(new Intent(RecordingCountdownActivity.this, LandingActivity.class));
-                finish();
+        btnCancel.setOnClickListener(view -> {
+            timer.cancel();
+            Toast.makeText(getApplicationContext(), "Cancel", Toast.LENGTH_SHORT).show();
+            startActivity(new Intent(RecordingCountdownActivity.this, LandingActivity.class));
+            finish();
 
-            }
         });
 
         timer.start();
