@@ -10,7 +10,6 @@ import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.TextUtils;
@@ -21,7 +20,6 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -35,17 +33,13 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
-import com.google.firebase.storage.UploadTask;
 
-import java.io.File;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -55,7 +49,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -167,14 +160,11 @@ public class RegisterActivity extends AppCompatActivity {
             }
         });
 
-        DatePickerDialog.OnDateSetListener date =new DatePickerDialog.OnDateSetListener() {
-            @Override
-            public void onDateSet(DatePicker view, int year, int month, int day) {
-                calendar.set(Calendar.YEAR, year);
-                calendar.set(Calendar.MONTH,month);
-                calendar.set(Calendar.DAY_OF_MONTH,day);
-                updateDate();
-            }
+        DatePickerDialog.OnDateSetListener date = (view, year, month, day) -> {
+            calendar.set(Calendar.YEAR, year);
+            calendar.set(Calendar.MONTH,month);
+            calendar.set(Calendar.DAY_OF_MONTH,day);
+            updateDate();
         };
 
         //show DatePickerDialog using this listener
@@ -187,11 +177,11 @@ public class RegisterActivity extends AppCompatActivity {
         );
 
         //Upload Image
-        btnUpload.setOnClickListener(v -> { pickImage(); });
+        btnUpload.setOnClickListener(v -> pickImage());
 
         btnRegister.setOnClickListener(v -> {
             try {
-                userRegister(v);
+                userRegister();
             } catch (ParseException e) {
                 e.printStackTrace();
             }
@@ -220,19 +210,16 @@ public class RegisterActivity extends AppCompatActivity {
 
             }
         });
-        txtTogglePass.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if(txtTogglePass.getText() == "SHOW"){
-                    txtTogglePass.setText("HIDE");
-                    etPassword.setInputType(InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
-                }
-                else{
-                    txtTogglePass.setText("SHOW");
-                    etPassword.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
-                }
-                etPassword.setSelection(etPassword.length());
+        txtTogglePass.setOnClickListener(view -> {
+            if(txtTogglePass.getText() == "SHOW"){
+                txtTogglePass.setText("HIDE");
+                etPassword.setInputType(InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
             }
+            else{
+                txtTogglePass.setText("SHOW");
+                etPassword.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+            }
+            etPassword.setSelection(etPassword.length());
         });
 
 
@@ -258,23 +245,20 @@ public class RegisterActivity extends AppCompatActivity {
 
             }
         });
-        txtToggleConfirmPass.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if(txtToggleConfirmPass.getText() == "SHOW"){
-                    txtToggleConfirmPass.setText("HIDE");
-                    etConPassword.setInputType(InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
-                }
-                else{
-                    txtToggleConfirmPass.setText("SHOW");
-                    etConPassword.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
-                }
-                etConPassword.setSelection(etConPassword.length());
+        txtToggleConfirmPass.setOnClickListener(view -> {
+            if(txtToggleConfirmPass.getText() == "SHOW"){
+                txtToggleConfirmPass.setText("HIDE");
+                etConPassword.setInputType(InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
             }
+            else{
+                txtToggleConfirmPass.setText("SHOW");
+                etConPassword.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+            }
+            etConPassword.setSelection(etConPassword.length());
         });
     }
 
-    public void userRegister(View view) throws ParseException {
+    public void userRegister() throws ParseException {
 
         String emailRegex = "^(.+)@(.+)$";
         String passRegex = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=\\S+$).{8,}$";
@@ -297,94 +281,103 @@ public class RegisterActivity extends AppCompatActivity {
         String valid = "01-01-2004"; //age restriction 18
         Date validDate = dateFormat.parse(valid);
 
-        //put data in hashmap to insert to db
-        docUsers.put("LastName", lastName);
-        docUsers.put("FirstName", firstName);
-        docUsers.put("MiddleName", middleName);
-        docUsers.put("Sex", sex);
-        docUsers.put("BirthDate", birthDate);
-        docUsers.put("MobileNumber", mobileNumber);
-        docUsers.put("Email", email);
-        docUsers.put("profileComplete", false);
+        //CHECK IF EMAIL IS ALREADY IN DB
+        DocumentReference docRef = db.collection("users").document(user.getUid());
 
-        //Data validation and register
-        try{
-            Date parsedDate = dateFormat.parse(birthDate);
-            assert parsedDate != null;
-            Matcher emailMatcher = emailPattern.matcher(etEmail.getText());
-            Matcher passMatcher = passPattern.matcher(etPassword.getText());
-            Matcher mobileNumberMatcher = mobileNumberPattern.matcher(etMobileNumber.getText());
+        docRef.get().addOnSuccessListener(documentSnapshot -> {
+            if(!documentSnapshot.exists()) { //EMAIL IS NEW, CREATE ACCOUNT
+                //put data in hashmap to insert to db
+                docUsers.put("LastName", lastName);
+                docUsers.put("FirstName", firstName);
+                docUsers.put("MiddleName", middleName);
+                docUsers.put("Sex", sex);
+                docUsers.put("BirthDate", birthDate);
+                docUsers.put("MobileNumber", mobileNumber);
+                docUsers.put("Email", email);
+                docUsers.put("profileComplete", false);
 
-            if(parsedDate.after(validDate)){
-                etBirthdate.setError("Please enter valid birthdate (mm-dd-yyyy)");
-            } else {
-                if(TextUtils.isEmpty(etLastName.getText())) {
-                    etLastName.setError("Please enter last name");
-                } else if(TextUtils.isEmpty(etFirstName.getText())) {
-                    etFirstName.setError("Please enter first name");
-                } else if(TextUtils.isEmpty(etBirthdate.getText())) {
-                    etBirthdate.setError("Please enter birthdate (mm-dd-yyyy)");
-                } else if(spinnerSex.getSelectedItem().equals("Sex")) {
-                    ((TextView)spinnerSex.getSelectedView()).setError("please select sex");
-                } else if(TextUtils.isEmpty(etMobileNumber.getText())) {
-                    etMobileNumber.setError("Please enter mobile number");
-                } else if (!mobileNumberMatcher.matches()) {
-                    etMobileNumber.setError("Please enter a valid mobile number");
-                } else if(etMobileNumber.getText().length() != 11) {
-                    etMobileNumber.setError("Please enter a valid mobile number");
-                } else if(TextUtils.isEmpty(etEmail.getText())) {
-                    etEmail.setError("Please enter email");
-                } else if (!emailMatcher.matches()) {
-                    etEmail.setError("Please enter valid email");
-                } else if(TextUtils.isEmpty(etPassword.getText())) {
-                    etPassword.setError("Please enter password");
-                } else if(!passMatcher.matches()) {
-                    etPassword.setError("Password must contain the following: " +
-                            "\n - At least 8 characters" +
-                            "\n - At least 1 digit" +
-                            "\n - At least one upper and lower case letter" +
-                            "\n - A special character (such as @, #, etc.)" +
-                            "\n - No spaces or tabs");
-                } else if(TextUtils.isEmpty(etConPassword.getText())) {
-                    etConPassword.setError("Please re-enter password");
-                } else if(!password.equals(cPassword)) {
-                    etConPassword.setError("Passwords don't match");
-                } else {
-                    Toast.makeText(RegisterActivity.this, "HELO", Toast.LENGTH_LONG).show();
-                    mAuth.createUserWithEmailAndPassword(email,password).addOnCompleteListener(this, task -> {
-                        if (task.isSuccessful()) {
-                            // Sign up success
-                            Log.d(TAG, "signUpWithEmailPassword:success");
-                            user = mAuth.getCurrentUser();
-                            docUsers.put("ID", user.getUid());
-                            docUsers.put("profileComplete", false);
-                            docUsers.put("isVerified", false);
+                //Data validation and register
+                try{
+                    Date parsedDate = dateFormat.parse(birthDate);
+                    assert parsedDate != null;
+                    Matcher emailMatcher = emailPattern.matcher(etEmail.getText());
+                    Matcher passMatcher = passPattern.matcher(etPassword.getText());
+                    Matcher mobileNumberMatcher = mobileNumberPattern.matcher(etMobileNumber.getText());
 
-                            //TODO: Ung URL ng image i-sasave sa document ng user
-                            if (!lblLink.getText().equals("")) {
-                                uploadPhotoToStorage();
-                            }
-
-                            //Verify user's email
-                            Intent otp = new Intent(RegisterActivity.this, RegisterOTPActivity.class);
-                            otp.putExtra("Email", etEmail.getText().toString());
-                            otp.putExtra("UserDetails", docUsers);
-                            startActivity(otp);
-                            finish();
+                    if(parsedDate.after(validDate)){
+                        etBirthdate.setError("Please enter valid birthdate (mm-dd-yyyy)");
+                    } else {
+                        if(TextUtils.isEmpty(etLastName.getText())) {
+                            etLastName.setError("Please enter last name");
+                        } else if(TextUtils.isEmpty(etFirstName.getText())) {
+                            etFirstName.setError("Please enter first name");
+                        } else if(TextUtils.isEmpty(etBirthdate.getText())) {
+                            etBirthdate.setError("Please enter birthdate (mm-dd-yyyy)");
+                        } else if(spinnerSex.getSelectedItem().equals("Sex")) {
+                            ((TextView)spinnerSex.getSelectedView()).setError("please select sex");
+                        } else if(TextUtils.isEmpty(etMobileNumber.getText())) {
+                            etMobileNumber.setError("Please enter mobile number");
+                        } else if (!mobileNumberMatcher.matches()) {
+                            etMobileNumber.setError("Please enter a valid mobile number");
+                        } else if(etMobileNumber.getText().length() != 11) {
+                            etMobileNumber.setError("Please enter a valid mobile number");
+                        } else if(TextUtils.isEmpty(etEmail.getText())) {
+                            etEmail.setError("Please enter email");
+                        } else if (!emailMatcher.matches()) {
+                            etEmail.setError("Please enter valid email");
+                        } else if(TextUtils.isEmpty(etPassword.getText())) {
+                            etPassword.setError("Please enter password");
+                        } else if(!passMatcher.matches()) {
+                            etPassword.setError("Password must contain the following: " +
+                                    "\n - At least 8 characters" +
+                                    "\n - At least 1 digit" +
+                                    "\n - At least one upper and lower case letter" +
+                                    "\n - A special character (such as @, #, etc.)" +
+                                    "\n - No spaces or tabs");
+                        } else if(TextUtils.isEmpty(etConPassword.getText())) {
+                            etConPassword.setError("Please re-enter password");
+                        } else if(!password.equals(cPassword)) {
+                            etConPassword.setError("Passwords don't match");
                         } else {
-                            // If sign up fails, display a message to the user.
-                            Log.w(TAG, "signUpWithEmailPassword:failure", task.getException());
-                            Toast.makeText(getApplicationContext(),
-                                    "Signup Failed",
-                                    Toast.LENGTH_SHORT).show();
+                            Toast.makeText(RegisterActivity.this, "HELO", Toast.LENGTH_LONG).show();
+                            mAuth.createUserWithEmailAndPassword(email,password).addOnCompleteListener(this, task -> {
+                                if (task.isSuccessful()) {
+                                    // Sign up success
+                                    Log.d(TAG, "signUpWithEmailPassword:success");
+                                    user = mAuth.getCurrentUser();
+                                    assert user != null;
+                                    docUsers.put("ID", user.getUid());
+                                    docUsers.put("profileComplete", false);
+                                    docUsers.put("isVerified", false);
+
+                                    if (!lblLink.getText().equals("")) {
+                                        uploadPhotoToStorage();
+                                    }
+
+                                    //Verify user's email
+                                    Intent otp = new Intent(RegisterActivity.this, RegisterOTPActivity.class);
+                                    otp.putExtra("Email", etEmail.getText().toString());
+                                    otp.putExtra("UserDetails", docUsers);
+                                    startActivity(otp);
+                                    finish();
+                                } else {
+                                    // If sign up fails, display a message to the user.
+                                    Log.w(TAG, "signUpWithEmailPassword:failure", task.getException());
+                                    Toast.makeText(getApplicationContext(),
+                                            "Signup Failed",
+                                            Toast.LENGTH_SHORT).show();
+                                }
+                            });
                         }
-                    });
+                    }
+                } catch(ParseException pe){
+                    etBirthdate.setHint("Please enter valid birthdate");
+                    etBirthdate.setError("Please enter valid birthdate");
                 }
+            } else { //ACCOUNT EXISTS, DISPLAY ERROR
+                etEmail.setError("This email is already registered");
             }
-        } catch(ParseException pe){
-            etBirthdate.setHint("Please enter valid birthdate");
-            etBirthdate.setError("Please enter valid birthdate");
-        }
+        });
     }
 
 //    public void goBack(View view){
@@ -405,48 +398,31 @@ public class RegisterActivity extends AppCompatActivity {
     private void uploadPhotoToStorage() {
         imageRef.child(user.getUid())
                 .putFile(Uri.parse(lblLink.getText().toString()))
-                .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                    @Override
-                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                .addOnSuccessListener(taskSnapshot -> {
 //                            Toast.makeText(RegisterGoogleActivity.this,
 //                                    "Upload successful: " + taskSnapshot.toString(),
 //                                    Toast.LENGTH_SHORT).show();
-                        imageRef.child(user.getUid()).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-                            @Override
-                            public void onSuccess(Uri uri) {
-                                idUri = String.valueOf(uri);
-                                docUsers.put("imgUri", idUri);
-                                Log.i("URI gDUrl()", idUri);
+                    imageRef.child(user.getUid()).getDownloadUrl().addOnSuccessListener(uri -> {
+                        idUri = String.valueOf(uri);
+                        docUsers.put("imgUri", idUri);
+                        Log.i("URI gDUrl()", idUri);
 
-                                db.collection("users").document(user.getUid()).set(docUsers)
-                                        .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                            @Override
-                                            public void onSuccess(Void aVoid) {
-                                                Toast.makeText(getApplicationContext(),
-                                                        "pushed image to document",
-                                                        Toast.LENGTH_SHORT).show();
-                                                Log.i(TAG, "Image pushed");
-                                            }
-                                        })
-                                        .addOnFailureListener(new OnFailureListener() {
-                                            @Override
-                                            public void onFailure(@NonNull Exception e) {
-                                                Toast.makeText(getApplicationContext(),
-                                                        "Error writing document",
-                                                        Toast.LENGTH_SHORT).show();
-                                                Log.w(TAG, "Error writing document", e);
-                                            }
-                                        });
-                            }
-                        });
-                    }
-                }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                Toast.makeText(RegisterActivity.this, "Upload failed.",
-                        Toast.LENGTH_SHORT).show();
-            }
-        });
+                        db.collection("users").document(user.getUid()).set(docUsers)
+                                .addOnSuccessListener(aVoid -> {
+                                    Toast.makeText(getApplicationContext(),
+                                            "pushed image to document",
+                                            Toast.LENGTH_SHORT).show();
+                                    Log.i(TAG, "Image pushed");
+                                })
+                                .addOnFailureListener(e -> {
+                                    Toast.makeText(getApplicationContext(),
+                                            "Error writing document",
+                                            Toast.LENGTH_SHORT).show();
+                                    Log.w(TAG, "Error writing document", e);
+                                });
+                    });
+                }).addOnFailureListener(e -> Toast.makeText(RegisterActivity.this, "Upload failed.",
+                        Toast.LENGTH_SHORT).show());
     }
 
     private void pickImage() {

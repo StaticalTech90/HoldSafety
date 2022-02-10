@@ -4,7 +4,6 @@ import static android.content.ContentValues.TAG;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.TextUtils;
@@ -28,7 +27,6 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.FirebaseAuth;
@@ -36,15 +34,11 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
-import org.w3c.dom.Document;
-
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 public class LoginActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener {
     private FirebaseAuth mAuth;
@@ -166,32 +160,29 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
             txtPassword.setSelection(txtPassword.length());
         });
 
-        btnLogin.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                String email, password;
+        btnLogin.setOnClickListener(view -> {
+            String email, password;
 
-                email = txtEmailOrMobileNum.getText().toString().trim();
-                password = txtPassword.getText().toString();
+            email = txtEmailOrMobileNum.getText().toString().trim();
+            password = txtPassword.getText().toString();
 
-                if(TextUtils.isEmpty(email) && TextUtils.isEmpty(password)) {
-                    txtEmailOrMobileNum.setError("Email is required");
-                    txtPassword.setError("Password is required");
-                    return;
-                }
-
-                if(TextUtils.isEmpty(email)) {
-                    txtEmailOrMobileNum.setError("Email is required");
-                    return;
-                }
-
-                if(TextUtils.isEmpty(password)) {
-                    txtPassword.setError("Password is required");
-                    return;
-                }
-
-                loginUser(email,password);
+            if(TextUtils.isEmpty(email) && TextUtils.isEmpty(password)) {
+                txtEmailOrMobileNum.setError("Email is required");
+                txtPassword.setError("Password is required");
+                return;
             }
+
+            if(TextUtils.isEmpty(email)) {
+                txtEmailOrMobileNum.setError("Email is required");
+                return;
+            }
+
+            if(TextUtils.isEmpty(password)) {
+                txtPassword.setError("Password is required");
+                return;
+            }
+
+            loginUser(email,password);
         });
     }
 
@@ -241,6 +232,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                         FirebaseUser user = mAuth.getCurrentUser();
 
                         //pass user to check if it exists in user table
+                        assert user != null;
                         checkUserAccount(user);
                     }
                     else {
@@ -289,10 +281,10 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                                 // Sign in success, update UI with the signed-in user's information
                                 Log.d("googlesignin", "signInWithCredential:success");
                                 FirebaseUser user = mAuth.getCurrentUser();
+                                assert user != null;
                                 Log.d("googlesignin", "user acc: " + user.getEmail());
 
                                 //Create a new account if it doesn't exist, otherwise continue
-                                assert user != null;
                                 docRef = colRef.document(user.getUid());
 
                                 docRef.get().addOnSuccessListener(documentSnapshot -> {
