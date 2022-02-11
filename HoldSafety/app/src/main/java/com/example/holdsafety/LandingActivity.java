@@ -76,7 +76,7 @@ public class LandingActivity extends AppCompatActivity {
     
     Button btnSafetyButton;
     ImageView btnMenu;
-    TextView seconds;
+    TextView seconds, description;
     private int timer;
     long remainTime;
     Map<String, Object> docDetails = new HashMap<>(); // for reports in db
