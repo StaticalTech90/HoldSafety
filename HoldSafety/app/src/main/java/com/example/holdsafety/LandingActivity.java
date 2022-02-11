@@ -65,7 +65,6 @@ import java.util.Locale;
 import java.util.Map;
 
 public class LandingActivity extends AppCompatActivity {
-
     String coordsLon, coordsLat;
     FirebaseAuth mAuth;
     FirebaseFirestore db;
@@ -116,6 +115,8 @@ public class LandingActivity extends AppCompatActivity {
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
 
         seconds = findViewById(R.id.countdown);
+        description = findViewById(R.id.description);
+
         btnSafetyButton = findViewById(R.id.btnSafetyButton);
         btnMenu = findViewById(R.id.menuButton);
 
@@ -131,7 +132,9 @@ public class LandingActivity extends AppCompatActivity {
                 //wait for timer to countdown
                 public void onTick(long millisUntilFinished) {
                     remainTime = millisUntilFinished / 1000;
-                    seconds.setText(Long.toString(remainTime));
+                    description.setVisibility(View.INVISIBLE);
+                    seconds.setVisibility(View.VISIBLE);
+                    seconds.setText(Long.toString(remainTime+1));
                 }
 
                 //timer executes this code once finished
@@ -153,6 +156,8 @@ public class LandingActivity extends AppCompatActivity {
                     cTimer.start();
                 } else if (event.getAction() == MotionEvent.ACTION_UP) { //button released
                     int timer = (int) (System.currentTimeMillis() - this.firstTouchTS) / 1000; //2 second timer
+                    description.setVisibility(View.VISIBLE);
+                    seconds.setVisibility(View.INVISIBLE);
 
                     //for debug
                     //Toast.makeText(getApplicationContext(), "Time Pressed: " + timer, Toast.LENGTH_SHORT).show();
@@ -161,7 +166,7 @@ public class LandingActivity extends AppCompatActivity {
                     cTimer.cancel();
 
                     //reset seconds
-                    seconds.setText(Long.toString(remainTime));
+                    seconds.setText(Long.toString(timer));
                 }
                 return false;
             }
@@ -328,7 +333,6 @@ public class LandingActivity extends AppCompatActivity {
     //GET USER CURRENT LOCATION
     @SuppressLint("MissingPermission")
     private void getCurrentLocation() {
-
         fusedLocationProviderClient.getLastLocation()
                 .addOnCompleteListener(task -> {
 
@@ -719,6 +723,13 @@ public class LandingActivity extends AppCompatActivity {
                 db.collection("reportAdmin").document(nearestBrgy).collection("reportDetails").document(reportID).set(docDetails)
                         .addOnSuccessListener(aVoid -> Log.d(TAG, "Report saved to brgy-sorted DB!"))
                         .addOnFailureListener(e -> Log.w(TAG, "Report saving to Error!!", e));
+
+                //ADD TO GENERAL REPORTS COLLECTION
+                docDetails.put("Barangay", nearestBrgy);
+                docDetails.put("User ID", userID);
+                db.collection("reports").document().set(docDetails)
+                        .addOnSuccessListener(aVoid -> Log.d(TAG, "General Report saved to brgy-sorted DB!"))
+                        .addOnFailureListener(e -> Log.w(TAG, "General Report saving to Error!!", e));
             }
         })
         .addOnFailureListener(documentSnapshot -> {
