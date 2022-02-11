@@ -65,7 +65,6 @@ import java.util.Locale;
 import java.util.Map;
 
 public class LandingActivity extends AppCompatActivity {
-
     String coordsLon, coordsLat;
     FirebaseAuth mAuth;
     FirebaseFirestore db;
@@ -335,7 +334,6 @@ public class LandingActivity extends AppCompatActivity {
     //GET USER CURRENT LOCATION
     @SuppressLint("MissingPermission")
     private void getCurrentLocation() {
-
         fusedLocationProviderClient.getLastLocation()
                 .addOnCompleteListener(task -> {
 

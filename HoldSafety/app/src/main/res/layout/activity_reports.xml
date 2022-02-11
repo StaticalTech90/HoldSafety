@@ -24,7 +24,7 @@
         android:layout_height="wrap_content"
 
         android:layout_marginTop="30dp"
-        android:layout_marginBottom="30dp"
+        android:paddingBottom="20dp"
 
         android:fontFamily="sans-serif-black"
         android:text="My Reports"
@@ -34,19 +34,25 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/backArrow" />
 
-    <LinearLayout
-        android:id="@+id/linearReportList"
-        android:layout_width="340dp"
-        android:layout_height="0dp"
+        <!-- LIST VIEW -->
+        <ScrollView
+            android:id="@+id/scrollViewReport"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:background="@color/dark_blue"
+            android:fillViewport="true"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/lblReports">
 
-        android:layout_marginTop="15dp"
-        android:layout_marginBottom="15dp"
-
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/lblReports"
-        android:orientation="vertical" >
+            <LinearLayout
+                android:id="@+id/linearReportList"
+                android:layout_width="340dp"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_gravity="center_horizontal"/>
+        </ScrollView>
     <!--VERTICAL PUTANGINA-->
 
 <!--    <androidx.recyclerview.widget.RecyclerView-->
@@ -61,6 +67,5 @@
 <!--        app:layout_constraintStart_toStartOf="parent"-->
 <!--        app:layout_constraintBottom_toBottomOf="parent"-->
 <!--        app:layout_constraintTop_toBottomOf="@+id/lblReports"/>-->
-    </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
