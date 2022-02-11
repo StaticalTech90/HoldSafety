@@ -33,10 +33,8 @@ import androidx.core.app.ActivityCompat;
 
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
@@ -44,7 +42,6 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
-import com.google.firebase.storage.UploadTask;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -111,23 +108,20 @@ public class RegisterGoogleActivity extends AppCompatActivity {
         selectBirthdate();
 
         //Upload Image
-        btnUpload.setOnClickListener(v -> { pickImage(); });
+        btnUpload.setOnClickListener(v -> pickImage());
 
         btnProceed.setOnClickListener(this::userRegister);
 
         if(user != null) {
             docRef = db.collection("users").document(user.getUid());
-            docRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                @Override
-                public void onSuccess(DocumentSnapshot documentSnapshot) {
-                    if(documentSnapshot.exists()) {
+            docRef.get().addOnSuccessListener(documentSnapshot -> {
+                if(documentSnapshot.exists()) {
 
-                        //REFACTORED FUNCTIONALITY TO SHOW ACCOUNT NAME AS LABEL
-                        firstName = documentSnapshot.getString("FirstName");
-                        lastName = documentSnapshot.getString("LastName");
-                        String username =  lastName + ", " + firstName;
-                        lblName.setText(username);
-                    }
+                    //REFACTORED FUNCTIONALITY TO SHOW ACCOUNT NAME AS LABEL
+                    firstName = documentSnapshot.getString("FirstName");
+                    lastName = documentSnapshot.getString("LastName");
+                    String username =  lastName + ", " + firstName;
+                    lblName.setText(username);
                 }
             });
         }
@@ -173,27 +167,21 @@ public class RegisterGoogleActivity extends AppCompatActivity {
             docUsers.put("profileComplete", true);
 
             db.collection("users").document(userId).set(docUsers)
-                    .addOnSuccessListener(new OnSuccessListener<Void>() {
-                        @Override
-                        public void onSuccess(Void aVoid) {
+                    .addOnSuccessListener(aVoid -> {
 
 //                            Toast.makeText(getApplicationContext(), "DocumentSnapshot successfully written!", Toast.LENGTH_SHORT).show();
 //                            Log.i("passed", "url"+idUri);
 
-                            Intent landing = new Intent(RegisterGoogleActivity.this,
-                                    LandingActivity.class);
-                            startActivity(landing);
-                            finish();
-                        }
+                        Intent landing = new Intent(RegisterGoogleActivity.this,
+                                LandingActivity.class);
+                        startActivity(landing);
+                        finish();
                     })
-                    .addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception e) {
-                            Toast.makeText(getApplicationContext(),
-                                    "Error writing document",
-                                    Toast.LENGTH_SHORT).show();
-                            Log.w(TAG, "Error writing document", e);
-                        }
+                    .addOnFailureListener(e -> {
+                        Toast.makeText(getApplicationContext(),
+                                "Error writing document",
+                                Toast.LENGTH_SHORT).show();
+                        Log.w(TAG, "Error writing document", e);
                     });
             }
     }
@@ -202,48 +190,31 @@ public class RegisterGoogleActivity extends AppCompatActivity {
     private void uploadPhotoToStorage() {
             imageRef.child(user.getUid())
                     .putFile(Uri.parse(lblLink.getText().toString()))
-                    .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                        @Override
-                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                    .addOnSuccessListener(taskSnapshot -> {
 //                            Toast.makeText(RegisterGoogleActivity.this,
 //                                    "Upload successful: " + taskSnapshot.toString(),
 //                                    Toast.LENGTH_SHORT).show();
-                            imageRef.child(user.getUid()).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-                                @Override
-                                public void onSuccess(Uri uri) {
-                                    idUri = String.valueOf(uri);
-                                    docUsers.put("imgUri", idUri);
-                                    Log.i("URI gDUrl()", idUri);
+                        imageRef.child(user.getUid()).getDownloadUrl().addOnSuccessListener(uri -> {
+                            idUri = String.valueOf(uri);
+                            docUsers.put("imgUri", idUri);
+                            Log.i("URI gDUrl()", idUri);
 
-                                    db.collection("users").document(user.getUid()).set(docUsers)
-                                            .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                                @Override
-                                                public void onSuccess(Void aVoid) {
-                                                    Toast.makeText(getApplicationContext(),
-                                                            "pushed image to document",
-                                                            Toast.LENGTH_SHORT).show();
-                                                    Log.i(TAG, "Image pushed");
-                                                }
-                                            })
-                                            .addOnFailureListener(new OnFailureListener() {
-                                                @Override
-                                                public void onFailure(@NonNull Exception e) {
-                                                    Toast.makeText(getApplicationContext(),
-                                                            "Error writing document",
-                                                            Toast.LENGTH_SHORT).show();
-                                                    Log.w(TAG, "Error writing document", e);
-                                                }
-                                            });
-                                }
-                            });
-                        }
-                    }).addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception e) {
-                    Toast.makeText(RegisterGoogleActivity.this, "Upload failed.",
-                            Toast.LENGTH_SHORT).show();
-                }
-            });
+                            db.collection("users").document(user.getUid()).set(docUsers)
+                                    .addOnSuccessListener(aVoid -> {
+                                        Toast.makeText(getApplicationContext(),
+                                                "pushed image to document",
+                                                Toast.LENGTH_SHORT).show();
+                                        Log.i(TAG, "Image pushed");
+                                    })
+                                    .addOnFailureListener(e -> {
+                                        Toast.makeText(getApplicationContext(),
+                                                "Error writing document",
+                                                Toast.LENGTH_SHORT).show();
+                                        Log.w(TAG, "Error writing document", e);
+                                    });
+                        });
+                    }).addOnFailureListener(e -> Toast.makeText(RegisterGoogleActivity.this, "Upload failed.",
+                            Toast.LENGTH_SHORT).show());
     }
 
     private void pickImage() {
@@ -377,14 +348,11 @@ public class RegisterGoogleActivity extends AppCompatActivity {
     }
 
     private void selectBirthdate() {
-        DatePickerDialog.OnDateSetListener date = new DatePickerDialog.OnDateSetListener() {
-            @Override
-            public void onDateSet(DatePicker view, int year, int month, int day) {
-                calendar.set(Calendar.YEAR, year);
-                calendar.set(Calendar.MONTH,month);
-                calendar.set(Calendar.DAY_OF_MONTH,day);
-                updateDate();
-            }
+        DatePickerDialog.OnDateSetListener date = (view, year, month, day) -> {
+            calendar.set(Calendar.YEAR, year);
+            calendar.set(Calendar.MONTH,month);
+            calendar.set(Calendar.DAY_OF_MONTH,day);
+            updateDate();
         };
 
         //show DatePickerDialog using this listener

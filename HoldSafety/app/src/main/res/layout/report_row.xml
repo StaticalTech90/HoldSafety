@@ -186,7 +186,7 @@
                     android:layout_toEndOf="@+id/lblCoordinated"
                     android:backgroundTint="@color/dark_blue"
                     android:fontFamily="sans-serif"
-                    android:text="Yes"
+                    android:text="Please remove this"
                     android:textColor="@color/dark_blue"
 
                     android:textSize="18sp" />
