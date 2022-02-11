@@ -715,6 +715,13 @@ public class LandingActivity extends AppCompatActivity {
                 db.collection("reportAdmin").document(nearestBrgy).collection("reportDetails").document(reportID).set(docDetails)
                         .addOnSuccessListener(aVoid -> Log.d(TAG, "Report saved to brgy-sorted DB!"))
                         .addOnFailureListener(e -> Log.w(TAG, "Report saving to Error!!", e));
+
+                //ADD TO GENERAL REPORTS COLLECTION
+                docDetails.put("Barangay", nearestBrgy);
+                docDetails.put("User ID", userID);
+                db.collection("reports").document().set(docDetails)
+                        .addOnSuccessListener(aVoid -> Log.d(TAG, "General Report saved to brgy-sorted DB!"))
+                        .addOnFailureListener(e -> Log.w(TAG, "General Report saving to Error!!", e));
             }
         })
         .addOnFailureListener(documentSnapshot -> {
