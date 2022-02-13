@@ -341,13 +341,24 @@ public class LandingActivity extends AppCompatActivity {
                         showGPSDialog();
 
                     } else {
+                        String address="";
                         Geocoder geocoder = new Geocoder(this, Locale.getDefault());
 
                         try {
-                            List<Address> addresses = geocoder.getFromLocation(
-                                    location.getLatitude(), location.getLongitude(), 2);
-                            String address = addresses.get(1).getAddressLine(0);
+                            List<Address> addresses = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
+                            if (addresses != null) {
+                                Address returnedAddress = addresses.get(0);
+                                StringBuilder strReturnedAddress = new StringBuilder("");
 
+                                for (int i = 0; i <= returnedAddress.getMaxAddressLineIndex(); i++) {
+                                    strReturnedAddress.append(returnedAddress.getAddressLine(i)).append("\n");
+                                }
+                                address = strReturnedAddress.toString();
+                                Log.w("User Address", address);
+                            } else {
+                                Log.w("User Address", "No Address returned!");
+                            }
+                            //String address = addresses.get(1).getAddressLine(0);
                             //Toast.makeText(this, "Current Location: " + location.getLatitude() + "," + location.getLongitude(), Toast.LENGTH_SHORT).show();
 
                             coordsLat = Double.toString(location.getLatitude());
@@ -359,9 +370,7 @@ public class LandingActivity extends AppCompatActivity {
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
-
                     }
-
                 });
     }
 
