@@ -68,7 +68,6 @@
         android:layout_height="wrap_content"
 
         android:fontFamily="sans-serif-black"
-        android:text="Verified Account"
         android:layout_marginTop="18dp"
         android:layout_marginLeft="40dp"
         android:textColor="@color/green"
@@ -76,6 +75,23 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/lblRegisterDesc"
         />
+
+    <Button
+        android:id="@+id/btnUploadID"
+        android:layout_width="wrap_content"
+        android:layout_height="26dp"
+        android:layout_marginTop="18dp"
+        android:layout_marginEnd="40dp"
+        android:paddingHorizontal="20dp"
+
+        android:background="@drawable/white_container"
+
+        android:onClick="uploadID"
+        android:text="Upload ID"
+
+        android:textSize="16sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/lblRegisterDesc" />
 
 
     <RelativeLayout
@@ -247,39 +263,6 @@
                 android:textSize="18sp" />
         </RelativeLayout>
 
-        <RelativeLayout
-            android:id="@+id/layoutEmail"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/layoutMobileNumber"
-            android:layout_marginTop="10dp">
-
-            <TextView
-                android:id="@+id/lblEmail"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-
-                android:fontFamily="sans-serif-light"
-                android:text="Email"
-                android:textColor="@color/white"
-                android:textSize="12sp"
-                app:layout_constraintStart_toStartOf="parent" />
-
-            <EditText
-
-                android:id="@+id/txtEmail"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-
-                android:layout_below="@+id/lblEmail"
-
-                android:backgroundTint="@color/white"
-                android:fontFamily="sans-serif-black"
-                android:inputType="textEmailAddress"
-                android:textColor="@color/white"
-                android:textSize="18sp" />
-
-        </RelativeLayout>
 
         <RelativeLayout
             android:layout_width="162dp"
@@ -314,6 +297,39 @@
                 android:textSize="18sp" />
         </RelativeLayout>
 
+        <RelativeLayout
+            android:id="@+id/layoutEmail"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/layoutMobileNumber"
+            android:layout_marginTop="10dp">
+
+            <TextView
+                android:id="@+id/lblEmail"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+
+                android:fontFamily="sans-serif-light"
+                android:text="Email"
+                android:textColor="@color/white"
+                android:textSize="12sp"
+                app:layout_constraintStart_toStartOf="parent" />
+
+            <EditText
+
+                android:id="@+id/txtEmail"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+
+                android:layout_below="@+id/lblEmail"
+
+                android:backgroundTint="@color/white"
+                android:fontFamily="sans-serif-black"
+                android:inputType="textEmailAddress"
+                android:textColor="@color/white"
+                android:textSize="18sp" />
+
+        </RelativeLayout>
     </RelativeLayout>
 
     <Button
@@ -331,30 +347,14 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/layoutAccountDetails" />
 
-    <Button
-        android:id="@+id/btnUploadID"
-        android:layout_width="106dp"
-        android:layout_height="26dp"
-        android:layout_marginStart="88dp"
-        android:layout_marginTop="18dp"
-
-        android:background="@drawable/white_container"
-
-        android:onClick="uploadID"
-        android:text="Upload ID"
-
-        android:textSize="16sp"
-        app:layout_constraintStart_toEndOf="@+id/lblAccountStatus"
-        app:layout_constraintTop_toBottomOf="@id/lblRegisterDesc" />
-
-    <Button
+    <TextView
         android:id="@+id/btnChangePassword"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:textColor="@color/light_blue"
+        android:fontFamily="sans-serif-black"
         android:text="Change Password"
         android:onClick="changePassword"
-        tools:layout_editor_absoluteX="126dp"
-        tools:layout_editor_absoluteY="496dp"
 
         android:layout_marginTop="10dp"
         app:layout_constraintEnd_toEndOf="parent"

@@ -57,7 +57,7 @@ public class AccountDetailsActivity extends AppCompatActivity {
 
         Toast.makeText(AccountDetailsActivity.this, user.getUid(), Toast.LENGTH_SHORT).show();
 
-        TextView txtLastName, txtFirstName, txtMiddleName, txtBirthDate, txtSex;
+        TextView txtLastName, txtFirstName, txtMiddleName, txtBirthDate, txtSex, lblAccountStatus;
         EditText txtMobileNumber, txtEmail;
         Button btnSave;
 
@@ -68,6 +68,7 @@ public class AccountDetailsActivity extends AppCompatActivity {
         txtSex = findViewById(R.id.txtSex);
         txtMobileNumber = findViewById(R.id.txtMobileNumber);
         txtEmail = findViewById(R.id.txtEmail);
+        lblAccountStatus = findViewById(R.id.lblAccountStatus);
         btnSave = findViewById(R.id.btnSave);
 
         //show details
@@ -82,6 +83,20 @@ public class AccountDetailsActivity extends AppCompatActivity {
                 String sex = documentSnapshot.getString("Sex");
                 String currentMobileNumber = documentSnapshot.getString("MobileNumber");
                 String currentEmail = documentSnapshot.getString("Email");
+
+                Boolean isVerified = documentSnapshot.getBoolean("isVerified");
+                Boolean isProfileComplete = documentSnapshot.getBoolean("profileComplete");
+
+                if(isVerified){
+                    lblAccountStatus.setTextColor(getResources().getColor(R.color.green));
+                    lblAccountStatus.setText("Verified Account");
+                } else if (!isVerified && isProfileComplete){
+                    lblAccountStatus.setTextColor(getResources().getColor(R.color.yellow));
+                    lblAccountStatus.setText("Pending Verification");
+                } else if (!isProfileComplete && !isVerified){
+                    lblAccountStatus.setTextColor(getResources().getColor(R.color.red));
+                    lblAccountStatus.setText("Not Verified");
+                }
 
                 txtLastName.setText(lastName);
                 txtFirstName.setText(firstName);
