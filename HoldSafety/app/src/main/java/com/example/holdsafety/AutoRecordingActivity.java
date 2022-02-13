@@ -190,13 +190,15 @@ public class AutoRecordingActivity extends AppCompatActivity {
 
                     //TODO: make this part work
                     //UPDATE THE "Evidence" FIELD IN REPORT DB (USER)
+                    /*
                     db.collection("reportUser").document(userID).collection("reportDetails").document(reportID).update(docUsers)
                             .addOnSuccessListener(unused -> Log.d("Video to Document", "Success! pushed to reportUser, id " + userID + " w/vid ID " + idUri))
                             .addOnFailureListener(e -> Log.d("Video to Document", "Failed to save to reportUser"));
                     //UPDATE THE "Evidence" FIELD IN REPORT DB (ADMIN)
                     db.collection("reportAdmin").document(nearestBrgy).collection("reportDetails").document(reportID).update(docUsers)
                             .addOnSuccessListener(unused -> Log.d("Video to Document", "Success! pushed to reportAdmin, id " + nearestBrgy + " w/vid ID " + idUri))
-                            .addOnFailureListener(e -> Log.d("Video to Document", "Failed to save to reportAdmin"));
+                            .addOnFailureListener(e -> Log.d("Video to Document", "Failed to save to reportAdmin"));*/
+
                     //UPDATE THE "Evidence" FIELD IN REPORT DB (GENERAL)
                     db.collection("reports").document(reportID).update(docUsers)
                             .addOnSuccessListener(unused -> Log.d("Video to Document", "Success! pushed to reportGeneral, id " + nearestBrgy + " w/vid ID " + idUri))

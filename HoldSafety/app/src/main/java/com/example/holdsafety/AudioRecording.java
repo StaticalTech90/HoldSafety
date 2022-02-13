@@ -98,7 +98,6 @@ public class AudioRecording extends AppCompatActivity {
 
     }
 
-
     @RequiresApi(api = Build.VERSION_CODES.O)
     private void startRecording() {
         try {

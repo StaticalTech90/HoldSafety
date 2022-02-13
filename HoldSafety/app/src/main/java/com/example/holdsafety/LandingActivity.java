@@ -715,6 +715,8 @@ public class LandingActivity extends AppCompatActivity {
                 vidLinkRequirements.put("nearestBrgy", nearestBrgy);
                 vidLinkRequirements.put("reportID", reportID);
 
+                /*
+
                 //ADD TO USER-SORTED COLLECTION
                 docRefDetails.set(docDetails)
                         .addOnSuccessListener(aVoid -> Log.d(TAG, "Report saved to user-sorted DB!"))
@@ -723,7 +725,7 @@ public class LandingActivity extends AppCompatActivity {
                 //ADD TO BRGY-SORTED COLLECTION USING THE SAME ID
                 db.collection("reportAdmin").document(nearestBrgy).collection("reportDetails").document(reportID).set(docDetails)
                         .addOnSuccessListener(aVoid -> Log.d(TAG, "Report saved to brgy-sorted DB!"))
-                        .addOnFailureListener(e -> Log.w(TAG, "Report saving to Error!!", e));
+                        .addOnFailureListener(e -> Log.w(TAG, "Report saving to Error!!", e)); */
 
                 //ADD TO GENERAL REPORTS COLLECTION
                 docDetails.put("Barangay", nearestBrgy);
@@ -759,6 +761,8 @@ public class LandingActivity extends AppCompatActivity {
             reportID = docRefDetails.getId();
             Log.d("DocID", "documentId: " + reportID);
 
+            /*
+
             //ADD TO USER-SORTED COLLECTION
             docRefDetails.set(docDetails)
                     .addOnSuccessListener(aVoid -> Log.d(TAG, "Report saved to user-sorted DB!"))
@@ -767,7 +771,7 @@ public class LandingActivity extends AppCompatActivity {
             //ADD TO BRGY-SORTED COLLECTION USING THE SAME ID
             reportAdminDetails.collection("reportDetails").document(reportID).set(docDetails)
                     .addOnSuccessListener(aVoid -> Log.d(TAG, "Report saved to brgy-sorted DB!"))
-                    .addOnFailureListener(e -> Log.w(TAG, "Report saving to Error!!", e));
+                    .addOnFailureListener(e -> Log.w(TAG, "Report saving to Error!!", e)); */
 
             //ADD TO GENERAL COLLECTION USING THE SAME ID
             db.collection("reports").document(reportID).set(docDetails)

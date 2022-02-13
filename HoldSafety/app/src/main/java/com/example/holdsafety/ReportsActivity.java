@@ -64,7 +64,7 @@ public class ReportsActivity extends AppCompatActivity {
                 if (task.isSuccessful()) {
                     for(QueryDocumentSnapshot reportSnap : task.getResult()) {
                         reportID = reportSnap.getId();
-                        Toast.makeText(ReportsActivity.this, reportID, Toast.LENGTH_SHORT).show();
+                        //Toast.makeText(ReportsActivity.this, reportID, Toast.LENGTH_SHORT).show();
 
                         latitude = reportSnap.getString("Lat");
                         longitude = reportSnap.getString("Lon");
