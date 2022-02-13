@@ -43,7 +43,6 @@ import com.google.android.gms.location.LocationSettingsRequest;
 import com.google.android.gms.location.LocationSettingsResponse;
 import com.google.android.gms.location.LocationSettingsStatusCodes;
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -56,7 +55,6 @@ import com.google.firebase.firestore.QuerySnapshot;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -82,6 +80,7 @@ public class LandingActivity extends AppCompatActivity {
     private int timer;
     long remainTime;
     Map<String, Object> docDetails = new HashMap<>(); // for reports in db
+    HashMap<String, String> vidLinkRequirements = new HashMap<>(); // for vid in db
 
     FusedLocationProviderClient fusedLocationProviderClient;
 
@@ -99,10 +98,10 @@ public class LandingActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_landing);
 
-
         //Get logged in user
         mAuth = FirebaseAuth.getInstance();
         user = mAuth.getCurrentUser();
+        assert user != null;
         userID = user.getUid();
         db = FirebaseFirestore.getInstance();
         docRef = db.collection("users").document(userID);
@@ -171,7 +170,6 @@ public class LandingActivity extends AppCompatActivity {
                 return false;
             }
         });
-
 
         //handle method for holdsafety widget
         if(isFromWidget!=null && isFromWidget.equals("true")){
@@ -408,79 +406,76 @@ public class LandingActivity extends AppCompatActivity {
         FirebaseFirestore.getInstance()
                 .collection("barangay")
                 .get()
-                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                .addOnCompleteListener(task -> {
 
-                        HashMap<String, Object> hashBrgys = new HashMap<>();
+                    HashMap<String, Object> hashBrgys = new HashMap<>();
 
-                        for (QueryDocumentSnapshot brgySnap : task.getResult()) {
+                    for (QueryDocumentSnapshot brgySnap : task.getResult()) {
 
-                            HashMap<String, Object> brgySnapHash = new HashMap<>();
+                        HashMap<String, Object> brgySnapHash = new HashMap<>();
 
-                            String brgyID = brgySnap.getId();
+                        String brgyID = brgySnap.getId();
 
-                            String brgyName = brgySnap.getString("Barangay");
-                            String city = brgySnap.getString("City");
-                            String email = brgySnap.getString("Email");
-                            String lat = brgySnap.getString("Latitude");
-                            String lon = brgySnap.getString("Longitude");
-                            String brgyMNumber = brgySnap.getString("MobileNumber");
+                        String brgyName = brgySnap.getString("Barangay");
+                        String city = brgySnap.getString("City");
+                        String email = brgySnap.getString("Email");
+                        String lat = brgySnap.getString("Latitude");
+                        String lon = brgySnap.getString("Longitude");
+                        String brgyMNumber = brgySnap.getString("MobileNumber");
 
-                            //COMPARE BRGY LAT & LON TO USER
-                            if (lat != null && lon != null) {
-                                float[] results = new float[1];
-                                Location.distanceBetween(
-                                        location.getLatitude(), location.getLongitude(),
-                                        Double.parseDouble(lat), Double.parseDouble(lon), results);
-                                //FLOAT[] WILL RETURN DISTANCE IN METER
-                                float distance = results[0];
+                        //COMPARE BRGY LAT & LON TO USER
+                        if (lat != null && lon != null) {
+                            float[] results = new float[1];
+                            Location.distanceBetween(
+                                    location.getLatitude(), location.getLongitude(),
+                                    Double.parseDouble(lat), Double.parseDouble(lon), results);
+                            //FLOAT[] WILL RETURN DISTANCE IN METER
+                            float distance = results[0];
 
-                                //ADD TO HASHMAP
-                                brgySnapHash.put("brgySnap", brgySnap);
-                                brgySnapHash.put("distance", distance);
-                                //ADD TO ALL BRGY SNAP
-                                hashBrgys.put(brgyID, brgySnapHash);
-                            }
-
+                            //ADD TO HASHMAP
+                            brgySnapHash.put("brgySnap", brgySnap);
+                            brgySnapHash.put("distance", distance);
+                            //ADD TO ALL BRGY SNAP
+                            hashBrgys.put(brgyID, brgySnapHash);
                         }
 
-                        //COMPARE DISTANCES BETWEEN BARANGAYS
-                        QueryDocumentSnapshot nearestBrgySnap = null;
-                        float nearestDistance = 0;
-                        for (String key : hashBrgys.keySet()) {
-
-                            HashMap<String, Object> hashDistances = (HashMap<String, Object>) hashBrgys.get(key);
-                            if (hashDistances != null) {
-
-                                QueryDocumentSnapshot brgySnap = (QueryDocumentSnapshot) hashDistances.get("brgySnap");
-                                float distance = (float) hashDistances.get("distance");
-
-                                if(nearestDistance == 0){
-                                    //FIRST KEY
-                                    nearestDistance = distance;
-                                    nearestBrgySnap = brgySnap;
-
-                                } else if(distance < nearestDistance){
-                                    nearestDistance = distance;
-                                    nearestBrgySnap = brgySnap;
-                                }
-                                nearestBrgy = nearestBrgySnap.getString("Barangay");
-                                docDetails.put("Barangay", nearestBrgy);
-                            }
-                        }
-
-                        //Enable wifi when button is held
-                        WifiManager wifiManager = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
-                        wifiManager.setWifiEnabled(true);
-
-                        String nearestBrgyID = nearestBrgySnap.getId();
-                        //Toast.makeText(LandingActivity.this, "Nearest Brgyv ID: " + nearestBrgySnap.getId(), Toast.LENGTH_SHORT).show();
-                        //Toast.makeText(LandingActivity.this, "Nearest Brgy: " + nearestBrgySnap.getString("Barangay"), Toast.LENGTH_SHORT).show();
-                        //sendLocationToContacts(location, address);
-                        //Toast.makeText(LandingActivity.this, "Geolocation: " + address, Toast.LENGTH_SHORT).show();
-                        sendAlertMessage(location, address, nearestBrgyID);
                     }
+
+                    //COMPARE DISTANCES BETWEEN BARANGAYS
+                    QueryDocumentSnapshot nearestBrgySnap = null;
+                    float nearestDistance = 0;
+                    for (String key : hashBrgys.keySet()) {
+
+                        HashMap<String, Object> hashDistances = (HashMap<String, Object>) hashBrgys.get(key);
+                        if (hashDistances != null) {
+
+                            QueryDocumentSnapshot brgySnap = (QueryDocumentSnapshot) hashDistances.get("brgySnap");
+                            float distance = (float) hashDistances.get("distance");
+
+                            if(nearestDistance == 0){
+                                //FIRST KEY
+                                nearestDistance = distance;
+                                nearestBrgySnap = brgySnap;
+
+                            } else if(distance < nearestDistance){
+                                nearestDistance = distance;
+                                nearestBrgySnap = brgySnap;
+                            }
+                            nearestBrgy = nearestBrgySnap.getString("Barangay");
+                            docDetails.put("Barangay", nearestBrgy);
+                        }
+                    }
+
+                    //Enable wifi when button is held
+                    WifiManager wifiManager = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+                    wifiManager.setWifiEnabled(true);
+
+                    String nearestBrgyID = nearestBrgySnap.getId();
+                    //Toast.makeText(LandingActivity.this, "Nearest Brgyv ID: " + nearestBrgySnap.getId(), Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(LandingActivity.this, "Nearest Brgy: " + nearestBrgySnap.getString("Barangay"), Toast.LENGTH_SHORT).show();
+                    //sendLocationToContacts(location, address);
+                    //Toast.makeText(LandingActivity.this, "Geolocation: " + address, Toast.LENGTH_SHORT).show();
+                    sendAlertMessage(location, address, nearestBrgyID);
                 });
     }
 
@@ -553,7 +548,7 @@ public class LandingActivity extends AppCompatActivity {
                         manager.sendMultipartTextMessage(brgyMobileNumber, null, msgArray, sentPendingIntents, null);
                         Toast.makeText(getApplicationContext(), "Text Sent to Brgy", Toast.LENGTH_LONG).show();
                     } catch (Exception ex) {
-                        Toast.makeText(getApplicationContext(), "SMS Error: " + ex.getMessage().toString(), Toast.LENGTH_LONG).show();
+                        Toast.makeText(getApplicationContext(), "SMS Error: " + ex.getMessage(), Toast.LENGTH_LONG).show();
                         ex.printStackTrace();
                     }
                 }
@@ -586,98 +581,91 @@ public class LandingActivity extends AppCompatActivity {
                 .document(userID)
                 .collection("contacts")
                 .get()
-                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        //Get each contact details
-                        for (QueryDocumentSnapshot snapshot : task.getResult()) {
-                            String contactID = snapshot.getId();
+                .addOnCompleteListener(task -> {
+                    //Get each contact details
+                    for (QueryDocumentSnapshot snapshot : task.getResult()) {
+                        String contactID = snapshot.getId();
 
-                            String mobileNumber = snapshot.getString("mobileNumber");
-                            String firstName = snapshot.getString("firstName");
-                            String lastName = snapshot.getString("lastName");
-                            String email = snapshot.getString("email");
+                        String mobileNumber = snapshot.getString("mobileNumber");
+                        String firstName = snapshot.getString("firstName");
+                        String lastName = snapshot.getString("lastName");
+                        String email = snapshot.getString("email");
 
-                            //Toast.makeText(getApplicationContext(), message, Toast.LENGTH_LONG).show();
+                        //Toast.makeText(getApplicationContext(), message, Toast.LENGTH_LONG).show();
 
-                            //Send Text Message
-                            if (mobileNumber != null) {
-                                registerReceiver(new BroadcastReceiver() {
-                                    @Override
-                                    public void onReceive(Context context, Intent intent) {
-                                        switch (getResultCode()) {
+                        //Send Text Message
+                        if (mobileNumber != null) {
+                            registerReceiver(new BroadcastReceiver() {
+                                @Override
+                                public void onReceive(Context context, Intent intent) {
+                                    switch (getResultCode()) {
 
-                                            case Activity.RESULT_OK:
-                                                //MESSAGE SENT
-                                                break;
-                                            case SmsManager.RESULT_ERROR_GENERIC_FAILURE:
-                                                break;
-                                            case SmsManager.RESULT_ERROR_NO_SERVICE:
-                                                break;
-                                            case SmsManager.RESULT_ERROR_NULL_PDU:
-                                                break;
-                                            case SmsManager.RESULT_ERROR_RADIO_OFF:
-                                                break;
-                                        }
+                                        case Activity.RESULT_OK:
+                                            //MESSAGE SENT
+                                            break;
+                                        case SmsManager.RESULT_ERROR_GENERIC_FAILURE:
+                                            break;
+                                        case SmsManager.RESULT_ERROR_NO_SERVICE:
+                                            break;
+                                        case SmsManager.RESULT_ERROR_NULL_PDU:
+                                            break;
+                                        case SmsManager.RESULT_ERROR_RADIO_OFF:
+                                            break;
                                     }
-                                }, new IntentFilter("SMS_SENT"));
-
-                                ArrayList<PendingIntent> sentPendingIntents = new ArrayList<PendingIntent>();
-                                PendingIntent sentPI = PendingIntent.getBroadcast(LandingActivity.this,
-                                        SEND_SMS_REQ_CODE, new Intent("SMS_SENT"), 0);
-
-                                //Send SMS
-                                try {
-                                    SmsManager manager = SmsManager.getDefault();
-                                    //For long messages to work
-                                    ArrayList<String> msgArray = manager.divideMessage(message);
-
-                                    for (int i = 0; i < msgArray.size(); i++) {
-                                        sentPendingIntents.add(i, sentPI);
-                                    }
-                                    manager.sendMultipartTextMessage(mobileNumber, null, msgArray, sentPendingIntents, null);
-                                    //Toast.makeText(getApplicationContext(), "Message Sent", Toast.LENGTH_LONG).show();
-                                } catch (Exception ex) {
-                                    Toast.makeText(getApplicationContext(), "SMS Error: " + ex.getMessage().toString(), Toast.LENGTH_LONG).show();
-                                    ex.printStackTrace();
                                 }
+                            }, new IntentFilter("SMS_SENT"));
 
-                                //SEND SMS
-                        /*
-                        SmsManager manager = SmsManager.getDefault();
-                        PendingIntent sentPI = PendingIntent.getBroadcast(LandingActivity.this,
-                                SEND_SMS_REQ_CODE, new Intent("SMS_SENT"), 0);
+                            ArrayList<PendingIntent> sentPendingIntents = new ArrayList<PendingIntent>();
+                            PendingIntent sentPI = PendingIntent.getBroadcast(LandingActivity.this,
+                                    SEND_SMS_REQ_CODE, new Intent("SMS_SENT"), 0);
 
-                        manager.sendTextMessage(mobileNumber, null, message, sentPI, null);
-                        Toast.makeText(getApplicationContext(), "SMS Sent", Toast.LENGTH_LONG).show();
-                        Toast.makeText(getApplicationContext(), "SMS Sent to: " + mobileNumber, Toast.LENGTH_LONG).show();
-                        */
+                            //Send SMS
+                            try {
+                                SmsManager manager = SmsManager.getDefault();
+                                //For long messages to work
+                                ArrayList<String> msgArray = manager.divideMessage(message);
+
+                                for (int i = 0; i < msgArray.size(); i++) {
+                                    sentPendingIntents.add(i, sentPI);
+                                }
+                                manager.sendMultipartTextMessage(mobileNumber, null, msgArray, sentPendingIntents, null);
+                                //Toast.makeText(getApplicationContext(), "Message Sent", Toast.LENGTH_LONG).show();
+                            } catch (Exception ex) {
+                                Toast.makeText(getApplicationContext(), "SMS Error: " + ex.getMessage(), Toast.LENGTH_LONG).show();
+                                ex.printStackTrace();
                             }
 
-                            if (email != null) {
-                                //Send Email
-                                String username = "holdsafety.ph@gmail.com";
-                                String password = "HoldSafety@4qmag";
-                                String subject = "[EMERGENCY] Alert Message - HoldSafety";
+                            //SEND SMS
+                    /*
+                    SmsManager manager = SmsManager.getDefault();
+                    PendingIntent sentPI = PendingIntent.getBroadcast(LandingActivity.this,
+                            SEND_SMS_REQ_CODE, new Intent("SMS_SENT"), 0);
 
-                                List<String> recipients = Collections.singletonList(email);
-                                //email of sender, password of sender, list of recipients, email subject, email body
-                                new MailTask(LandingActivity.this).execute(username, password, recipients, subject, message);
-
-                                //Toast.makeText(LandingActivity.this, "Email Sent", Toast.LENGTH_LONG).show();
-                            }
+                    manager.sendTextMessage(mobileNumber, null, message, sentPI, null);
+                    Toast.makeText(getApplicationContext(), "SMS Sent", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getApplicationContext(), "SMS Sent to: " + mobileNumber, Toast.LENGTH_LONG).show();
+                    */
                         }
-                        saveToDB();
-                    }
-                });
+                        if (email != null) {
+                            //Send Email
+                            String username = "holdsafety.ph@gmail.com";
+                            String password = "HoldSafety@4qmag";
+                            String subject = "[EMERGENCY] Alert Message - HoldSafety";
 
-        startActivity(new Intent(LandingActivity.this, RecordingCountdownActivity.class));
+                            List<String> recipients = Collections.singletonList(email);
+                            //email of sender, password of sender, list of recipients, email subject, email body
+                            new MailTask(LandingActivity.this).execute(username, password, recipients, subject, message);
+
+                            //Toast.makeText(LandingActivity.this, "Email Sent", Toast.LENGTH_LONG).show();
+                        }
+                    }
+                    saveToDB();
+                });
     }
 
     private void saveToDB() {
-        Date currentDate = Calendar.getInstance().getTime();
-        SimpleDateFormat dateFormat = new SimpleDateFormat("MM-dd-yyyy");
-        String formattedDate = dateFormat.format(currentDate);
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault());
+        String currentDateandTime = sdf.format(new Date());
 
         docRef = db.collection("users").document(userID);
 
@@ -687,24 +675,36 @@ public class LandingActivity extends AppCompatActivity {
                 String lastName = documentSnapshot.getString("LastName");
                 docDetails.put("FirstName", firstName);
                 docDetails.put("LastName", lastName);
-
-                        
                 docDetails.put("Barangay", nearestBrgy);
-                docDetails.put("Report Date", formattedDate);
-
-                //TODO: PUT VIDEO LINK IN DB
+                docDetails.put("Report Date", currentDateandTime);
+                docDetails.put("Evidence", "");
 
                 db = FirebaseFirestore.getInstance();
 
-                //MAKE THE USER ID VISIBLE FOR QUERIES BY ADDING FIELD
+                //MAKE THE USER ID VISIBLE TO QUERIES BY ADDING FIELD
                 Map<String, Object> fillerField = new HashMap<>();
-                fillerField.put("ID", userID);
+                fillerField.put("Field", "filler_for_visibility");
                 db.collection("reportUser").document(userID).set(fillerField);
+                db.collection("reportAdmin").document(nearestBrgy).set(fillerField);
 
                 //GET THE ID OF THE REPORT TO BE SAVED IN DB
                 DocumentReference docRefDetails = db.collection("reportUser").document(userID).collection("reportDetails").document();
                 reportID = docRefDetails.getId();
                 Log.d("DocID", "documentId: " + reportID);
+
+                //TODO: PUT VIDEO LINK IN reportUser DB
+                //putExtras for evidence push to reportId
+                Intent audioRecordIntent = new Intent(this, AudioRecording.class);
+                audioRecordIntent.putExtra("reportId", reportID);
+                audioRecordIntent.putExtra("userId", userID);
+
+                Intent videoRecordIntent = new Intent(this, AutoRecordingActivity.class);
+                videoRecordIntent.putExtra("reportId", reportID);
+                videoRecordIntent.putExtra("userId", userID);
+
+                vidLinkRequirements.put("userID", userID);
+                vidLinkRequirements.put("nearestBrgy", nearestBrgy);
+                vidLinkRequirements.put("reportID", reportID);
 
                 //ADD TO USER-SORTED COLLECTION
                 docRefDetails.set(docDetails)
@@ -719,9 +719,13 @@ public class LandingActivity extends AppCompatActivity {
                 //ADD TO GENERAL REPORTS COLLECTION
                 docDetails.put("Barangay", nearestBrgy);
                 docDetails.put("User ID", userID);
-                db.collection("reports").document().set(docDetails)
+                db.collection("reports").document(reportID).set(docDetails)
                         .addOnSuccessListener(aVoid -> Log.d(TAG, "General Report saved to brgy-sorted DB!"))
                         .addOnFailureListener(e -> Log.w(TAG, "General Report saving to Error!!", e));
+
+                Intent recordingCountdown = new Intent(LandingActivity.this, RecordingCountdownActivity.class);
+                recordingCountdown.putExtra("vidLinkRequirements", vidLinkRequirements);
+                startActivity(recordingCountdown);
             }
         })
         .addOnFailureListener(documentSnapshot -> {
@@ -729,9 +733,7 @@ public class LandingActivity extends AppCompatActivity {
             docDetails.put("LastName", "");
 
             docDetails.put("Barangay", nearestBrgy);
-            docDetails.put("Report Date", formattedDate);
-
-            //TODO: PUT VIDEO LINK IN DB
+            docDetails.put("Report Date", currentDateandTime);
 
             db = FirebaseFirestore.getInstance();
             DocumentReference reportUserDetails = db.collection("reportUser").document(userID);
@@ -757,6 +759,12 @@ public class LandingActivity extends AppCompatActivity {
             reportAdminDetails.collection("reportDetails").document(reportID).set(docDetails)
                     .addOnSuccessListener(aVoid -> Log.d(TAG, "Report saved to brgy-sorted DB!"))
                     .addOnFailureListener(e -> Log.w(TAG, "Report saving to Error!!", e));
+
+            //ADD TO GENERAL COLLECTION USING THE SAME ID
+            db.collection("reports").document(reportID).set(docDetails)
+                    .addOnSuccessListener(aVoid -> Log.d(TAG, "General Report saved to brgy-sorted DB!"))
+                    .addOnFailureListener(e -> Log.w(TAG, "General Report saving to Error!!", e));
+
         });
     }
 

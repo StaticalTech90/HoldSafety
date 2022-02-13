@@ -288,7 +288,7 @@ public class AccountDetailsActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         if(requestCode==1 && resultCode==RESULT_OK && data!=null && data.getData()!=null){
             imageURI = data.getData();
-            Toast.makeText(getApplicationContext(), "Selected " + imageURI, Toast.LENGTH_SHORT).show();
+            //Toast.makeText(getApplicationContext(), "Selected " + imageURI, Toast.LENGTH_SHORT).show();
             //uploadPicture();
         }
     }
@@ -318,7 +318,7 @@ public class AccountDetailsActivity extends AppCompatActivity {
                                         isEmailChanged = false;
                                         userPassword = "";
 
-                                        Toast.makeText(AccountDetailsActivity.this, "Changes Saved", Toast.LENGTH_LONG).show();
+                                        //Toast.makeText(AccountDetailsActivity.this, "Changes Saved", Toast.LENGTH_LONG).show();
 
                                         //insert email verification here
 
@@ -333,7 +333,7 @@ public class AccountDetailsActivity extends AppCompatActivity {
                                         isEmailChanged = false;
                                         userPassword = "";
 
-                                        Toast.makeText(AccountDetailsActivity.this, "Update Email Failed" + "\nChanges not Saved", Toast.LENGTH_LONG).show();
+                                        //Toast.makeText(AccountDetailsActivity.this, "Update Email Failed" + "\nChanges not Saved", Toast.LENGTH_LONG).show();
 
                                         finish();
                                         startActivity(getIntent());
@@ -348,7 +348,7 @@ public class AccountDetailsActivity extends AppCompatActivity {
                         isEmailChanged = false;
                         userPassword = "";
 
-                        Toast.makeText(AccountDetailsActivity.this, "Reauthentication Failed" + "\nChanges not Saved", Toast.LENGTH_LONG).show();
+                        //Toast.makeText(AccountDetailsActivity.this, "Reauthentication Failed" + "\nChanges not Saved", Toast.LENGTH_LONG).show();
 
                         finish();
                         startActivity(getIntent());
@@ -492,9 +492,9 @@ public class AccountDetailsActivity extends AppCompatActivity {
                 //DELETE IMAGE
                 FirebaseStorage.getInstance().getReference("id").child(user.getUid()).delete()
                 .addOnSuccessListener(v -> {
-                    Toast.makeText(AccountDetailsActivity.this, "Deleted Image", Toast.LENGTH_LONG).show();
+                    //Toast.makeText(AccountDetailsActivity.this, "Deleted Image", Toast.LENGTH_LONG).show();
                 }).addOnFailureListener(v1 -> {
-                    Toast.makeText(AccountDetailsActivity.this, "Failed", Toast.LENGTH_LONG).show();
+                    //Toast.makeText(AccountDetailsActivity.this, "Failed", Toast.LENGTH_LONG).show();
                 });
 
                 db.collection("users").document(user.getUid()).delete();
@@ -504,7 +504,7 @@ public class AccountDetailsActivity extends AppCompatActivity {
                 finish();
             }
             else{
-                Toast.makeText(AccountDetailsActivity.this, "Error: " + task.getException().getMessage(), Toast.LENGTH_LONG).show();
+                //Toast.makeText(AccountDetailsActivity.this, "Error: " + task.getException().getMessage(), Toast.LENGTH_LONG).show();
             }
         }));
 

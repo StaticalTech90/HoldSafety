@@ -29,13 +29,20 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.OnProgressListener;
+import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
 
 public class AutoRecordingActivity extends AppCompatActivity {
     CameraPreview cameraPreview;
@@ -53,16 +60,42 @@ public class AutoRecordingActivity extends AppCompatActivity {
     ProgressBar progressBar;
     private final int RECORDING_REQ_CODE = 1000;
 
+    HashMap<String, String> vidLinkRequirements;
+    String userID, nearestBrgy, reportID;
+
+    StorageReference videoRef;
+    String idUri;
+
+    Map<String, Object> docUsers = new HashMap<>();
+    FirebaseUser user;
+    FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_auto_recording);
+
+
 
         btnRecord = findViewById(R.id.btnRecord);
         txtIsRecording = findViewById(R.id.cardIsRecording);
         progressBar = findViewById(R.id.progressBar);
         cameraLayout = findViewById(R.id.camera_preview);
         mAuth = FirebaseAuth.getInstance();
+        user = mAuth.getCurrentUser();
+        videoRef = FirebaseStorage.getInstance().getReference("emergencyVideos/");
+
+        Intent intent = getIntent();
+        vidLinkRequirements = (HashMap<String, String>) intent.getSerializableExtra("vidLinkRequirements");
+
+        userID = vidLinkRequirements.get("userID");
+        nearestBrgy = vidLinkRequirements.get("nearestBrgy");
+        reportID = vidLinkRequirements.get("reportID");
+
+        Toast.makeText(getApplicationContext(), "HasmapID: " + userID , Toast.LENGTH_SHORT).show();
+        Toast.makeText(getApplicationContext(), "HasmapBrgy: " + nearestBrgy , Toast.LENGTH_SHORT).show();
+        Toast.makeText(getApplicationContext(), "HasmapReportID: " + reportID , Toast.LENGTH_SHORT).show();
 
 
         btnRecord.setOnClickListener(new View.OnClickListener() {
@@ -122,6 +155,9 @@ public class AutoRecordingActivity extends AppCompatActivity {
                     public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                         Toast.makeText(AutoRecordingActivity.this, "Upload successful", Toast.LENGTH_SHORT).show();
                         setHandler();
+
+                        getVideoLink();
+
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
@@ -140,6 +176,33 @@ public class AutoRecordingActivity extends AppCompatActivity {
                         progressBar.setProgress((int) progress);
                     }
                 });
+    }
+
+    private void getVideoLink() {
+        //FETCH VIDEO LINK
+        videoRef.child(user.getUid() + "/" + recordingFile.getName()).getDownloadUrl()
+                .addOnSuccessListener(uri -> {
+                    Log.d("Video to Document", "Fetching video URI success");
+                    idUri = String.valueOf(uri);
+                    docUsers.put("Evidence", idUri);
+                    Log.d("Video to Document", idUri); // WORKING. FETCHES CORRECT VID. JUST NEED TO PUT IT IN THE DB
+//                                Log.i("URI gDUrl()", idUri);
+
+                    //TODO: make this part work
+                    //UPDATE THE "Evidence" FIELD IN REPORT DB (USER)
+                    db.collection("reportUser").document(userID).collection("reportDetails").document(reportID).update(docUsers)
+                            .addOnSuccessListener(unused -> Log.d("Video to Document", "Success! pushed to reportUser, id " + userID + " w/vid ID " + idUri))
+                            .addOnFailureListener(e -> Log.d("Video to Document", "Failed to save to reportUser"));
+                    //UPDATE THE "Evidence" FIELD IN REPORT DB (ADMIN)
+                    db.collection("reportAdmin").document(nearestBrgy).collection("reportDetails").document(reportID).update(docUsers)
+                            .addOnSuccessListener(unused -> Log.d("Video to Document", "Success! pushed to reportAdmin, id " + nearestBrgy + " w/vid ID " + idUri))
+                            .addOnFailureListener(e -> Log.d("Video to Document", "Failed to save to reportAdmin"));
+                    //UPDATE THE "Evidence" FIELD IN REPORT DB (GENERAL)
+                    db.collection("reports").document(reportID).update(docUsers)
+                            .addOnSuccessListener(unused -> Log.d("Video to Document", "Success! pushed to reportGeneral, id " + nearestBrgy + " w/vid ID " + idUri))
+                            .addOnFailureListener(e -> Log.d("Video to Document", "Failed to save to reportGeneral"));
+                })
+                .addOnFailureListener(e -> Log.d("Video to Document", "Fetching video URI failed. Log: " + e.getMessage()));
     }
 
     private void setCamera() {
@@ -254,11 +317,22 @@ public class AutoRecordingActivity extends AppCompatActivity {
 
         // Create a media file name
         Date date = new Date();
-        File mediaFile = new File(mediaStorageDir.getPath() + File.separator +
-                "VID_" + date.getTime() + ".mp4");
+        File mediaFile = new File(mediaStorageDir.getPath() + File.separator + "HoldSafety_" + date.getTime() + ".mp4");
 
         recordingFile = mediaFile;
         return mediaFile;
+
+        /*
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd_HH:mma", Locale.getDefault());
+        String currentDateandTime = sdf.format(new Date());
+
+        File mediaFile = new File(mediaStorageDir.getPath() + File.separator +
+                "VID_" + currentDateandTime + ".mp4");
+
+        recordingFile = mediaFile;
+        return mediaFile;
+
+         */
     }
 
     private void setHandler() {
