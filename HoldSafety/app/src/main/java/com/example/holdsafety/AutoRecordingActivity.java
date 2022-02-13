@@ -1,16 +1,6 @@
 package com.example.holdsafety;
 
-import static android.content.ContentValues.TAG;
-
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.cardview.widget.CardView;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-
-import android.Manifest;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.graphics.PorterDuff;
 import android.hardware.Camera;
 import android.media.CamcorderProfile;
@@ -24,27 +14,26 @@ import android.util.Log;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ProgressBar;
-import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.cardview.widget.CardView;
+import androidx.core.content.ContextCompat;
+
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
-import com.google.firebase.storage.UploadTask;
 
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Locale;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 public class AutoRecordingActivity extends AppCompatActivity {
@@ -69,6 +58,9 @@ public class AutoRecordingActivity extends AppCompatActivity {
     StorageReference videoRef;
     String idUri;
 
+    HashMap<String, String> vidLinkRequirements;
+    String nearestBrgy;
+
     FloatingActionButton btnRecord;
     boolean isRecording = false;
     CardView txtIsRecording;
@@ -81,54 +73,58 @@ public class AutoRecordingActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_auto_recording);
 
-        videoRef = FirebaseStorage.getInstance().getReference("emergencyVideos");
+        videoRef = FirebaseStorage.getInstance().getReference("emergencyVideos/");
+        mAuth = FirebaseAuth.getInstance();
+        user = mAuth.getCurrentUser();
 
         user = mAuth.getCurrentUser();
         btnRecord = findViewById(R.id.btnRecord);
         txtIsRecording = findViewById(R.id.cardIsRecording);
         progressBar = findViewById(R.id.progressBar);
         cameraLayout = findViewById(R.id.camera_preview);
-        mAuth = FirebaseAuth.getInstance();
 
+        //FOR VID LINK SAVE TO DB
+        Intent intent = getIntent();
+        vidLinkRequirements = (HashMap<String, String>) intent.getSerializableExtra("vidLinkRequirements");
+        userID = vidLinkRequirements.get("userID");
+        nearestBrgy = vidLinkRequirements.get("nearestBrgy");
+        reportID = vidLinkRequirements.get("reportID");
 
-        btnRecord.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if(isRecording){
-                    //user is currently recording
-                    //stop option
-                    mediaRecorder.stop();
-                    camera.lock();
+        btnRecord.setOnClickListener(view -> {
+            if(isRecording){
+                //user is currently recording
+                //stop option
+                mediaRecorder.stop();
+                camera.lock();
 
-                    //add file to db
-                    addFileToFirebase();
+                //add file to db
+                addFileToFirebase();
+            } else {
+                //user is not recording
+                //play option
+                if(prepareVideoRecorder()){
+                    mediaRecorder.start();
+                    //2. SET TIMER (5 SECONDS) - Limit of the recording
+                    new CountDownTimer(5000, 1000){
+                        @Override
+                        public void onTick(long l) {
+                            long timeRemaining = (l/1000) + 1;
+                            //txtAudioRecording.setText("Recording will stop in " + timeRemaining + " seconds");
+                        }
+
+                        @Override
+                        public void onFinish() {
+                            //3. STOP RECORDING
+                            btnRecord.performClick();
+                        }
+
+                    }.start();
                 } else {
-                    //user is not recording
-                    //play option
-                    if(prepareVideoRecorder()){
-                        mediaRecorder.start();
-                        //2. SET TIMER (5 SECONDS) - Limit of the recording
-                        new CountDownTimer(5000, 1000){
-                            @Override
-                            public void onTick(long l) {
-                                long timeRemaining = (l/1000) + 1;
-                                //txtAudioRecording.setText("Recording will stop in " + timeRemaining + " seconds");
-                            }
-
-                            @Override
-                            public void onFinish() {
-                                //3. STOP RECORDING
-                                btnRecord.performClick();
-                            }
-
-                        }.start();
-                    } else {
-                        releaseMediaRecorder();
-                    }
+                    releaseMediaRecorder();
                 }
-                isRecording = !isRecording;
-                updateButtonUI();
             }
+            isRecording = !isRecording;
+            updateButtonUI();
         });
         setCamera();
     }
@@ -140,60 +136,46 @@ public class AutoRecordingActivity extends AppCompatActivity {
         //add to firebase
         FirebaseStorage.getInstance()
                 .getReference("emergencyVideos")
-                .child(userID)
+                .child(user.getUid())
                 .child(recordingFile.getName())
                 .putFile(Uri.fromFile(recordingFile))
-                .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                    @Override
-                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                        Toast.makeText(AutoRecordingActivity.this, "Upload successful", Toast.LENGTH_SHORT).show();
-                        setHandler();
+                .addOnSuccessListener(taskSnapshot -> {
+                    Log.d("VidUpload", "Vid Uploaded to storage");
+                    Toast.makeText(AutoRecordingActivity.this, "Upload successful", Toast.LENGTH_SHORT).show();
+                    setHandler();
 
-                        videoRef.child(user.getUid()).child(recordingFile.getName()).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-                            @Override
-                            public void onSuccess(Uri uri) {
+                    Log.d("Video to Document", recordingFile.getName());
+
+                    //FETCH VIDEO LINK
+                    videoRef.child(user.getUid() + "/" + recordingFile.getName()).getDownloadUrl()
+                            .addOnSuccessListener(uri -> {
+                                Log.d("Video to Document", "Fetching video URI success");
                                 idUri = String.valueOf(uri);
                                 docUsers.put("Evidence", idUri);
-                                Log.i("URI gDUrl()", idUri);
+                                Log.d("Video to Document", idUri); // WORKING. FETCHES CORRECT VID. JUST NEED TO PUT IT IN THE DB
+//                                Log.i("URI gDUrl()", idUri);
 
-                                userReportDB.set(docUsers)
-                                        .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                            @Override
-                                            public void onSuccess(Void aVoid) {
-                                                Toast.makeText(getApplicationContext(),
-                                                        "pushed video to document",
-                                                        Toast.LENGTH_SHORT).show();
-                                                Log.i(TAG, "Video pushed");
-                                            }
-                                        })
-                                        .addOnFailureListener(new OnFailureListener() {
-                                            @Override
-                                            public void onFailure(@NonNull Exception e) {
-                                                Toast.makeText(getApplicationContext(),
-                                                        "Error writing document",
-                                                        Toast.LENGTH_SHORT).show();
-                                                Log.w(TAG, "Error writing document", e);
-                                            }
-                                        });
-                            }
-                        });
-                    }
+                                //TODO: make this part work
+                                //UPDATE THE "Evidence" FIELD IN REPORT DB (USER)
+                                db.collection("reportUser").document(userID).collection("reportDetails").document(reportID).update(docUsers)
+                                        .addOnSuccessListener(unused -> Log.d("Video to Document", "Success! pushed to reportUser, id " + userID + " w/vid ID " + idUri))
+                                        .addOnFailureListener(e -> Log.d("Video to Document", "Failed to save to reportUser"));
+                                //UPDATE THE "Evidence" FIELD IN REPORT DB (ADMIN)
+                                db.collection("reportAdmin").document(nearestBrgy).collection("reportDetails").document(reportID).update(docUsers)
+                                        .addOnSuccessListener(unused -> Log.d("Video to Document", "Success! pushed to reportAdmin, id " + nearestBrgy + " w/vid ID " + idUri))
+                                        .addOnFailureListener(e -> Log.d("Video to Document", "Failed to save to reportAdmin"));
+                            })
+                            .addOnFailureListener(e -> Log.d("Video to Document", "Fetching video URI failed. Log: " + e.getMessage()));
                 })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Toast.makeText(AutoRecordingActivity.this, "Upload failed: " +e.getMessage(), Toast.LENGTH_SHORT).show();
-                        setHandler();
+                .addOnFailureListener(e -> {
+                    Toast.makeText(AutoRecordingActivity.this, "Upload failed: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                    setHandler();
 
-                    }
                 })
-                .addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
-                    @Override
-                    public void onProgress(@NonNull UploadTask.TaskSnapshot snapshot) {
-                        double progress = (100.0 * snapshot.getBytesTransferred() / snapshot.getTotalByteCount());
-                        progressBar.getProgressDrawable().setColorFilter(ContextCompat.getColor(AutoRecordingActivity.this,R.color.light_blue), PorterDuff.Mode.MULTIPLY);
-                        progressBar.setProgress((int) progress);
-                    }
+                .addOnProgressListener(snapshot -> {
+                    double progress = (100.0 * snapshot.getBytesTransferred() / snapshot.getTotalByteCount());
+                    progressBar.getProgressDrawable().setColorFilter(ContextCompat.getColor(AutoRecordingActivity.this,R.color.light_blue), PorterDuff.Mode.MULTIPLY);
+                    progressBar.setProgress((int) progress);
                 });
     }
 
