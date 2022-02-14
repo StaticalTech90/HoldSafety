@@ -27,6 +27,7 @@ public class RecordingCountdownActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
         vidLinkRequirements = (HashMap<String, String>) intent.getSerializableExtra("vidLinkRequirements");
+        Toast.makeText(getApplicationContext(), "Recording Hashmap: " + vidLinkRequirements , Toast.LENGTH_SHORT).show();
 
         CountDownTimer timer = new CountDownTimer(3000, 1000)
         {

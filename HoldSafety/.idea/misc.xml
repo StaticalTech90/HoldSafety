@@ -41,6 +41,7 @@
         <entry key="..\:/Users/nhoriza/Downloads/HoldSafety-main/HoldSafety-main/HoldSafety/app/src/main/res/layout/activity_account_details.xml" value="0.2006340579710145" />
         <entry key="..\:/Users/nhoriza/Downloads/HoldSafety-main/HoldSafety-main/HoldSafety/app/src/main/res/layout/activity_menu.xml" value="0.215625" />
         <entry key="..\:/Users/nhoriza/Downloads/HoldSafety-main/HoldSafety-main/HoldSafety/app/src/main/res/layout/activity_register_google.xml" value="0.13020833333333334" />
+        <entry key="..\:/Users/nhoriza/Downloads/HoldSafety-main/HoldSafety-main/HoldSafety/app/src/main/res/layout/report_row.xml" value="0.16145833333333334" />
         <entry key="..\:/Users/nhoriza/Downloads/HoldSafety-temp/HoldSafety-temp/HoldSafety/app/src/main/res/layout/activity_register.xml" value="0.2346014492753623" />
         <entry key="..\:/Users/nhoriza/Downloads/HoldSafety-temp/HoldSafety-temp/HoldSafety/app/src/main/res/layout/activity_register_google.xml" value="0.2346014492753623" />
         <entry key="..\:/ffabu/Documents/iACADEMY/3rd_Year-Third_Term/CSTHES01/HoldSafety/HoldSafety/app/src/main/res/layout/activity_account_details.xml" value="0.19583333333333333" />
@@ -60,7 +61,7 @@
       </map>
     </option>
   </component>
-  <component name="ProjectRootManager" version="2" languageLevel="JDK_11" project-jdk-name="16" project-jdk-type="JavaSDK">
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_15" project-jdk-name="16" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/build/classes" />
   </component>
   <component name="ProjectType">
