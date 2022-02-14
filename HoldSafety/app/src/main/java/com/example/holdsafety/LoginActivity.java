@@ -66,19 +66,19 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
     protected void onStart() {
         super.onStart();
         //check if user is already logged in
-//        Log.d("userSnap", user.getEmail());
-//        if(user != null) {
-//            determineNextActivity(user.getUid(), user.getEmail());
-//            Intent intent = new Intent(LoginActivity.this, LandingActivity.class);
-//            isFromWidget = getIntent().getStringExtra("isFromWidget");
-//
-//            //handle method for holdsafety widget
-//            if(isFromWidget != null && isFromWidget.equals("true")) {
-//                intent.putExtra("isFromWidget", "true");
-//                Toast.makeText(getApplicationContext(), "Inside IF Widget" , Toast.LENGTH_SHORT).show();
-//            }
-//            startActivity(intent);
-//        }
+        Log.d("userSnap", user.getEmail());
+        if(user != null) {
+            //determineNextActivity(user.getUid(), user.getEmail());
+            Intent intent = new Intent(LoginActivity.this, LandingActivity.class);
+            isFromWidget = getIntent().getStringExtra("isFromWidget");
+
+            //handle method for holdsafety widget
+            if(isFromWidget != null && isFromWidget.equals("true")) {
+                intent.putExtra("isFromWidget", "true");
+                Toast.makeText(getApplicationContext(), "Inside IF Widget" , Toast.LENGTH_SHORT).show();
+            }
+            startActivity(intent);
+        }
     }
 
     @Override
