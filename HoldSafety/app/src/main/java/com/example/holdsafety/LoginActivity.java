@@ -242,8 +242,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                             Toast.makeText(LoginActivity.this, "Error: " + task.getException().getMessage(), Toast.LENGTH_LONG).show();
                         }
                     }
-                }
-        });
+                });
     }
 
     private void checkUserAccount(FirebaseUser user) {
