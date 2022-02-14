@@ -50,6 +50,7 @@ import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -72,7 +73,7 @@ public class LandingActivity extends AppCompatActivity {
     String lastName, firstName, mobileNumber, googleMapLink, message;
     String brgyName, brgyCity, brgyEmail, brgyMobileNumber;
     String reportID;
-    
+
     Button btnSafetyButton;
     ImageView btnMenu;
     TextView seconds, description;
@@ -648,7 +649,6 @@ public class LandingActivity extends AppCompatActivity {
                     SmsManager manager = SmsManager.getDefault();
                     PendingIntent sentPI = PendingIntent.getBroadcast(LandingActivity.this,
                             SEND_SMS_REQ_CODE, new Intent("SMS_SENT"), 0);
-
                     manager.sendTextMessage(mobileNumber, null, message, sentPI, null);
                     Toast.makeText(getApplicationContext(), "SMS Sent", Toast.LENGTH_LONG).show();
                     Toast.makeText(getApplicationContext(), "SMS Sent to: " + mobileNumber, Toast.LENGTH_LONG).show();
@@ -669,9 +669,6 @@ public class LandingActivity extends AppCompatActivity {
                     }
                     saveToDB();
                 });
-        Intent recordingCountdown = new Intent(LandingActivity.this, RecordingCountdownActivity.class);
-        recordingCountdown.putExtra("vidLinkRequirements", vidLinkRequirements);
-        startActivity(recordingCountdown);
     }
 
     private void saveToDB() {
@@ -698,7 +695,6 @@ public class LandingActivity extends AppCompatActivity {
                 fillerField.put("Field", "filler_for_visibility");
                 db.collection("reportUser").document(userID).set(fillerField);
                 db.collection("reportAdmin").document(nearestBrgy).set(fillerField);
-
                  */
 
                 //GET THE ID OF THE REPORT TO BE SAVED IN DB
@@ -721,12 +717,10 @@ public class LandingActivity extends AppCompatActivity {
                 vidLinkRequirements.put("reportID", reportID);
 
                 /*
-
                 //ADD TO USER-SORTED COLLECTION
                 docRefDetails.set(docDetails)
                         .addOnSuccessListener(aVoid -> Log.d(TAG, "Report saved to user-sorted DB!"))
                         .addOnFailureListener(e -> Log.w(TAG, "Report saving to Error!!", e));
-
                 //ADD TO BRGY-SORTED COLLECTION USING THE SAME ID
                 db.collection("reportAdmin").document(nearestBrgy).collection("reportDetails").document(reportID).set(docDetails)
                         .addOnSuccessListener(aVoid -> Log.d(TAG, "Report saved to brgy-sorted DB!"))
@@ -744,49 +738,45 @@ public class LandingActivity extends AppCompatActivity {
                 startActivity(recordingCountdown);
             }
         })
-        .addOnFailureListener(documentSnapshot -> {
-            docDetails.put("FirstName", "");
-            docDetails.put("LastName", "");
+                .addOnFailureListener(documentSnapshot -> {
+                    docDetails.put("FirstName", "");
+                    docDetails.put("LastName", "");
 
-            docDetails.put("Barangay", nearestBrgy);
-            docDetails.put("Report Date", currentDateandTime);
+                    docDetails.put("Barangay", nearestBrgy);
+                    docDetails.put("Report Date", currentDateandTime);
 
 
-            db = FirebaseFirestore.getInstance();
+                    db = FirebaseFirestore.getInstance();
             /*
             DocumentReference reportUserDetails = db.collection("reportUser").document(userID);
             DocumentReference reportAdminDetails = db.collection("reportAdmin").document(nearestBrgy);
-
-
             //MAKE THE ID VISIBLE FOR QUERIES BY ADDING FIELD
             Map<String, Object> fillerField = new HashMap<>();
             fillerField.put("Field", "filler_for_visibility");
             reportUserDetails.set(fillerField);
             reportAdminDetails.set(fillerField);*/
 
-            //GET THE ID OF THE REPORT TO BE SAVED IN DB
-            DocumentReference docRefDetails = db.collection("reports").document();
-            reportID = docRefDetails.getId();
-            Log.d("DocID", "documentId: " + reportID);
+                    //GET THE ID OF THE REPORT TO BE SAVED IN DB
+                    DocumentReference docRefDetails = db.collection("reports").document();
+                    reportID = docRefDetails.getId();
+                    Log.d("DocID", "documentId: " + reportID);
 
             /*
-
             //ADD TO USER-SORTED COLLECTION
             docRefDetails.set(docDetails)
                     .addOnSuccessListener(aVoid -> Log.d(TAG, "Report saved to user-sorted DB!"))
                     .addOnFailureListener(e -> Log.w(TAG, "Report saving to Error!!", e));
-
             //ADD TO BRGY-SORTED COLLECTION USING THE SAME ID
             reportAdminDetails.collection("reportDetails").document(reportID).set(docDetails)
                     .addOnSuccessListener(aVoid -> Log.d(TAG, "Report saved to brgy-sorted DB!"))
                     .addOnFailureListener(e -> Log.w(TAG, "Report saving to Error!!", e)); */
 
-            //ADD TO GENERAL COLLECTION USING THE SAME ID
-            db.collection("reports").document(reportID).set(docDetails)
-                    .addOnSuccessListener(aVoid -> Log.d(TAG, "General Report saved to brgy-sorted DB!"))
-                    .addOnFailureListener(e -> Log.w(TAG, "General Report saving to Error!!", e));
+                    //ADD TO GENERAL COLLECTION USING THE SAME ID
+                    db.collection("reports").document(reportID).set(docDetails)
+                            .addOnSuccessListener(aVoid -> Log.d(TAG, "General Report saved to brgy-sorted DB!"))
+                            .addOnFailureListener(e -> Log.w(TAG, "General Report saving to Error!!", e));
 
-        });
+                });
     }
 
     @Override
