@@ -38,6 +38,7 @@ import com.google.firebase.storage.UploadTask;
 
 import java.io.File;
 import java.io.IOException;
+import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -319,10 +320,20 @@ public class AutoRecordingActivity extends AppCompatActivity {
 
         // Create a media file name
         Date date = new Date();
-        File mediaFile = new File(mediaStorageDir.getPath() + File.separator + "HoldSafety_" + date.getTime() + ".mp4");
+        Timestamp timestamp = new Timestamp(date.getTime());
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd_HH:mm", Locale.getDefault());
+        String currentDateandTime = sdf.format(timestamp);
 
+        File mediaFile = new File(mediaStorageDir.getPath() + File.separator +
+                "HoldSafety_" + currentDateandTime + ".mp4");
         recordingFile = mediaFile;
         return mediaFile;
+
+//        Date date = new Date();
+//        File mediaFile = new File(mediaStorageDir.getPath() + File.separator + "HoldSafety_" + date.getTime() + ".mp4");
+//
+//        recordingFile = mediaFile;
+//        return mediaFile;
 
         /*
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd_HH:mma", Locale.getDefault());

@@ -278,6 +278,9 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
             try {
                 GoogleSignInAccount account = task.getResult(ApiException.class);
                 AuthCredential credential = GoogleAuthProvider.getCredential(account.getIdToken(), null);
+
+                //TODO: CHECK IF ACC EXISTS IN DB. IF IT DOES, SHOW ERROR, OTHERWISE do signInWithCredential()
+
                 mAuth.signInWithCredential(credential)
                         .addOnCompleteListener(this, task1 -> {
                             if (task1.isSuccessful()) {

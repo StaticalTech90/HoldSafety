@@ -53,6 +53,7 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.io.IOException;
+import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -672,104 +673,76 @@ public class LandingActivity extends AppCompatActivity {
     }
 
     private void saveToDB() {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault());
-        String currentDateandTime = sdf.format(new Date());
+        Date date = new Date();
+        Timestamp timestamp = new Timestamp(date.getTime());
 
         docRef = db.collection("users").document(userID);
 
-        docRef.get().addOnSuccessListener(documentSnapshot -> {
-            if(documentSnapshot.exists()) {
-                String firstName = documentSnapshot.getString("FirstName");
-                String lastName = documentSnapshot.getString("LastName");
-                docDetails.put("FirstName", firstName);
-                docDetails.put("LastName", lastName);
-                docDetails.put("Barangay", nearestBrgy);
-                docDetails.put("Report Date", currentDateandTime);
-                docDetails.put("Evidence", "");
+        docRef.get()
+                .addOnSuccessListener(documentSnapshot -> {
+                    if(documentSnapshot.exists()) {
+                        String firstName = documentSnapshot.getString("FirstName");
+                        String lastName = documentSnapshot.getString("LastName");
+                        docDetails.put("FirstName", firstName);
+                        docDetails.put("LastName", lastName);
+                        docDetails.put("Barangay", nearestBrgy);
+                        docDetails.put("Report Date", timestamp);
+                        docDetails.put("Evidence", "");
 
-                db = FirebaseFirestore.getInstance();
+                        db = FirebaseFirestore.getInstance();
 
-                //MAKE THE USER ID VISIBLE TO QUERIES BY ADDING FIELD
-                /*
-                Map<String, Object> fillerField = new HashMap<>();
-                fillerField.put("Field", "filler_for_visibility");
-                db.collection("reportUser").document(userID).set(fillerField);
-                db.collection("reportAdmin").document(nearestBrgy).set(fillerField);
-                 */
+                        //MAKE THE USER ID VISIBLE TO QUERIES BY ADDING FIELD
+                        /*
+                        Map<String, Object> fillerField = new HashMap<>();
+                        fillerField.put("Field", "filler_for_visibility");
+                        db.collection("reportUser").document(userID).set(fillerField);
+                        db.collection("reportAdmin").document(nearestBrgy).set(fillerField);
+                         */
 
-                //GET THE ID OF THE REPORT TO BE SAVED IN DB
-                DocumentReference docRefDetails = db.collection("reports").document();
-                reportID = docRefDetails.getId();
-                Log.d("DocID", "documentId: " + reportID);
+                        //GET THE ID OF THE REPORT TO BE SAVED IN DB
+                        DocumentReference docRefDetails = db.collection("reports").document();
+                        reportID = docRefDetails.getId();
+                        Log.d("DocID", "documentId: " + reportID);
 
-                //TODO: PUT VIDEO LINK IN reportUser DB
-                //putExtras for evidence push to reportId
-                Intent audioRecordIntent = new Intent(this, AudioRecording.class);
-                audioRecordIntent.putExtra("reportId", reportID);
-                audioRecordIntent.putExtra("userId", userID);
+                        //putExtras for evidence push to reportId
+                        Intent audioRecordIntent = new Intent(this, AudioRecording.class);
+                        audioRecordIntent.putExtra("reportId", reportID);
+                        audioRecordIntent.putExtra("userId", userID);
 
-                Intent videoRecordIntent = new Intent(this, AutoRecordingActivity.class);
-                videoRecordIntent.putExtra("reportId", reportID);
-                videoRecordIntent.putExtra("userId", userID);
+                        Intent videoRecordIntent = new Intent(this, AutoRecordingActivity.class);
+                        videoRecordIntent.putExtra("reportId", reportID);
+                        videoRecordIntent.putExtra("userId", userID);
 
-                vidLinkRequirements.put("userID", userID);
-                vidLinkRequirements.put("nearestBrgy", nearestBrgy);
-                vidLinkRequirements.put("reportID", reportID);
+                        vidLinkRequirements.put("userID", userID);
+                        vidLinkRequirements.put("nearestBrgy", nearestBrgy);
+                        vidLinkRequirements.put("reportID", reportID);
 
-                /*
-                //ADD TO USER-SORTED COLLECTION
-                docRefDetails.set(docDetails)
-                        .addOnSuccessListener(aVoid -> Log.d(TAG, "Report saved to user-sorted DB!"))
-                        .addOnFailureListener(e -> Log.w(TAG, "Report saving to Error!!", e));
-                //ADD TO BRGY-SORTED COLLECTION USING THE SAME ID
-                db.collection("reportAdmin").document(nearestBrgy).collection("reportDetails").document(reportID).set(docDetails)
-                        .addOnSuccessListener(aVoid -> Log.d(TAG, "Report saved to brgy-sorted DB!"))
-                        .addOnFailureListener(e -> Log.w(TAG, "Report saving to Error!!", e)); */
+                        //ADD TO GENERAL REPORTS COLLECTION
+                        docDetails.put("Barangay", nearestBrgy);
+                        docDetails.put("User ID", userID);
+                        db.collection("reports").document(reportID).set(docDetails)
+                                .addOnSuccessListener(aVoid -> Log.d(TAG, "General Report saved to brgy-sorted DB!"))
+                                .addOnFailureListener(e -> Log.w(TAG, "General Report saving to Error!!", e));
 
-                //ADD TO GENERAL REPORTS COLLECTION
-                docDetails.put("Barangay", nearestBrgy);
-                docDetails.put("User ID", userID);
-                db.collection("reports").document(reportID).set(docDetails)
-                        .addOnSuccessListener(aVoid -> Log.d(TAG, "General Report saved to brgy-sorted DB!"))
-                        .addOnFailureListener(e -> Log.w(TAG, "General Report saving to Error!!", e));
-
-                Intent recordingCountdown = new Intent(LandingActivity.this, RecordingCountdownActivity.class);
-                recordingCountdown.putExtra("vidLinkRequirements", vidLinkRequirements);
-                startActivity(recordingCountdown);
-            }
-        })
+                        Intent recordingCountdown = new Intent(LandingActivity.this, RecordingCountdownActivity.class);
+                        recordingCountdown.putExtra("vidLinkRequirements", vidLinkRequirements);
+                        startActivity(recordingCountdown);
+                    }
+                })
                 .addOnFailureListener(documentSnapshot -> {
                     docDetails.put("FirstName", "");
                     docDetails.put("LastName", "");
 
                     docDetails.put("Barangay", nearestBrgy);
-                    docDetails.put("Report Date", currentDateandTime);
+                    docDetails.put("Report Date", timestamp);
 
 
                     db = FirebaseFirestore.getInstance();
-            /*
-            DocumentReference reportUserDetails = db.collection("reportUser").document(userID);
-            DocumentReference reportAdminDetails = db.collection("reportAdmin").document(nearestBrgy);
-            //MAKE THE ID VISIBLE FOR QUERIES BY ADDING FIELD
-            Map<String, Object> fillerField = new HashMap<>();
-            fillerField.put("Field", "filler_for_visibility");
-            reportUserDetails.set(fillerField);
-            reportAdminDetails.set(fillerField);*/
 
                     //GET THE ID OF THE REPORT TO BE SAVED IN DB
                     DocumentReference docRefDetails = db.collection("reports").document();
                     reportID = docRefDetails.getId();
                     Log.d("DocID", "documentId: " + reportID);
-
-            /*
-            //ADD TO USER-SORTED COLLECTION
-            docRefDetails.set(docDetails)
-                    .addOnSuccessListener(aVoid -> Log.d(TAG, "Report saved to user-sorted DB!"))
-                    .addOnFailureListener(e -> Log.w(TAG, "Report saving to Error!!", e));
-            //ADD TO BRGY-SORTED COLLECTION USING THE SAME ID
-            reportAdminDetails.collection("reportDetails").document(reportID).set(docDetails)
-                    .addOnSuccessListener(aVoid -> Log.d(TAG, "Report saved to brgy-sorted DB!"))
-                    .addOnFailureListener(e -> Log.w(TAG, "Report saving to Error!!", e)); */
 
                     //ADD TO GENERAL COLLECTION USING THE SAME ID
                     db.collection("reports").document(reportID).set(docDetails)
