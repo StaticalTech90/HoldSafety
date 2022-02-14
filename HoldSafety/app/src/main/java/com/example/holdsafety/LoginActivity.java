@@ -27,6 +27,7 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
@@ -65,19 +66,19 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
     protected void onStart() {
         super.onStart();
         //check if user is already logged in
-//        Log.d("userSnap", user.getEmail());
-//        if(user != null) {
-//            determineNextActivity(user.getUid(), user.getEmail());
-//            Intent intent = new Intent(LoginActivity.this, LandingActivity.class);
-//            isFromWidget = getIntent().getStringExtra("isFromWidget");
-//
-//            //handle method for holdsafety widget
-//            if(isFromWidget != null && isFromWidget.equals("true")) {
-//                intent.putExtra("isFromWidget", "true");
-//                Toast.makeText(getApplicationContext(), "Inside IF Widget" , Toast.LENGTH_SHORT).show();
-//            }
-//            startActivity(intent);
-//        }
+        Log.d("userSnap", user.getEmail());
+        if(user != null) {
+            //determineNextActivity(user.getUid(), user.getEmail());
+            Intent intent = new Intent(LoginActivity.this, LandingActivity.class);
+            isFromWidget = getIntent().getStringExtra("isFromWidget");
+
+            //handle method for holdsafety widget
+            if(isFromWidget != null && isFromWidget.equals("true")) {
+                intent.putExtra("isFromWidget", "true");
+                Toast.makeText(getApplicationContext(), "Inside IF Widget" , Toast.LENGTH_SHORT).show();
+            }
+            startActivity(intent);
+        }
     }
 
     @Override
@@ -230,16 +231,16 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                 .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
-                        if(task.isSuccessful()){
+                        if (task.isSuccessful()) {
                             mAuth = FirebaseAuth.getInstance();
                             FirebaseUser user = mAuth.getCurrentUser();
 
-                        //pass user to check if it exists in user table
-                        assert user != null;
-                        checkUserAccount(user);
-                    }
-                    else {
-                        Toast.makeText(LoginActivity.this, "Error: " + task.getException().getMessage(), Toast.LENGTH_LONG).show();
+                            //pass user to check if it exists in user table
+                            assert user != null;
+                            checkUserAccount(user);
+                        } else {
+                            Toast.makeText(LoginActivity.this, "Error: " + task.getException().getMessage(), Toast.LENGTH_LONG).show();
+                        }
                     }
                 }
         });

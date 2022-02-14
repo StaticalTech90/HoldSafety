@@ -89,6 +89,7 @@ public class RegisterActivity extends AppCompatActivity {
         setContentView(R.layout.activity_register);
 
         mAuth = FirebaseAuth.getInstance();
+        user = mAuth.getCurrentUser();
 
         lblLink = findViewById(R.id.txtImageLink);
 

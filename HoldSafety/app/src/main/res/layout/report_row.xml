@@ -158,39 +158,6 @@
                     android:textSize="18sp" />
             </RelativeLayout>
 
-            <RelativeLayout
-                android:id="@+id/containerCoordinated"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/containerBarangay">
-
-                <TextView
-                    android:id="@+id/lblCoordinated"
-                    android:layout_width="110dp"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentStart="true"
-                    android:layout_marginStart="10dp"
-                    android:fontFamily="sans-serif"
-                    android:text="Coordinated:"
-
-                    android:textColor="@color/dark_blue"
-                    android:textSize="18sp"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:id="@+id/txtCoordinated"
-                    android:layout_width="240dp"
-                    android:layout_height="wrap_content"
-                    android:layout_toEndOf="@+id/lblCoordinated"
-                    android:backgroundTint="@color/dark_blue"
-                    android:fontFamily="sans-serif"
-                    android:text="Please remove this"
-                    android:textColor="@color/dark_blue"
-
-                    android:textSize="18sp" />
-            </RelativeLayout>
 
             <RelativeLayout
                 android:id="@+id/containerEvidence"
@@ -200,7 +167,7 @@
 
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/containerCoordinated">
+                app:layout_constraintTop_toBottomOf="@id/containerBarangay">
 
                 <TextView
                     android:id="@+id/lblEvidence"

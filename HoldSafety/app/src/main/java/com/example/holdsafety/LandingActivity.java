@@ -340,13 +340,24 @@ public class LandingActivity extends AppCompatActivity {
                         showGPSDialog();
 
                     } else {
+                        String address="";
                         Geocoder geocoder = new Geocoder(this, Locale.getDefault());
 
                         try {
-                            List<Address> addresses = geocoder.getFromLocation(
-                                    location.getLatitude(), location.getLongitude(), 2);
-                            String address = addresses.get(1).getAddressLine(0);
+                            List<Address> addresses = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
+                            if (addresses != null) {
+                                Address returnedAddress = addresses.get(0);
+                                StringBuilder strReturnedAddress = new StringBuilder("");
 
+                                for (int i = 0; i <= returnedAddress.getMaxAddressLineIndex(); i++) {
+                                    strReturnedAddress.append(returnedAddress.getAddressLine(i)).append("\n");
+                                }
+                                address = strReturnedAddress.toString();
+                                Log.w("User Address", address);
+                            } else {
+                                Log.w("User Address", "No Address returned!");
+                            }
+                            //String address = addresses.get(1).getAddressLine(0);
                             //Toast.makeText(this, "Current Location: " + location.getLatitude() + "," + location.getLongitude(), Toast.LENGTH_SHORT).show();
 
                             coordsLat = Double.toString(location.getLatitude());
@@ -358,9 +369,7 @@ public class LandingActivity extends AppCompatActivity {
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
-
                     }
-
                 });
     }
 
@@ -645,7 +654,6 @@ public class LandingActivity extends AppCompatActivity {
                     Toast.makeText(getApplicationContext(), "SMS Sent to: " + mobileNumber, Toast.LENGTH_LONG).show();
                     */
                         }
-
                         if (email != null) {
                             //Send Email
                             String username = "holdsafety.ph@gmail.com";
@@ -685,13 +693,16 @@ public class LandingActivity extends AppCompatActivity {
                 db = FirebaseFirestore.getInstance();
 
                 //MAKE THE USER ID VISIBLE TO QUERIES BY ADDING FIELD
+                /*
                 Map<String, Object> fillerField = new HashMap<>();
                 fillerField.put("Field", "filler_for_visibility");
                 db.collection("reportUser").document(userID).set(fillerField);
                 db.collection("reportAdmin").document(nearestBrgy).set(fillerField);
 
+                 */
+
                 //GET THE ID OF THE REPORT TO BE SAVED IN DB
-                DocumentReference docRefDetails = db.collection("reportUser").document(userID).collection("reportDetails").document();
+                DocumentReference docRefDetails = db.collection("reports").document();
                 reportID = docRefDetails.getId();
                 Log.d("DocID", "documentId: " + reportID);
 
@@ -709,6 +720,8 @@ public class LandingActivity extends AppCompatActivity {
                 vidLinkRequirements.put("nearestBrgy", nearestBrgy);
                 vidLinkRequirements.put("reportID", reportID);
 
+                /*
+
                 //ADD TO USER-SORTED COLLECTION
                 docRefDetails.set(docDetails)
                         .addOnSuccessListener(aVoid -> Log.d(TAG, "Report saved to user-sorted DB!"))
@@ -717,14 +730,18 @@ public class LandingActivity extends AppCompatActivity {
                 //ADD TO BRGY-SORTED COLLECTION USING THE SAME ID
                 db.collection("reportAdmin").document(nearestBrgy).collection("reportDetails").document(reportID).set(docDetails)
                         .addOnSuccessListener(aVoid -> Log.d(TAG, "Report saved to brgy-sorted DB!"))
-                        .addOnFailureListener(e -> Log.w(TAG, "Report saving to Error!!", e));
+                        .addOnFailureListener(e -> Log.w(TAG, "Report saving to Error!!", e)); */
 
                 //ADD TO GENERAL REPORTS COLLECTION
                 docDetails.put("Barangay", nearestBrgy);
                 docDetails.put("User ID", userID);
-                db.collection("reports").document().set(docDetails)
+                db.collection("reports").document(reportID).set(docDetails)
                         .addOnSuccessListener(aVoid -> Log.d(TAG, "General Report saved to brgy-sorted DB!"))
                         .addOnFailureListener(e -> Log.w(TAG, "General Report saving to Error!!", e));
+
+                Intent recordingCountdown = new Intent(LandingActivity.this, RecordingCountdownActivity.class);
+                recordingCountdown.putExtra("vidLinkRequirements", vidLinkRequirements);
+                startActivity(recordingCountdown);
             }
         })
         .addOnFailureListener(documentSnapshot -> {
@@ -734,20 +751,25 @@ public class LandingActivity extends AppCompatActivity {
             docDetails.put("Barangay", nearestBrgy);
             docDetails.put("Report Date", currentDateandTime);
 
+
             db = FirebaseFirestore.getInstance();
+            /*
             DocumentReference reportUserDetails = db.collection("reportUser").document(userID);
             DocumentReference reportAdminDetails = db.collection("reportAdmin").document(nearestBrgy);
+
 
             //MAKE THE ID VISIBLE FOR QUERIES BY ADDING FIELD
             Map<String, Object> fillerField = new HashMap<>();
             fillerField.put("Field", "filler_for_visibility");
             reportUserDetails.set(fillerField);
-            reportAdminDetails.set(fillerField);
+            reportAdminDetails.set(fillerField);*/
 
             //GET THE ID OF THE REPORT TO BE SAVED IN DB
-            DocumentReference docRefDetails = reportUserDetails.collection("reportDetails").document();
+            DocumentReference docRefDetails = db.collection("reports").document();
             reportID = docRefDetails.getId();
             Log.d("DocID", "documentId: " + reportID);
+
+            /*
 
             //ADD TO USER-SORTED COLLECTION
             docRefDetails.set(docDetails)
@@ -757,7 +779,13 @@ public class LandingActivity extends AppCompatActivity {
             //ADD TO BRGY-SORTED COLLECTION USING THE SAME ID
             reportAdminDetails.collection("reportDetails").document(reportID).set(docDetails)
                     .addOnSuccessListener(aVoid -> Log.d(TAG, "Report saved to brgy-sorted DB!"))
-                    .addOnFailureListener(e -> Log.w(TAG, "Report saving to Error!!", e));
+                    .addOnFailureListener(e -> Log.w(TAG, "Report saving to Error!!", e)); */
+
+            //ADD TO GENERAL COLLECTION USING THE SAME ID
+            db.collection("reports").document(reportID).set(docDetails)
+                    .addOnSuccessListener(aVoid -> Log.d(TAG, "General Report saved to brgy-sorted DB!"))
+                    .addOnFailureListener(e -> Log.w(TAG, "General Report saving to Error!!", e));
+
         });
     }
 
