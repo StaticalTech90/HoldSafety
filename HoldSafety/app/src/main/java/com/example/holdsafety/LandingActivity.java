@@ -694,13 +694,16 @@ public class LandingActivity extends AppCompatActivity {
                 db = FirebaseFirestore.getInstance();
 
                 //MAKE THE USER ID VISIBLE TO QUERIES BY ADDING FIELD
+                /*
                 Map<String, Object> fillerField = new HashMap<>();
                 fillerField.put("Field", "filler_for_visibility");
                 db.collection("reportUser").document(userID).set(fillerField);
                 db.collection("reportAdmin").document(nearestBrgy).set(fillerField);
 
+                 */
+
                 //GET THE ID OF THE REPORT TO BE SAVED IN DB
-                DocumentReference docRefDetails = db.collection("reportUser").document(userID).collection("reportDetails").document();
+                DocumentReference docRefDetails = db.collection("reports").document();
                 reportID = docRefDetails.getId();
                 Log.d("DocID", "documentId: " + reportID);
 
@@ -749,18 +752,21 @@ public class LandingActivity extends AppCompatActivity {
             docDetails.put("Barangay", nearestBrgy);
             docDetails.put("Report Date", currentDateandTime);
 
+
             db = FirebaseFirestore.getInstance();
+            /*
             DocumentReference reportUserDetails = db.collection("reportUser").document(userID);
             DocumentReference reportAdminDetails = db.collection("reportAdmin").document(nearestBrgy);
+
 
             //MAKE THE ID VISIBLE FOR QUERIES BY ADDING FIELD
             Map<String, Object> fillerField = new HashMap<>();
             fillerField.put("Field", "filler_for_visibility");
             reportUserDetails.set(fillerField);
-            reportAdminDetails.set(fillerField);
+            reportAdminDetails.set(fillerField);*/
 
             //GET THE ID OF THE REPORT TO BE SAVED IN DB
-            DocumentReference docRefDetails = reportUserDetails.collection("reportDetails").document();
+            DocumentReference docRefDetails = db.collection("reports").document();
             reportID = docRefDetails.getId();
             Log.d("DocID", "documentId: " + reportID);
 
