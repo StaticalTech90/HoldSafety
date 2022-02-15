@@ -27,10 +27,8 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthCredential;
-import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
@@ -44,7 +42,6 @@ import java.util.Map;
 public class LoginActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener {
     private FirebaseAuth mAuth;
 
-    private final static int RC_SIGN_IN = 308;
     EditText txtEmailOrMobileNum, txtPassword;
     Button btnLogin;
     TextView txtToggle;
@@ -118,14 +115,11 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                 .build();
 
         //Google Sign In Button Onclick Listener
-        btnGoogle.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                gsc.signOut();
-                //Display list of google accounts
-                Intent GoogleSignIntent = Auth.GoogleSignInApi.getSignInIntent(googleApiClient);
-                startActivityForResult(GoogleSignIntent, SIGN_IN_REQUEST_CODE);
-            }
+        btnGoogle.setOnClickListener(view -> {
+            gsc.signOut();
+            //Display list of google accounts
+            Intent GoogleSignIntent = Auth.GoogleSignInApi.getSignInIntent(googleApiClient);
+            startActivityForResult(GoogleSignIntent, SIGN_IN_REQUEST_CODE);
         });
 
         txtPassword.addTextChangedListener(new TextWatcher() {
@@ -228,19 +222,16 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
 
     public void loginUser(String email, String password) {
         mAuth.signInWithEmailAndPassword(email,password)
-                .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        if (task.isSuccessful()) {
-                            mAuth = FirebaseAuth.getInstance();
-                            FirebaseUser user = mAuth.getCurrentUser();
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        mAuth = FirebaseAuth.getInstance();
+                        FirebaseUser user = mAuth.getCurrentUser();
 
-                            //pass user to check if it exists in user table
-                            assert user != null;
-                            checkUserAccount(user);
-                        } else {
-                            Toast.makeText(LoginActivity.this, "Error: " + task.getException().getMessage(), Toast.LENGTH_LONG).show();
-                        }
+                        //pass user to check if it exists in user table
+                        assert user != null;
+                        checkUserAccount(user);
+                    } else {
+                        Toast.makeText(LoginActivity.this, "Error: " + task.getException().getMessage(), Toast.LENGTH_LONG).show();
                     }
                 });
     }
@@ -279,8 +270,6 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                 GoogleSignInAccount account = task.getResult(ApiException.class);
                 AuthCredential credential = GoogleAuthProvider.getCredential(account.getIdToken(), null);
 
-                //TODO: CHECK IF ACC EXISTS IN DB. IF IT DOES, SHOW ERROR, OTHERWISE do signInWithCredential()
-
                 mAuth.signInWithCredential(credential)
                         .addOnCompleteListener(this, task1 -> {
                             if (task1.isSuccessful()) {
@@ -298,7 +287,6 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                                     if(!documentSnapshot.exists()) {
                                         //ADD KNOWN AND PLACEHOLDER VALUES
                                         Map < String, Object > docUsers = new HashMap<>();
-                                        String email = user.getEmail();
                                         docUsers.put("ID", user.getUid());
                                         docUsers.put("isVerified", false);
                                         docUsers.put("LastName", account.getFamilyName());
@@ -373,36 +361,6 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
         startActivity(new Intent(LoginActivity.this, ForgotPasswordActivity.class));
         finish();
     }
-
-//    public void determineNextActivity(String uid, String email) {
-//        colRef.get().addOnCompleteListener(task -> {
-//            if(task.isSuccessful()) {
-//                for(QueryDocumentSnapshot userSnap : task.getResult()) {
-//                    if(userSnap.getString("Email").equals(email)) { //EMAIL IN DB
-//                        Log.d("userSnap", "userSnap.getString = " + userSnap.getString("Email"));
-//                        Log.d("userSnap", "user's email to match = " + email);
-//                        Log.d("userSnap", "Are they equal? Answer: " + userSnap.getString("Email").equals(email));
-//                        Boolean isComplete = userSnap.getBoolean("profileComplete");
-//
-//                        while(isComplete == null) {
-//                            isComplete = userSnap.getBoolean("profileComplete");
-//                        }
-//
-//                        if(isComplete != null) {
-//                            if(isComplete) { //PROFILE IS COMPLETE, GO TO LANDING ON STARTUP
-//                                Log.d("userSnap", "is profile complete? = " + userSnap.getBoolean("profileComplete"));
-//                                Intent landingPage = new Intent (LoginActivity.this, LandingActivity.class);
-//                                startActivity(landingPage);
-//                                Log.d("userSnap", "isAccountComplete result inside if: " + isComplete);
-//                            }
-//                        }
-//                    }
-//                }
-//            } else {
-//                Log.d("isAccountComplete", "Failed to fetch in DB");
-//            }
-//        });
-//    }
 
     public void userSignUp(View view) {
         Intent intent = new Intent (this, RegisterActivity.class);
