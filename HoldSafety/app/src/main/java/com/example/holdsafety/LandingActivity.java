@@ -42,7 +42,6 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.LocationSettingsRequest;
 import com.google.android.gms.location.LocationSettingsResponse;
 import com.google.android.gms.location.LocationSettingsStatusCodes;
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -50,11 +49,9 @@ import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
 
 import java.io.IOException;
 import java.sql.Timestamp;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -736,9 +733,6 @@ public class LandingActivity extends AppCompatActivity {
                     docDetails.put("Barangay", nearestBrgy);
                     docDetails.put("Report Date", timestamp);
 
-
-                    db = FirebaseFirestore.getInstance();
-
                     //GET THE ID OF THE REPORT TO BE SAVED IN DB
                     DocumentReference docRefDetails = db.collection("reports").document();
                     reportID = docRefDetails.getId();
@@ -755,8 +749,18 @@ public class LandingActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        //Asks for permissions on activity start
-        setPermissions();
+        //TODO: IF USER DETAILS INCOMPLETE, GO BACK TO FILL UP DETAILS (GOOGLE SIGN IN)
+        db.collection("users").document(userID).get()
+                .addOnSuccessListener(documentSnapshot -> {
+                    if(!documentSnapshot.getBoolean("profileComplete")) { // not null or true
+                        //Check if profile is complete on activity start
+                        finish();
+                        startActivity(new Intent(this, RegisterGoogleActivity.class));
+                    } else {
+                        //Asks for permissions on activity start
+                        setPermissions();
+                    }
+        });
     }
 
 }
