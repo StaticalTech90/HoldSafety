@@ -47,8 +47,8 @@ public class MenuActivity extends AppCompatActivity {
                 .enableAutoManage(this, null)
                 .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
                 .build();
+        */
 
-         */
 
         btnLogout.setOnClickListener(this::logoutUser);
     }

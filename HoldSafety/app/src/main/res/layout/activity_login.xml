@@ -57,8 +57,8 @@
             android:textColor="@color/white"
 
             app:autoSizeMaxTextSize="40sp"
-            app:autoSizeMinTextSize="15sp"
-            app:autoSizeStepGranularity="10sp"
+            app:autoSizeMinTextSize="25sp"
+            app:autoSizeStepGranularity="5sp"
 
             app:autoSizeTextType="uniform"
             app:layout_constraintDimensionRatio="1:0.15"
@@ -306,6 +306,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/btnLoginWithGoogle"
+            android:layout_marginTop="8dp"
             >
 
             <TextView
@@ -343,6 +344,8 @@
 
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toEndOf="@id/lblNoAccount" />
+
+
         </androidx.constraintlayout.widget.ConstraintLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>

@@ -7,6 +7,654 @@
     tools:context=".AccountDetailsActivity"
     android:background="@color/dark_blue">
 
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/backContainer"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="@id/mainGuidelineV1"
+        app:layout_constraintEnd_toEndOf="@id/mainGuidelineV2"
+        app:layout_constraintTop_toTopOf="@+id/mainGuidelineH1">
+
+
+        <ImageView
+            android:id="@+id/backArrow"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintDimensionRatio="1:0.8"
+
+            android:src="@drawable/arrow"
+            android:contentDescription="back button" />
+
+        <TextView
+            android:id="@+id/btnRemoveAccount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+
+            android:fontFamily="sans-serif-black"
+            android:textColor="@color/red"
+
+            android:onClick="removeAccount"
+            android:text="@string/btnRemoveAccount"
+            android:clickable="true"
+            android:focusable="true"
+
+            app:autoSizeMaxTextSize="15sp"
+            app:autoSizeMinTextSize="12sp"
+            app:autoSizeStepGranularity="1sp"
+            app:autoSizeTextType="uniform"
+
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <ScrollView
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+
+        android:fillViewport="true"
+
+        app:layout_constraintBottom_toBottomOf="@id/mainGuidelineH2"
+        app:layout_constraintEnd_toEndOf="@id/mainGuidelineV2"
+        app:layout_constraintStart_toStartOf="@id/mainGuidelineV1"
+        app:layout_constraintTop_toBottomOf="@id/backContainer">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:orientation="vertical"
+
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/headingContainer"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+
+                android:layout_marginTop="35dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+
+                app:layout_constraintTop_toTopOf="parent">
+
+                <TextView
+                    android:id="@+id/lblAccountDetails"
+                    android:layout_width="0dp"
+                    android:layout_height="35dp"
+                    android:ellipsize="end"
+                    android:fontFamily="sans-serif-black"
+                    android:singleLine="true"
+
+                    android:text="Account Details"
+                    android:textColor="@color/white"
+                    app:autoSizeMaxTextSize="40sp"
+                    app:autoSizeMinTextSize="25sp"
+                    app:autoSizeStepGranularity="5sp"
+
+                    app:autoSizeTextType="uniform"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/lblAccountDesc"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+
+                    android:fontFamily="sans-serif"
+                    android:text="Personal Information"
+                    android:textColor="@color/gray"
+
+                    app:autoSizeMaxTextSize="15sp"
+                    app:autoSizeMinTextSize="10sp"
+                    app:autoSizeStepGranularity="1sp"
+
+                    app:autoSizeTextType="uniform"
+                    app:layout_constraintDimensionRatio="1:0.1"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/lblAccountDetails" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/layoutDetails"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/headingContainer">
+
+                <TextView
+                    android:id="@+id/lblAccountStatus"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+
+                    android:fontFamily="sans-serif-black"
+                    android:gravity="center_vertical"
+                    android:text="Verified"
+                    android:textColor="@color/green"
+
+                    app:autoSizeMaxTextSize="18sp"
+                    app:autoSizeMinTextSize="15sp"
+                    app:autoSizeStepGranularity="0.5sp"
+                    app:autoSizeTextType="uniform"
+
+                    app:layout_constraintDimensionRatio="1:0.2"
+                    app:layout_constraintEnd_toEndOf="@id/detailsGuidelineV1"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+
+                <Button
+                    android:id="@+id/btnUploadID"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:background="@drawable/white_container"
+
+                    android:onClick="uploadID"
+
+                    android:paddingHorizontal="10dp"
+                    android:text="Upload ID"
+
+                    app:autoSizeMaxTextSize="16sp"
+                    app:autoSizeMinTextSize="12sp"
+                    app:autoSizeStepGranularity="0.5sp"
+                    app:autoSizeTextType="uniform"
+
+                    app:layout_constraintDimensionRatio="1:0.2"
+
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="@+id/detailsGuidelineV1"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/layoutLastName"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+
+                    android:layout_marginTop="20dp"
+                    android:layout_marginRight="1dp"
+
+                    app:layout_constraintEnd_toEndOf="@+id/detailsGuidelineV1"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/lblAccountStatus">
+
+                    <TextView
+                        android:id="@+id/lblLastName"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+
+                        android:fontFamily="sans-serif"
+                        android:gravity="center_vertical"
+                        android:text="Last Name"
+                        android:textColor="@color/gray"
+
+                        app:autoSizeMaxTextSize="12sp"
+                        app:autoSizeMinTextSize="10sp"
+                        app:autoSizeStepGranularity="0.5sp"
+                        app:autoSizeTextType="uniform"
+
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintHorizontal_bias="0.0"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <TextView
+                        android:id="@+id/txtLastName"
+                        android:layout_width="0dp"
+                        android:layout_height="0dp"
+
+                        android:backgroundTint="@color/white"
+                        android:ellipsize="end"
+                        android:fontFamily="sans-serif-black"
+
+                        android:maxLines="1"
+                        android:textColor="@color/white"
+                        app:autoSizeMaxTextSize="18sp"
+
+                        app:autoSizeMinTextSize="15sp"
+                        app:autoSizeStepGranularity="0.5sp"
+
+                        app:autoSizeTextType="uniform"
+
+                        app:layout_constraintDimensionRatio="1:0.2"
+
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/lblLastName" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/layoutFirstName"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+
+                    android:layout_marginLeft="1dp"
+                    android:layout_marginTop="20dp"
+
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="@id/detailsGuidelineV1"
+                    app:layout_constraintTop_toBottomOf="@+id/lblAccountStatus">
+
+                    <TextView
+                        android:id="@+id/lblFirstName"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+
+                        android:fontFamily="sans-serif"
+                        android:gravity="center_vertical"
+                        android:text="First Name"
+                        android:textColor="@color/gray"
+
+                        app:autoSizeMaxTextSize="12sp"
+                        app:autoSizeMinTextSize="10sp"
+                        app:autoSizeStepGranularity="0.5sp"
+                        app:autoSizeTextType="uniform"
+
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintHorizontal_bias="0.0"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <TextView
+                        android:id="@+id/txtFirstName"
+                        android:layout_width="0dp"
+                        android:layout_height="0dp"
+
+                        android:backgroundTint="@color/white"
+                        android:ellipsize="end"
+                        android:fontFamily="sans-serif-black"
+
+                        android:maxLines="1"
+                        android:textColor="@color/white"
+                        app:autoSizeMaxTextSize="18sp"
+
+                        app:autoSizeMinTextSize="15sp"
+                        app:autoSizeStepGranularity="0.5sp"
+
+                        app:autoSizeTextType="uniform"
+
+                        app:layout_constraintDimensionRatio="1:0.2"
+
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/lblFirstName" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/layoutMiddleName"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+
+                    android:layout_marginTop="8dp"
+                    android:layout_marginRight="1dp"
+
+                    app:layout_constraintEnd_toEndOf="@+id/detailsGuidelineV1"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/layoutLastName">
+
+                    <TextView
+                        android:id="@+id/lblMiddleName"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+
+                        android:fontFamily="sans-serif"
+                        android:gravity="center_vertical"
+                        android:text="Middle Name"
+                        android:textColor="@color/gray"
+
+                        app:autoSizeMaxTextSize="12sp"
+                        app:autoSizeMinTextSize="10sp"
+                        app:autoSizeStepGranularity="0.5sp"
+                        app:autoSizeTextType="uniform"
+
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintHorizontal_bias="0.0"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <TextView
+                        android:id="@+id/txtMiddleName"
+                        android:layout_width="0dp"
+                        android:layout_height="0dp"
+
+                        android:backgroundTint="@color/white"
+                        android:ellipsize="end"
+                        android:fontFamily="sans-serif-black"
+
+                        android:maxLines="1"
+                        android:textColor="@color/white"
+                        app:autoSizeMaxTextSize="18sp"
+
+                        app:autoSizeMinTextSize="15sp"
+                        app:autoSizeStepGranularity="0.5sp"
+
+                        app:autoSizeTextType="uniform"
+
+                        app:layout_constraintDimensionRatio="1:0.2"
+
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/lblMiddleName" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/layoutBirthDate"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+
+                    android:layout_marginLeft="1dp"
+                    android:layout_marginTop="8dp"
+
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="@id/detailsGuidelineV1"
+                    app:layout_constraintTop_toBottomOf="@+id/layoutLastName">
+
+                    <TextView
+                        android:id="@+id/lblBirthDate"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+
+                        android:fontFamily="sans-serif"
+                        android:gravity="center_vertical"
+                        android:text="Birth Date"
+                        android:textColor="@color/gray"
+
+                        app:autoSizeMaxTextSize="12sp"
+                        app:autoSizeMinTextSize="10sp"
+                        app:autoSizeStepGranularity="0.5sp"
+                        app:autoSizeTextType="uniform"
+
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintHorizontal_bias="0.0"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <TextView
+                        android:id="@+id/txtBirthDate"
+                        android:layout_width="0dp"
+                        android:layout_height="0dp"
+
+                        android:backgroundTint="@color/white"
+                        android:ellipsize="end"
+                        android:fontFamily="sans-serif-black"
+
+                        android:maxLines="1"
+                        android:textColor="@color/white"
+                        app:autoSizeMaxTextSize="18sp"
+
+                        app:autoSizeMinTextSize="15sp"
+                        app:autoSizeStepGranularity="0.5sp"
+
+                        app:autoSizeTextType="uniform"
+
+                        app:layout_constraintDimensionRatio="1:0.2"
+
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/lblBirthDate" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/layoutSex"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+
+                    android:layout_marginTop="8dp"
+                    android:layout_marginRight="1dp"
+
+                    app:layout_constraintBottom_toBottomOf="@id/layoutMobileNumber"
+                    app:layout_constraintEnd_toEndOf="@+id/detailsGuidelineV1"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/layoutMiddleName">
+
+                    <TextView
+                        android:id="@+id/lblSex"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+
+                        android:fontFamily="sans-serif"
+                        android:gravity="center_vertical"
+                        android:text="Sex"
+                        android:textColor="@color/gray"
+
+                        app:autoSizeMaxTextSize="12sp"
+                        app:autoSizeMinTextSize="10sp"
+                        app:autoSizeStepGranularity="0.5sp"
+                        app:autoSizeTextType="uniform"
+
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintHorizontal_bias="0.0"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <TextView
+                        android:id="@+id/txtSex"
+                        android:layout_width="0dp"
+                        android:layout_height="0dp"
+
+                        android:backgroundTint="@color/white"
+
+                        android:ellipsize="end"
+                        android:fontFamily="sans-serif-black"
+                        android:gravity="bottom"
+
+                        android:maxLines="1"
+                        android:textColor="@color/white"
+                        app:autoSizeMaxTextSize="18sp"
+
+                        app:autoSizeMinTextSize="15sp"
+                        app:autoSizeStepGranularity="0.5sp"
+
+                        app:autoSizeTextType="uniform"
+
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintDimensionRatio="1:0.2"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintHorizontal_bias="0.0"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/lblSex" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/layoutMobileNumber"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+
+                    android:layout_marginLeft="1dp"
+                    android:layout_marginTop="8dp"
+
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="@id/detailsGuidelineV1"
+                    app:layout_constraintTop_toBottomOf="@+id/layoutMiddleName">
+
+                    <TextView
+                        android:id="@+id/lblMobileNumber"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+
+                        android:fontFamily="sans-serif"
+                        android:gravity="center_vertical"
+                        android:text="Mobile Number"
+                        android:textColor="@color/gray"
+
+                        app:autoSizeMaxTextSize="12sp"
+                        app:autoSizeMinTextSize="10sp"
+                        app:autoSizeStepGranularity="0.5sp"
+                        app:autoSizeTextType="uniform"
+
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintHorizontal_bias="0.0"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <EditText
+                        android:id="@+id/txtMobileNumber"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:backgroundTint="@color/white"
+
+                        android:fontFamily="sans-serif-black"
+
+                        android:inputType="number"
+                        android:textColor="@color/white"
+                        app:autoSizeMaxTextSize="18sp"
+                        app:autoSizeMinTextSize="15sp"
+                        app:autoSizeStepGranularity="0.5sp"
+                        app:autoSizeTextType="uniform"
+
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/lblMobileNumber" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/layoutEmail"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+
+                    android:layout_marginTop="8dp"
+
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/layoutMobileNumber">
+
+                    <TextView
+                        android:id="@+id/lblEmail"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+
+                        android:fontFamily="sans-serif"
+                        android:gravity="center_vertical"
+                        android:text="Email"
+                        android:textColor="@color/gray"
+
+                        app:autoSizeMaxTextSize="12sp"
+                        app:autoSizeMinTextSize="10sp"
+                        app:autoSizeStepGranularity="0.5sp"
+                        app:autoSizeTextType="uniform"
+
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintHorizontal_bias="0.0"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <EditText
+                        android:id="@+id/txtEmail"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:backgroundTint="@color/white"
+
+                        android:fontFamily="sans-serif-black"
+
+                        android:inputType="textEmailAddress"
+                        android:textColor="@color/white"
+                        app:autoSizeMaxTextSize="18sp"
+                        app:autoSizeMinTextSize="15sp"
+                        app:autoSizeStepGranularity="0.5sp"
+                        app:autoSizeTextType="uniform"
+
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/lblEmail" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <androidx.constraintlayout.widget.Guideline
+                    android:id="@+id/detailsGuidelineV1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    app:layout_constraintGuide_percent="0.50" />
+
+
+                <TextView
+                    android:id="@+id/btnChangePassword"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:fontFamily="sans-serif-black"
+                    android:onClick="changePassword"
+                    android:text="Change Password"
+
+                    android:textColor="@color/light_blue"
+                    app:autoSizeMaxTextSize="16sp"
+                    app:autoSizeMinTextSize="14sp"
+                    app:autoSizeStepGranularity="0.5sp"
+
+                    app:autoSizeTextType="uniform"
+
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/layoutEmail" />
+
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <Button
+                android:id="@+id/btnSave"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+
+                android:layout_marginTop="25dp"
+
+                android:background="@drawable/blue_button"
+                android:fontFamily="sans-serif-black"
+                android:text="PROCEED"
+
+                android:textColor="@color/dark_blue"
+                app:autoSizeMaxTextSize="22sp"
+                app:autoSizeMinTextSize="15sp"
+                app:autoSizeStepGranularity="3sp"
+
+                app:autoSizeTextType="uniform"
+                app:layout_constraintEnd_toEndOf="@id/saveBtnGuidelineV2"
+                app:layout_constraintStart_toStartOf="@+id/saveBtnGuidelineV1"
+
+                app:layout_constraintTop_toBottomOf="@id/layoutDetails" />
+
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/saveBtnGuidelineV1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintGuide_percent="0.20" />
+
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/saveBtnGuidelineV2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintGuide_percent="0.80" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+
+
+
+    </ScrollView>
+
+
+
+
+    <!--
     <ImageView
         android:id="@+id/backArrow"
         android:layout_width="30dp"
@@ -359,6 +1007,35 @@
         android:layout_marginTop="10dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/layoutAccountDetails"/>
+        app:layout_constraintTop_toBottomOf="@+id/layoutAccountDetails"/> -->
+
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/mainGuidelineV1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.10" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/mainGuidelineV2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.90" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/mainGuidelineH1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.05" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/mainGuidelineH2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.95" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
