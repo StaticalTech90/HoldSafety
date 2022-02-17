@@ -2,8 +2,10 @@ package com.example.holdsafety;
 
 import static android.content.ContentValues.TAG;
 
+import android.Manifest;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.Editable;
@@ -17,34 +19,47 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.EmailAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+
+import java.util.HashMap;
 
 public class AccountDetailsActivity extends AppCompatActivity {
     public Uri imageURI;
     FirebaseAuth mAuth;
     FirebaseUser user;
-    FirebaseFirestore db;
-    StorageReference fStorage;
+    FirebaseFirestore db = FirebaseFirestore.getInstance();
+    StorageReference imageRef = FirebaseStorage.getInstance().getReference("id");
     DocumentReference docRef;
+
     Boolean isNumberChanged = false, isEmailChanged = false;
+    String imageLink;
     String userPassword = "";
+    String idUri, userId;
+    HashMap<String, Object> docUsers = new HashMap<>();
+
+    TextView txtLastName, txtFirstName, txtMiddleName, txtBirthDate, txtSex, lblAccountStatus, txtImage;
+    EditText txtMobileNumber, txtEmail;
+    Button btnSave, btnUpload;
+
+    private static final int EXTERNAL_STORAGE_REQ_CODE = 1000;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,12 +69,9 @@ public class AccountDetailsActivity extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
         user = mAuth.getCurrentUser();
         db = FirebaseFirestore.getInstance();
-
-        Toast.makeText(AccountDetailsActivity.this, user.getUid(), Toast.LENGTH_SHORT).show();
-
-        TextView txtLastName, txtFirstName, txtMiddleName, txtBirthDate, txtSex, lblAccountStatus;
-        EditText txtMobileNumber, txtEmail;
-        Button btnSave;
+        userId = user.getUid();
+        //Toast.makeText(AccountDetailsActivity.this, user.getUid(), Toast.LENGTH_SHORT).show();
+        docRef = db.collection("users").document(userId);
 
         txtLastName = findViewById(R.id.txtLastName);
         txtFirstName = findViewById(R.id.txtFirstName);
@@ -68,11 +80,11 @@ public class AccountDetailsActivity extends AppCompatActivity {
         txtSex = findViewById(R.id.txtSex);
         txtMobileNumber = findViewById(R.id.txtMobileNumber);
         txtEmail = findViewById(R.id.txtEmail);
+        txtImage = findViewById(R.id.txtImageLink);
         lblAccountStatus = findViewById(R.id.lblAccountStatus);
         btnSave = findViewById(R.id.btnSave);
-
+        btnUpload = findViewById(R.id.btnUploadID);
         //show details
-        docRef = db.collection("users").document(user.getUid());
 
         docRef.get().addOnSuccessListener(documentSnapshot -> {
             if(documentSnapshot.exists()){
@@ -266,22 +278,90 @@ public class AccountDetailsActivity extends AppCompatActivity {
                             if (isEmailChanged) {
                                 changeEmail(newEmail);
                             }
+
                         }
                     }
                 }); //end of dialog code
             }
         });
+
+        btnUpload.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                pickImage();
+            }
+        });
     }
 
-    public void uploadID(View view){
+    //PUT IMAGE UPLOAD HERE
+    private void uploadPhotoToStorage() {
+        imageRef.child(user.getUid())
+                .putFile(Uri.parse(txtImage.getText().toString()))
+                .addOnSuccessListener(taskSnapshot -> {
+                    imageRef.child(user.getUid()).getDownloadUrl().addOnSuccessListener(uri -> {
+                        idUri = String.valueOf(uri);
+                        docUsers.put("imgUri", idUri);
+                        Log.i("URI gDUrl()", idUri);
 
-        Intent intent = new Intent();
-        intent.setType("image/*");
-        intent.setAction(Intent.ACTION_GET_CONTENT);
-
-        //deprecated -> wont work
-        //startActivityForResult(intent, 1);
+                        db.collection("users").document(user.getUid()).update(docUsers)
+                                .addOnSuccessListener(aVoid -> {
+                                    Toast.makeText(getApplicationContext(),
+                                            "pushed image to document",
+                                            Toast.LENGTH_SHORT).show();
+                                    Log.i(TAG, "Image pushed");
+                                })
+                                .addOnFailureListener(e -> {
+                                    Toast.makeText(getApplicationContext(),
+                                            "Error writing document",
+                                            Toast.LENGTH_SHORT).show();
+                                    Log.w(TAG, "Error writing document", e);
+                                });
+                    });
+                }).addOnFailureListener(e -> Toast.makeText(AccountDetailsActivity.this, "Upload failed.",
+                Toast.LENGTH_SHORT).show());
     }
+
+    private void pickImage() {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
+                == PackageManager.PERMISSION_DENIED) {
+            //DENIED PERMISSION
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
+                    EXTERNAL_STORAGE_REQ_CODE);
+            return;
+        }
+
+        //PICK IMAGE
+        //PERMISSION GRANTED
+        //OPEN IMAGE PICKER
+        Intent imagePickIntent = new Intent();
+        imagePickIntent.setType("image/*");
+        imagePickIntent.setAction(Intent.ACTION_GET_CONTENT);
+
+        activityResultLauncher.launch(imagePickIntent);
+    }
+
+    //ACTIVITY RESULT
+    ActivityResultLauncher<Intent> activityResultLauncher = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            new ActivityResultCallback<ActivityResult>() {
+                @Override
+                public void onActivityResult(ActivityResult result) {
+
+                    if (result.getResultCode() == RESULT_OK) {
+                        Intent data = result.getData();
+                        if (data != null) {
+                            if (data.getData() != null) {
+
+                                Uri imageUri = data.getData();
+                                txtImage.setText(imageUri.toString());
+                                uploadPhotoToStorage();
+
+                            }
+                        }
+                    }
+                }
+            });
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
@@ -520,6 +600,13 @@ public class AccountDetailsActivity extends AppCompatActivity {
     }
 
     public void goBack(View view){
+        startActivity(new Intent(AccountDetailsActivity.this, MenuActivity.class));
+        finish();
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
         startActivity(new Intent(AccountDetailsActivity.this, MenuActivity.class));
         finish();
     }

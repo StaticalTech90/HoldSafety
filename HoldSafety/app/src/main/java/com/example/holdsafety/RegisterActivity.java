@@ -404,12 +404,6 @@ public class RegisterActivity extends AppCompatActivity {
 
     }
 
-//    public void goBack(View view){
-//        Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
-//        finish();
-//        startActivity(intent);
-//    }
-
     //update edittext value
     private void updateDate(){
         //matched with line 174
@@ -503,5 +497,17 @@ public class RegisterActivity extends AppCompatActivity {
                 pickImage();
             }
         }
+    }
+
+    public void goBack(View view){
+        finish();
+        startActivity(new Intent(getApplicationContext(), LoginActivity.class));
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        finish();
+        startActivity(new Intent(getApplicationContext(), LoginActivity.class));
     }
 }
