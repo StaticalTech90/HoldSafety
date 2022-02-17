@@ -38,6 +38,7 @@ import com.google.firebase.storage.UploadTask;
 
 import java.io.File;
 import java.io.IOException;
+import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -318,6 +319,16 @@ public class AutoRecordingActivity extends AppCompatActivity {
         }
 
         // Create a media file name
+//        Date date = new Date();
+//        Timestamp timestamp = new Timestamp(date.getTime());
+//        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd_HH:mm", Locale.getDefault());
+//        String currentDateandTime = sdf.format(timestamp);
+//
+//        File mediaFile = new File(mediaStorageDir.getPath() + File.separator +
+//                "HoldSafety_" + currentDateandTime + ".mp4");
+//        recordingFile = mediaFile;
+//        return mediaFile;
+
         Date date = new Date();
         File mediaFile = new File(mediaStorageDir.getPath() + File.separator + "HoldSafety_" + date.getTime() + ".mp4");
 
@@ -327,13 +338,10 @@ public class AutoRecordingActivity extends AppCompatActivity {
         /*
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd_HH:mma", Locale.getDefault());
         String currentDateandTime = sdf.format(new Date());
-
         File mediaFile = new File(mediaStorageDir.getPath() + File.separator +
                 "VID_" + currentDateandTime + ".mp4");
-
         recordingFile = mediaFile;
         return mediaFile;
-
          */
     }
 
@@ -346,5 +354,11 @@ public class AutoRecordingActivity extends AppCompatActivity {
                 progressBar.setProgress(0);
             }
         }, 2000);
+    }
+
+    @Override
+    public void onBackPressed() {
+        finish();
+        startActivity(new Intent(this, LandingActivity.class));
     }
 }

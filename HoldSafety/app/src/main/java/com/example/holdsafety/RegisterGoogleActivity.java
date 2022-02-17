@@ -16,7 +16,6 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -33,12 +32,9 @@ import androidx.core.app.ActivityCompat;
 
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -47,7 +43,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -73,7 +68,6 @@ public class RegisterGoogleActivity extends AppCompatActivity {
 
     TextView lblLink;
     String firstName, lastName, email, selectedSex;
-    Date birthDate;
     Map<String, Object> docUsers = new HashMap<>();
 
     private static final int EXTERNAL_STORAGE_REQ_CODE = 1000;
@@ -190,30 +184,25 @@ public class RegisterGoogleActivity extends AppCompatActivity {
     private void uploadPhotoToStorage() {
             imageRef.child(user.getUid())
                     .putFile(Uri.parse(lblLink.getText().toString()))
-                    .addOnSuccessListener(taskSnapshot -> {
-//                            Toast.makeText(RegisterGoogleActivity.this,
-//                                    "Upload successful: " + taskSnapshot.toString(),
-//                                    Toast.LENGTH_SHORT).show();
-                        imageRef.child(user.getUid()).getDownloadUrl().addOnSuccessListener(uri -> {
-                            idUri = String.valueOf(uri);
-                            docUsers.put("imgUri", idUri);
-                            Log.i("URI gDUrl()", idUri);
+                    .addOnSuccessListener(taskSnapshot -> imageRef.child(user.getUid()).getDownloadUrl().addOnSuccessListener(uri -> {
+                        idUri = String.valueOf(uri);
+                        docUsers.put("imgUri", idUri);
+                        Log.i("URI gDUrl()", idUri);
 
-                            db.collection("users").document(user.getUid()).set(docUsers)
-                                    .addOnSuccessListener(aVoid -> {
-                                        Toast.makeText(getApplicationContext(),
-                                                "pushed image to document",
-                                                Toast.LENGTH_SHORT).show();
-                                        Log.i(TAG, "Image pushed");
-                                    })
-                                    .addOnFailureListener(e -> {
-                                        Toast.makeText(getApplicationContext(),
-                                                "Error writing document",
-                                                Toast.LENGTH_SHORT).show();
-                                        Log.w(TAG, "Error writing document", e);
-                                    });
-                        });
-                    }).addOnFailureListener(e -> Toast.makeText(RegisterGoogleActivity.this, "Upload failed.",
+                        db.collection("users").document(user.getUid()).set(docUsers)
+                                .addOnSuccessListener(aVoid -> {
+                                    Toast.makeText(getApplicationContext(),
+                                            "pushed image to document",
+                                            Toast.LENGTH_SHORT).show();
+                                    Log.i(TAG, "Image pushed");
+                                })
+                                .addOnFailureListener(e -> {
+                                    Toast.makeText(getApplicationContext(),
+                                            "Error writing document",
+                                            Toast.LENGTH_SHORT).show();
+                                    Log.w(TAG, "Error writing document", e);
+                                });
+                    })).addOnFailureListener(e -> Toast.makeText(RegisterGoogleActivity.this, "Upload failed.",
                             Toast.LENGTH_SHORT).show());
     }
 
@@ -281,8 +270,6 @@ public class RegisterGoogleActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         if(requestCode==1 && resultCode==RESULT_OK && data!=null && data.getData()!=null){
             imageURI = data.getData();
-            //Toast.makeText(getApplicationContext(), "Selected " + imageURI, Toast.LENGTH_SHORT).show();
-            //uploadPicture();
         }
     }
 
@@ -294,11 +281,7 @@ public class RegisterGoogleActivity extends AppCompatActivity {
         ArrayAdapter<String> spinnerSexAdapter = new ArrayAdapter<String>(this, R.layout.spinner_sex, sexList) {
             @Override
             public boolean isEnabled(int position){
-                if(position == 0){
-                    return false;
-                } else{
-                    return true;
-                }
+                return position != 0;
             }
 
             @Override
@@ -321,12 +304,10 @@ public class RegisterGoogleActivity extends AppCompatActivity {
         spinnerSex.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                String selectedItemText = (String) parent.getItemAtPosition(position);
                 // If user change the default selection
                 // First item is disable and it is used for hint
                 if(position > 0){
                     // Notify the selected item text
-                    //Toast.makeText(getApplicationContext(), "Selected : " + selectedItemText, Toast.LENGTH_SHORT).show();
                     selectedSex = spinnerSex.getSelectedItem().toString().trim();
                 }
             }

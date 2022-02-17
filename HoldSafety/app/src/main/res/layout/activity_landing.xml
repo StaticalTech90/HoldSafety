@@ -7,6 +7,172 @@
     tools:context=".LandingActivity"
     android:background="@color/dark_blue">
 
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/containerButtons"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintDimensionRatio="1:0.15"
+        app:layout_constraintStart_toStartOf="@id/mainGuidelineV1"
+        app:layout_constraintEnd_toEndOf="@id/mainGuidelineV2"
+        app:layout_constraintTop_toTopOf="@+id/mainGuidelineH1">
+
+        <ImageView
+            android:id="@+id/menuButton"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:clickable="true"
+            android:src="@drawable/menu"
+            app:layout_constraintDimensionRatio="1:1"/>
+
+        <ImageView
+            android:id="@+id/bluetooth"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:clickable="true"
+            android:src="@drawable/bluetooth"
+            app:layout_constraintDimensionRatio="1:1"/>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/containerTexts"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintDimensionRatio="1:0.5"
+        app:layout_constraintStart_toStartOf="@id/headerGuidelineV1"
+        app:layout_constraintEnd_toEndOf="@id/headerGuidelineV2"
+        app:layout_constraintTop_toBottomOf="@+id/containerButtons"
+        >
+
+        <TextView
+            android:id="@+id/instruction"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+
+            app:layout_constraintDimensionRatio="1:0.2"
+
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+
+            app:autoSizeMaxTextSize="22sp"
+            app:autoSizeMinTextSize="16sp"
+            app:autoSizeStepGranularity="0.5sp"
+            app:autoSizeTextType="uniform"
+
+            android:fontFamily="sans-serif-black"
+            android:textColor="@color/white"
+            android:gravity="center"
+            android:text="HOLD THE BUTTON IN CASE OF EMERGENCY"
+            />
+
+        <TextView
+            android:id="@+id/description"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+
+            app:layout_constraintDimensionRatio="1:0.1"
+
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/instruction"
+
+            app:autoSizeMaxTextSize="18sp"
+            app:autoSizeMinTextSize="15sp"
+            app:autoSizeStepGranularity="0.5sp"
+            app:autoSizeTextType="uniform"
+
+            android:fontFamily="sans-serif"
+            android:textColor="@color/hint_color"
+            android:text="(for two seconds)"
+            android:gravity="center"
+
+            />
+
+
+        <TextView
+            android:id="@+id/countdown"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+
+            app:layout_constraintDimensionRatio="1:0.2"
+
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/instruction"
+
+            app:autoSizeMaxTextSize="50sp"
+            app:autoSizeMinTextSize="30sp"
+            app:autoSizeStepGranularity="1sp"
+            app:autoSizeTextType="uniform"
+
+            android:fontFamily="sans-serif-black"
+            android:gravity="center"
+            android:textColor="@color/red"
+
+            android:visibility="invisible"
+            />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+
+        app:layout_constraintDimensionRatio="1:1.025"
+        app:layout_constraintStart_toStartOf="@id/mainGuidelineV1"
+        app:layout_constraintEnd_toEndOf="@id/mainGuidelineV2"
+        app:layout_constraintTop_toBottomOf="@+id/containerTexts"
+        >
+
+        <Button
+            android:id="@+id/btnSafetyButton"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="parent"
+
+            android:background="@drawable/safetybutton_selector"/>
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="600dp"
+        android:layout_height="wrap_content"
+
+        android:layout_marginStart="-50dp"
+        android:layout_marginBottom="50dp"
+        android:alpha=".1"
+        android:fontFamily="sans-serif-black"
+        android:text="HOLD SAFETY"
+        android:textColor="@color/hint_color"
+        android:textSize="130sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/headerGuidelineV1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.20" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/headerGuidelineV2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.80" />
+
+    <!--
+
     <ImageView
         android:id="@+id/bluetooth"
         android:layout_width="30dp"
@@ -97,19 +263,36 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/containerInstruction" />
 
-    <TextView
-        android:id="@+id/textView"
-        android:layout_width="600dp"
 
+
+    -->
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/mainGuidelineV1"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="-50dp"
-        android:layout_marginBottom="50dp"
-        android:alpha=".1"
-        android:fontFamily="sans-serif-black"
-        android:text="HOLD SAFETY"
-        android:textColor="@color/hint_color"
-        android:textSize="130sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.10" />
 
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/mainGuidelineV2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.90" />
+
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/mainGuidelineH1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.05" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/mainGuidelineH2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.95" />
 </androidx.constraintlayout.widget.ConstraintLayout>
