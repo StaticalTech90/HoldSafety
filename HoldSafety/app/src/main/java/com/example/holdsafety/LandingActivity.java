@@ -754,10 +754,10 @@ public class LandingActivity extends AppCompatActivity {
                 });
     }
 
-//    @Override
-//    protected void onStart() {
-//        super.onStart();
-//        //TODO: IF USER DETAILS INCOMPLETE, GO BACK TO FILL UP DETAILS (GOOGLE SIGN IN)
+    @Override
+    protected void onStart() {
+        super.onStart();
+        //TODO: IF USER DETAILS INCOMPLETE, GO BACK TO FILL UP DETAILS (GOOGLE SIGN IN)
 //        db.collection("users").document(userID).get()
 //                .addOnSuccessListener(documentSnapshot -> {
 //                    if(!documentSnapshot.getBoolean("profileComplete")) { // not null or true
@@ -765,10 +765,10 @@ public class LandingActivity extends AppCompatActivity {
 //                        finish();
 //                        startActivity(new Intent(this, RegisterGoogleActivity.class));
 //                    } else {
-//                        //Asks for permissions on activity start
-//                        setPermissions();
-//                    }
-//        });
-//    }
+                        //Asks for permissions on activity start
+                        setPermissions();
+                    //}
+        //});
+    }
 
 }
