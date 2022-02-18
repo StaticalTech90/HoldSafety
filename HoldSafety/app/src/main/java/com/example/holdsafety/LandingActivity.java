@@ -209,13 +209,6 @@ public class LandingActivity extends AppCompatActivity {
                     new String[]{Manifest.permission.SEND_SMS},
                     SEND_SMS_REQ_CODE);
         } else if(ActivityCompat.checkSelfPermission(this,
-                Manifest.permission.CAMERA) == PackageManager.PERMISSION_DENIED ){
-            //DENIED CAMERA PERMISSION
-            Log.d("camera permission", "Please Grant Camera Permission");
-            //SHOW PERMISSION
-            ActivityCompat.requestPermissions(this,
-                    new String[] {Manifest.permission.CAMERA}, CAMERA_REQ_CODE);
-        } else if(ActivityCompat.checkSelfPermission(this,
                 Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_DENIED){
             //DENIED AUDIO PERMISSION
             Log.d("audio permission", "Please Grant Audio Permission");
@@ -229,6 +222,13 @@ public class LandingActivity extends AppCompatActivity {
             //SHOW PERMISSION
             ActivityCompat.requestPermissions(this,
                     new String[] {Manifest.permission.WRITE_EXTERNAL_STORAGE}, STORAGE_WRITE_REQ_CODE);
+        } else if(ActivityCompat.checkSelfPermission(this,
+                Manifest.permission.CAMERA) == PackageManager.PERMISSION_DENIED ){
+            //DENIED CAMERA PERMISSION
+            Log.d("camera permission", "Please Grant Camera Permission");
+            //SHOW PERMISSION
+            ActivityCompat.requestPermissions(this,
+                    new String[] {Manifest.permission.CAMERA}, CAMERA_REQ_CODE);
         }
     }
 
@@ -269,19 +269,6 @@ public class LandingActivity extends AppCompatActivity {
                 startActivity(settingsIntent);
                 Toast.makeText(this, "Please Grant SMS Permission.", Toast.LENGTH_SHORT).show();
             }
-        } else if(requestCode == CAMERA_REQ_CODE){
-            if(ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.CAMERA)){
-                ActivityCompat.requestPermissions(this, permissions, CAMERA_REQ_CODE);
-            } else if (ActivityCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
-                    == PackageManager.PERMISSION_GRANTED){
-                setPermissions();
-            } else {
-                Intent settingsIntent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-                Uri uri = Uri.fromParts("package", getPackageName(), null);
-                settingsIntent.setData(uri);
-                startActivity(settingsIntent);
-                Toast.makeText(this, "Please Grant Camera Permission.", Toast.LENGTH_SHORT).show();
-            }
         } else if(requestCode == AUDIO_REQ_CODE){
             if(ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.CAMERA)){
                 ActivityCompat.requestPermissions(this, permissions, AUDIO_REQ_CODE);
@@ -300,7 +287,8 @@ public class LandingActivity extends AppCompatActivity {
                 ActivityCompat.requestPermissions(this, permissions, STORAGE_WRITE_REQ_CODE);
             } else if (ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
                     == PackageManager.PERMISSION_GRANTED){
-                Toast.makeText(this, "Permissions granted.", Toast.LENGTH_SHORT).show();
+                //Toast.makeText(this, "Permissions granted.", Toast.LENGTH_SHORT).show();
+
             } else {
                 Intent settingsIntent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
                 Uri uri = Uri.fromParts("package", getPackageName(), null);
@@ -309,6 +297,21 @@ public class LandingActivity extends AppCompatActivity {
                 Toast.makeText(this, "Please Grant Storage Permission.", Toast.LENGTH_SHORT).show();
             }
         }
+//        else if(requestCode == CAMERA_REQ_CODE){
+//            if(ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.CAMERA)){
+//                ActivityCompat.requestPermissions(this, permissions, CAMERA_REQ_CODE);
+//            } else if (ActivityCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
+//                    == PackageManager.PERMISSION_GRANTED){
+//
+//            }
+////            else {
+////                Intent settingsIntent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+////                Uri uri = Uri.fromParts("package", getPackageName(), null);
+////                settingsIntent.setData(uri);
+////                startActivity(settingsIntent);
+////                Toast.makeText(this, "Please Grant Camera Permission.", Toast.LENGTH_SHORT).show();
+////            }
+//        }
     }
 
     @Override

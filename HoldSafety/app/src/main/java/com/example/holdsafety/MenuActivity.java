@@ -54,7 +54,7 @@ public class MenuActivity extends AppCompatActivity {
     }
 
     public void userAccount(View view){
-        Intent intent = new Intent (getApplicationContext(), AccountDetailsActivity.class);
+        Intent intent = new Intent (MenuActivity.this, AccountDetailsActivity.class);
         startActivity(intent);
     }
 

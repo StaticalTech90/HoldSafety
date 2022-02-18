@@ -9,6 +9,7 @@ import androidx.core.content.ContextCompat;
 
 import android.content.Intent;
 import android.graphics.PorterDuff;
+import android.media.CamcorderProfile;
 import android.media.MediaRecorder;
 import android.net.Uri;
 import android.os.Build;
@@ -35,6 +36,8 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
 import java.io.File;
+import java.io.IOException;
+import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
@@ -44,19 +47,17 @@ import java.util.Map;
 public class AudioRecording extends AppCompatActivity {
 
     Button btnAudio;
-    boolean isRecording = false;
+    boolean isRecording = true;
     MediaRecorder mediaRecorder;
 
-    Intent intent = getIntent();
-    String userID = intent.getStringExtra("userId");
-    String reportID = intent.getStringExtra("reportId");
+    HashMap<String, String> vidLinkRequirements;
+    String userID, nearestBrgy, reportID;
     String idUri;
 
     FirebaseUser user;
     FirebaseAuth mAuth;
     ProgressBar progressBar;
     FirebaseFirestore db = FirebaseFirestore.getInstance();
-    DocumentReference userReportDB = db.collection("reportUser").document(userID).collection("reportDetails").document(reportID);
 
     Map<String, Object> docUsers = new HashMap<>();
     StorageReference audioRef;
@@ -69,86 +70,81 @@ public class AudioRecording extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_audio_recording);
 
-        audioRef = FirebaseStorage.getInstance().getReference("emergencyAudios");
+        audioRef = FirebaseStorage.getInstance().getReference("emergencyAudios/");
 
-        user = mAuth.getCurrentUser();
         btnAudio = findViewById(R.id.btnRecordAudio);
         mAuth = FirebaseAuth.getInstance();
+        user = mAuth.getCurrentUser();
         progressBar = findViewById(R.id.audioProgressBar);
         txtAudioRecording = findViewById(R.id.txtAudioRecord);
+
+        Intent intent = getIntent();
+        vidLinkRequirements = (HashMap<String, String>) intent.getSerializableExtra("vidLinkRequirements");
+
+        userID = vidLinkRequirements.get("userID");
+        nearestBrgy = vidLinkRequirements.get("nearestBrgy");
+        reportID = vidLinkRequirements.get("reportID");
 
         btnAudio.setOnClickListener(new View.OnClickListener() {
             @RequiresApi(api = Build.VERSION_CODES.O)
             @Override
             public void onClick(View view) {
-                if(isRecording){
-                    //user is currently recording
-                    //stop option
-                    stopRecording();
-                } else {
-                    //user is not recording
-                    //start option
-                    startRecording();
-                }
+//                if(isRecording){
+//                    //user is currently recording
+//                    //stop option
+//                    mediaRecorder.stop();
+//                    addToFirebase();
+//                } else {
+//                    if(prepareAudioRecorder()){
+//                        mediaRecorder.start();
+//
+//                        //2. SET TIMER (5 SECONDS) - Limit of the recording
+//                        new CountDownTimer(5000, 1000){
+//                            @Override
+//                            public void onTick(long l) {
+//                                long timeRemaining = (l/1000) + 1;
+//                                //txtAudioRecording.setText("Recording will stop in " + timeRemaining + " seconds");
+//                            }
+//
+//                            @Override
+//                            public void onFinish() {
+//                                //3. STOP RECORDING
+//                                btnAudio.performClick();
+//                            }
+//
+//                        }.start();
+//                    } else {
+//                        releaseMediaRecorder();
+//                    }
+//                    //user is not recording
+//                    //start option
+//                    //startRecording();
+//                }
+                onRecord(isRecording);
                 isRecording = !isRecording;
             }
         });
 
-        recordAudio();
-
+        setRecorder();
     }
 
+
     @RequiresApi(api = Build.VERSION_CODES.O)
-    private void startRecording() {
-        try {
-            mediaRecorder = new MediaRecorder();
-            mediaRecorder.reset();
-            mediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
-            mediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
-            mediaRecorder.setOutputFile(getOutputMediaFile());
-            mediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
-            mediaRecorder.prepare();
-            mediaRecorder.start();
-
-            btnAudio.setText("Stop Recording");
-            Toast.makeText(AudioRecording.this, "Audio Recording Started", Toast.LENGTH_SHORT).show();
-
-
-            //2. SET TIMER (5 SECONDS) - Limit of the recording
-            new CountDownTimer(5000, 1000){
-
-                @Override
-                public void onTick(long l) {
-                    long timeRemaining = (l/1000) + 1;
-                    txtAudioRecording.setText("Recording will stop in " + timeRemaining + " seconds");
-                }
-
-                @Override
-                public void onFinish() {
-                    //3. STOP RECORDING
-                    txtAudioRecording.setText("");
-                    stopRecording();
-                }
-
-            }.start();
-
-        } catch (Exception e){
-            Toast.makeText(AudioRecording.this, e.getMessage(), Toast.LENGTH_SHORT).show();
-            e.printStackTrace();
+    private void onRecord(boolean start) {
+        if (start) {
+            startRecording();
+        } else {
+            stopRecording();
         }
-
     }
 
     private void stopRecording() {
         mediaRecorder.stop();
-        mediaRecorder.reset();
         mediaRecorder.release();
-        mediaRecorder = null;
-
-        btnAudio.setText("Start Recording");
-        Toast.makeText(AudioRecording.this, "Recording Stopped", Toast.LENGTH_SHORT).show();
+        //mediaRecorder = null;
         addToFirebase();
-
+//        btnAudio.setText("Start Recording");
+//        Toast.makeText(AudioRecording.this, "Recording Stopped", Toast.LENGTH_SHORT).show();
     }
 
     private void addToFirebase() {
@@ -158,7 +154,7 @@ public class AudioRecording extends AppCompatActivity {
         //add to firebase
         FirebaseStorage.getInstance()
                 .getReference("emergencyAudios")
-                .child(userID)
+                .child(mAuth.getCurrentUser().getUid())
                 .child(recordingFile.getName())
                 .putFile(Uri.fromFile(recordingFile))
                 .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
@@ -167,41 +163,15 @@ public class AudioRecording extends AppCompatActivity {
                         Toast.makeText(AudioRecording.this, "Upload successful", Toast.LENGTH_SHORT).show();
                         setHandler();
 
-                        audioRef.child(user.getUid()).child(recordingFile.getName()).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-                            @Override
-                            public void onSuccess(Uri uri) {
-                                idUri = String.valueOf(uri);
-                                docUsers.put("Evidence", idUri);
-                                Log.i("URI gDUrl()", idUri);
-
-                                userReportDB.set(docUsers)
-                                        .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                            @Override
-                                            public void onSuccess(Void aVoid) {
-                                                Toast.makeText(getApplicationContext(),
-                                                        "pushed audio to report",
-                                                        Toast.LENGTH_SHORT).show();
-                                                Log.i(TAG, "Audio pushed");
-                                            }
-                                        })
-                                        .addOnFailureListener(new OnFailureListener() {
-                                            @Override
-                                            public void onFailure(@NonNull Exception e) {
-                                                Toast.makeText(getApplicationContext(),
-                                                        "Error writing document",
-                                                        Toast.LENGTH_SHORT).show();
-                                                Log.w(TAG, "Error writing document", e);
-                                            }
-                                        });
-                            }
-                        });
+                        getAudioLink();
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
-                        Toast.makeText(AudioRecording.this, "Upload failed.", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(AudioRecording.this, "Upload failed: " +e.getMessage(), Toast.LENGTH_SHORT).show();
                         setHandler();
+
                     }
                 })
                 .addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
@@ -214,8 +184,25 @@ public class AudioRecording extends AppCompatActivity {
                 });
     }
 
-    public void recordAudio(){
+    private void getAudioLink() {
+        //FETCH VIDEO LINK
+        audioRef.child(user.getUid() + "/" + recordingFile.getName()).getDownloadUrl()
+                .addOnSuccessListener(uri -> {
+                    Log.d("Video to Document", "Fetching video URI success");
+                    idUri = String.valueOf(uri);
+                    docUsers.put("Evidence", idUri);
+                    Log.d("Video to Document", idUri); // WORKING. FETCHES CORRECT VID. JUST NEED TO PUT IT IN THE DB
+//                                Log.i("URI gDUrl()", idUri);
 
+                    //UPDATE THE "Evidence" FIELD IN REPORT DB (GENERAL)
+                    db.collection("reports").document(reportID).update(docUsers)
+                            .addOnSuccessListener(unused -> Log.d("Video to Document", "Success! pushed to reportGeneral, id " + nearestBrgy + " w/vid ID " + idUri))
+                            .addOnFailureListener(e -> Log.d("Video to Document", "Failed to save to reportGeneral"));
+                })
+                .addOnFailureListener(e -> Log.d("Video to Document", "Fetching video URI failed. Log: " + e.getMessage()));
+    }
+
+    private void recordAudio(){
         /*
         //START DELAY TIMER
         new CountDownTimer(1000, 1000){
@@ -239,9 +226,100 @@ public class AudioRecording extends AppCompatActivity {
         }.start();
 
          */
-
         btnAudio.setEnabled(true);
         btnAudio.performClick();
+    }
+
+    private void setRecorder(){
+        mediaRecorder = new MediaRecorder();
+
+        //needs time for audio recorder to process
+        new CountDownTimer(1000, 1000){
+            @Override
+            public void onTick(long l) {
+                long timeRemaining = (l/1000)+1;
+                Log.d("TAG", "Time Remaining before recording: " + timeRemaining);
+            }
+            @Override
+            public void onFinish() {
+                btnAudio.setEnabled(true);
+            }
+        }.start();
+    }
+
+    private boolean prepareAudioRecorder(){
+        mediaRecorder = new MediaRecorder();
+        mediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
+        mediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
+        mediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
+
+        mediaRecorder.setOutputFile(String.valueOf(getOutputMediaFile()));
+
+        try {
+            mediaRecorder.prepare();
+        } catch (IllegalStateException e) {
+            Log.d("TAG", "IllegalStateException preparing MediaRecorder: " + e.getMessage());
+            releaseMediaRecorder();
+            return false;
+        } catch (IOException e) {
+            Log.d("TAG", "IOException preparing MediaRecorder: " + e.getMessage());
+            releaseMediaRecorder();
+            return false;
+        }
+        return true;
+    }
+
+    private void releaseMediaRecorder(){
+        if (mediaRecorder != null) {
+            mediaRecorder.release(); // release the recorder object
+            mediaRecorder = null;
+        }
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    private void startRecording() {
+        try {
+            mediaRecorder = new MediaRecorder();
+            mediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
+            mediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
+            mediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
+
+            mediaRecorder.setOutputFile(String.valueOf(getOutputMediaFile()));
+            Log.e("tag", String.valueOf(getOutputMediaFile()));
+
+            try {
+                mediaRecorder.prepare();
+                mediaRecorder.start();
+            } catch (IOException e) {
+                releaseMediaRecorder();
+                Log.e("tag", "prepare() failed");
+            }
+
+            btnAudio.setText("Stop Recording");
+            Toast.makeText(AudioRecording.this, "Audio Recording Started", Toast.LENGTH_SHORT).show();
+
+
+            //2. SET TIMER (5 SECONDS) - Limit of the recording
+            new CountDownTimer(5000, 1000){
+
+                @Override
+                public void onTick(long l) {
+                    long timeRemaining = (l/1000) + 1;
+                    txtAudioRecording.setText("Recording will stop in " + timeRemaining + " seconds");
+                }
+
+                @Override
+                public void onFinish() {
+                    //3. STOP RECORDING
+                    txtAudioRecording.setText("");
+                    stopRecording();
+                }
+            }.start();
+
+        } catch (Exception e){
+            Toast.makeText(AudioRecording.this, e.getMessage(), Toast.LENGTH_SHORT).show();
+            e.printStackTrace();
+        }
 
     }
 
@@ -260,18 +338,19 @@ public class AudioRecording extends AppCompatActivity {
         // Create the storage directory if it does not exist
         if (!mediaStorageDir.exists()) {
             if (!mediaStorageDir.mkdirs()) {
-                Log.d("MyCameraApp", "failed to create directory");
+                Log.d("HoldSafetyAudio", "failed to create directory");
                 return null;
             }
         }
 
         // Create a media file name
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd_HH:mma", Locale.getDefault());
-        String currentDateandTime = sdf.format(new Date());
-//        Date date = new Date();
+        Date date = new Date();
+        Timestamp timestamp = new Timestamp(date.getTime());
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd_HH:mm", Locale.getDefault());
+        String currentDateAndTime = sdf.format(timestamp);
 
         File mediaFile = new File(mediaStorageDir.getPath() + File.separator +
-                "AUD_" + currentDateandTime + ".mp3");
+                "AUD_" + currentDateAndTime + ".mp3");
 
         recordingFile = mediaFile;
         return mediaFile;
@@ -286,5 +365,20 @@ public class AudioRecording extends AppCompatActivity {
                 progressBar.setProgress(0);
             }
         }, 2000);
+    }
+
+    @Override
+    public void onBackPressed() {
+        finish();
+        startActivity(new Intent(this, LandingActivity.class));
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        if (mediaRecorder != null) {
+            mediaRecorder.release();
+            mediaRecorder = null;
+        }
     }
 }

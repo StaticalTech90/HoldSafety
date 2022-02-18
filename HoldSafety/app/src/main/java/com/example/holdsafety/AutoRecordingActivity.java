@@ -313,7 +313,7 @@ public class AutoRecordingActivity extends AppCompatActivity {
         // Create the storage directory if it does not exist
         if (!mediaStorageDir.exists()) {
             if (!mediaStorageDir.mkdirs()) {
-                Log.d("MyCameraApp", "failed to create directory");
+                Log.d("HoldSafetyCamera", "failed to create directory");
                 return null;
             }
         }
@@ -332,10 +332,10 @@ public class AutoRecordingActivity extends AppCompatActivity {
         Date date = new Date();
         Timestamp timestamp = new Timestamp(date.getTime());
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd_HH:mm", Locale.getDefault());
-        String currentDateandTime = sdf.format(timestamp);
+        String currentDateAndTime = sdf.format(timestamp);
 
         File mediaFile = new File(mediaStorageDir.getPath() + File.separator +
-                "HoldSafety_" + currentDateandTime + ".mp4");
+                "HoldSafety_" + currentDateAndTime + ".mp4");
         recordingFile = mediaFile;
         return mediaFile;
 
@@ -370,5 +370,14 @@ public class AutoRecordingActivity extends AppCompatActivity {
     public void onBackPressed() {
         finish();
         startActivity(new Intent(this, LandingActivity.class));
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        if (mediaRecorder != null) {
+            mediaRecorder.release();
+            mediaRecorder = null;
+        }
     }
 }
