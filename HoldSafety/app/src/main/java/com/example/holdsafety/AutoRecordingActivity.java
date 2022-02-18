@@ -330,18 +330,28 @@ public class AutoRecordingActivity extends AppCompatActivity {
 //        return mediaFile;
 
         Date date = new Date();
-        Timestamp timestamp = new Timestamp(date.getTime());
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd_HH:mm", Locale.getDefault());
-        String currentDateAndTime = sdf.format(timestamp);
+        File mediaFile = new File(mediaStorageDir.getPath() + File.separator + "HoldSafety_" + date.getTime() + ".mp4");
 
-        File mediaFile = new File(mediaStorageDir.getPath() + File.separator +
-                "HoldSafety_" + currentDateAndTime + ".mp4");
         recordingFile = mediaFile;
         return mediaFile;
 
+        /*
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd_HH:mma", Locale.getDefault());
+        String currentDateandTime = sdf.format(new Date());
+        File mediaFile = new File(mediaStorageDir.getPath() + File.separator +
+                "VID_" + currentDateandTime + ".mp4");
+        recordingFile = mediaFile;
+        return mediaFile;
+         */
+
+        // Create a media file name
 //        Date date = new Date();
-//        File mediaFile = new File(mediaStorageDir.getPath() + File.separator + "HoldSafety_" + date.getTime() + ".mp4");
+//        Timestamp timestamp = new Timestamp(date.getTime());
+//        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd_HH:mm", Locale.getDefault());
+//        String currentDateandTime = sdf.format(timestamp);
 //
+//        File mediaFile = new File(mediaStorageDir.getPath() + File.separator +
+//                "HoldSafety_" + currentDateandTime + ".mp4");
 //        recordingFile = mediaFile;
 //        return mediaFile;
 
