@@ -154,14 +154,28 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
+                <TextView
+                    android:id="@+id/txtImageLink"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+
+                    android:fontFamily="sans-serif-black"
+                    android:gravity="center_vertical"
+                    android:text=""
+                    android:textColor="@color/green"
+
+                    app:autoSizeMaxTextSize="0sp"
+                    app:autoSizeMinTextSize="0sp"
+                    app:autoSizeStepGranularity="0sp"
+
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
 
                 <Button
                     android:id="@+id/btnUploadID"
                     android:layout_width="0dp"
                     android:layout_height="0dp"
                     android:background="@drawable/white_container"
-
-                    android:onClick="uploadID"
 
                     android:paddingHorizontal="10dp"
                     android:text="Upload ID"
