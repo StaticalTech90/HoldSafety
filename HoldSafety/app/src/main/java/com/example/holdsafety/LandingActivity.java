@@ -754,21 +754,21 @@ public class LandingActivity extends AppCompatActivity {
                 });
     }
 
-    @Override
-    protected void onStart() {
-        super.onStart();
-        //TODO: IF USER DETAILS INCOMPLETE, GO BACK TO FILL UP DETAILS (GOOGLE SIGN IN)
-        db.collection("users").document(userID).get()
-                .addOnSuccessListener(documentSnapshot -> {
-                    if(!documentSnapshot.getBoolean("profileComplete")) { // not null or true
-                        //Check if profile is complete on activity start
-                        finish();
-                        startActivity(new Intent(this, RegisterGoogleActivity.class));
-                    } else {
-                        //Asks for permissions on activity start
-                        setPermissions();
-                    }
-        });
-    }
+//    @Override
+//    protected void onStart() {
+//        super.onStart();
+//        //TODO: IF USER DETAILS INCOMPLETE, GO BACK TO FILL UP DETAILS (GOOGLE SIGN IN)
+//        db.collection("users").document(userID).get()
+//                .addOnSuccessListener(documentSnapshot -> {
+//                    if(!documentSnapshot.getBoolean("profileComplete")) { // not null or true
+//                        //Check if profile is complete on activity start
+//                        finish();
+//                        startActivity(new Intent(this, RegisterGoogleActivity.class));
+//                    } else {
+//                        //Asks for permissions on activity start
+//                        setPermissions();
+//                    }
+//        });
+//    }
 
 }
