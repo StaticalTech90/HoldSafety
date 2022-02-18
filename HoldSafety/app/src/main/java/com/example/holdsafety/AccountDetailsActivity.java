@@ -271,6 +271,7 @@ public class AccountDetailsActivity extends AppCompatActivity {
                 }); //end of dialog code
             }
         });
+
     }
 
     public void uploadID(View view){

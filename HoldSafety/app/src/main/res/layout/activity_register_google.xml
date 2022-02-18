@@ -7,19 +7,433 @@
     tools:context=".RegisterGoogleActivity"
     android:background="@color/dark_blue">
 
-    <ImageView
-        android:id="@+id/backArrow"
-        android:layout_width="30dp"
-        android:layout_height="25dp"
-
-        android:layout_marginTop="30dp"
-        android:layout_marginLeft="40dp"
-        android:src="@drawable/arrow"
-        android:onClick="goBack"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/backContainer"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintDimensionRatio="1:0.15"
+        app:layout_constraintStart_toStartOf="@id/mainGuidelineV1"
+        app:layout_constraintEnd_toEndOf="@id/mainGuidelineV2"
+        app:layout_constraintTop_toTopOf="@+id/mainGuidelineH1">
 
 
+        <ImageView
+            android:id="@+id/backArrow"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintDimensionRatio="1:0.8"
+
+            android:src="@drawable/arrow"
+            android:onClick="goBack"
+            android:contentDescription="back button" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/headingContainer"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintDimensionRatio="1:0.3"
+        app:layout_constraintStart_toStartOf="@id/mainGuidelineV1"
+        app:layout_constraintEnd_toEndOf="@id/mainGuidelineV2"
+        app:layout_constraintTop_toBottomOf="@+id/backContainer">
+
+
+        <TextView
+            android:id="@+id/lblRegister"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+
+            android:fontFamily="sans-serif-black"
+            android:text="Fill Up Details"
+            android:textColor="@color/white"
+
+            app:autoSizeMaxTextSize="40sp"
+            app:autoSizeMinTextSize="25sp"
+            app:autoSizeStepGranularity="5sp"
+
+            app:autoSizeTextType="uniform"
+
+            app:layout_constraintDimensionRatio="1:0.15"
+
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/lblRegisterDesc"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+
+            android:fontFamily="sans-serif"
+            android:text="Please input the necessary details to login with Google"
+            android:textColor="@color/gray"
+
+            app:autoSizeMaxTextSize="15sp"
+            app:autoSizeMinTextSize="10sp"
+            app:autoSizeStepGranularity="1sp"
+
+            app:autoSizeTextType="uniform"
+            app:layout_constraintDimensionRatio="1:0.1"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/lblRegister" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/inputContainer"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+
+        app:layout_constraintStart_toStartOf="@id/mainGuidelineV1"
+        app:layout_constraintEnd_toEndOf="@id/mainGuidelineV2"
+        app:layout_constraintTop_toBottomOf="@id/headingContainer">
+
+        <TextView
+            android:id="@+id/lblGoogleName"
+            android:layout_width="0dp"
+            android:layout_height="30dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+
+            android:singleLine="true"
+            android:ellipsize="end"
+            android:textColor="@color/white"
+            android:fontFamily="sans-serif-black"
+            android:text="Hello"
+
+            app:autoSizeMaxTextSize="18sp"
+            app:autoSizeMinTextSize="15sp"
+            app:autoSizeStepGranularity="0.5sp"
+            app:autoSizeTextType="uniform" />
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/containerMiddleName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+
+            android:layout_marginTop="5dp"
+
+            android:background="@drawable/white_container"
+
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/lblGoogleName">
+
+            <EditText
+                android:id="@+id/txtMiddleName"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+
+                android:background="@null"
+                android:ellipsize="end"
+                android:fontFamily="sans-serif"
+
+                android:hint="Middle Name"
+                android:inputType="text"
+                android:maxLines="1"
+                android:scrollHorizontally="true"
+                android:textColor="@color/dark_blue"
+                app:layout_constraintDimensionRatio="6"
+
+                app:layout_constraintEnd_toEndOf="@+id/middleNameGuidelineV2"
+                app:layout_constraintStart_toStartOf="@id/middleNameGuidelineV1"
+
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/middleNameGuidelineV1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintGuide_percent="0.05" />
+
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/middleNameGuidelineV2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintGuide_percent="0.95" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/containerBirthDate"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+
+            android:layout_marginTop="8dp"
+
+            android:background="@drawable/white_container"
+
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/containerMiddleName">
+
+            <EditText
+                android:id="@+id/txtBirthDate"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+
+                android:background="@null"
+                android:ellipsize="end"
+                android:fontFamily="sans-serif"
+
+                android:clickable="false"
+                android:cursorVisible="false"
+                android:focusable="false"
+                android:focusableInTouchMode="false"
+
+                android:hint="Birth Date * (mm-dd-yyyy)"
+                android:inputType="text"
+                android:maxLines="1"
+                android:scrollHorizontally="true"
+                android:textColor="@color/dark_blue"
+                app:layout_constraintDimensionRatio="6"
+
+                app:layout_constraintEnd_toEndOf="@+id/birthdateGuidelineV2"
+                app:layout_constraintStart_toStartOf="@id/birthdateeGuidelineV1"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/birthdateeGuidelineV1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintGuide_percent="0.05" />
+
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/birthdateGuidelineV2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintGuide_percent="0.95" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/containerSex"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+
+            android:layout_marginTop="8dp"
+
+            android:background="@drawable/white_container"
+
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/containerBirthDate">
+
+            <Spinner
+                android:id="@+id/txtSex"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+
+                app:layout_constraintDimensionRatio="6"
+
+                android:background="@android:color/transparent"
+                android:spinnerMode="dropdown"
+
+                app:layout_constraintEnd_toEndOf="@+id/sexGuidelineV2"
+                app:layout_constraintStart_toStartOf="@id/sexGuidelineV1"
+                app:layout_constraintTop_toTopOf="parent"
+                />
+
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/sexGuidelineV1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintGuide_percent="0.05" />
+
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/sexGuidelineV2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintGuide_percent="0.95" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/containerMobileNumber"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+
+            android:layout_marginTop="8dp"
+
+            android:background="@drawable/white_container"
+
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/containerSex">
+
+            <EditText
+                android:id="@+id/txtMobileNumber"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+
+                android:background="@null"
+                android:ellipsize="end"
+                android:fontFamily="sans-serif"
+
+                android:hint="Mobile Number *"
+                android:inputType="number"
+                android:maxLines="1"
+                android:scrollHorizontally="true"
+                android:textColor="@color/dark_blue"
+                app:layout_constraintDimensionRatio="6"
+
+                app:layout_constraintEnd_toEndOf="@+id/numberGuidelineV2"
+                app:layout_constraintStart_toStartOf="@id/numberGuidelineV1"
+
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/numberGuidelineV1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintGuide_percent="0.05" />
+
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/numberGuidelineV2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintGuide_percent="0.95" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/idContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+
+            android:layout_marginTop="12dp"
+
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/containerMobileNumber">
+
+
+            <TextView
+                android:id="@+id/txtImageLink"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="@+id/btnUploadGuidelineV1"
+                app:layout_constraintBottom_toBottomOf="parent"
+
+                android:singleLine="true"
+                android:ellipsize="end"
+                android:textColor="@color/white"
+
+                app:autoSizeMaxTextSize="16sp"
+                app:autoSizeMinTextSize="13sp"
+                app:autoSizeStepGranularity="0.5sp"
+
+                app:autoSizeTextType="uniform" />
+
+            <Button
+                android:id="@+id/btnUploadID"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="@+id/btnUploadGuidelineV1"
+                android:paddingHorizontal="6dp"
+
+                android:background="@drawable/white_container"
+                android:text="Upload ID"
+
+                app:autoSizeMaxTextSize="16sp"
+                app:autoSizeMinTextSize="10sp"
+                app:autoSizeStepGranularity="1sp"
+                app:autoSizeTextType="uniform" />
+
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/btnUploadGuidelineV1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintGuide_percent="0.60" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <Button
+        android:id="@+id/btnProceed"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+
+        android:layout_marginTop="12dp"
+        android:layout_marginBottom="16dp"
+
+        app:layout_constraintTop_toBottomOf="@id/inputContainer"
+        app:layout_constraintStart_toStartOf="@+id/registerBtnGuidelineV1"
+        app:layout_constraintBottom_toBottomOf="@id/mainGuidelineH2"
+        app:layout_constraintEnd_toEndOf="@id/registerBtnGuidelineV2"
+
+        android:background="@drawable/blue_button"
+        android:fontFamily="sans-serif-black"
+        android:text="PROCEED"
+        android:textColor="@color/dark_blue"
+
+        app:autoSizeMaxTextSize="22sp"
+        app:autoSizeMinTextSize="15sp"
+        app:autoSizeStepGranularity="3sp"
+
+        app:autoSizeTextType="uniform" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/registerBtnGuidelineV1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.20" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/registerBtnGuidelineV2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.80" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/mainGuidelineV1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.10" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/mainGuidelineV2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.90" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/mainGuidelineH1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.05" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/mainGuidelineH2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.95" />
+
+    <!--
     <TextView
         android:id="@+id/lblRegister"
         android:layout_width="wrap_content"
@@ -214,7 +628,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/btnUploadID" />
 
-    <!-- Don't put text in android:text -->
+    Don't put text in android:text
     <TextView
         android:id="@+id/txtImageLink"
         android:layout_width="wrap_content"
@@ -231,6 +645,6 @@
         app:layout_constraintBottom_toTopOf="@+id/btnProceed"
         app:layout_constraintEnd_toStartOf="@+id/btnUploadID"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/containerMobileNumber" />
+        app:layout_constraintTop_toBottomOf="@+id/containerMobileNumber" /> -->
 
 </androidx.constraintlayout.widget.ConstraintLayout>

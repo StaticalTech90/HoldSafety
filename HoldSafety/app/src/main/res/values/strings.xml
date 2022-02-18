@@ -11,13 +11,6 @@
     <!--This is the default client to prevent API error 10-->
     <string name="default_web_client">233680747912-m8q45hor79go5n8aqfkuneklnkshudqs.apps.googleusercontent.com</string>
 
-    <string-array name="contact_name">
-        <item>Danielle David</item>
-        <item>Francis Fabul</item>
-        <item>Nhoriza Icaro</item>
-        <item>Joselito Mandigma</item>
-        <item>Random Name</item>
-    </string-array>
 
     <string-array name="sex">
         <item>Sex</item>
@@ -25,12 +18,5 @@
         <item>F</item>
     </string-array>
 
-    <string-array name="reportID">
-        <item>U001</item>
-        <item>U002</item>
-        <item>U003</item>
-        <item>U004</item>
-        <item>U005</item>
-        <item>U006</item>
-    </string-array>
+
 </resources>

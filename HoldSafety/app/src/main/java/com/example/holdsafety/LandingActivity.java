@@ -52,6 +52,7 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.io.IOException;
 import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -174,6 +175,7 @@ public class LandingActivity extends AppCompatActivity {
             getCurrentLocation();
             //Toast.makeText(getApplicationContext(), "Inside IF" , Toast.LENGTH_SHORT).show();
         }
+
     }
 
     public void menuRedirect(View view) {
@@ -732,6 +734,9 @@ public class LandingActivity extends AppCompatActivity {
 
                     docDetails.put("Barangay", nearestBrgy);
                     docDetails.put("Report Date", timestamp);
+
+
+                    db = FirebaseFirestore.getInstance();
 
                     //GET THE ID OF THE REPORT TO BE SAVED IN DB
                     DocumentReference docRefDetails = db.collection("reports").document();

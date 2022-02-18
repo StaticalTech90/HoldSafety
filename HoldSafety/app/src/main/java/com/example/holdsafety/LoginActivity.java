@@ -180,6 +180,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
 
             loginUser(email,password);
         });
+
     }
 
     private void updateUI(FirebaseUser user) {

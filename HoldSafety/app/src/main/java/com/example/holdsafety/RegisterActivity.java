@@ -92,6 +92,8 @@ public class RegisterActivity extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
         user = mAuth.getCurrentUser();
 
+
+
         lblLink = findViewById(R.id.txtImageLink);
 
         etLastName = findViewById(R.id.txtLastName);
@@ -108,12 +110,15 @@ public class RegisterActivity extends AppCompatActivity {
         txtTogglePass = findViewById(R.id.txtTogglePass);
         txtToggleConfirmPass = findViewById(R.id.txtToggleConfirmPass);
 
+
+
         txtTogglePass.setVisibility(View.GONE);
         txtToggleConfirmPass.setVisibility(View.GONE);
         etPassword.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
         etConPassword.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
 
         btnUpload = findViewById(R.id.btnUploadID);
+
 
         String[] sex = new String[]{"Sex *", "M", "F"};
         List<String> sexList = new ArrayList<>(Arrays.asList(sex));
@@ -177,6 +182,7 @@ public class RegisterActivity extends AppCompatActivity {
                 calendar.get(Calendar.MONTH),
                 calendar.get(Calendar.DAY_OF_MONTH)).show()
         );
+
 
         //Upload Image
         btnUpload.setOnClickListener(v -> pickImage());
@@ -257,6 +263,7 @@ public class RegisterActivity extends AppCompatActivity {
             }
             etConPassword.setSelection(etConPassword.length());
         });
+
     }
 
     public void userRegister() throws ParseException {

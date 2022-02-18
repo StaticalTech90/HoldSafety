@@ -16,7 +16,7 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"/>
 
-    <RelativeLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/relativeRecord"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -29,18 +29,23 @@
         <View
             android:layout_width="60dp"
             android:layout_height="60dp"
-            android:background="@drawable/round_shape" />
+            android:background="@drawable/round_shape"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/btnRecord"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
             android:enabled="false"
             android:src="@drawable/recording_shape"
             android:tint="@color/red"
             app:backgroundTint="@color/dark_blue" />
-    </RelativeLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <ProgressBar
         android:id="@+id/progressBar"

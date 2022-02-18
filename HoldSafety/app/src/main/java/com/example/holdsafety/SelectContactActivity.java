@@ -42,7 +42,7 @@ public class SelectContactActivity extends AppCompatActivity {
         user = mAuth.getCurrentUser();
         db = FirebaseFirestore.getInstance();
 
-        contactName = getResources().getStringArray(R.array.contact_name);
+        //contactName = getResources().getStringArray(R.array.contact_name);
         contactsView = findViewById(R.id.linearContactList);
 
         ContactAdapter contactAdapter = new ContactAdapter(this, contactName);
