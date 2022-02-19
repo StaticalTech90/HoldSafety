@@ -7,20 +7,252 @@
     tools:context=".RegisterOTPActivity"
     android:background="@color/dark_blue">
 
-    <ImageView
-        android:id="@+id/backArrow"
-        android:layout_width="30dp"
-        android:layout_height="25dp"
-        android:onClick="goBack"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
 
-        android:layout_marginTop="30dp"
-        android:layout_marginLeft="40dp"
-        android:src="@drawable/left_arrow"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        >
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/backContainer"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintDimensionRatio="1:0.4"
+            app:layout_constraintStart_toStartOf="@id/mainGuidelineV1"
+            app:layout_constraintEnd_toEndOf="@id/mainGuidelineV2"
+            app:layout_constraintTop_toTopOf="@+id/mainGuidelineH1">
 
 
-    <TextView
+            <ImageView
+                android:id="@+id/backArrow"
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintDimensionRatio="1:0.8"
+
+                android:src="@drawable/arrow"
+                android:onClick="goBack"
+                android:contentDescription="back button" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/headingContainer"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintDimensionRatio="1:0.35"
+            app:layout_constraintStart_toStartOf="@id/mainGuidelineV1"
+            app:layout_constraintEnd_toEndOf="@id/mainGuidelineV2"
+            app:layout_constraintTop_toBottomOf="@+id/backContainer">
+
+            <TextView
+                android:id="@+id/lblVerifyEmail"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+
+                android:fontFamily="sans-serif-black"
+                android:text="Verify Email"
+                android:textColor="@color/white"
+
+                app:autoSizeMaxTextSize="40sp"
+                app:autoSizeMinTextSize="25sp"
+                app:autoSizeStepGranularity="5sp"
+
+                app:autoSizeTextType="uniform"
+
+                app:layout_constraintDimensionRatio="1:0.17"
+
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/lblVerifyDesc"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+
+                android:fontFamily="sans-serif"
+                android:text="Please enter the OTP that will be sent to your email to verify your entered email."
+                android:textColor="@color/gray"
+
+                app:autoSizeMaxTextSize="15sp"
+                app:autoSizeMinTextSize="10sp"
+                app:autoSizeStepGranularity="1sp"
+
+                app:autoSizeTextType="uniform"
+                app:layout_constraintDimensionRatio="1:0.18"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/lblVerifyEmail" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/containerEmail"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+
+            android:layout_marginTop="15dp"
+
+            android:background="@drawable/white_container"
+
+            app:layout_constraintStart_toStartOf="@id/mainGuidelineV1"
+            app:layout_constraintEnd_toEndOf="@id/mainGuidelineV2"
+            app:layout_constraintTop_toBottomOf="@id/headingContainer">
+
+            <EditText
+                android:id="@+id/txtEmail"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+
+                android:background="@null"
+                android:ellipsize="end"
+                android:fontFamily="sans-serif"
+
+                android:focusable="false"
+
+                android:hint="Email *"
+                android:inputType="textEmailAddress"
+                android:maxLines="1"
+                android:scrollHorizontally="true"
+                android:textColor="@color/dark_blue"
+                app:layout_constraintDimensionRatio="6"
+
+                app:layout_constraintEnd_toEndOf="@+id/emailGuidelineV2"
+                app:layout_constraintStart_toStartOf="@id/emailGuidelineV1"
+
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/emailGuidelineV1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintGuide_percent="0.05" />
+
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/emailGuidelineV2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintGuide_percent="0.95" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+        <Button
+            android:id="@+id/btnSendCode"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+
+            android:layout_marginTop="40dp"
+            android:layout_marginBottom="16dp"
+            android:padding="10dp"
+
+            app:layout_constraintTop_toBottomOf="@id/containerEmail"
+            app:layout_constraintStart_toStartOf="@+id/sendBtnGuidelineV1"
+            app:layout_constraintEnd_toEndOf="@id/sendBtnGuidelineV2"
+
+            android:background="@drawable/blue_button"
+            android:fontFamily="sans-serif-black"
+            android:text="SEND VERIFICATION CODE"
+            android:textColor="@color/dark_blue"
+
+            app:autoSizeMaxTextSize="22sp"
+            app:autoSizeMinTextSize="15sp"
+            app:autoSizeStepGranularity="3sp"
+
+            app:autoSizeTextType="uniform" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/sendBtnGuidelineV1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.15" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/sendBtnGuidelineV2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.85" />
+
+        <TextView
+            android:id="@+id/txtTimeRemaining"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+
+            android:layout_marginTop="15dp"
+
+            android:fontFamily="sans-serif-black"
+            android:text="Time Remaining"
+            android:textColor="@color/white"
+
+            app:autoSizeMaxTextSize="15sp"
+            app:autoSizeMinTextSize="12sp"
+            app:autoSizeStepGranularity="1sp"
+            app:autoSizeTextType="uniform"
+
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/btnSendCode" />
+
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/mainGuidelineV1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.10" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/mainGuidelineV2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.90" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/mainGuidelineH1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.05" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/mainGuidelineH2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.95" />
+
+        <TextView
+            android:id="@+id/textView"
+            android:layout_width="600dp"
+            android:layout_height="wrap_content"
+
+            android:layout_marginStart="-50dp"
+            android:layout_marginBottom="44dp"
+            android:alpha=".1"
+            android:fontFamily="sans-serif-black"
+            android:text="HOLD SAFETY"
+            android:textColor="@color/hint_color"
+            android:textSize="130sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+        <!--
+        <TextView
         android:id="@+id/lblVerifyEmail"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -120,7 +352,7 @@
         android:textColor="@color/hint_color"
         android:textSize="130sp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent" /> -->
 
 
 

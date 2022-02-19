@@ -113,8 +113,6 @@ public class AddContactActivity extends AppCompatActivity {
 
             }
         });
-
-
     }
 
     public void saveContact(View view){

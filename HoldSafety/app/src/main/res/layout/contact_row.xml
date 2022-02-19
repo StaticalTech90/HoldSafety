@@ -3,21 +3,91 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_marginBottom="20dp"
     android:id="@+id/layoutContact">
-
 
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:layout_margin="10dp"
+        android:layout_marginVertical="10dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:cardCornerRadius="20dp"
+        app:cardCornerRadius="15dp"
         >
 
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:paddingVertical="10dp"
+            android:paddingHorizontal="15dp">
+
+            <TextView
+                android:id="@+id/txtContactName"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:maxLines="1"
+                android:ellipsize="end"
+                android:fontFamily="sans-serif"
+
+                app:layout_constraintDimensionRatio="6"
+                android:gravity="center_vertical"
+
+                android:text="dakjdhhdihdiusafhdsjfhdfsadddsaddsddasdadsdsdadsdsddadhoihasufhfuidf"
+
+                android:textColor="@color/dark_blue"
+                android:textSize="18sp"
+
+                app:layout_constraintEnd_toEndOf="@id/editIconGuidelineV1"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <ImageView
+                android:id="@+id/updateContact"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+
+                android:src="@drawable/update_user"
+                app:layout_constraintEnd_toEndOf="@id/deleteIconGuidelineV1"
+                app:layout_constraintStart_toStartOf="@id/editIconGuidelineV1"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+
+                android:padding="5dp"/>
+
+            <ImageView
+                android:id="@+id/btnRemoveAccount"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+
+
+                android:src="@drawable/remove_user"
+                app:layout_constraintStart_toEndOf="@+id/updateContact"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+
+                android:padding="3dp"/>
+
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/editIconGuidelineV1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintGuide_percent="0.8" />
+
+
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/deleteIconGuidelineV1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintGuide_percent="0.9" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <!--
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -56,6 +126,7 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
-        </androidx.constraintlayout.widget.ConstraintLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout> -->
+
     </androidx.cardview.widget.CardView>
 </androidx.constraintlayout.widget.ConstraintLayout>

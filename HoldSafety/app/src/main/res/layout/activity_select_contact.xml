@@ -7,103 +7,140 @@
     tools:context=".SelectContactActivity"
     android:background="@color/dark_blue">
 
-    <ImageView
-        android:id="@+id/backArrow"
-        android:layout_width="30dp"
-        android:layout_height="25dp"
 
-        android:layout_marginTop="30dp"
-        android:layout_marginLeft="40dp"
-        android:src="@drawable/left_arrow"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/backContainer"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="@id/mainGuidelineV1"
+        app:layout_constraintEnd_toEndOf="@id/mainGuidelineV2"
+        app:layout_constraintTop_toTopOf="@+id/mainGuidelineH1">
+
+
+        <ImageView
+            android:id="@+id/backArrow"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintDimensionRatio="1:0.8"
+
+            android:src="@drawable/arrow"
+            android:contentDescription="back button" />
+
+        <TextView
+            android:id="@+id/lblNumOfContacts"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+
+            android:fontFamily="sans-serif"
+            android:text="Number of Contacts: 2/5"
+            android:textColor="@color/gray"
+
+            app:autoSizeMaxTextSize="15sp"
+            app:autoSizeMinTextSize="12sp"
+            app:autoSizeStepGranularity="1sp"
+            app:autoSizeTextType="uniform"
+
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/headingContainer"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+
+        android:layout_marginTop="35dp"
+        app:layout_constraintDimensionRatio="1:0.25"
+        app:layout_constraintStart_toStartOf="@id/mainGuidelineV1"
+        app:layout_constraintEnd_toEndOf="@id/mainGuidelineV2"
+        app:layout_constraintTop_toBottomOf="@id/backContainer">
+
+        <TextView
+            android:id="@+id/lblUpdateContact"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:singleLine="false"
+
+            android:fontFamily="sans-serif-black"
+            android:text="Update Emergency Contact"
+            android:textColor="@color/white"
+
+            app:autoSizeMaxTextSize="40sp"
+            app:autoSizeMinTextSize="25sp"
+            app:autoSizeStepGranularity="5sp"
+
+            app:autoSizeTextType="uniform"
+
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"/>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <TextView
-        android:id="@+id/lblNumOfContacts"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-
-        android:layout_marginTop="32dp"
-        android:layout_marginEnd="40dp"
+        android:id="@+id/lblSelectContactDesc"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
 
         android:fontFamily="sans-serif"
-        android:text="Number of Contacts: 2/5"
+        android:text="Select conatct to be updated"
         android:textColor="@color/gray"
-        android:textSize="15sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
 
-    <TextView
-        android:id="@+id/lblUpdateContact"
-        android:layout_width="350dp"
-        android:layout_height="wrap_content"
+        app:autoSizeMaxTextSize="15sp"
+        app:autoSizeMinTextSize="10sp"
+        app:autoSizeStepGranularity="1sp"
 
-        android:layout_marginTop="76dp"
-        android:fontFamily="sans-serif-black"
-        android:text="Update Emergency Contact"
-        android:layout_marginLeft="40dp"
-        android:textColor="@color/white"
-        android:textSize="33sp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/backArrow" />
-
-    <TextView
-        android:id="@+id/lblUpdateContactDesc"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-
-        android:fontFamily="sans-serif"
-        android:layout_marginLeft="40dp"
-        android:text="Select the contact to be updated"
-        android:textColor="@color/gray"
-        android:textSize="18sp"
-
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/lblUpdateContact" />
+        app:autoSizeTextType="uniform"
+        app:layout_constraintDimensionRatio="1:0.1"
+        app:layout_constraintEnd_toEndOf="@id/mainGuidelineV2"
+        app:layout_constraintStart_toStartOf="@id/mainGuidelineV1"
+        app:layout_constraintTop_toBottomOf="@+id/headingContainer" />
 
 
         <!--HOLDER FOR THE CARD VIEWS-->
         <LinearLayout
             android:id="@+id/linearContactList"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:orientation="vertical"
 
             android:layout_marginTop="20dp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/lblUpdateContactDesc">
-
-<!--            <TextView-->
-<!--                android:id="@+id/txtContactName"-->
-<!--                android:layout_width="wrap_content"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:fontFamily="sans-serif"-->
-<!--                android:text="Contact Name"-->
-<!--                android:textColor="@color/dark_blue"-->
-
-<!--                android:textSize="18sp"-->
-<!--                app:layout_constraintStart_toStartOf="parent"-->
-<!--                app:layout_constraintTop_toTopOf="parent" />-->
-
-<!--            <ImageView-->
-<!--                android:id="@+id/updateContact"-->
-<!--                android:layout_width="22dp"-->
-<!--                android:layout_height="25dp"-->
-<!--                android:layout_marginEnd="5dp"-->
-
-<!--                android:src="@drawable/update_user"-->
-<!--                app:layout_constraintBottom_toBottomOf="parent"-->
-<!--                app:layout_constraintEnd_toStartOf="@id/btnRemoveAccount"-->
-<!--                app:layout_constraintTop_toTopOf="parent" />-->
-
-<!--            <ImageView-->
-<!--                android:id="@+id/btnRemoveAccount"-->
-<!--                android:layout_width="30dp"-->
-<!--                android:layout_height="25dp"-->
-
-<!--                android:src="@drawable/remove_user"-->
-<!--                app:layout_constraintBottom_toBottomOf="parent"-->
-<!--                app:layout_constraintEnd_toEndOf="parent"-->
-<!--                app:layout_constraintTop_toTopOf="parent" />-->
+            app:layout_constraintStart_toStartOf="@id/mainGuidelineV1"
+            app:layout_constraintEnd_toEndOf="@id/mainGuidelineV2"
+            app:layout_constraintTop_toBottomOf="@+id/lblSelectContactDesc">
         </LinearLayout>
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/mainGuidelineV1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.10" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/mainGuidelineV2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.90" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/mainGuidelineH1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.05" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/mainGuidelineH2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.95" />
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -7,17 +7,239 @@
     tools:context=".DesignateContactActivity"
     android:background="@color/dark_blue">
 
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/backContainer"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintDimensionRatio="1:0.25"
+        app:layout_constraintStart_toStartOf="@id/mainGuidelineV1"
+        app:layout_constraintEnd_toEndOf="@id/mainGuidelineV2"
+        app:layout_constraintTop_toTopOf="@+id/mainGuidelineH1">
+
+
+        <ImageView
+            android:id="@+id/backArrow"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintDimensionRatio="1:0.8"
+
+            android:src="@drawable/arrow"
+            android:onClick="goBack"
+            android:contentDescription="back button" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/headingContainer"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintDimensionRatio="1:0.3"
+        app:layout_constraintStart_toStartOf="@id/mainGuidelineV1"
+        app:layout_constraintEnd_toEndOf="@id/mainGuidelineV2"
+        app:layout_constraintTop_toBottomOf="@+id/backContainer">
+
+        <TextView
+            android:id="@+id/lblDesignateContact"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+
+            android:fontFamily="sans-serif-black"
+            android:text="Designate Emergency Contact"
+            android:textColor="@color/white"
+
+            app:autoSizeMaxTextSize="40sp"
+            app:autoSizeMinTextSize="25sp"
+            app:autoSizeStepGranularity="5sp"
+
+            app:autoSizeTextType="uniform"
+
+            app:layout_constraintDimensionRatio="1:0.3"
+
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/btnAddContact"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+
+        app:layout_constraintStart_toStartOf="@id/mainGuidelineV1"
+        app:layout_constraintEnd_toEndOf="@id/mainGuidelineV2"
+        app:layout_constraintTop_toBottomOf="@+id/headingContainer"
+
+        android:layout_marginTop="15dp"
+        android:paddingVertical="5dp"
+
+        android:clickable="true"
+        android:focusable="true"
+        android:onClick="addContact"
+
+        android:background="@drawable/white_container">
+
+        <TextView
+            android:id="@+id/lblAddContact"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:ellipsize="end"
+            android:fontFamily="sans-serif"
+
+            app:layout_constraintDimensionRatio="6"
+            android:gravity="center_vertical"
+
+            android:text="Add Emergency Contact"
+            android:textColor="@color/dark_blue"
+            app:autoSizeMaxTextSize="17sp"
+            app:autoSizeMinTextSize="12sp"
+            app:autoSizeStepGranularity="0.5sp"
+
+            app:autoSizeTextType="uniform"
+            app:layout_constraintEnd_toEndOf="@id/addIconGuidelineV1"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="@id/addGuidelineV1"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageView
+            android:id="@+id/imgAddContacts"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+
+            android:src="@drawable/add_user"
+            app:layout_constraintEnd_toEndOf="@id/addGuidelineV2"
+            app:layout_constraintStart_toStartOf="@id/addIconGuidelineV1"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+
+            android:paddingVertical="8dp"/>
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/addGuidelineV1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.05" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/addGuidelineV2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.95" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/addIconGuidelineV1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.8" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/btnUpdateContact"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+
+        app:layout_constraintStart_toStartOf="@id/mainGuidelineV1"
+        app:layout_constraintEnd_toEndOf="@id/mainGuidelineV2"
+        app:layout_constraintTop_toBottomOf="@+id/btnAddContact"
+
+        android:layout_marginTop="15dp"
+        android:paddingVertical="5dp"
+
+        android:clickable="true"
+        android:focusable="true"
+        android:onClick="updateContact"
+
+        android:background="@drawable/white_container">
+
+        <TextView
+            android:id="@+id/lblUpdateContact"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:ellipsize="end"
+            android:fontFamily="sans-serif"
+
+            app:layout_constraintDimensionRatio="6"
+            android:gravity="center_vertical"
+
+            android:text="Update Emergency Contact"
+            android:textColor="@color/dark_blue"
+            app:autoSizeMaxTextSize="17sp"
+            app:autoSizeMinTextSize="12sp"
+            app:autoSizeStepGranularity="0.5sp"
+
+            app:autoSizeTextType="uniform"
+            app:layout_constraintEnd_toEndOf="@id/updateIconGuidelineV1"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="@id/updateGuidelineV1"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageView
+            android:id="@+id/imgUpdateContacts"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+
+            android:src="@drawable/update_user"
+            app:layout_constraintEnd_toEndOf="@id/updateGuidelineV2"
+            app:layout_constraintStart_toStartOf="@id/updateIconGuidelineV1"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+
+            android:paddingVertical="8dp"/>
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/updateGuidelineV1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.05" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/updateGuidelineV2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.95" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/updateIconGuidelineV1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.8" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
     <ImageView
-        android:id="@+id/backArrow"
-        android:layout_width="30dp"
-        android:layout_height="25dp"
+        android:id="@+id/imgDesignate"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
 
-        android:layout_marginTop="30dp"
-        android:layout_marginStart="40dp"
-        android:src="@drawable/left_arrow"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:foregroundGravity="right"
 
+        app:layout_constraintEnd_toEndOf="@id/mainGuidelineV2"
+        app:layout_constraintStart_toStartOf="@id/imgGuidelineV1"
+        app:layout_constraintBottom_toBottomOf="@id/mainGuidelineH2"
+        app:layout_constraintDimensionRatio="1:1.3"
+
+        android:src="@drawable/holdsafety_designate" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/imgGuidelineV1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.3" />
+
+
+    <!--
     <TextView
         android:id="@+id/lblDesignateContact"
         android:layout_width="350dp"
@@ -126,6 +348,34 @@
         android:src="@drawable/holdsafety_designate"
 
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent" /> -->
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/mainGuidelineV1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.10" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/mainGuidelineV2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.90" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/mainGuidelineH1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.05" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/mainGuidelineH2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.95" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

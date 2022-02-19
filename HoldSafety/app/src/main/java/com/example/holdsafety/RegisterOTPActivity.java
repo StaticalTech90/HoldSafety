@@ -88,6 +88,7 @@ public class RegisterOTPActivity extends AppCompatActivity {
                 }
             }
         });
+
     }
 
     private void sendVerification(String email, DialogEmailVerify dialog) {

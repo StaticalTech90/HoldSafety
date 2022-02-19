@@ -1,6 +1,8 @@
 package com.example.holdsafety;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.view.View;
@@ -9,6 +11,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 
 import java.util.HashMap;
 
@@ -41,9 +44,16 @@ public class RecordingCountdownActivity extends AppCompatActivity {
                 //countdownTimer.setText("3");
                 Toast.makeText(getApplicationContext(), "Done Countdown" , Toast.LENGTH_SHORT).show();
 
-                Intent recordVideo = new Intent(RecordingCountdownActivity.this, AutoRecordingActivity.class);
-                recordVideo.putExtra("vidLinkRequirements", vidLinkRequirements);
-                startActivity(recordVideo);
+                if(ActivityCompat.checkSelfPermission(RecordingCountdownActivity.this,
+                        Manifest.permission.CAMERA) == PackageManager.PERMISSION_DENIED){
+                    Intent recordAudio = new Intent(RecordingCountdownActivity.this, AudioRecording.class);
+                    recordAudio.putExtra("vidLinkRequirements", vidLinkRequirements);
+                    startActivity(recordAudio);
+                } else {
+                    Intent recordVideo = new Intent(RecordingCountdownActivity.this, AutoRecordingActivity.class);
+                    recordVideo.putExtra("vidLinkRequirements", vidLinkRequirements);
+                    startActivity(recordVideo);
+                }
             }
 
         };
