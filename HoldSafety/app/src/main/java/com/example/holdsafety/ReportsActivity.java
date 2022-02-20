@@ -22,6 +22,7 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
@@ -58,7 +59,8 @@ public class ReportsActivity extends AppCompatActivity {
     }
 
     public void listMyReports() {
-        db.collection("reports").whereEqualTo("User ID", userID).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+        db.collection("reports").whereEqualTo("User ID", userID).orderBy("Report Date", Query.Direction.DESCENDING)
+                .get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
                 if (task.isSuccessful()) {

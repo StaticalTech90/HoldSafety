@@ -160,6 +160,7 @@ public class ChangePasswordActivity extends AppCompatActivity {
                 finish();
             }
         });
+
     }
 
     public void changePassword(){
@@ -200,5 +201,10 @@ public class ChangePasswordActivity extends AppCompatActivity {
                         }
                     }
                 });
+    }
+
+    public void forgotPassword(View view) {
+        startActivity(new Intent(ChangePasswordActivity.this, ForgotPasswordActivity.class));
+        finish();
     }
 }

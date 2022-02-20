@@ -11,6 +11,7 @@ import android.telephony.SmsManager;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -33,9 +34,9 @@ import java.util.Collections;
 import java.util.List;
 
 public class ContactDevelopersActivity extends AppCompatActivity {
-
     private String selectedConcern;
     EditText etMessage, etEmail;
+    Button btnSend;
 
     FirebaseUser user;
     FirebaseAuth mAuth;
@@ -48,11 +49,14 @@ public class ContactDevelopersActivity extends AppCompatActivity {
         dropdownContact();
         etEmail = findViewById(R.id.txtEmail);
         etMessage = findViewById(R.id.txtMessage);
+        btnSend = findViewById(R.id.btnSend);
 
         //Get data from db and auto-input in the form
         mAuth = FirebaseAuth.getInstance();
         user = mAuth.getCurrentUser();
         checkUserEmail();
+
+        btnSend.setOnClickListener(this::sendMessage);
     }
 
     public void checkUserEmail(){

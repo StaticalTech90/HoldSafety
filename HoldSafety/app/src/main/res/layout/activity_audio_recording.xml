@@ -8,38 +8,113 @@
     tools:context=".AudioRecording"
     android:background="@color/dark_blue">
 
-    <RelativeLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/containerNotification"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
 
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-
-        android:layout_marginTop="80dp">
+        app:layout_constraintDimensionRatio="1:0.4"
+        app:layout_constraintStart_toStartOf="@id/mainGuidelineV1"
+        app:layout_constraintEnd_toEndOf="@id/mainGuidelineV2"
+        app:layout_constraintTop_toTopOf="@+id/mainGuidelineH1"
+        >
 
         <ImageView
             android:id="@+id/imgLogo"
-            android:layout_width="100dp"
-            android:layout_height="100dp"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+
+            app:layout_constraintDimensionRatio="1:1.2"
+
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
 
             android:src="@drawable/holdsafety_default"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            />
 
         <TextView
             android:id="@+id/lblNotification"
-            android:layout_width="200dp"
-            android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
-            android:layout_marginStart="3dp"
-            android:layout_toEndOf="@+id/imgLogo"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+
+            android:layout_marginStart="8dp"
             android:fontFamily="sans-serif-black"
+            android:gravity="center_vertical"
             android:text="The alert message was already sent!"
+
             android:textColor="@color/gray"
-            android:textSize="16sp" />
-    </RelativeLayout>
+            app:autoSizeMaxTextSize="16sp"
+            app:autoSizeMinTextSize="12sp"
+            app:autoSizeStepGranularity="0.5sp"
+
+            app:autoSizeTextType="uniform"
+
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toEndOf="@id/imgLogo"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.0" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="600dp"
+
+        android:layout_height="wrap_content"
+        android:layout_marginStart="-50dp"
+        android:layout_marginBottom="50dp"
+        android:alpha=".1"
+        android:fontFamily="sans-serif-black"
+        android:text="HOLD SAFETY"
+        android:textColor="@color/hint_color"
+        android:textSize="130sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/btnGuidelineV1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.25" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/btnGuidelineV2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.75" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/mainGuidelineV1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.15" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/mainGuidelineV2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.85" />
+
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/mainGuidelineH1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.05" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/mainGuidelineH2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.95" />
 
     <Button
         android:id="@+id/btnRecordAudio"
@@ -73,23 +148,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textColor="@color/white"
+        android:fontFamily="sans-serif"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/audioProgressBar" />
 
-    <TextView
-        android:id="@+id/textView"
-        android:layout_width="600dp"
-
-        android:layout_height="wrap_content"
-        android:layout_marginStart="-50dp"
-        android:layout_marginBottom="50dp"
-        android:alpha=".1"
-        android:fontFamily="sans-serif-black"
-        android:text="HOLD SAFETY"
-        android:textColor="@color/hint_color"
-        android:textSize="130sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
 
   </androidx.constraintlayout.widget.ConstraintLayout>

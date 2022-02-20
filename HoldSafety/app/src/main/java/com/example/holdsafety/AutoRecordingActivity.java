@@ -331,7 +331,6 @@ public class AutoRecordingActivity extends AppCompatActivity {
 
         Date date = new Date();
         File mediaFile = new File(mediaStorageDir.getPath() + File.separator + "HoldSafety_" + date.getTime() + ".mp4");
-
         recordingFile = mediaFile;
         return mediaFile;
 

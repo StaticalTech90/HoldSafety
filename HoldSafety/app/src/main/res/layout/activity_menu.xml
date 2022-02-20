@@ -159,6 +159,7 @@
         app:layout_constraintTop_toBottomOf="@+id/divider"
 
         android:layout_marginTop="15dp"
+        android:paddingVertical="5dp"
 
         android:clickable="true"
         android:focusable="true"
@@ -234,6 +235,7 @@
         app:layout_constraintTop_toBottomOf="@+id/btnDesignateContact"
 
         android:layout_marginTop="8dp"
+        android:paddingVertical="5dp"
 
         android:clickable="true"
         android:focusable="true"
@@ -309,10 +311,10 @@
         app:layout_constraintTop_toBottomOf="@+id/btnContactDevelopers"
 
         android:layout_marginTop="8dp"
+        android:paddingVertical="5dp"
 
         android:clickable="true"
         android:focusable="true"
-        android:onClick="contactDevelopers"
 
         android:background="@drawable/white_container">
 
@@ -384,10 +386,10 @@
         app:layout_constraintTop_toBottomOf="@+id/btnUserManual"
 
         android:layout_marginTop="8dp"
+        android:paddingVertical="5dp"
 
         android:clickable="true"
         android:focusable="true"
-        android:onClick="contactDevelopers"
 
         android:background="@drawable/white_container">
 
@@ -460,10 +462,10 @@
         app:layout_constraintTop_toBottomOf="@+id/btnTermsAndConditions"
 
         android:layout_marginTop="8dp"
+        android:paddingVertical="5dp"
 
         android:clickable="true"
         android:focusable="true"
-        android:onClick="contactDevelopers"
 
         android:background="@drawable/white_container">
 
