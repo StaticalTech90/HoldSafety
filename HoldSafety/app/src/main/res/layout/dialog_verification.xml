@@ -17,32 +17,31 @@
             android:layout_width="100dp"
             android:layout_height="100dp"
 
-            android:src="@drawable/holdsafety_default"
-            android:layout_centerHorizontal="true"/>
+            android:layout_centerHorizontal="true"
+            android:src="@drawable/holdsafety_default" />
 
         <TextView
             android:id="@+id/lblVerifyEmail"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_below="@+id/imgLogo"
+            android:layout_marginHorizontal="40dp"
+            android:layout_marginTop="5dp"
             android:fontFamily="sans-serif-black"
             android:text="Email Verification"
             android:textColor="@color/dark_blue"
-            android:layout_marginTop="5dp"
-            android:layout_marginHorizontal="40dp"
-            android:textSize="35sp"
-            android:layout_below="@+id/imgLogo"/>
+            android:textSize="35sp" />
 
         <TextView
             android:id="@+id/lblVerifyDesc"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:fontFamily="sans-serif"
+            android:layout_below="@+id/lblVerifyEmail"
             android:layout_marginHorizontal="40dp"
+            android:fontFamily="sans-serif"
             android:text="One-Time Password (OTP) has been sent to your email."
             android:textColor="@color/gray"
-            android:textSize="16sp"
-            android:layout_below="@+id/lblVerifyEmail"
-            />
+            android:textSize="16sp" />
 
         <EditText
             android:id="@+id/txtCode"
@@ -59,7 +58,7 @@
             android:inputType="number"
             android:maxLength="6"
             android:maxLines="1"
-            android:textColor="@color/dark_blue"/>
+            android:textColor="@color/dark_blue" />
 
 
         <Button
@@ -67,8 +66,8 @@
             android:layout_width="match_parent"
             android:layout_height="55dp"
             android:layout_below="@+id/txtCode"
-            android:layout_marginHorizontal="50dp"
             android:layout_centerHorizontal="true"
+            android:layout_marginHorizontal="50dp"
             android:layout_marginTop="36dp"
             android:background="@drawable/blue_button"
             android:fontFamily="sans-serif-black"
@@ -76,6 +75,15 @@
             android:text="Submit"
             android:textColor="@color/dark_blue"
             android:textSize="20sp" />
+
+        <!--        HI PAAYOS ULE SALAMAT TEAM LIDER    -->
+        <TextView
+            android:id="@+id/txtTimeRemaining"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/btnSubmit"
+            android:layout_marginTop="-354dp"
+            android:text="Resend in x seconds" />
 
 
     </RelativeLayout>
