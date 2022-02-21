@@ -15,9 +15,12 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -30,12 +33,13 @@ public class RegisterOTPActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
     FirebaseFirestore db;
     FirebaseUser user;
+    StorageReference imageRef = FirebaseStorage.getInstance().getReference("id");
 
     Button btnSendCode;
     EditText etEmail;
     TextView txtTimeRemaining;
 
-    String userEmail;
+    String userEmail, idUri;
     HashMap<String, Object> docUsers;
 
     @Override
@@ -90,7 +94,30 @@ public class RegisterOTPActivity extends AppCompatActivity {
 
                 //insert to db with success/failure listeners
                 db.collection("users").document(user.getUid()).set(docUsers)
-                        .addOnSuccessListener(aVoid -> Log.d(TAG, "User successfully registered!"))
+                        .addOnSuccessListener(new OnSuccessListener<Void>() {
+                            @Override
+                            public void onSuccess(Void unused) {
+                                imageRef.child(user.getUid()).getDownloadUrl().addOnSuccessListener(uri -> {
+                                    idUri = String.valueOf(uri);
+                                    docUsers.put("imgUri", idUri);
+                                    Log.i("URI gDUrl()", idUri);
+
+                                    db.collection("users").document(user.getUid()).update(docUsers)
+                                            .addOnSuccessListener(aVoid -> {
+                                                Toast.makeText(getApplicationContext(),
+                                                        "pushed image to document",
+                                                        Toast.LENGTH_SHORT).show();
+                                                Log.i(TAG, "Image pushed");
+                                            })
+                                            .addOnFailureListener(e -> {
+                                                Toast.makeText(getApplicationContext(),
+                                                        "Error writing document",
+                                                        Toast.LENGTH_SHORT).show();
+                                                Log.w(TAG, "Error writing document", e);
+                                            });
+                                });
+                            }
+                        })
                         .addOnFailureListener(e -> Log.w(TAG, "error", e));
 
                 startActivity(new Intent(this, LandingActivity.class));

@@ -570,9 +570,9 @@ public class AccountDetailsActivity extends AppCompatActivity {
                 user.delete().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
                 //DELETE IMAGE
-                FirebaseStorage.getInstance().getReference("id").child(user.getUid()).delete()
+                imageRef.child(user.getUid()).delete()
                 .addOnSuccessListener(v -> {
-                    //Toast.makeText(AccountDetailsActivity.this, "Deleted Image", Toast.LENGTH_LONG).show();
+                    Toast.makeText(AccountDetailsActivity.this, "Deleted Image", Toast.LENGTH_LONG).show();
                 }).addOnFailureListener(v1 -> {
                     //Toast.makeText(AccountDetailsActivity.this, "Failed", Toast.LENGTH_LONG).show();
                 });

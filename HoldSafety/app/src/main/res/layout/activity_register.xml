@@ -615,6 +615,8 @@
                         app:layout_constraintEnd_toEndOf="@+id/btnUploadGuidelineV1"
                         app:layout_constraintBottom_toBottomOf="parent"
 
+                        android:text=""
+
                         android:singleLine="true"
                         android:ellipsize="end"
                         android:textColor="@color/white"
