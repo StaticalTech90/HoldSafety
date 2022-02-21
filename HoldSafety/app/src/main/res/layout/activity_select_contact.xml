@@ -7,7 +7,6 @@
     tools:context=".SelectContactActivity"
     android:background="@color/dark_blue">
 
-
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/backContainer"
         android:layout_width="0dp"
@@ -15,7 +14,6 @@
         app:layout_constraintStart_toStartOf="@id/mainGuidelineV1"
         app:layout_constraintEnd_toEndOf="@id/mainGuidelineV2"
         app:layout_constraintTop_toTopOf="@+id/mainGuidelineH1">
-
 
         <ImageView
             android:id="@+id/backArrow"
@@ -35,7 +33,6 @@
             android:layout_height="wrap_content"
 
             android:fontFamily="sans-serif"
-            android:text="Number of Contacts: 2/5"
             android:textColor="@color/gray"
 
             app:autoSizeMaxTextSize="15sp"
@@ -89,7 +86,7 @@
         android:layout_height="0dp"
 
         android:fontFamily="sans-serif"
-        android:text="Select conatct to be updated"
+        android:text="Select contact to be updated"
         android:textColor="@color/gray"
 
         app:autoSizeMaxTextSize="15sp"
@@ -102,19 +99,52 @@
         app:layout_constraintStart_toStartOf="@id/mainGuidelineV1"
         app:layout_constraintTop_toBottomOf="@+id/headingContainer" />
 
+    <TextView
+        android:id="@+id/lblNoContactsDesc"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
 
-        <!--HOLDER FOR THE CARD VIEWS-->
-        <LinearLayout
-            android:id="@+id/linearContactList"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
+        android:fontFamily="sans-serif-black"
+        android:text="No contacts yet. Please add emergency contact."
+        android:textColor="@color/white"
 
-            android:layout_marginTop="20dp"
-            app:layout_constraintStart_toStartOf="@id/mainGuidelineV1"
-            app:layout_constraintEnd_toEndOf="@id/mainGuidelineV2"
-            app:layout_constraintTop_toBottomOf="@+id/lblSelectContactDesc">
-        </LinearLayout>
+        android:layout_marginTop="20dp"
+        android:textSize="18sp"
+        android:gravity="center"
+        android:visibility="gone"
+
+        app:layout_constraintEnd_toEndOf="@id/mainGuidelineV2"
+        app:layout_constraintStart_toStartOf="@id/mainGuidelineV1"
+        app:layout_constraintTop_toBottomOf="@+id/lblSelectContactDesc" />
+
+
+    <!--HOLDER FOR THE CARD VIEWS-->
+    <LinearLayout
+        android:id="@+id/linearContactList"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+
+        android:layout_marginTop="20dp"
+        app:layout_constraintStart_toStartOf="@id/mainGuidelineV1"
+        app:layout_constraintEnd_toEndOf="@id/mainGuidelineV2"
+        app:layout_constraintTop_toBottomOf="@+id/lblSelectContactDesc">
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="600dp"
+        android:layout_height="wrap_content"
+
+        android:layout_marginStart="-50dp"
+        android:layout_marginBottom="50dp"
+        android:alpha=".1"
+        android:fontFamily="sans-serif-black"
+        android:text="HOLD SAFETY"
+        android:textColor="@color/hint_color"
+        android:textSize="130sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/mainGuidelineV1"

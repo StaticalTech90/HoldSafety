@@ -28,14 +28,15 @@
         <entry key="..\:/Users/nhoriza/Desktop/HoldSafety/HoldSafety/app/src/main/res/layout/activity_login.xml" value="0.264" />
         <entry key="..\:/Users/nhoriza/Desktop/HoldSafety/HoldSafety/app/src/main/res/layout/activity_menu.xml" value="0.13677536231884058" />
         <entry key="..\:/Users/nhoriza/Desktop/HoldSafety/HoldSafety/app/src/main/res/layout/activity_recording_countdown.xml" value="0.1046875" />
-        <entry key="..\:/Users/nhoriza/Desktop/HoldSafety/HoldSafety/app/src/main/res/layout/activity_register.xml" value="0.1046875" />
+        <entry key="..\:/Users/nhoriza/Desktop/HoldSafety/HoldSafety/app/src/main/res/layout/activity_register.xml" value="0.2" />
         <entry key="..\:/Users/nhoriza/Desktop/HoldSafety/HoldSafety/app/src/main/res/layout/activity_register1.xml" value="0.1403985507246377" />
         <entry key="..\:/Users/nhoriza/Desktop/HoldSafety/HoldSafety/app/src/main/res/layout/activity_register2.xml" value="0.1403985507246377" />
         <entry key="..\:/Users/nhoriza/Desktop/HoldSafety/HoldSafety/app/src/main/res/layout/activity_register_google.xml" value="0.1" />
         <entry key="..\:/Users/nhoriza/Desktop/HoldSafety/HoldSafety/app/src/main/res/layout/activity_register_otp.xml" value="0.17604166666666668" />
         <entry key="..\:/Users/nhoriza/Desktop/HoldSafety/HoldSafety/app/src/main/res/layout/activity_register_otpactivity.xml" value="0.17604166666666668" />
-        <entry key="..\:/Users/nhoriza/Desktop/HoldSafety/HoldSafety/app/src/main/res/layout/activity_reports.xml" value="0.1490036231884058" />
-        <entry key="..\:/Users/nhoriza/Desktop/HoldSafety/HoldSafety/app/src/main/res/layout/activity_select_contact.xml" value="0.1" />
+        <entry key="..\:/Users/nhoriza/Desktop/HoldSafety/HoldSafety/app/src/main/res/layout/activity_reports.xml" value="0.264" />
+        <entry key="..\:/Users/nhoriza/Desktop/HoldSafety/HoldSafety/app/src/main/res/layout/activity_select_contact.xml" value="0.4" />
+        <entry key="..\:/Users/nhoriza/Desktop/HoldSafety/HoldSafety/app/src/main/res/layout/activity_update_contact.xml" value="0.4" />
         <entry key="..\:/Users/nhoriza/Desktop/HoldSafety/HoldSafety/app/src/main/res/layout/contact_row.xml" value="0.1" />
         <entry key="..\:/Users/nhoriza/Desktop/HoldSafety/HoldSafety/app/src/main/res/layout/dialog_verification.xml" value="0.17604166666666668" />
         <entry key="..\:/Users/nhoriza/Desktop/HoldSafety/HoldSafety/app/src/main/res/layout/report_row.xml" value="0.1490036231884058" />
