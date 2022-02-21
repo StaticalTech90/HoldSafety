@@ -38,6 +38,8 @@ public class ReportsActivity extends AppCompatActivity {
     LinearLayout reportView;
     String reportID, location, date, barangay, evidence;
     String longitude, latitude;
+    TextView lblReportsCount, lblNoReports;
+    int count;
 //    RecyclerView recyclerViewReports;
 //    String[] reportID;
 
@@ -53,6 +55,8 @@ public class ReportsActivity extends AppCompatActivity {
         db = FirebaseFirestore.getInstance();
 
         reportView = findViewById(R.id.linearReportList);
+        lblReportsCount = findViewById(R.id.lblNumOfReports);
+        lblNoReports = findViewById(R.id.lblNoReports);
 
         //getGeoLoc();
         listMyReports();
@@ -66,6 +70,7 @@ public class ReportsActivity extends AppCompatActivity {
                 if (task.isSuccessful()) {
                     for(QueryDocumentSnapshot reportSnap : task.getResult()) {
                         reportID = reportSnap.getId();
+                        count++;
                         //Toast.makeText(ReportsActivity.this, reportID, Toast.LENGTH_SHORT).show();
 
                         latitude = reportSnap.getString("Lat");
@@ -91,6 +96,14 @@ public class ReportsActivity extends AppCompatActivity {
 
                         reportView.addView(displayReportView);
                     }
+                    lblReportsCount.setText("Number of Reports: " + count);
+
+                    if(count==0){
+                        lblNoReports.setVisibility(View.VISIBLE);
+                    } else {
+                        lblNoReports.setVisibility(View.GONE);
+                    }
+
                 } else {
                     Log.w("Reports", "Error getting documents: ", task.getException());
                 }

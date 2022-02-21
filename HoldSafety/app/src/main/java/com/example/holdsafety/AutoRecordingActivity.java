@@ -71,13 +71,13 @@ public class AutoRecordingActivity extends AppCompatActivity {
     FirebaseUser user;
     FirebaseFirestore db = FirebaseFirestore.getInstance();
 
+    CountDownTimer timer;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_auto_recording);
-
-
 
         btnRecord = findViewById(R.id.btnRecord);
         txtIsRecording = findViewById(R.id.cardIsRecording);
@@ -98,10 +98,21 @@ public class AutoRecordingActivity extends AppCompatActivity {
         Toast.makeText(getApplicationContext(), "HasmapBrgy: " + nearestBrgy , Toast.LENGTH_SHORT).show();
         Toast.makeText(getApplicationContext(), "HasmapReportID: " + reportID , Toast.LENGTH_SHORT).show();
 
+        timer = new CountDownTimer(10000, 1000) {
+            @Override
+            public void onTick(long millisUntilFinished) {
+            }
+            @Override
+            public void onFinish() {
+                btnRecord.performClick();
+            }
+        };
+
 
         btnRecord.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                timer.cancel();
                 if(isRecording){
                     //user is currently recording
                     //stop option
@@ -115,6 +126,8 @@ public class AutoRecordingActivity extends AppCompatActivity {
                     //play option
                     if(prepareVideoRecorder()){
                         mediaRecorder.start();
+                        timer.start();
+                        /*
                         //2. SET TIMER (5 SECONDS) - Limit of the recording
                         new CountDownTimer(5000, 1000){
                             @Override
@@ -130,6 +143,8 @@ public class AutoRecordingActivity extends AppCompatActivity {
                             }
 
                         }.start();
+
+                         */
                     } else {
                         releaseMediaRecorder();
                     }

@@ -32,6 +32,8 @@ public class SelectContactActivity extends AppCompatActivity {
 
     LinearLayout contactsView;
     String[] contactName;
+    TextView lblContactCount, lblNoContacts;
+    int count;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,8 +48,10 @@ public class SelectContactActivity extends AppCompatActivity {
         contactsView = findViewById(R.id.linearContactList);
 
         ContactAdapter contactAdapter = new ContactAdapter(this, contactName);
-
+        lblContactCount = findViewById(R.id.lblNumOfContacts);
+        lblNoContacts = findViewById(R.id.lblNoContactsDesc);
         getContacts();
+        getContactCount();
     }
 
     @SuppressLint("SetTextI18n")
@@ -168,6 +172,31 @@ public class SelectContactActivity extends AppCompatActivity {
                         Toast.makeText(this, "No Contacts Available", Toast.LENGTH_SHORT).show();
                     }
 
+                });
+    }
+
+    public void getContactCount(){
+        FirebaseFirestore.getInstance()
+                .collection("emergencyContacts")
+                .document(user.getUid()).collection("contacts").get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        for (QueryDocumentSnapshot contactSnap : task.getResult()) {
+                            count++;
+                        }
+                        lblContactCount.setText("Number of Contacts: "+ count + "/5");
+
+                        if(count==0){
+                            lblNoContacts.setVisibility(View.VISIBLE);
+                        }
+                        else{
+                            lblNoContacts.setVisibility(View.GONE);
+                        }
+                    }
+
+                    else{
+                        Toast.makeText(this, "No Contacts Available", Toast.LENGTH_SHORT).show();
+                    }
                 });
     }
 }

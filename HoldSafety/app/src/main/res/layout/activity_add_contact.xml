@@ -34,7 +34,6 @@
             android:layout_height="wrap_content"
 
             android:fontFamily="sans-serif"
-            android:text="2 out of 5"
             android:textColor="@color/gray"
 
             app:autoSizeMaxTextSize="15sp"

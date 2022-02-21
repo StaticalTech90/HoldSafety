@@ -1,11 +1,8 @@
 package com.example.holdsafety;
 
-import static android.content.ContentValues.TAG;
-
 import android.graphics.Color;
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -15,17 +12,12 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.FirebaseFirestoreException;
-import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -33,6 +25,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class AddContactActivity extends AppCompatActivity {
 
@@ -46,6 +39,8 @@ public class AddContactActivity extends AppCompatActivity {
     private EditText etContactMobileNumber;
     private EditText etContactEmail;
     private Spinner etRelation;
+
+    int count;
 
 
     @Override
@@ -64,6 +59,8 @@ public class AddContactActivity extends AppCompatActivity {
         etContactEmail = findViewById(R.id.txtContactEmail);
         etRelation = findViewById(R.id.txtRelationWithContact);
         lblContactCount = findViewById(R.id.lblNumOfContacts);
+
+        getContactCount();
 
         String[] relation = new String[]{"Relation With Contact", "Parent", "Sibling", "Relative", "Close Friend", "Acquaintance"};
         List<String> relationList = new ArrayList<>(Arrays.asList(relation));
@@ -163,31 +160,21 @@ public class AddContactActivity extends AppCompatActivity {
 
     }
 
-    //PEND
     public void getContactCount(){
-        Toast.makeText(AddContactActivity.this, "HElo", Toast.LENGTH_LONG).show();
-        //BLOCK FOR CONTACT COUNT
-        final DocumentReference docRef = db.collection("emergencyContacts")
-                .document(user.getUid()).collection("contacts").document();
+        FirebaseFirestore.getInstance()
+                .collection("emergencyContacts")
+                .document(user.getUid()).collection("contacts").get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        for (QueryDocumentSnapshot contactSnap : task.getResult()) {
+                            count++;
+                        }
+                        lblContactCount.setText(count + " out of 5");
+                    }
 
-        docRef.addSnapshotListener((snapshot, e) -> {
-            if (e != null) {
-                Log.w(TAG, "Listen failed.", e);
-                return;
-            }
-
-            snapshot.getData().size();
-
-            String source = snapshot != null && snapshot.getMetadata().hasPendingWrites()
-                    ? "Local" : "Server";
-
-            if (snapshot != null && snapshot.exists()) {
-                Log.d(TAG, source + " data: " + snapshot.getData().size());
-                lblContactCount.setText("Number of Contacts: "
-                        + snapshot.getData().size() + "/5");
-            } else {
-                Log.d(TAG, source + " data: null");
-            }
-        });
+                    else{
+                        Toast.makeText(this, "No Contacts Available", Toast.LENGTH_SHORT).show();
+                    }
+                });
     }
 }
