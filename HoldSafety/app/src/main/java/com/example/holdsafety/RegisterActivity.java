@@ -61,6 +61,7 @@ public class RegisterActivity extends AppCompatActivity {
     FirebaseUser user;
 
     HashMap<String, Object> docUsers = new HashMap<>();
+    Intent otp;
 
     final Calendar calendar = Calendar.getInstance();
     String idUri;
@@ -117,8 +118,9 @@ public class RegisterActivity extends AppCompatActivity {
         etPassword.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
         etConPassword.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
 
-        btnUpload = findViewById(R.id.btnUploadID);
+        otp = new Intent(RegisterActivity.this, RegisterOTPActivity.class);
 
+        btnUpload = findViewById(R.id.btnUploadID);
 
         String[] sex = new String[]{"Sex *", "M", "F"};
         List<String> sexList = new ArrayList<>(Arrays.asList(sex));
@@ -372,15 +374,16 @@ public class RegisterActivity extends AppCompatActivity {
                                                user = mAuth.getCurrentUser();
                                                assert user != null;
                                                docUsers.put("ID", user.getUid());
-                                               docUsers.put("profileComplete", true);
                                                docUsers.put("isVerified", false);
 
                                                if (!lblLink.getText().equals("")) {
                                                    uploadPhotoToStorage();
+                                                   docUsers.put("profileComplete", true);
+                                               } else {
+                                                   docUsers.put("profileComplete", false);
                                                }
 
                                                //Verify user's email
-                                               Intent otp = new Intent(RegisterActivity.this, RegisterOTPActivity.class);
                                                otp.putExtra("Email", etEmail.getText().toString());
                                                otp.putExtra("UserDetails", docUsers);
                                                startActivity(otp);
@@ -428,8 +431,10 @@ public class RegisterActivity extends AppCompatActivity {
                         idUri = String.valueOf(uri);
                         docUsers.put("imgUri", idUri);
                         Log.i("URI gDUrl()", idUri);
+                        //otp.putExtra("imgUri", idUri);
+                        //otp.putExtra("UserDetails", docUsers);
 
-                        db.collection("users").document(user.getUid()).set(docUsers)
+                        db.collection("users").document(user.getUid()).update(docUsers)
                                 .addOnSuccessListener(aVoid -> {
                                     Toast.makeText(getApplicationContext(),
                                             "pushed image to document",

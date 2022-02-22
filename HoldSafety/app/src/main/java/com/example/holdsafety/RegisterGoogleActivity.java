@@ -69,6 +69,7 @@ public class RegisterGoogleActivity extends AppCompatActivity {
     TextView lblLink;
     String firstName, lastName, email, selectedSex;
     Map<String, Object> docUsers = new HashMap<>();
+    HashMap<String, String> googleSignInMap;
 
     private static final int EXTERNAL_STORAGE_REQ_CODE = 1000;
 
@@ -81,6 +82,12 @@ public class RegisterGoogleActivity extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
         user = mAuth.getCurrentUser();
         imageRef = FirebaseStorage.getInstance().getReference("id");
+
+        Intent intent = getIntent();
+        googleSignInMap = (HashMap<String, String>)intent.getSerializableExtra("googleSignInMap");
+
+        //email = googleSignInMap.get("email");
+        //Log.v("HashMapTest", hashMap.get("key"));
 
         lblLink = findViewById(R.id.txtImageLink);
         etMiddleName = findViewById(R.id.txtMiddleName);
@@ -101,16 +108,22 @@ public class RegisterGoogleActivity extends AppCompatActivity {
         dropdownSex();
         selectBirthdate();
 
+        //get details from prev intent
+        lastName = googleSignInMap.get("lastName");
+        firstName = googleSignInMap.get("firstName");
+        String username =  lastName + ", " + firstName;
+        lblName.setText(username);
+
         //Upload Image
         btnUpload.setOnClickListener(v -> pickImage());
-
         btnProceed.setOnClickListener(this::userRegister);
+
+        /*
 
         if(user != null) {
             docRef = db.collection("users").document(user.getUid());
             docRef.get().addOnSuccessListener(documentSnapshot -> {
                 if(documentSnapshot.exists()) {
-
                     //REFACTORED FUNCTIONALITY TO SHOW ACCOUNT NAME AS LABEL
                     firstName = documentSnapshot.getString("FirstName");
                     lastName = documentSnapshot.getString("LastName");
@@ -119,6 +132,8 @@ public class RegisterGoogleActivity extends AppCompatActivity {
                 }
             });
         }
+
+         */
     }
 
     //refactored userRegister onClickListener into independent function
@@ -128,7 +143,7 @@ public class RegisterGoogleActivity extends AppCompatActivity {
         Pattern mobileNumberPattern = Pattern.compile(mobileNumberRegex);
 
         String userId = user.getUid();
-        String uEmail = user.getEmail();
+        String uEmail = googleSignInMap.get("email");
         String middleName = etMiddleName.getText().toString();
         String birthDate = etBirthDate.getText().toString().trim();
         String mobileNo = etMobileNo.getText().toString();
@@ -145,9 +160,6 @@ public class RegisterGoogleActivity extends AppCompatActivity {
         } else if(etMobileNo.getText().length() != 11) {
             etMobileNo.setError("Please enter a valid mobile number");
         } else {
-            if (!lblLink.getText().equals("")) {
-                uploadPhotoToStorage();
-            }
 
             docUsers.put("ID", user.getUid());
             docUsers.put("Email", uEmail);
@@ -158,11 +170,16 @@ public class RegisterGoogleActivity extends AppCompatActivity {
             docUsers.put("Sex", sex);
             docUsers.put("MobileNumber", mobileNo);
             docUsers.put("isVerified", false);
-            docUsers.put("profileComplete", true);
+
+            if (!lblLink.getText().equals("")) {
+                uploadPhotoToStorage();
+                docUsers.put("profileComplete", true);
+            } else {
+                docUsers.put("profileComplete", false);
+            }
 
             db.collection("users").document(userId).set(docUsers)
                     .addOnSuccessListener(aVoid -> {
-
 //                            Toast.makeText(getApplicationContext(), "DocumentSnapshot successfully written!", Toast.LENGTH_SHORT).show();
 //                            Log.i("passed", "url"+idUri);
 

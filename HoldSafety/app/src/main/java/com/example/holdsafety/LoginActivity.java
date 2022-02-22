@@ -287,6 +287,15 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                                 docRef.get().addOnSuccessListener(documentSnapshot -> {
                                     if(!documentSnapshot.exists()) {
                                         //ADD KNOWN AND PLACEHOLDER VALUES
+                                        HashMap<String, String> googleSignInMap = new HashMap<String, String>();
+                                        googleSignInMap.put("lastName", account.getFamilyName());
+                                        googleSignInMap.put("firstName", account.getGivenName());
+                                        googleSignInMap.put("email", account.getEmail());
+
+                                        Intent intent = new Intent(this, RegisterGoogleActivity.class);
+                                        intent.putExtra("googleSignInMap",googleSignInMap);
+                                        startActivity(intent);
+                                        /*
                                         Map < String, Object > docUsers = new HashMap<>();
                                         docUsers.put("ID", user.getUid());
                                         docUsers.put("isVerified", false);
@@ -310,6 +319,9 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                                                     //Log.w(TAG, "Error writing document", e);
                                                 });
                                         updateUI(user);
+
+                                         */
+                                        Toast.makeText(getApplicationContext(), "User does not exist", Toast.LENGTH_SHORT).show();
                                     } else { //ACCOUNT EXISTS, COMPLETE THE PROFILE
                                         colRef.document(user.getUid()).get().addOnSuccessListener(existingDocumentSnapshot -> {
                                             Boolean isComplete = documentSnapshot.getBoolean("profileComplete");

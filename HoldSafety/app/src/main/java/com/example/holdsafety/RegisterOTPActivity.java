@@ -5,16 +5,23 @@ import static android.content.ContentValues.TAG;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.Paint;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.util.Log;
+import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -27,12 +34,13 @@ public class RegisterOTPActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
     FirebaseFirestore db;
     FirebaseUser user;
+    StorageReference imageRef = FirebaseStorage.getInstance().getReference("id");
 
     Button btnSendCode;
     EditText etEmail;
     TextView txtTimeRemaining;
 
-    String userEmail;
+    String userEmail, idUri;
     HashMap<String, Object> docUsers;
 
     @Override
@@ -58,37 +66,7 @@ public class RegisterOTPActivity extends AppCompatActivity {
         Toast.makeText(this, "Email: " + userEmail, Toast.LENGTH_LONG).show();
         etEmail.setText(userEmail);
 
-        btnSendCode.setOnClickListener(view -> {
-            //Email data validation
-            String emailRegex = "^(.+)@(.+)$";
-            Pattern emailPattern = Pattern.compile(emailRegex);
-
-            if(etEmail.getText() != null) {
-                Matcher emailMatcher = emailPattern.matcher(etEmail.getText());
-
-                if(!emailMatcher.matches()) {
-                    etEmail.setError("Please enter valid email");
-                } else { //User must input code before timer ends
-                    DialogEmailVerify dialog = new DialogEmailVerify(this);
-                    //Countdown timer
-//                    new CountDownTimer(60000, 1000) {
-//                        @Override
-//                        public void onTick(long millisUntilFinished) {
-//                            long timeRemaining = millisUntilFinished / 1000;
-//                            dialog.timeRemaining.setText("Time Remaining: " + timeRemaining);
-//                        }
-//
-//                        @Override
-//                        public void onFinish() {
-//                            dialog.dismissDialog();
-//                        }
-//                    }.start();
-
-                    sendVerification(etEmail.getText().toString(), dialog);
-                }
-            }
-        });
-
+        btnSendCode.setOnClickListener(view -> sendCode());
     }
 
     private void sendVerification(String email, DialogEmailVerify dialog) {
@@ -117,7 +95,30 @@ public class RegisterOTPActivity extends AppCompatActivity {
 
                 //insert to db with success/failure listeners
                 db.collection("users").document(user.getUid()).set(docUsers)
-                        .addOnSuccessListener(aVoid -> Log.d(TAG, "User successfully registered!"))
+                        .addOnSuccessListener(new OnSuccessListener<Void>() {
+                            @Override
+                            public void onSuccess(Void unused) {
+                                imageRef.child(user.getUid()).getDownloadUrl().addOnSuccessListener(uri -> {
+                                    idUri = String.valueOf(uri);
+                                    docUsers.put("imgUri", idUri);
+                                    Log.i("URI gDUrl()", idUri);
+
+                                    db.collection("users").document(user.getUid()).update(docUsers)
+                                            .addOnSuccessListener(aVoid -> {
+                                                Toast.makeText(getApplicationContext(),
+                                                        "pushed image to document",
+                                                        Toast.LENGTH_SHORT).show();
+                                                Log.i(TAG, "Image pushed");
+                                            })
+                                            .addOnFailureListener(e -> {
+                                                Toast.makeText(getApplicationContext(),
+                                                        "Error writing document",
+                                                        Toast.LENGTH_SHORT).show();
+                                                Log.w(TAG, "Error writing document", e);
+                                            });
+                                });
+                            }
+                        })
                         .addOnFailureListener(e -> Log.w(TAG, "error", e));
 
                 startActivity(new Intent(this, LandingActivity.class));
@@ -126,6 +127,45 @@ public class RegisterOTPActivity extends AppCompatActivity {
         });
 
         dialog.showDialog();
+
+        //Allow code to be resent every 30 seconds
+        CountDownTimer timer = new CountDownTimer(30000, 1000) {
+            @Override
+            public void onTick(long millisUntilFinished) { //ticking timer
+                long timeRemaining = millisUntilFinished / 1000;
+                dialog.timeRemaining.setOnClickListener(null); // make unclickable while ticking
+                dialog.timeRemaining.setText("Resend in " + timeRemaining + " seconds");
+            }
+
+            @Override
+            public void onFinish() { //finish timer
+                dialog.timeRemaining.setText("Resend Code");
+                dialog.timeRemaining.setTextColor(Color.BLUE);
+                dialog.timeRemaining.setOnClickListener(v -> {
+                    sendCode();
+                    dialog.timeRemaining.setTextColor(Color.LTGRAY);
+                    dialog.dismissDialog();
+                });
+            }
+        };
+        timer.start();
+    }
+
+    private void sendCode() {
+        //Email data validation
+        String emailRegex = "^(.+)@(.+)$";
+        Pattern emailPattern = Pattern.compile(emailRegex);
+
+        if(etEmail.getText() != null) {
+            Matcher emailMatcher = emailPattern.matcher(etEmail.getText());
+
+            if(emailMatcher.matches()) {
+                DialogEmailVerify dialog = new DialogEmailVerify(this);
+                sendVerification(etEmail.getText().toString(), dialog);
+            } else {
+                etEmail.setError("Please enter valid email");
+            }
+        }
     }
 
     private String randomNumber() {

@@ -99,16 +99,7 @@ public class AccountDetailsActivity extends AppCompatActivity {
                 Boolean isVerified = documentSnapshot.getBoolean("isVerified");
                 Boolean isProfileComplete = documentSnapshot.getBoolean("profileComplete");
 
-                if(isVerified){
-                    lblAccountStatus.setTextColor(getResources().getColor(R.color.green));
-                    lblAccountStatus.setText("Verified Account");
-                } else if (!isVerified && isProfileComplete){
-                    lblAccountStatus.setTextColor(getResources().getColor(R.color.yellow));
-                    lblAccountStatus.setText("Pending Verification");
-                } else if (!isProfileComplete && !isVerified){
-                    lblAccountStatus.setTextColor(getResources().getColor(R.color.red));
-                    lblAccountStatus.setText("Not Verified");
-                }
+                setAccountStatus(isVerified, isProfileComplete);
 
                 txtLastName.setText(lastName);
                 txtFirstName.setText(firstName);
@@ -293,6 +284,19 @@ public class AccountDetailsActivity extends AppCompatActivity {
         });
     }
 
+    private void setAccountStatus(Boolean isVerified, Boolean isProfileComplete) {
+        if(isVerified){
+            lblAccountStatus.setTextColor(getResources().getColor(R.color.green));
+            lblAccountStatus.setText("Verified Account");
+        } else if (!isVerified && isProfileComplete){
+            lblAccountStatus.setTextColor(getResources().getColor(R.color.yellow));
+            lblAccountStatus.setText("Pending Verification");
+        } else if (!isProfileComplete && !isVerified){
+            lblAccountStatus.setTextColor(getResources().getColor(R.color.red));
+            lblAccountStatus.setText("Not Verified");
+        }
+    }
+
     //PUT IMAGE UPLOAD HERE
     private void uploadPhotoToStorage() {
         imageRef.child(user.getUid())
@@ -301,6 +305,7 @@ public class AccountDetailsActivity extends AppCompatActivity {
                     imageRef.child(user.getUid()).getDownloadUrl().addOnSuccessListener(uri -> {
                         idUri = String.valueOf(uri);
                         docUsers.put("imgUri", idUri);
+                        docUsers.put("profileComplete", true);
                         Log.i("URI gDUrl()", idUri);
 
                         db.collection("users").document(user.getUid()).update(docUsers)
@@ -316,6 +321,8 @@ public class AccountDetailsActivity extends AppCompatActivity {
                                             Toast.LENGTH_SHORT).show();
                                     Log.w(TAG, "Error writing document", e);
                                 });
+
+                        setAccountStatus(false, true);
                     });
                 }).addOnFailureListener(e -> Toast.makeText(AccountDetailsActivity.this, "Upload failed.",
                 Toast.LENGTH_SHORT).show());
@@ -570,9 +577,9 @@ public class AccountDetailsActivity extends AppCompatActivity {
                 user.delete().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
                 //DELETE IMAGE
-                FirebaseStorage.getInstance().getReference("id").child(user.getUid()).delete()
+                imageRef.child(user.getUid()).delete()
                 .addOnSuccessListener(v -> {
-                    //Toast.makeText(AccountDetailsActivity.this, "Deleted Image", Toast.LENGTH_LONG).show();
+                    Toast.makeText(AccountDetailsActivity.this, "Deleted Image", Toast.LENGTH_LONG).show();
                 }).addOnFailureListener(v1 -> {
                     //Toast.makeText(AccountDetailsActivity.this, "Failed", Toast.LENGTH_LONG).show();
                 });

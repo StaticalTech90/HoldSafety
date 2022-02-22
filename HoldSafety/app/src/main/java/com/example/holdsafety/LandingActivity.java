@@ -235,7 +235,6 @@ public class LandingActivity extends AppCompatActivity {
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-
         if (requestCode == LOCATION_REQ_CODE) {
             if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_FINE_LOCATION)) {
                 //DENIED ONCE
@@ -317,13 +316,10 @@ public class LandingActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-
         if (requestCode == GPS_REQ_CODE) {
-
             if (resultCode == RESULT_OK) {
                 //USER PRESSED OK
                 getCurrentLocation();
-
             } else {
                 //USER PRESSED NO THANKS
                 showGPSDialog();
@@ -390,7 +386,6 @@ public class LandingActivity extends AppCompatActivity {
 
         locationSettingsResponseTask.addOnCompleteListener(
                 task -> {
-
                     try {
                         LocationSettingsResponse locationSettingsResponse = task.getResult(ApiException.class);
                         getCurrentLocation();
