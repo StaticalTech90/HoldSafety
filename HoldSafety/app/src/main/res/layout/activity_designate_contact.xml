@@ -27,7 +27,6 @@
             app:layout_constraintDimensionRatio="1:0.8"
 
             android:src="@drawable/arrow"
-            android:onClick="goBack"
             android:contentDescription="back button" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
