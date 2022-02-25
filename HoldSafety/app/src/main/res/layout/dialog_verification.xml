@@ -16,7 +16,6 @@
             android:id="@+id/imgLogo"
             android:layout_width="100dp"
             android:layout_height="100dp"
-
             android:layout_centerHorizontal="true"
             android:src="@drawable/holdsafety_default" />
 
@@ -25,8 +24,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@+id/imgLogo"
-
-            android:layout_marginHorizontal="40dp"
+            android:layout_marginHorizontal="20dp"
             android:layout_marginTop="5dp"
             android:fontFamily="sans-serif-black"
             android:text="Email Verification"
@@ -38,8 +36,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@+id/lblVerifyEmail"
-
-            android:layout_marginHorizontal="40dp"
+            android:layout_marginHorizontal="20dp"
             android:fontFamily="sans-serif"
             android:text="One-Time Password (OTP) has been sent to your email."
             android:textColor="@color/gray"
@@ -69,8 +66,7 @@
             android:layout_height="55dp"
             android:layout_below="@+id/txtCode"
             android:layout_centerHorizontal="true"
-
-            android:layout_marginHorizontal="50dp"
+            android:layout_marginHorizontal="40dp"
             android:layout_marginTop="36dp"
             android:background="@drawable/blue_button"
             android:fontFamily="sans-serif-black"
@@ -85,9 +81,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@+id/btnSubmit"
-
-            android:layout_marginTop="-354dp"
-            android:text="Resend in x seconds" />
+            android:layout_centerHorizontal="true"
+            android:text="Resend in x seconds"
+            android:layout_marginTop="5dp"/>
 
 
     </RelativeLayout>

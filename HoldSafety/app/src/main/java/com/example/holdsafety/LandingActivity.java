@@ -69,6 +69,7 @@ public class LandingActivity extends AppCompatActivity {
 
     String userID, isFromWidget, nearestBrgy;
     String lastName, firstName, mobileNumber, googleMapLink, message;
+    Boolean isVerified;
     String brgyName, brgyCity, brgyEmail, brgyMobileNumber;
     String coordsLon, coordsLat;
     String reportID;
@@ -351,7 +352,9 @@ public class LandingActivity extends AppCompatActivity {
                             coordsLon = Double.toString(location.getLongitude());
                             docDetails.put("Lat", coordsLat);
                             docDetails.put("Lon", coordsLon);
-                            getEstablishmentsLocations(location, address);
+
+
+                            getNearestBrgyLocation(location, address);
                             //TODO COMPARE LOCATION TO CONTACTS
                         } catch (IOException e) {
                             e.printStackTrace();
@@ -394,7 +397,7 @@ public class LandingActivity extends AppCompatActivity {
         );
     }
 
-    private void getEstablishmentsLocations(Location location, String address) {
+    private void getNearestBrgyLocation(Location location, String address) {
         //GET ESTABLISHMENTS LOCATIONS
         FirebaseFirestore.getInstance()
                 .collection("barangay")
@@ -443,7 +446,6 @@ public class LandingActivity extends AppCompatActivity {
                                 nearestBrgySnap = brgySnap;
                             }
                             nearestBrgy = nearestBrgySnap.getString("Barangay");
-                            docDetails.put("Barangay", nearestBrgy);
                         }
                     }
 
@@ -458,11 +460,13 @@ public class LandingActivity extends AppCompatActivity {
 
     private void sendAlertMessage(Location location, String address, String nearestBrgyID){
         //Get User Info
+        isVerified = false;
         docRef.get().addOnSuccessListener(documentSnapshot -> {
             if(documentSnapshot.exists()){
                 lastName = documentSnapshot.getString("LastName");
                 firstName = documentSnapshot.getString("FirstName");
                 mobileNumber = documentSnapshot.getString("MobileNumber");
+                isVerified = documentSnapshot.getBoolean("isVerified");
 
                 //Declare and initialize alert message contents
                 googleMapLink = "https://maps.google.com/?q=" + location.getLatitude() + "," + location.getLongitude();
@@ -471,75 +475,89 @@ public class LandingActivity extends AppCompatActivity {
                         "\nPhone Number: " + mobileNumber +
                         "\nLocation: " + address +
                         "\nPlease go here immediately: " + googleMapLink;
-            } else {
+
+                //Only send msg to barangay if verified
+                if(isVerified){
+                    //get nearest brgy details
+                    docRefBrgy.document(nearestBrgyID).get().addOnSuccessListener(brgySnapshot -> {
+                        //Toast.makeText(getApplicationContext(), "Inside Doc Ref", Toast.LENGTH_LONG).show();
+                        if(brgySnapshot.exists()){
+                            brgyName = brgySnapshot.getString("Barangay");
+                            brgyCity = brgySnapshot.getString("City");
+                            brgyEmail = brgySnapshot.getString("Email");
+                            brgyMobileNumber = brgySnapshot.getString("MobileNumber");
+                            //Toast.makeText(getApplicationContext(), "Brgy Name [Inside docRefBrgy]: " + brgyName, Toast.LENGTH_LONG).show();
+
+                            if (brgyMobileNumber != null) {
+                                registerReceiver(new BroadcastReceiver() {
+                                    @Override
+                                    public void onReceive(Context context, Intent intent) {
+                                        switch (getResultCode()) {
+                                            case Activity.RESULT_OK:
+                                                //MESSAGE SENT
+                                                break;
+                                            case SmsManager.RESULT_ERROR_GENERIC_FAILURE:
+                                                break;
+                                            case SmsManager.RESULT_ERROR_NO_SERVICE:
+                                                break;
+                                            case SmsManager.RESULT_ERROR_NULL_PDU:
+                                                break;
+                                            case SmsManager.RESULT_ERROR_RADIO_OFF:
+                                                break;
+                                        }
+                                    }
+                                }, new IntentFilter("SMS_SENT"));
+
+                                ArrayList<PendingIntent> sentPendingIntents = new ArrayList<PendingIntent>();
+                                PendingIntent sentPI = PendingIntent.getBroadcast(LandingActivity.this,
+                                        SEND_SMS_REQ_CODE, new Intent("SMS_SENT"), 0);
+
+                                //Send SMS
+                                try {
+                                    SmsManager manager = SmsManager.getDefault();
+                                    //For long messages to work
+                                    ArrayList<String> msgArray = manager.divideMessage(message);
+
+                                    for (int i = 0; i < msgArray.size(); i++) {
+                                        sentPendingIntents.add(i, sentPI);
+                                    }
+                                    docDetails.put("Barangay", nearestBrgy);
+                                    manager.sendMultipartTextMessage(brgyMobileNumber, null, msgArray, sentPendingIntents, null);
+                                    Toast.makeText(getApplicationContext(), "Text Sent to Brgy", Toast.LENGTH_LONG).show();
+                                } catch (Exception ex) {
+                                    Toast.makeText(getApplicationContext(), "SMS Error: " + ex.getMessage(), Toast.LENGTH_LONG).show();
+                                    ex.printStackTrace();
+                                }
+                            }
+
+                            if (brgyEmail != null) {
+                                //Send Email
+                                String username = "holdsafety.ph@gmail.com";
+                                String password = "HoldSafety@4qmag";
+                                String subject = "[EMERGENCY] Alert Message - HoldSafety";
+
+                                List<String> recipients = Collections.singletonList(brgyEmail);
+                                //email of sender, password of sender, list of recipients, email subject, email body
+                                new MailTask(LandingActivity.this).execute(username, password, recipients, subject, message);
+
+                                Toast.makeText(LandingActivity.this, "Email Sent to Brgy", Toast.LENGTH_LONG).show();
+                            }
+                        }
+                        else{
+                            Toast.makeText(getApplicationContext(), "No barangay", Toast.LENGTH_LONG).show();
+                            finish();
+                        }
+                    });
+                } else if (!isVerified){
+                    Toast.makeText(getApplicationContext(), "You're not yet verified. Can't send alert to barangay", Toast.LENGTH_LONG).show();
+                }
+
+            }
+            else{
                 Toast.makeText(getApplicationContext(), "No current user", Toast.LENGTH_LONG).show();
             }
         });
 
-        //get nearest brgy details
-        docRefBrgy.document(nearestBrgyID).get().addOnSuccessListener(documentSnapshot -> {
-            if(documentSnapshot.exists()){
-                brgyName = documentSnapshot.getString("Barangay");
-                brgyCity = documentSnapshot.getString("City");
-                brgyEmail = documentSnapshot.getString("Email");
-                brgyMobileNumber = documentSnapshot.getString("MobileNumber");
-
-                if (brgyMobileNumber != null) {
-                    registerReceiver(new BroadcastReceiver() {
-                        @Override
-                        public void onReceive(Context context, Intent intent) {
-                            switch (getResultCode()) {
-                                case Activity.RESULT_OK: //MESSAGE SENT
-                                    break;
-                                case SmsManager.RESULT_ERROR_GENERIC_FAILURE:
-                                    break;
-                                case SmsManager.RESULT_ERROR_NO_SERVICE:
-                                    break;
-                                case SmsManager.RESULT_ERROR_NULL_PDU:
-                                    break;
-                                case SmsManager.RESULT_ERROR_RADIO_OFF:
-                                    break;
-                            }
-                        }
-                    }, new IntentFilter("SMS_SENT"));
-
-                    ArrayList<PendingIntent> sentPendingIntents = new ArrayList<PendingIntent>();
-                    PendingIntent sentPI = PendingIntent.getBroadcast(LandingActivity.this,
-                            SEND_SMS_REQ_CODE, new Intent("SMS_SENT"), 0);
-
-                    //Send SMS
-                    try {
-                        SmsManager manager = SmsManager.getDefault();
-                        //For long messages to work
-                        ArrayList<String> msgArray = manager.divideMessage(message);
-
-                        for (int i = 0; i < msgArray.size(); i++) {
-                            sentPendingIntents.add(i, sentPI);
-                        }
-                        manager.sendMultipartTextMessage(brgyMobileNumber, null, msgArray, sentPendingIntents, null);
-                        Toast.makeText(getApplicationContext(), "Text Sent to Brgy", Toast.LENGTH_LONG).show();
-                    } catch (Exception ex) {
-                        Toast.makeText(getApplicationContext(), "SMS Error: " + ex.getMessage(), Toast.LENGTH_LONG).show();
-                        ex.printStackTrace();
-                    }
-                }
-
-                if (brgyEmail != null) {
-                    //Send Email
-                    String username = "holdsafety.ph@gmail.com";
-                    String password = "HoldSafety@4qmag";
-                    String subject = "[EMERGENCY] Alert Message - HoldSafety";
-
-                    List<String> recipients = Collections.singletonList(brgyEmail);
-                    //email of sender, password of sender, list of recipients, email subject, email body
-                    new MailTask(LandingActivity.this).execute(username, password, recipients, subject, message);
-
-                    Toast.makeText(LandingActivity.this, "Email Sent to Brgy", Toast.LENGTH_LONG).show();
-                }
-            } else {
-                Toast.makeText(getApplicationContext(), "No barangay", Toast.LENGTH_LONG).show();
-            }
-        });
 
         //Get user's emergency contacts
         FirebaseFirestore.getInstance()
@@ -636,7 +654,7 @@ public class LandingActivity extends AppCompatActivity {
                         String lastName = documentSnapshot.getString("LastName");
                         docDetails.put("FirstName", firstName);
                         docDetails.put("LastName", lastName);
-                        docDetails.put("Barangay", nearestBrgy);
+                        //docDetails.put("Barangay", nearestBrgy);
                         docDetails.put("Report Date", timestamp);
                         docDetails.put("Evidence", "");
 
@@ -661,7 +679,7 @@ public class LandingActivity extends AppCompatActivity {
                         vidLinkRequirements.put("reportID", reportID);
 
                         //ADD TO GENERAL REPORTS COLLECTION
-                        docDetails.put("Barangay", nearestBrgy);
+                        //docDetails.put("Barangay", nearestBrgy); adding of brgy will happen if nagsend ng alert msg sakanila
                         docDetails.put("User ID", userID);
                         db.collection("reports").document(reportID).set(docDetails)
                                 .addOnSuccessListener(aVoid -> Log.d(TAG, "General Report saved to brgy-sorted DB!"))
@@ -675,7 +693,8 @@ public class LandingActivity extends AppCompatActivity {
                 .addOnFailureListener(documentSnapshot -> {
                     docDetails.put("FirstName", "");
                     docDetails.put("LastName", "");
-                    docDetails.put("Barangay", nearestBrgy);
+
+                    //docDetails.put("Barangay", nearestBrgy);
                     docDetails.put("Report Date", timestamp);
 
                     db = FirebaseFirestore.getInstance();

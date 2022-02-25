@@ -79,11 +79,11 @@ public class ReportsActivity extends AppCompatActivity {
                             TextView txtBarangay = displayReportView.findViewById(R.id.txtBarangay);
                             TextView txtEvidence = displayReportView.findViewById(R.id.txtEvidence);
 
-                            txtReportID.setText(reportID);
-                            txtReportLocation.setText(location);
-                            txtDateAndTime.setText(date);
-                            txtBarangay.setText(barangay);
-                            txtEvidence.setText(evidence);
+                        txtReportID.setText(reportID);
+                        txtReportLocation.setText(location.trim());
+                        txtDateAndTime.setText(date);
+                        txtBarangay.setText(barangay);
+                        txtEvidence.setText(evidence);
 
                             reportView.addView(displayReportView);
                         }
