@@ -85,37 +85,37 @@ public class AudioRecordingActivity extends AppCompatActivity {
             @RequiresApi(api = Build.VERSION_CODES.O)
             @Override
             public void onClick(View view) {
-//                if(isRecording){
-//                    //user is currently recording
-//                    //stop option
-//                    mediaRecorder.stop();
-//                    addToFirebase();
-//                } else {
-//                    if(prepareAudioRecorder()){
-//                        mediaRecorder.start();
-//
-//                        //2. SET TIMER (5 SECONDS) - Limit of the recording
-//                        new CountDownTimer(5000, 1000){
-//                            @Override
-//                            public void onTick(long l) {
-//                                long timeRemaining = (l/1000) + 1;
-//                                //txtAudioRecording.setText("Recording will stop in " + timeRemaining + " seconds");
-//                            }
-//
-//                            @Override
-//                            public void onFinish() {
-//                                //3. STOP RECORDING
-//                                btnAudio.performClick();
-//                            }
-//
-//                        }.start();
-//                    } else {
-//                        releaseMediaRecorder();
-//                    }
-//                    //user is not recording
-//                    //start option
-//                    //startRecording();
-//                }
+                if(isRecording){
+                    //user is currently recording
+                    //stop option
+                    mediaRecorder.stop();
+                    addToFirebase();
+                } else {
+                    if(prepareAudioRecorder()){
+                        mediaRecorder.start();
+
+                        //2. SET TIMER (5 SECONDS) - Limit of the recording
+                        new CountDownTimer(5000, 1000){
+                            @Override
+                            public void onTick(long l) {
+                                long timeRemaining = (l/1000) + 1;
+                                //txtAudioRecording.setText("Recording will stop in " + timeRemaining + " seconds");
+                            }
+
+                            @Override
+                            public void onFinish() {
+                                //3. STOP RECORDING
+                                btnAudio.performClick();
+                            }
+
+                        }.start();
+                    } else {
+                        releaseMediaRecorder();
+                    }
+                    //user is not recording
+                    //start option
+                    //startRecording();
+                }
                 onRecord(isRecording);
                 isRecording = !isRecording;
             }

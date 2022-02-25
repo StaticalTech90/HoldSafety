@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
 import android.telephony.SmsManager;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -33,6 +34,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class ContactDevelopersActivity extends AppCompatActivity {
     private String selectedConcern;
@@ -78,47 +81,67 @@ public class ContactDevelopersActivity extends AppCompatActivity {
     }
 
     public void sendMessage(){
-        //Get user's emergency contacts
-        FirebaseFirestore.getInstance()
-                .collection("admin")
-                .get()
-                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        //Get each contact details
-                        for(QueryDocumentSnapshot snapshot : task.getResult()){
-                            String contactID = snapshot.getId();
+        String email = etEmail.getText().toString().trim();
+        String message = etMessage.getText().toString().trim();
 
-                            //String mobileNumber = snapshot.getString("mobileNumber");
-                            //String firstName = snapshot.getString("firstName");
-                            //String lastName = snapshot.getString("lastName");
-                            String email = snapshot.getString("Email");
+        String emailRegex = "^[a-zA-Z0-9_!#$%&'*+/=?`{|}~^.-]+@[a-zA-Z0-9.-]+$";
+        Pattern emailPattern = Pattern.compile(emailRegex);
+        Matcher emailMatcher = emailPattern.matcher(etEmail.getText());
 
+        if(TextUtils.isEmpty(email)){
+            etEmail.setError("Please enter email");
+        } else if (!emailMatcher.matches()) {
+            etEmail.setError("Please enter valid email");
+        } else if (TextUtils.isEmpty(message)) {
+            etMessage.setError("Please input a message");
+        } else {
+            //Get user's emergency contacts
+            FirebaseFirestore.getInstance()
+                    .collection("admin")
+                    .get()
+                    .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                        @Override
+                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                            //Get each contact details
+                            for(QueryDocumentSnapshot snapshot : task.getResult()){
+                                String contactID = snapshot.getId();
 
-                            //Toast.makeText(getApplicationContext(), "Developer: " + email, Toast.LENGTH_LONG).show();
-                            if(email!=null){
-                                //Send Email
-                                String username = "holdsafety.ph@gmail.com";
-                                String password = "HoldSafety@4qmag";
-                                String subject = "HOLDSAFETY CONTACT DEVELOPERS: " + selectedConcern ;
-                                String message = "Sender: " + etEmail.getText().toString().trim()
-                                + " Message: " + etMessage.getText().toString().trim();
+                                //String mobileNumber = snapshot.getString("mobileNumber");
+                                //String firstName = snapshot.getString("firstName");
+                                //String lastName = snapshot.getString("lastName");
+                                String email = snapshot.getString("Email");
 
-                                List<String> recipients = Collections.singletonList(email);
-                                //email of sender, password of sender, list of recipients, email subject, email body
-                                new MailTask(ContactDevelopersActivity.this).execute(username, password, recipients, subject, message);
+                                //Toast.makeText(getApplicationContext(), "Developer: " + email, Toast.LENGTH_LONG).show();
+                                if(email!=null){
+                                    //Send Email
+                                    String username = "holdsafety.ph@gmail.com";
+                                    String password = "HoldSafety@4qmag";
+                                    String subject = "HOLDSAFETY CONTACT DEVELOPERS: " + selectedConcern ;
+                                    String message = "Sender: " + etEmail.getText().toString().trim()
+                                            + " Message: " + etMessage.getText().toString().trim();
 
-                                Toast.makeText(ContactDevelopersActivity.this, "Email Sent", Toast.LENGTH_LONG).show();
+                                    List<String> recipients = Collections.singletonList(email);
+                                    //email of sender, password of sender, list of recipients, email subject, email body
+                                    new MailTask(ContactDevelopersActivity.this).execute(username, password, recipients, subject, message);
+
+                                    Toast.makeText(ContactDevelopersActivity.this, "Email Sent", Toast.LENGTH_LONG).show();
+                                }
                             }
                         }
-                    }
-                });
-        Toast.makeText(getApplicationContext(), "Successfully sent a message to developers", Toast.LENGTH_SHORT).show();
+                    });
+
+            Toast.makeText(getApplicationContext(), "Successfully sent a message to developers", Toast.LENGTH_SHORT).show();
+            finish();
+            overridePendingTransition(0, 0);
+            startActivity(getIntent());
+            overridePendingTransition(0, 0);
+        }
+
     }
 
     public String dropdownContact(){
         Spinner spinnerAction = findViewById(R.id.txtAction);
-        String[] action = new String[]{"Report a bug", "Feedback", "Concern"};
+        String[] action = new String[]{"Concern", "Report a bug", "Feedback"};
         List<String> actionList = new ArrayList<>(Arrays.asList(action));
 
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this, R.layout.spinner, actionList);

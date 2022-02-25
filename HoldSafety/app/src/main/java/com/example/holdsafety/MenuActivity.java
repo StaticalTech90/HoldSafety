@@ -22,7 +22,7 @@ public class MenuActivity extends AppCompatActivity {
     FirebaseAuth mAuth;
     ImageView btnBack;
     ConstraintLayout btnUserAccount, btnDesignateContact, btnContactDevelopers, btnUserManual, btnTermsAndConditions, btnAbout;
-    TextView btnViewReports, btnLogout;
+    TextView btnViewReports, btnLogout, txtName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,6 +40,9 @@ public class MenuActivity extends AppCompatActivity {
         btnAbout = findViewById(R.id.btnAbout);
         btnViewReports = findViewById(R.id.btnViewReports);
         btnLogout = findViewById(R.id.txtLogout);
+        txtName = findViewById(R.id.txtName);
+
+        txtName.setText(mAuth.getCurrentUser().getDisplayName());
 
         btnBack.setOnClickListener(view -> goBack());
         btnUserAccount.setOnClickListener(view -> userAccount());

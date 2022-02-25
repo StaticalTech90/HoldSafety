@@ -3,6 +3,7 @@ package com.example.holdsafety;
 import static android.content.ContentValues.TAG;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -39,10 +40,12 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -100,6 +103,7 @@ public class RegisterGoogleActivity extends AppCompatActivity {
         btnProceed = findViewById(R.id.btnProceed);
         btnUpload = findViewById(R.id.btnUploadID);
 
+
         // check if a user is signed in
         GoogleSignInAccount signInAccount = GoogleSignIn.getLastSignedInAccount(this);
         // get the details from their Google account
@@ -118,14 +122,24 @@ public class RegisterGoogleActivity extends AppCompatActivity {
 
         btnBack.setOnClickListener(view -> goBack());
         btnUpload.setOnClickListener(view -> pickImage());
-        btnProceed.setOnClickListener(view -> userRegister());
+        btnProceed.setOnClickListener(view -> {
+            try {
+                userRegister();
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+        });
     }
 
     //refactored userRegister onClickListener into independent function
-    public void userRegister(){
+    public void userRegister() throws ParseException {
         user = mAuth.getCurrentUser();
         String mobileNumberRegex = "^(09|\\+639)\\d{9}$";
         Pattern mobileNumberPattern = Pattern.compile(mobileNumberRegex);
+
+        SimpleDateFormat dateFormat = new SimpleDateFormat("MM-dd-yyyy");
+        String valid = "01-01-2004"; //age restriction 18
+        Date validDate = dateFormat.parse(valid);
 
         String userId = user.getUid();
         String uEmail = googleSignInMap.get("email");
@@ -136,47 +150,61 @@ public class RegisterGoogleActivity extends AppCompatActivity {
 
         Matcher mobileNumberMatcher = mobileNumberPattern.matcher(etMobileNo.getText());
 
-        if(spinnerSex.getSelectedItem().equals("Sex")) {
-            ((TextView)spinnerSex.getSelectedView()).setError("please select sex");
-        } else if(TextUtils.isEmpty(etMobileNo.getText())) {
-            etMobileNo.setError("Enter Mobile number");
-        } else if (!mobileNumberMatcher.matches()) {
-            etMobileNo.setError("Please enter a valid mobile number");
-        } else if(etMobileNo.getText().length() != 11) {
-            etMobileNo.setError("Please enter a valid mobile number");
-        } else {
-
-            docUsers.put("ID", user.getUid());
-            docUsers.put("Email", uEmail);
-            docUsers.put("LastName", lastName);
-            docUsers.put("FirstName", firstName);
-            docUsers.put("MiddleName", middleName);
-            docUsers.put("BirthDate", birthDate);
-            docUsers.put("Sex", sex);
-            docUsers.put("MobileNumber", mobileNo);
-            docUsers.put("isVerified", false);
-
-            if (!lblLink.getText().equals("")) {
-                uploadPhotoToStorage();
-                docUsers.put("profileComplete", true);
+        try{
+            Date parsedDate = dateFormat.parse(birthDate);
+            if(parsedDate.after(validDate)){
+                etBirthDate.getText().clear();
+                etBirthDate.setHint("Please enter valid birthdate");
+                etBirthDate.setError("Please enter valid birthdate");
+            }else if(TextUtils.isEmpty(birthDate)) {
+                //assert parsedDate != null;
+                etBirthDate.setError("Please enter birthdate (mm-dd-yyyy)");
+            }else if(spinnerSex.getSelectedItem().equals("Sex")) {
+                ((TextView)spinnerSex.getSelectedView()).setError("please select sex");
+            } else if(TextUtils.isEmpty(etMobileNo.getText())) {
+                etMobileNo.setError("Enter Mobile number");
+            } else if (!mobileNumberMatcher.matches()) {
+                etMobileNo.setError("Please enter a valid mobile number");
+            } else if(etMobileNo.getText().length() != 11) {
+                etMobileNo.setError("Please enter a valid mobile number");
             } else {
-                docUsers.put("profileComplete", false);
-            }
+                docUsers.put("ID", user.getUid());
+                docUsers.put("Email", uEmail);
+                docUsers.put("LastName", lastName);
+                docUsers.put("FirstName", firstName);
+                docUsers.put("MiddleName", middleName);
+                docUsers.put("BirthDate", birthDate);
+                docUsers.put("Sex", sex);
+                docUsers.put("MobileNumber", mobileNo);
+                docUsers.put("isVerified", false);
 
-            db.collection("users").document(userId).set(docUsers)
-                    .addOnSuccessListener(aVoid -> {
-                        Intent landing = new Intent(RegisterGoogleActivity.this,
-                                LandingActivity.class);
-                        startActivity(landing);
-                        finish();
-                    })
-                    .addOnFailureListener(e -> {
-                        Toast.makeText(getApplicationContext(),
-                                "Error writing document",
-                                Toast.LENGTH_SHORT).show();
-                        Log.w(TAG, "Error writing document", e);
-                    });
+                if (!lblLink.getText().equals("")) {
+                    uploadPhotoToStorage();
+                    docUsers.put("profileComplete", true);
+                } else {
+                    docUsers.put("profileComplete", false);
+                }
+
+                db.collection("users").document(userId).set(docUsers)
+                        .addOnSuccessListener(aVoid -> {
+                            Intent landing = new Intent(RegisterGoogleActivity.this,
+                                    LandingActivity.class);
+                            startActivity(landing);
+                            finish();
+                        })
+                        .addOnFailureListener(e -> {
+                            Toast.makeText(getApplicationContext(),
+                                    "Error writing document",
+                                    Toast.LENGTH_SHORT).show();
+                            Log.w(TAG, "Error writing document", e);
+                        });
             }
+        } catch(ParseException pe){
+            etBirthDate.getText().clear();
+            etBirthDate.setHint("Please enter valid birthdate");
+            etBirthDate.setError("Please enter valid birthdate");
+        }
+
     }
 
     //Since the methods here are async, set this value ahead of the rest of the document fields
@@ -319,6 +347,7 @@ public class RegisterGoogleActivity extends AppCompatActivity {
         String myFormat="MM-dd-yyyy";
         SimpleDateFormat dateFormat=new SimpleDateFormat(myFormat, Locale.US);
         etBirthDate.setText(dateFormat.format(calendar.getTime()));
+        etBirthDate.setError(null);
     }
 
     private void selectBirthdate() {

@@ -29,6 +29,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class AddContactActivity extends AppCompatActivity {
     FirebaseAuth mAuth;
@@ -40,7 +42,7 @@ public class AddContactActivity extends AppCompatActivity {
     private EditText etContactLastName, etContactFirstName, etContactMobileNumber, etContactEmail;
     private Spinner etRelation;
     Button btnSaveContact;
-    int count;
+    int emergencyContactCount;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,7 +68,7 @@ public class AddContactActivity extends AppCompatActivity {
         btnBack.setOnClickListener(view -> goBack());
         btnSaveContact.setOnClickListener(view -> saveContact());
 
-        String[] relation = new String[]{"Relation With Contact", "Parent", "Sibling", "Relative", "Close Friend", "Acquaintance"};
+        String[] relation = new String[]{"Relation With Contact *", "Parent", "Sibling", "Relative", "Close Friend", "Acquaintance"};
         List<String> relationList = new ArrayList<>(Arrays.asList(relation));
 
         ArrayAdapter<String> spinnerRelationAdapter = new ArrayAdapter<String>(this, R.layout.spinner, relationList){
@@ -115,50 +117,62 @@ public class AddContactActivity extends AppCompatActivity {
     }
 
     public void saveContact(){
-        Map<String, Object> docContacts = new HashMap<>();
+        if(emergencyContactCount<5){
+            Map<String, Object> docContacts = new HashMap<>();
 
-        String contactLastName = etContactLastName.getText().toString().trim();
-        String contactFirstName = etContactFirstName.getText().toString().trim();
-        String contactMobileNumber = etContactMobileNumber.getText().toString().trim();
-        String contactEmail = etContactEmail.getText().toString().trim();
-        String contactRelation = etRelation.getSelectedItem().toString().trim();
+            String contactLastName = etContactLastName.getText().toString().trim();
+            String contactFirstName = etContactFirstName.getText().toString().trim();
+            String contactMobileNumber = etContactMobileNumber.getText().toString().trim();
+            String contactEmail = etContactEmail.getText().toString().trim();
+            String contactRelation = etRelation.getSelectedItem().toString().trim();
 
-        Toast.makeText
-                (getApplicationContext(), "Selected Relation In String: " + contactRelation, Toast.LENGTH_SHORT)
-                .show();
+            String emailRegex = "^[a-zA-Z0-9_!#$%&'*+/=?`{|}~^.-]+@[a-zA-Z0-9.-]+$";
+            String mobileNumberRegex = "^(09|\\+639)\\d{9}$";
+            Pattern emailPattern = Pattern.compile(emailRegex);
+            Pattern mobileNumberPattern = Pattern.compile(mobileNumberRegex);
+            Matcher emailMatcher = emailPattern.matcher(contactEmail);
+            Matcher mobileNumberMatcher = mobileNumberPattern.matcher(contactMobileNumber);
 
-        docContacts.put("lastName", contactLastName);
-        docContacts.put("firstName", contactFirstName);
-        docContacts.put("mobileNumber", contactMobileNumber);
-        docContacts.put("email", contactEmail);
-        docContacts.put("relation", contactRelation);
+            docContacts.put("lastName", contactLastName);
+            docContacts.put("firstName", contactFirstName);
+            docContacts.put("mobileNumber", contactMobileNumber);
+            docContacts.put("email", contactEmail);
+            docContacts.put("relation", contactRelation);
 
-        if(TextUtils.isEmpty(etContactLastName.getText())){
-            etContactLastName.setHint("please enter contact last name");
-            etContactLastName.setError("please enter contact last name");
-        } else if(TextUtils.isEmpty(etContactFirstName.getText())){
-            etContactFirstName.setHint("please enter contact first name");
-            etContactFirstName.setError("please enter contact first name");
-        } else if(TextUtils.isEmpty(etContactMobileNumber.getText())){
-            etContactMobileNumber.setHint("please enter contact mobile number");
-            etContactMobileNumber.setError("please enter contact mobile number");
-        } else if(TextUtils.isEmpty(etContactEmail.getText())){
-            etContactEmail.setHint("please enter contact email");
-            etContactEmail.setError("please enter contact email");
+            if(TextUtils.isEmpty(contactLastName)){
+                etContactLastName.setError("Please enter contact last name");
+            } else if(TextUtils.isEmpty(contactFirstName)) {
+                etContactFirstName.setError("Please enter contact first name");
+            } else if (contactRelation.equals("Relation With Contact *")) {
+                ((TextView)etRelation.getSelectedView()).setError("Please select relation with contact");
+            } else if(TextUtils.isEmpty(contactMobileNumber)){
+                etContactMobileNumber.setError("Please enter contact mobile number");
+            }  else if (!mobileNumberMatcher.matches()) {
+                etContactMobileNumber.setError("Please enter a valid mobile number");
+            } else if(TextUtils.isEmpty(contactEmail)){
+                etContactEmail.setError("Please enter contact email");
+            } else if (!emailMatcher.matches()) {
+                etContactEmail.setError("Please enter valid email");
+            } else {
+                db.collection("emergencyContacts").document(user.getUid()).collection("contacts")
+                        .add(docContacts).addOnCompleteListener(this, task -> {
+                    if (task.isSuccessful()) {
+                        Toast.makeText(getApplicationContext(), "Successfully Added Contact", Toast.LENGTH_SHORT).show();
+                        finish();
+                        overridePendingTransition(0, 0);
+                        startActivity(getIntent());
+                        overridePendingTransition(0, 0);
+                    } else {
+                        Toast.makeText(getApplicationContext(),
+                                Objects.requireNonNull(task.getException()).toString(),
+                                Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
         } else {
-            db.collection("emergencyContacts").document(user.getUid()).collection("contacts")
-                    .add(docContacts).addOnCompleteListener(this, task -> {
-                if (task.isSuccessful()) {
-                    Toast.makeText(getApplicationContext(),
-                            "Successfully Added Contact",
-                            Toast.LENGTH_SHORT).show();
-                } else {
-                    Toast.makeText(getApplicationContext(),
-                            Objects.requireNonNull(task.getException()).toString(),
-                            Toast.LENGTH_SHORT).show();
-                }
-            });
+            Toast.makeText(getApplicationContext(), "Number of Emergency Contact exceeds to limit", Toast.LENGTH_SHORT).show();
         }
+
     }
 
     public void getContactCount(){
@@ -168,9 +182,9 @@ public class AddContactActivity extends AppCompatActivity {
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         for (QueryDocumentSnapshot contactSnap : task.getResult()) {
-                            count++;
+                            emergencyContactCount++;
                         }
-                        lblContactCount.setText(count + " out of 5");
+                        lblContactCount.setText(emergencyContactCount + " out of 5");
                     }
 
                     else{

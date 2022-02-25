@@ -135,15 +135,16 @@
                         android:fontFamily="sans-serif"
 
                         android:hint="Last Name *"
-                        android:inputType="text"
+                        android:inputType="textCapWords"
                         android:maxLines="1"
                         android:scrollHorizontally="true"
                         android:textColor="@color/dark_blue"
                         app:layout_constraintDimensionRatio="6"
 
                         app:layout_constraintEnd_toEndOf="@+id/lastNameGuidelineV2"
-                        app:layout_constraintStart_toStartOf="@id/lastNameGuidelineV1"
+                        app:layout_constraintHorizontal_bias="0.0"
 
+                        app:layout_constraintStart_toStartOf="@id/lastNameGuidelineV1"
                         app:layout_constraintTop_toTopOf="parent" />
 
                     <androidx.constraintlayout.widget.Guideline
@@ -185,7 +186,7 @@
                         android:fontFamily="sans-serif"
 
                         android:hint="First Name *"
-                        android:inputType="text"
+                        android:inputType="textCapWords"
                         android:maxLines="1"
                         android:scrollHorizontally="true"
                         android:textColor="@color/dark_blue"
@@ -235,7 +236,7 @@
                         android:fontFamily="sans-serif"
 
                         android:hint="Middle Name"
-                        android:inputType="text"
+                        android:inputType="textCapWords"
                         android:maxLines="1"
                         android:scrollHorizontally="true"
                         android:textColor="@color/dark_blue"

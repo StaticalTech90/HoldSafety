@@ -118,8 +118,8 @@
                     android:ellipsize="end"
                     android:fontFamily="sans-serif"
 
-                    android:hint="Email or Phone Number"
-                    android:inputType="text"
+                    android:hint="Email"
+                    android:inputType="textEmailAddress"
                     android:maxLines="1"
                     android:scrollHorizontally="true"
                     android:textColor="@color/dark_blue"

@@ -65,7 +65,7 @@ public class SelectContactActivity extends AppCompatActivity {
                 .document(user.getUid()).collection("contacts").get()
                 .addOnCompleteListener(task -> {
                     Intent intent = new Intent(this, UpdateContactActivity.class);
-                    Toast.makeText(this, user.getUid(), Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(this, user.getUid(), Toast.LENGTH_SHORT).show();
                     if (task.isSuccessful()) {
                         //FOR EACH
                         //GET ALL ID
@@ -101,6 +101,7 @@ public class SelectContactActivity extends AppCompatActivity {
                                 intent.putExtra("documentId", documentId);
 
                                 startActivity(intent);
+                                finish();
                             });
 
                             btnDelete.setOnClickListener(view -> {

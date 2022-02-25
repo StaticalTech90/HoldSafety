@@ -143,7 +143,7 @@
 
                     android:fontFamily="sans-serif-black"
 
-                    android:inputType="text"
+                    android:inputType="textCapWords"
                     android:textColor="@color/white"
                     app:autoSizeMaxTextSize="18sp"
                     app:autoSizeMinTextSize="15sp"
@@ -196,7 +196,7 @@
 
                     android:fontFamily="sans-serif-black"
 
-                    android:inputType="text"
+                    android:inputType="textCapWords"
                     android:textColor="@color/white"
                     app:autoSizeMaxTextSize="18sp"
                     app:autoSizeMinTextSize="15sp"

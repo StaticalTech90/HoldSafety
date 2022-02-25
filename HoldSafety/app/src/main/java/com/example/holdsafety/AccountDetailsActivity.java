@@ -39,6 +39,8 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
 import java.util.HashMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class AccountDetailsActivity extends AppCompatActivity {
     public Uri imageURI;
@@ -195,84 +197,97 @@ public class AccountDetailsActivity extends AppCompatActivity {
                 Toast.makeText(AccountDetailsActivity.this, "No Changes Made", Toast.LENGTH_LONG).show();
             }
             else if (isEmailChanged || isNumberChanged){
-                //pop up for re-enter password
-                EditText txtInputPassword;
+                String emailRegex = "^[a-zA-Z0-9_!#$%&'*+/=?`{|}~^.-]+@[a-zA-Z0-9.-]+$";
+                String mobileNumberRegex = "^(09|\\+639)\\d{9}$";
+                Pattern emailPattern = Pattern.compile(emailRegex);
+                Pattern mobileNumberPattern = Pattern.compile(mobileNumberRegex);
+                Matcher emailMatcher = emailPattern.matcher(txtEmail.getText());
+                Matcher mobileNumberMatcher = mobileNumberPattern.matcher(txtMobileNumber.getText());
 
-                AlertDialog.Builder dialogSaveChanges;
-                dialogSaveChanges = new AlertDialog.Builder(AccountDetailsActivity.this);
-                dialogSaveChanges.setTitle("Save Changes");
+                if (!mobileNumberMatcher.matches()) {
+                    txtMobileNumber.setError("Please enter a valid mobile number");
+                } else if (!emailMatcher.matches()){
+                    txtEmail.setError("Please enter a valid email");
+                } else {
+                    //pop up for re-enter password
+                    EditText txtInputPassword;
 
-                //if only number is changed
-                if (isNumberChanged && !isEmailChanged){
-                    dialogSaveChanges.setMessage("Re-enter password to save changes:");
-                }
+                    AlertDialog.Builder dialogSaveChanges;
+                    dialogSaveChanges = new AlertDialog.Builder(AccountDetailsActivity.this);
+                    dialogSaveChanges.setTitle("Save Changes");
 
-                //if both
-                if (isEmailChanged){
-                    dialogSaveChanges.setMessage("Note: Upon changing your email, you will not be able to save recordings until the new email is verified." +
-                            "\n\nRe-enter password to save changes:");
-                }
-
-                txtInputPassword = new EditText(AccountDetailsActivity.this);
-                dialogSaveChanges.setView(txtInputPassword);
-
-                txtInputPassword.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
-
-                //saves user input if not empty
-                txtInputPassword.addTextChangedListener(new TextWatcher() {
-                    @Override
-                    public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                    //if only number is changed
+                    if (isNumberChanged && !isEmailChanged){
+                        dialogSaveChanges.setMessage("Re-enter password to save changes:");
                     }
 
-                    @Override
-                    public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                        userPassword = txtInputPassword.getText().toString().trim();
+                    //if both
+                    if (isEmailChanged){
+                        dialogSaveChanges.setMessage("Note: Upon changing your email, you will not be able to save recordings until the new email is verified." +
+                                "\n\nRe-enter password to save changes:");
                     }
 
-                    @Override
-                    public void afterTextChanged(Editable editable) {
-                    }
-                });
+                    txtInputPassword = new EditText(AccountDetailsActivity.this);
+                    dialogSaveChanges.setView(txtInputPassword);
 
-                dialogSaveChanges.setPositiveButton("Done", (dialogInterface, i) -> {
-                    //Do nothing here, override this button later to change the close behaviour
-                });
+                    txtInputPassword.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
 
-                dialogSaveChanges.setNegativeButton("Cancel", (dialogInterface, i) -> {
-                    dialogInterface.dismiss();
-
-                    //reset values
-                    isEmailChanged = false;
-                    isNumberChanged = false;
-                    userPassword = "";
-
-                    finish();
-                    startActivity(getIntent());
-                });
-
-                AlertDialog changeEmailDialog = dialogSaveChanges.create();
-                changeEmailDialog.show();
-
-                //Override
-                changeEmailDialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        if (TextUtils.isEmpty(userPassword)) {
-                            txtInputPassword.setError("Password is required");
-                        } else {
-                            userPassword = txtInputPassword.getText().toString();
-
-                            if (isNumberChanged) {
-                                changeNumber(newMobileNumber);
-                            }
-
-                            if (isEmailChanged) {
-                                changeEmail(newEmail);
-                            }
-
+                    //saves user input if not empty
+                    txtInputPassword.addTextChangedListener(new TextWatcher() {
+                        @Override
+                        public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
                         }
-                    }
-                }); //end of dialog code
+
+                        @Override
+                        public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                            userPassword = txtInputPassword.getText().toString().trim();
+                        }
+
+                        @Override
+                        public void afterTextChanged(Editable editable) {
+                        }
+                    });
+
+                    dialogSaveChanges.setPositiveButton("Done", (dialogInterface, i) -> {
+                        //Do nothing here, override this button later to change the close behaviour
+                    });
+
+                    dialogSaveChanges.setNegativeButton("Cancel", (dialogInterface, i) -> {
+                        dialogInterface.dismiss();
+
+                        //reset values
+                        isEmailChanged = false;
+                        isNumberChanged = false;
+                        userPassword = "";
+
+                        finish();
+                        startActivity(getIntent());
+                    });
+
+                    AlertDialog changeEmailDialog = dialogSaveChanges.create();
+                    changeEmailDialog.show();
+
+                    //Override
+                    changeEmailDialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            if (TextUtils.isEmpty(userPassword)) {
+                                txtInputPassword.setError("Password is required");
+                            } else {
+                                userPassword = txtInputPassword.getText().toString();
+
+                                if (isNumberChanged) {
+                                    changeNumber(newMobileNumber);
+                                }
+
+                                if (isEmailChanged) {
+                                    changeEmail(newEmail);
+                                }
+
+                            }
+                        }
+                    }); //end of dialog code
+                }
             }
         });
     }
@@ -281,9 +296,11 @@ public class AccountDetailsActivity extends AppCompatActivity {
         if(isVerified){
             lblAccountStatus.setTextColor(getResources().getColor(R.color.green));
             lblAccountStatus.setText("Verified Account");
+            btnUploadID.setVisibility(View.GONE);
         } else if (!isVerified && isProfileComplete){
             lblAccountStatus.setTextColor(getResources().getColor(R.color.yellow));
             lblAccountStatus.setText("Pending Verification");
+            btnUploadID.setVisibility(View.GONE);
         } else if (!isProfileComplete && !isVerified){
             lblAccountStatus.setTextColor(getResources().getColor(R.color.red));
             lblAccountStatus.setText("Not Verified");

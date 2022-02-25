@@ -157,6 +157,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
             }
             txtPassword.setSelection(txtPassword.length());
         });
+
         btnLogin.setOnClickListener(view -> {
             String email, password;
 
@@ -181,6 +182,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
 
             loginUser(email,password);
         });
+
         btnForgotPass.setOnClickListener(view -> forgotPassword());
         btnSignUp.setOnClickListener(view -> userSignUp());
         btnMenu.setOnClickListener(view -> othersRedirect());
@@ -277,6 +279,8 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
 
                                 docRef.get().addOnSuccessListener(documentSnapshot -> {
                                     if(!documentSnapshot.exists()) {
+                                        Toast.makeText(getApplicationContext(), "Does not exist yet", Toast.LENGTH_SHORT).show();
+
                                         //ADD KNOWN AND PLACEHOLDER VALUES
                                         HashMap<String, String> googleSignInMap = new HashMap<>();
                                         googleSignInMap.put("lastName", account.getFamilyName());
@@ -287,26 +291,13 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                                         googleReg.putExtra("googleSignInMap", googleSignInMap);
                                         startActivity(googleReg);
                                     } else { //ACCOUNT EXISTS, COMPLETE THE PROFILE
-                                        colRef.document(user.getUid()).get().addOnSuccessListener(existingDocumentSnapshot -> {
-                                            Boolean isComplete = documentSnapshot.getBoolean("profileComplete");
-
-                                            while(isComplete == null) {
-                                                isComplete = documentSnapshot.getBoolean("profileComplete");
-                                            }
-
-                                            if(!isComplete) { //IF PROFILE INCOMPLETE, FILL UP FORM
-                                                Log.d("isAccountComplete", "onActivityResult(): else if(): Result: Account exists");
-                                                completeGoogleProfile();
-                                            } else { //PROFILE COMPLETE, GO TO LANDING
-                                                Intent landingPage = new Intent (LoginActivity.this, LandingActivity.class);
-                                                startActivity(landingPage);
-                                            }
-                                        });
+                                        Intent landingPage = new Intent (LoginActivity.this, LandingActivity.class);
+                                        startActivity(landingPage);
                                     }
                                 });
                             } else {
                                 // If sign in fails, display a message to the user.
-                                Toast.makeText(getApplicationContext(), "Failed to sign in w/goog", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(getApplicationContext(), "Failed Google Sign In", Toast.LENGTH_SHORT).show();
                                 Log.w(TAG, "signInWithCredential:failure", task1.getException());
                                 //Snackbar.make(mBinding.mainLayout, "Authentication Failed.", Snackbar.LENGTH_SHORT).show();
                                 updateUI(null);

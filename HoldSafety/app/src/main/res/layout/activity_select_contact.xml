@@ -7,6 +7,21 @@
     tools:context=".SelectContactActivity"
     android:background="@color/dark_blue">
 
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="600dp"
+        android:layout_height="wrap_content"
+
+        android:layout_marginStart="-50dp"
+        android:layout_marginBottom="50dp"
+        android:alpha=".1"
+        android:fontFamily="sans-serif-black"
+        android:text="HOLD SAFETY"
+        android:textColor="@color/hint_color"
+        android:textSize="130sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/backContainer"
         android:layout_width="0dp"
@@ -131,20 +146,6 @@
         app:layout_constraintTop_toBottomOf="@+id/lblSelectContactDesc">
     </LinearLayout>
 
-    <TextView
-        android:id="@+id/textView"
-        android:layout_width="600dp"
-        android:layout_height="wrap_content"
-
-        android:layout_marginStart="-50dp"
-        android:layout_marginBottom="50dp"
-        android:alpha=".1"
-        android:fontFamily="sans-serif-black"
-        android:text="HOLD SAFETY"
-        android:textColor="@color/hint_color"
-        android:textSize="130sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/mainGuidelineV1"
