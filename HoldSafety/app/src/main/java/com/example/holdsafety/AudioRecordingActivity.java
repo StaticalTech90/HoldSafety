@@ -1,7 +1,5 @@
 package com.example.holdsafety;
 
-import static android.content.ContentValues.TAG;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
@@ -9,7 +7,6 @@ import androidx.core.content.ContextCompat;
 
 import android.content.Intent;
 import android.graphics.PorterDuff;
-import android.media.CamcorderProfile;
 import android.media.MediaRecorder;
 import android.net.Uri;
 import android.os.Build;
@@ -28,7 +25,6 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.OnProgressListener;
@@ -44,7 +40,7 @@ import java.util.Locale;
 import java.util.HashMap;
 import java.util.Map;
 
-public class AudioRecording extends AppCompatActivity {
+public class AudioRecordingActivity extends AppCompatActivity {
 
     Button btnAudio;
     boolean isRecording = true;
@@ -144,7 +140,7 @@ public class AudioRecording extends AppCompatActivity {
         //mediaRecorder = null;
         addToFirebase();
 //        btnAudio.setText("Start Recording");
-//        Toast.makeText(AudioRecording.this, "Recording Stopped", Toast.LENGTH_SHORT).show();
+//        Toast.makeText(AudioRecordingActivity.this, "Recording Stopped", Toast.LENGTH_SHORT).show();
     }
 
     private void addToFirebase() {
@@ -160,7 +156,7 @@ public class AudioRecording extends AppCompatActivity {
                 .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                     @Override
                     public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                        Toast.makeText(AudioRecording.this, "Upload successful", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(AudioRecordingActivity.this, "Upload successful", Toast.LENGTH_SHORT).show();
                         setHandler();
 
                         getAudioLink();
@@ -169,7 +165,7 @@ public class AudioRecording extends AppCompatActivity {
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
-                        Toast.makeText(AudioRecording.this, "Upload failed: " +e.getMessage(), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(AudioRecordingActivity.this, "Upload failed: " +e.getMessage(), Toast.LENGTH_SHORT).show();
                         setHandler();
 
                     }
@@ -178,7 +174,7 @@ public class AudioRecording extends AppCompatActivity {
                     @Override
                     public void onProgress(@NonNull UploadTask.TaskSnapshot snapshot) {
                         double progress = (100.0 * snapshot.getBytesTransferred() / snapshot.getTotalByteCount());
-                        progressBar.getProgressDrawable().setColorFilter(ContextCompat.getColor(AudioRecording.this,R.color.light_blue), PorterDuff.Mode.MULTIPLY);
+                        progressBar.getProgressDrawable().setColorFilter(ContextCompat.getColor(AudioRecordingActivity.this,R.color.light_blue), PorterDuff.Mode.MULTIPLY);
                         progressBar.setProgress((int) progress);
                     }
                 });
@@ -296,7 +292,7 @@ public class AudioRecording extends AppCompatActivity {
             }
 
             btnAudio.setText("Stop Recording");
-            Toast.makeText(AudioRecording.this, "Audio Recording Started", Toast.LENGTH_SHORT).show();
+            Toast.makeText(AudioRecordingActivity.this, "Audio Recording Started", Toast.LENGTH_SHORT).show();
 
 
             //2. SET TIMER (5 SECONDS) - Limit of the recording
@@ -317,7 +313,7 @@ public class AudioRecording extends AppCompatActivity {
             }.start();
 
         } catch (Exception e){
-            Toast.makeText(AudioRecording.this, e.getMessage(), Toast.LENGTH_SHORT).show();
+            Toast.makeText(AudioRecordingActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
             e.printStackTrace();
         }
 

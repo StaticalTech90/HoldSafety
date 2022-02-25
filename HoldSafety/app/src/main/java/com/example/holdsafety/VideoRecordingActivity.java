@@ -3,12 +3,9 @@ package com.example.holdsafety;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
-import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
-import android.Manifest;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.graphics.PorterDuff;
 import android.hardware.Camera;
 import android.media.CamcorderProfile;
@@ -22,7 +19,6 @@ import android.util.Log;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ProgressBar;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnFailureListener;
@@ -38,14 +34,11 @@ import com.google.firebase.storage.UploadTask;
 
 import java.io.File;
 import java.io.IOException;
-import java.sql.Timestamp;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.Map;
 
-public class AutoRecordingActivity extends AppCompatActivity {
+public class VideoRecordingActivity extends AppCompatActivity {
     CameraPreview cameraPreview;
     Camera camera;
     MediaRecorder mediaRecorder;
@@ -169,7 +162,7 @@ public class AutoRecordingActivity extends AppCompatActivity {
                 .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                     @Override
                     public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                        Toast.makeText(AutoRecordingActivity.this, "Upload successful", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(VideoRecordingActivity.this, "Upload successful", Toast.LENGTH_SHORT).show();
                         setHandler();
 
                         getVideoLink();
@@ -179,7 +172,7 @@ public class AutoRecordingActivity extends AppCompatActivity {
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
-                        Toast.makeText(AutoRecordingActivity.this, "Upload failed: " +e.getMessage(), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(VideoRecordingActivity.this, "Upload failed: " +e.getMessage(), Toast.LENGTH_SHORT).show();
                         setHandler();
 
                     }
@@ -188,7 +181,7 @@ public class AutoRecordingActivity extends AppCompatActivity {
                     @Override
                     public void onProgress(@NonNull UploadTask.TaskSnapshot snapshot) {
                         double progress = (100.0 * snapshot.getBytesTransferred() / snapshot.getTotalByteCount());
-                        progressBar.getProgressDrawable().setColorFilter(ContextCompat.getColor(AutoRecordingActivity.this,R.color.light_blue), PorterDuff.Mode.MULTIPLY);
+                        progressBar.getProgressDrawable().setColorFilter(ContextCompat.getColor(VideoRecordingActivity.this,R.color.light_blue), PorterDuff.Mode.MULTIPLY);
                         progressBar.setProgress((int) progress);
                     }
                 });

@@ -376,7 +376,6 @@
                 android:fontFamily="sans-serif-black"
                 android:text="SAVE CONTACT"
                 android:textColor="@color/dark_blue"
-                android:onClick="saveContact"
 
                 app:autoSizeMaxTextSize="22sp"
                 app:autoSizeMinTextSize="15sp"

@@ -1,5 +1,6 @@
 package com.example.holdsafety;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -7,7 +8,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -28,20 +31,16 @@ import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class AddContactActivity extends AppCompatActivity {
-
     private FirebaseAuth mAuth;
     FirebaseUser user;
     FirebaseFirestore db = FirebaseFirestore.getInstance();
 
+    ImageView btnBack;
     private TextView lblContactCount;
-    private EditText etContactLastName;
-    private EditText etContactFirstName;
-    private EditText etContactMobileNumber;
-    private EditText etContactEmail;
+    private EditText etContactLastName, etContactFirstName, etContactMobileNumber, etContactEmail;
     private Spinner etRelation;
-
+    Button btnSaveContact;
     int count;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,14 +52,19 @@ public class AddContactActivity extends AppCompatActivity {
 
         Toast.makeText(getApplicationContext(), "Designate Contacts", Toast.LENGTH_SHORT).show();
 
+        btnBack = findViewById(R.id.backArrow);
         etContactLastName = findViewById(R.id.txtContactLastName);
         etContactFirstName = findViewById(R.id.txtContactFirstName);
         etContactMobileNumber = findViewById(R.id.txtContactMobileNumber);
         etContactEmail = findViewById(R.id.txtContactEmail);
         etRelation = findViewById(R.id.txtRelationWithContact);
         lblContactCount = findViewById(R.id.lblNumOfContacts);
+        btnSaveContact = findViewById(R.id.btnSaveContact);
 
         getContactCount();
+
+        btnBack.setOnClickListener(view -> goBack());
+        btnSaveContact.setOnClickListener(view -> saveContact());
 
         String[] relation = new String[]{"Relation With Contact", "Parent", "Sibling", "Relative", "Close Friend", "Acquaintance"};
         List<String> relationList = new ArrayList<>(Arrays.asList(relation));
@@ -89,8 +93,6 @@ public class AddContactActivity extends AppCompatActivity {
 
         spinnerRelationAdapter.setDropDownViewResource(R.layout.spinner);
         etRelation.setAdapter(spinnerRelationAdapter);
-
-
         etRelation.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -112,7 +114,7 @@ public class AddContactActivity extends AppCompatActivity {
         });
     }
 
-    public void saveContact(View view){
+    public void saveContact(){
         Map<String, Object> docContacts = new HashMap<>();
 
         String contactLastName = etContactLastName.getText().toString().trim();
@@ -157,7 +159,6 @@ public class AddContactActivity extends AppCompatActivity {
                 }
             });
         }
-
     }
 
     public void getContactCount(){
@@ -176,5 +177,10 @@ public class AddContactActivity extends AppCompatActivity {
                         Toast.makeText(this, "No Contacts Available", Toast.LENGTH_SHORT).show();
                     }
                 });
+    }
+
+    private void goBack(){
+        startActivity(new Intent(AddContactActivity.this, DesignateContactActivity.class));
+        finish();
     }
 }

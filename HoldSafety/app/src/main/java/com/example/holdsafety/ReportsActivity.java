@@ -1,30 +1,22 @@
 package com.example.holdsafety;
 
-import android.app.Dialog;
+import android.content.Intent;
 import android.location.Address;
 import android.location.Geocoder;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.List;
 import java.util.Locale;
@@ -35,13 +27,12 @@ public class ReportsActivity extends AppCompatActivity {
     String userID;
     FirebaseFirestore db;
 
+    ImageView btnBack;
     LinearLayout reportView;
     String reportID, location, date, barangay, evidence;
     String longitude, latitude;
     TextView lblReportsCount, lblNoReports;
     int count;
-//    RecyclerView recyclerViewReports;
-//    String[] reportID;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,101 +48,63 @@ public class ReportsActivity extends AppCompatActivity {
         reportView = findViewById(R.id.linearReportList);
         lblReportsCount = findViewById(R.id.lblNumOfReports);
         lblNoReports = findViewById(R.id.lblNoReports);
+        btnBack = findViewById(R.id.backArrow);
 
-        //getGeoLoc();
+        btnBack.setOnClickListener(view -> goBack());
+
         listMyReports();
     }
 
     public void listMyReports() {
         db.collection("reports").whereEqualTo("User ID", userID).orderBy("Report Date", Query.Direction.DESCENDING)
-                .get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                if (task.isSuccessful()) {
-                    for(QueryDocumentSnapshot reportSnap : task.getResult()) {
-                        reportID = reportSnap.getId();
-                        count++;
-                        //Toast.makeText(ReportsActivity.this, reportID, Toast.LENGTH_SHORT).show();
+                .get().addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        for(QueryDocumentSnapshot reportSnap : task.getResult()) {
+                            reportID = reportSnap.getId();
+                            count++;
+                            //Toast.makeText(ReportsActivity.this, reportID, Toast.LENGTH_SHORT).show();
 
-                        latitude = reportSnap.getString("Lat");
-                        longitude = reportSnap.getString("Lon");
-                        location = getGeoLoc(latitude, longitude);
-                        date = reportSnap.getTimestamp("Report Date").toDate().toString();
-                        barangay = reportSnap.getString("Barangay");
-                        evidence = reportSnap.getString("Evidence");
+                            latitude = reportSnap.getString("Lat");
+                            longitude = reportSnap.getString("Lon");
+                            location = getGeoLoc(latitude, longitude);
+                            date = reportSnap.getTimestamp("Report Date").toDate().toString();
+                            barangay = reportSnap.getString("Barangay");
+                            evidence = reportSnap.getString("Evidence");
 
-                        View displayReportView = getLayoutInflater().inflate(R.layout.report_row, null, false);
+                            View displayReportView = getLayoutInflater().inflate(R.layout.report_row, null, false);
 
-                        TextView txtReportID = displayReportView.findViewById(R.id.txtReportID);
-                        TextView txtReportLocation = displayReportView.findViewById(R.id.txtReportLocation);
-                        TextView txtDateAndTime = displayReportView.findViewById(R.id.txtDateAndTime);
-                        TextView txtBarangay = displayReportView.findViewById(R.id.txtBarangay);
-                        TextView txtEvidence = displayReportView.findViewById(R.id.txtEvidence);
+                            TextView txtReportID = displayReportView.findViewById(R.id.txtReportID);
+                            TextView txtReportLocation = displayReportView.findViewById(R.id.txtReportLocation);
+                            TextView txtDateAndTime = displayReportView.findViewById(R.id.txtDateAndTime);
+                            TextView txtBarangay = displayReportView.findViewById(R.id.txtBarangay);
+                            TextView txtEvidence = displayReportView.findViewById(R.id.txtEvidence);
 
-                        txtReportID.setText(reportID);
-                        txtReportLocation.setText(location);
-                        txtDateAndTime.setText(date);
-                        txtBarangay.setText(barangay);
-                        txtEvidence.setText(evidence);
+                            txtReportID.setText(reportID);
+                            txtReportLocation.setText(location);
+                            txtDateAndTime.setText(date);
+                            txtBarangay.setText(barangay);
+                            txtEvidence.setText(evidence);
 
-                        reportView.addView(displayReportView);
-                    }
-                    lblReportsCount.setText("Number of Reports: " + count);
+                            reportView.addView(displayReportView);
+                        }
+                        lblReportsCount.setText("Number of Reports: " + count);
 
-                    if(count==0){
-                        lblNoReports.setVisibility(View.VISIBLE);
+                        if(count==0){
+                            lblNoReports.setVisibility(View.VISIBLE);
+                        } else {
+                            lblNoReports.setVisibility(View.GONE);
+                        }
                     } else {
-                        lblNoReports.setVisibility(View.GONE);
+                        Log.w("Reports", "Error getting documents: ", task.getException());
                     }
-
-                } else {
-                    Log.w("Reports", "Error getting documents: ", task.getException());
-                }
-            }
-        });
-
-        /*
-        db.collection("reportUser").document(userID).collection("reportDetails").get().addOnCompleteListener(task -> {
-            if(task.isSuccessful()) {
-                for(QueryDocumentSnapshot reportSnap : task.getResult()) {
-                    reportID = reportSnap.getId();
-                    Toast.makeText(this, reportID, Toast.LENGTH_SHORT).show();
-
-                    latitude = reportSnap.getString("Lat");
-                    longitude = reportSnap.getString("Lon");
-                    location = getGeoLoc(latitude, longitude);
-                    date = reportSnap.getString("Report Date");
-                    barangay = reportSnap.getString("Barangay");
-                    evidence = reportSnap.getString("Evidence");
-
-
-
-                    View displayReportView = getLayoutInflater().inflate(R.layout.report_row, null, false);
-
-                    TextView txtReportID = displayReportView.findViewById(R.id.txtReportID);
-                    TextView txtReportLocation = displayReportView.findViewById(R.id.txtReportLocation);
-                    TextView txtDateAndTime = displayReportView.findViewById(R.id.txtDateAndTime);
-                    TextView txtBarangay = displayReportView.findViewById(R.id.txtBarangay);
-                    TextView txtEvidence = displayReportView.findViewById(R.id.txtEvidence);
-
-                    txtReportID.setText(reportID);
-                    txtReportLocation.setText(location);
-                    txtDateAndTime.setText(date);
-                    txtBarangay.setText(barangay);
-                    txtEvidence.setText(evidence);
-
-                    reportView.addView(displayReportView);
-                }
-            }
-        });
-        */
+                });
     }
 
     public String getGeoLoc(String latitude, String longitude) {
         String strAdd = "";
         Geocoder geocoder = new Geocoder(this, Locale.getDefault());
-        Double doubleLat = Double.parseDouble(latitude.trim());
-        Double doubleLong = Double.parseDouble(longitude.trim());
+        double doubleLat = Double.parseDouble(latitude.trim());
+        double doubleLong = Double.parseDouble(longitude.trim());
         try {
             List<Address> addresses = geocoder.getFromLocation(doubleLat, doubleLong, 1);
             if (addresses != null) {
@@ -175,72 +128,9 @@ public class ReportsActivity extends AppCompatActivity {
         //Toast.makeText(getApplicationContext(), "Address: " + strAdd, Toast.LENGTH_SHORT).show();
 
     }
-    
-//    public void place(){
-//        FirebaseFirestore.getInstance()
-//                .collection("emergencyContacts")
-//                .document(user.getUid()).collection("contacts").get()
-//                .addOnCompleteListener(task -> {
-//
-//                    if (task.isSuccessful()) {
-//                        //FOR EACH
-//                        //GET ALL ID
-//                        for (QueryDocumentSnapshot contactSnap : task.getResult()) {
-//
-//                            String brgyID = contactSnap.getId();
-//                            //GET CONTACT DETAILS
-//                            String email = contactSnap.getString("email");
-//                            String firstName = contactSnap.getString("firstName");
-//                            String lastName = contactSnap.getString("lastName");
-//                            String mobileNumber = contactSnap.getString("mobileNumber");
-//                            String relation = contactSnap.getString("relation");
-//
-//                            //DECLARE THE LAYOUT - CARDVIEW
-//                            View detailsView = getLayoutInflater().inflate(R.layout.activity_select_contact, null, false);
-//
-//                            //DECLARE TEXTS AND BUTTONS
-//                            TextView txtContactName = detailsView.findViewById(R.id.txtContactName);
-//                            ImageView btnUpdate = detailsView.findViewById(R.id.updateContact);
-//                            ImageView btnDelete = detailsView.findViewById(R.id.btnRemoveAccount);
-//
-//                            //SET TEXTS
-//                            txtContactName.setText(firstName+" "+lastName);
-//
-//                            //SET DETAILS ONCLICK LISTENER
-//                            btnUpdate.setOnClickListener(view -> {
-//                                //SHOW DETAILS DIALOG
-//                                Dialog dialog = new Dialog(BrgyLocationsActivity.this);
-//                                View dialogView = getLayoutInflater().inflate(R.layout.layout_brgy_details, null, false);
-//                                dialog.setContentView(dialogView);
-//                                dialog.setCancelable(false);
-//
-//                                //DECLARE DIALOG VIEWS
-//                                TextView txtDetailsLocation = dialogView.findViewById(R.id.txtDetailsLocation);
-//                                Button btnOk = dialogView.findViewById(R.id.btnOk);
-//
-//                                //SET TEXT AND ON CLICK LISTENER
-//                                txtDetailsLocation.setText(brgyLat + ", " + brgyLon);
-//                                btnOk.setOnClickListener(new View.OnClickListener() {
-//                                    @Override
-//                                    public void onClick(View view) {
-//                                        //DISMISS DIALOG
-//                                        dialog.dismiss();
-//                                    }
-//                                });
-//
-//                                dialog.show();
-//
-//                            });
-//
-//                            //ADD TO LINEAR
-//                            linearLayoutBrgy.addView(detailsView);
-//                        }
-//
-//                    } else {
-//                        //NO DATA AVAILABLE
-//                        Toast.makeText(this, "No Brgy. Available", Toast.LENGTH_SHORT).show();
-//                    }
-//
-//                });
-//    }
+
+    private void goBack(){
+        startActivity(new Intent(ReportsActivity.this, MenuActivity.class));
+        finish();
+    }
 }

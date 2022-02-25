@@ -36,7 +36,6 @@
             android:fontFamily="sans-serif-black"
             android:textColor="@color/red"
 
-            android:onClick="removeAccount"
             android:text="@string/btnRemoveAccount"
             android:clickable="true"
             android:focusable="true"
@@ -609,7 +608,6 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="12dp"
                     android:fontFamily="sans-serif-black"
-                    android:onClick="changePassword"
                     android:text="Change Password"
 
                     android:textColor="@color/light_blue"

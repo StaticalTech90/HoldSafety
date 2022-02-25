@@ -30,10 +30,10 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.HoldSafety">
         <activity
-            android:name=".AudioRecording"
+            android:name=".AudioRecordingActivity"
             android:exported="true" />
         <activity
-            android:name=".AutoRecordingActivity"
+            android:name=".VideoRecordingActivity"
             android:exported="true" />
         <activity
             android:name=".RegisterOTPActivity"

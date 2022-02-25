@@ -30,6 +30,7 @@ public class SelectContactActivity extends AppCompatActivity {
     FirebaseUser user;
     FirebaseFirestore db;
 
+    ImageView btnBack;
     LinearLayout contactsView;
     String[] contactName;
     TextView lblContactCount, lblNoContacts;
@@ -44,12 +45,15 @@ public class SelectContactActivity extends AppCompatActivity {
         user = mAuth.getCurrentUser();
         db = FirebaseFirestore.getInstance();
 
-        //contactName = getResources().getStringArray(R.array.contact_name);
         contactsView = findViewById(R.id.linearContactList);
 
         ContactAdapter contactAdapter = new ContactAdapter(this, contactName);
         lblContactCount = findViewById(R.id.lblNumOfContacts);
         lblNoContacts = findViewById(R.id.lblNoContactsDesc);
+        btnBack = findViewById(R.id.backArrow);
+
+        btnBack.setOnClickListener(view -> goBack());
+
         getContacts();
         getContactCount();
     }
@@ -66,7 +70,6 @@ public class SelectContactActivity extends AppCompatActivity {
                         //FOR EACH
                         //GET ALL ID
                         for (QueryDocumentSnapshot contactSnap : task.getResult()) {
-
                             //GET CONTACT DETAILS
                             String email = contactSnap.getString("email");
                             String firstName = contactSnap.getString("firstName");
@@ -88,9 +91,7 @@ public class SelectContactActivity extends AppCompatActivity {
 
                             //SET DETAILS ONCLICK LISTENER
                             btnUpdate.setOnClickListener(view -> {
-
                                 Toast.makeText(this, email, Toast.LENGTH_SHORT).show();
-
                                 //PREPARE DATA TO PASS
                                 intent.putExtra("email", email);
                                 intent.putExtra("firstName", firstName);
@@ -100,39 +101,6 @@ public class SelectContactActivity extends AppCompatActivity {
                                 intent.putExtra("documentId", documentId);
 
                                 startActivity(intent);
-//                                //SHOW DETAILS DIALOG
-//                                Dialog dialog = new Dialog(SelectContactActivity.this);
-//                                View dialogView = getLayoutInflater().inflate(R.layout.activity_update_contact, null, false);
-//                                dialog.setContentView(dialogView);
-//                                dialog.setCancelable(false);
-//
-//                                //DECLARE DIALOG VIEWS
-//                                TextView txtEmail = dialogView.findViewById(R.id.lblEmail);
-//                                TextView txtFirstName = dialogView.findViewById(R.id.lblFirstName);
-//                                TextView txtLastName = dialogView.findViewById(R.id.lblLastName);
-//                                TextView txtMobileNumber = dialogView.findViewById(R.id.lblMobileNumber);
-//                                TextView txtRelation = dialogView.findViewById(R.id.lblRelation);
-//
-//                                Button btnApplyUpdate = dialogView.findViewById(R.id.btnUpdateContact);
-//
-//
-//                                //SET TEXT AND ON CLICK LISTENER
-//                                txtEmail.setText(email);
-//                                txtFirstName.setText(firstName);
-//                                txtLastName.setText(lastName);
-//                                txtMobileNumber.setText(mobileNumber);
-//                                txtRelation.setText(relation);
-//
-//                                btnApplyUpdate.setOnClickListener(view1 -> {
-//                                    //GET DATA I GUESS
-//
-//                                    //DISMISS DIALOG
-//                                    dialog.dismiss();
-//
-//                                    startActivity(new Intent(this, UpdateContactActivity.class));
-//                                });
-//
-//                                dialog.show();
                             });
 
                             btnDelete.setOnClickListener(view -> {
@@ -147,7 +115,6 @@ public class SelectContactActivity extends AppCompatActivity {
                                                 .collection("contacts")
                                                 .document(documentId)
                                                 .delete();
-
                                         //Reload Activity After deleting contact
                                         finish();
                                         startActivity(getIntent());
@@ -159,19 +126,16 @@ public class SelectContactActivity extends AppCompatActivity {
                                         dialogInterface.dismiss();
                                     }
                                 });
-
                                 AlertDialog alertDialog = dialogRemoveAccount.create();
                                 alertDialog.show();
                             });
                             //ADD TO LINEAR
                             contactsView.addView(detailsView);
                         }
-
                     } else {
                         //NO DATA AVAILABLE
                         Toast.makeText(this, "No Contacts Available", Toast.LENGTH_SHORT).show();
                     }
-
                 });
     }
 
@@ -186,17 +150,19 @@ public class SelectContactActivity extends AppCompatActivity {
                         }
                         lblContactCount.setText("Number of Contacts: "+ count + "/5");
 
-                        if(count==0){
+                        if(count==0) {
                             lblNoContacts.setVisibility(View.VISIBLE);
-                        }
-                        else{
+                        } else {
                             lblNoContacts.setVisibility(View.GONE);
                         }
-                    }
-
-                    else{
+                    } else {
                         Toast.makeText(this, "No Contacts Available", Toast.LENGTH_SHORT).show();
                     }
                 });
+    }
+
+    private void goBack(){
+        startActivity(new Intent(SelectContactActivity.this, DesignateContactActivity.class));
+        finish();
     }
 }

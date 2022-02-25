@@ -12,6 +12,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -37,14 +38,14 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.HashMap;
-import java.util.Map;
 
 public class LoginActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener {
     private FirebaseAuth mAuth;
 
     EditText txtEmailOrMobileNum, txtPassword;
     Button btnLogin;
-    TextView txtToggle;
+    TextView txtToggle, btnForgotPass, btnSignUp;
+    ImageView btnMenu;
     SignInButton btnGoogle;
     String isFromWidget;
 
@@ -65,7 +66,6 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
         //check if user is already logged in
         //Log.d("userSnap", user.getEmail());
         if(user != null) {
-            //determineNextActivity(user.getUid(), user.getEmail());
             Intent intent = new Intent(LoginActivity.this, LandingActivity.class);
             isFromWidget = getIntent().getStringExtra("isFromWidget");
 
@@ -88,12 +88,14 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
         user = mAuth.getCurrentUser();
         db = FirebaseFirestore.getInstance();
         colRef = db.collection("users");
-        createRequest();
 
         txtEmailOrMobileNum = findViewById(R.id.txtEmailOrMobileNum);
         txtPassword = findViewById(R.id.txtCurrentPassword);
         btnLogin = findViewById(R.id.btnLogin);
+        btnForgotPass = findViewById(R.id.btnForgotPassword);
+        btnSignUp = findViewById(R.id.lblRegister);
         txtToggle = findViewById(R.id.txtToggle);
+        btnMenu = findViewById(R.id.menu);
 
         btnGoogle = findViewById(R.id.btnLoginWithGoogle);
 
@@ -155,7 +157,6 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
             }
             txtPassword.setSelection(txtPassword.length());
         });
-
         btnLogin.setOnClickListener(view -> {
             String email, password;
 
@@ -180,7 +181,9 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
 
             loginUser(email,password);
         });
-
+        btnForgotPass.setOnClickListener(view -> forgotPassword());
+        btnSignUp.setOnClickListener(view -> userSignUp());
+        btnMenu.setOnClickListener(view -> othersRedirect());
     }
 
     private void updateUI(FirebaseUser user) {
@@ -207,18 +210,6 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
             });
             finish();
         }
-    }
-
-    //TODO: MAY KWENTA BA ITO?
-    private void createRequest() {
-        // Configure Google Sign In
-        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestIdToken(getString(R.string.default_web_client))
-                .requestEmail()
-                .build();
-
-        // Build a GoogleSignInClient with the options specified by gso.
-//        GoogleSignInClient mGoogleSignInClient = GoogleSignIn.getClient(getApplicationContext(), gso);
     }
 
     public void loginUser(String email, String password) {
@@ -287,7 +278,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                                 docRef.get().addOnSuccessListener(documentSnapshot -> {
                                     if(!documentSnapshot.exists()) {
                                         //ADD KNOWN AND PLACEHOLDER VALUES
-                                        HashMap<String, String> googleSignInMap = new HashMap<String, String>();
+                                        HashMap<String, String> googleSignInMap = new HashMap<>();
                                         googleSignInMap.put("lastName", account.getFamilyName());
                                         googleSignInMap.put("firstName", account.getGivenName());
                                         googleSignInMap.put("email", account.getEmail());
@@ -295,32 +286,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                                         Intent intent = new Intent(this, RegisterGoogleActivity.class);
                                         intent.putExtra("googleSignInMap",googleSignInMap);
                                         startActivity(intent);
-                                        /*
-                                        Map < String, Object > docUsers = new HashMap<>();
-                                        docUsers.put("ID", user.getUid());
-                                        docUsers.put("isVerified", false);
-                                        docUsers.put("LastName", account.getFamilyName());
-                                        docUsers.put("FirstName", account.getGivenName());
-                                        docUsers.put("MiddleName", "");
-                                        docUsers.put("Sex", "");
-                                        docUsers.put("BirthDate", "");
-                                        docUsers.put("MobileNumber", "");
-                                        docUsers.put("Email", account.getEmail());
-                                        docUsers.put("profileComplete", false);
 
-                                        //ADD TO DB
-                                        db.collection("users").document(user.getUid()).set(docUsers)
-                                                .addOnSuccessListener(unused -> {
-                                                    Toast.makeText(getApplicationContext(), "Successful db input", Toast.LENGTH_SHORT).show();
-                                                    //Log.d(TAG, "DocumentSnapshot successfully written!");
-                                                })
-                                                .addOnFailureListener(e -> {
-                                                    Toast.makeText(getApplicationContext(), "Unsuccessful", Toast.LENGTH_SHORT).show();
-                                                    //Log.w(TAG, "Error writing document", e);
-                                                });
-                                        updateUI(user);
-
-                                         */
                                         Toast.makeText(getApplicationContext(), "User does not exist", Toast.LENGTH_SHORT).show();
                                     } else { //ACCOUNT EXISTS, COMPLETE THE PROFILE
                                         colRef.document(user.getUid()).get().addOnSuccessListener(existingDocumentSnapshot -> {
@@ -355,9 +321,9 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
         }
     }
 
-    public void othersRedirect(View view) {
-        Intent intent = new Intent(getApplicationContext(), OthersActivity.class);
-        startActivity(intent);
+    public void othersRedirect() {
+        Intent others = new Intent(getApplicationContext(), OthersActivity.class);
+        startActivity(others);
     }
 
     @Override
@@ -370,13 +336,14 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
         startActivity(completeGoogleRegistration);
     }
 
-    public void forgotPassword(View view) {
-        startActivity(new Intent(LoginActivity.this, ForgotPasswordActivity.class));
+    public void forgotPassword() {
+        Intent forgotPass = new Intent(LoginActivity.this, ForgotPasswordActivity.class);
+        startActivity(forgotPass);
         finish();
     }
 
-    public void userSignUp(View view) {
-        Intent intent = new Intent (this, RegisterActivity.class);
-        startActivity(intent);
+    public void userSignUp() {
+        Intent register = new Intent (this, RegisterActivity.class);
+        startActivity(register);
     }
 }

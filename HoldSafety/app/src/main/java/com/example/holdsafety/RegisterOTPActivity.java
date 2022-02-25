@@ -12,6 +12,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -33,8 +34,9 @@ public class RegisterOTPActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
     FirebaseFirestore db;
     FirebaseUser user;
-    StorageReference imageRef = FirebaseStorage.getInstance().getReference("id");
+    StorageReference imageRef;
 
+    ImageView btnBack;
     Button btnSendCode;
     EditText etEmail;
     TextView txtTimeRemaining;
@@ -51,10 +53,12 @@ public class RegisterOTPActivity extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
         user = mAuth.getCurrentUser();
         db = FirebaseFirestore.getInstance();
+        imageRef = FirebaseStorage.getInstance().getReference("id");
 
-        btnSendCode = findViewById(R.id.btnSendCode);
         etEmail = findViewById(R.id.txtEmail);
         txtTimeRemaining = findViewById(R.id.txtTimeRemaining);
+        btnBack = findViewById(R.id.backArrow);
+        btnSendCode = findViewById(R.id.btnSendCode);
 
         //Get extras
         userEmail = getIntent().getStringExtra("Email");
@@ -65,6 +69,7 @@ public class RegisterOTPActivity extends AppCompatActivity {
         Toast.makeText(this, "Email: " + userEmail, Toast.LENGTH_LONG).show();
         etEmail.setText(userEmail);
 
+        btnBack.setOnClickListener(view -> goBack());
         btnSendCode.setOnClickListener(view -> sendCode());
     }
 
@@ -104,15 +109,11 @@ public class RegisterOTPActivity extends AppCompatActivity {
 
                                     db.collection("users").document(user.getUid()).update(docUsers)
                                             .addOnSuccessListener(aVoid -> {
-                                                Toast.makeText(getApplicationContext(),
-                                                        "pushed image to document",
-                                                        Toast.LENGTH_SHORT).show();
+                                                Toast.makeText(getApplicationContext(), "pushed image to document", Toast.LENGTH_SHORT).show();
                                                 Log.i(TAG, "Image pushed");
                                             })
                                             .addOnFailureListener(e -> {
-                                                Toast.makeText(getApplicationContext(),
-                                                        "Error writing document",
-                                                        Toast.LENGTH_SHORT).show();
+                                                Toast.makeText(getApplicationContext(), "Error writing document", Toast.LENGTH_SHORT).show();
                                                 Log.w(TAG, "Error writing document", e);
                                             });
                                 });
@@ -172,11 +173,14 @@ public class RegisterOTPActivity extends AppCompatActivity {
 
         int random  = new Random().nextInt(999999 + 1);
         code = String.valueOf(random);
-
         while(code.length() != 6) {
             code = "0" + code;
         }
-
         return code;
+    }
+
+    private void goBack() {
+        startActivity(new Intent(RegisterOTPActivity.this, RegisterActivity.class));
+        finish();
     }
 }

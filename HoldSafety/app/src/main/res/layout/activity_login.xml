@@ -23,7 +23,6 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             android:clickable="true"
-            android:onClick="othersRedirect"
             android:src="@drawable/menu"
             app:layout_constraintDimensionRatio="1:1"/>
 
@@ -244,7 +243,6 @@
             android:layout_height="wrap_content"
 
             android:fontFamily="sans-serif-light"
-            android:onClick="forgotPassword"
             android:text="Forgot Password?"
             android:textColor="@color/light_blue"
 
@@ -335,7 +333,6 @@
                 android:fontFamily="sans-serif-black"
                 android:text="Sign Up"
                 android:textColor="@color/light_blue"
-                android:onClick="userSignUp"
 
                 app:autoSizeMaxTextSize="15sp"
                 app:autoSizeMinTextSize="12sp"

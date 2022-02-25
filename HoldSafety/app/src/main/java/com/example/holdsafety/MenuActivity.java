@@ -3,10 +3,12 @@ package com.example.holdsafety;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
@@ -18,12 +20,9 @@ import com.google.firebase.auth.FirebaseAuth;
 
 public class MenuActivity extends AppCompatActivity {
     FirebaseAuth mAuth;
-    private GoogleApiClient googleApiClient;
-    GoogleSignInClient gsc;
-
-    GoogleSignInOptions gso;
-    TextView btnLogout;
-
+    ImageView btnBack;
+    ConstraintLayout btnUserAccount, btnDesignateContact, btnContactDevelopers, btnUserManual, btnTermsAndConditions, btnAbout;
+    TextView btnViewReports, btnLogout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,65 +30,61 @@ public class MenuActivity extends AppCompatActivity {
         setContentView(R.layout.activity_menu);
 
         mAuth = FirebaseAuth.getInstance();
+
+        btnBack = findViewById(R.id.backArrow);
+        btnUserAccount = findViewById(R.id.layoutAccountDetails);
+        btnDesignateContact = findViewById(R.id.btnDesignateContact);
+        btnContactDevelopers = findViewById(R.id.btnContactDevelopers);
+        btnUserManual = findViewById(R.id.btnUserManual);
+        btnTermsAndConditions = findViewById(R.id.btnTermsAndConditions);
+        btnAbout = findViewById(R.id.btnAbout);
+        btnViewReports = findViewById(R.id.btnViewReports);
         btnLogout = findViewById(R.id.txtLogout);
 
-        /*
-        gso = new GoogleSignInOptions
-                .Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestIdToken("233680747912-m8q45hor79go5n8aqfkuneklnkshudqs.apps.googleusercontent.com")
-                .requestEmail()
-                .build();
-
-        gsc = GoogleSignIn.getClient(this, gso);
-
-
-        googleApiClient = new GoogleApiClient.Builder(this)
-                .enableAutoManage(this, null)
-                .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
-                .build();
-        */
-
-
-        btnLogout.setOnClickListener(this::logoutUser);
+        btnBack.setOnClickListener(view -> goBack());
+        btnUserAccount.setOnClickListener(view -> userAccount());
+        btnDesignateContact.setOnClickListener(view -> designateContacts());
+        btnContactDevelopers.setOnClickListener(view -> contactDevelopers());
+        btnUserManual.setOnClickListener(view -> userManual());
+        btnTermsAndConditions.setOnClickListener(view -> termsAndConditions());
+        btnAbout.setOnClickListener(view -> aboutSystem());
+        btnViewReports.setOnClickListener(view -> viewReports());
+        btnLogout.setOnClickListener(view -> logoutUser());
     }
 
-    public void userAccount(View view){
-        Intent intent = new Intent (MenuActivity.this, AccountDetailsActivity.class);
-        startActivity(intent);
+    private void userAccount(){
+        Intent userAccount = new Intent (MenuActivity.this, AccountDetailsActivity.class);
+        startActivity(userAccount);
     }
 
-    public void designateContacts(View view){
-        //Toast.makeText(getApplicationContext(), "Designate Contacts", Toast.LENGTH_SHORT).show();
-        Intent intent = new Intent (getApplicationContext(), DesignateContactActivity.class);
-        startActivity(intent);
+    private void designateContacts(){
+        Intent designateContacts = new Intent (getApplicationContext(), DesignateContactActivity.class);
+        startActivity(designateContacts);
     }
 
-    public void contactDevelopers(View view){
-        Toast.makeText(getApplicationContext(), "Contact Developers", Toast.LENGTH_SHORT).show();
-        Intent intent = new Intent (getApplicationContext(), ContactDevelopersActivity.class);
-        startActivity(intent);
+    private void contactDevelopers(){
+        Intent contactDevelopers = new Intent (getApplicationContext(), ContactDevelopersActivity.class);
+        startActivity(contactDevelopers);
     }
 
-    public void userManual(View view){
+    private void userManual(){
         Toast.makeText(getApplicationContext(), "User Manual", Toast.LENGTH_SHORT).show();
     }
 
-    public void termsAndConditions(View view){
+    private void termsAndConditions(){
         Toast.makeText(getApplicationContext(), "Terms and Conditions", Toast.LENGTH_SHORT).show();
     }
 
-    public void aboutSystem(View view){
+    private void aboutSystem(){
         Toast.makeText(getApplicationContext(), "About the System", Toast.LENGTH_SHORT).show();
     }
 
-    public void viewReports(View view){
-        //Toast.makeText(getApplicationContext(), "About the System", Toast.LENGTH_SHORT).show();
-        Intent intent = new Intent (getApplicationContext(), ReportsActivity.class);
-        startActivity(intent);
+    private void viewReports(){
+        Intent viewReports = new Intent (getApplicationContext(), ReportsActivity.class);
+        startActivity(viewReports);
     }
 
-    public void logoutUser(View view){
-            //========SIGN OUT
+    private void logoutUser(){
             GoogleSignInOptions gso = new GoogleSignInOptions
                     .Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                     .requestIdToken("233680747912-m8q45hor79go5n8aqfkuneklnkshudqs.apps.googleusercontent.com")
@@ -107,8 +102,10 @@ public class MenuActivity extends AppCompatActivity {
                     finish();
                 }
             });
-            //========END OF SIGN OUT
+    }
 
-
+    private void goBack(){
+        startActivity(new Intent(MenuActivity.this, LandingActivity.class));
+        finish();
     }
 }

@@ -13,6 +13,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -35,6 +36,7 @@ import java.util.List;
 
 public class ContactDevelopersActivity extends AppCompatActivity {
     private String selectedConcern;
+    ImageView btnBack;
     EditText etMessage, etEmail;
     Button btnSend;
 
@@ -46,17 +48,20 @@ public class ContactDevelopersActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_contact_developers);
 
+        mAuth = FirebaseAuth.getInstance();
+        user = mAuth.getCurrentUser();
+
         dropdownContact();
+        btnBack = findViewById(R.id.backArrow);
         etEmail = findViewById(R.id.txtEmail);
         etMessage = findViewById(R.id.txtMessage);
         btnSend = findViewById(R.id.btnSend);
 
         //Get data from db and auto-input in the form
-        mAuth = FirebaseAuth.getInstance();
-        user = mAuth.getCurrentUser();
         checkUserEmail();
 
-        btnSend.setOnClickListener(this::sendMessage);
+        btnBack.setOnClickListener(view -> goBack());
+        btnSend.setOnClickListener(view -> sendMessage());
     }
 
     public void checkUserEmail(){
@@ -72,7 +77,7 @@ public class ContactDevelopersActivity extends AppCompatActivity {
         }
     }
 
-    public void sendMessage(View view){
+    public void sendMessage(){
         //Get user's emergency contacts
         FirebaseFirestore.getInstance()
                 .collection("admin")
@@ -108,7 +113,6 @@ public class ContactDevelopersActivity extends AppCompatActivity {
                         }
                     }
                 });
-
         Toast.makeText(getApplicationContext(), "Successfully sent a message to developers", Toast.LENGTH_SHORT).show();
     }
 
@@ -140,5 +144,10 @@ public class ContactDevelopersActivity extends AppCompatActivity {
             }
         });
         return selectedConcern;
+    }
+
+    private void goBack(){
+        startActivity(new Intent(ContactDevelopersActivity.this, MenuActivity.class));
+        finish();
     }
 }

@@ -78,7 +78,6 @@
 
         android:clickable="true"
         android:focusable="true"
-        android:onClick="addContact"
 
         android:background="@drawable/white_container">
 
@@ -154,7 +153,6 @@
 
         android:clickable="true"
         android:focusable="true"
-        android:onClick="updateContact"
 
         android:background="@drawable/white_container">
 
@@ -236,118 +234,6 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         app:layout_constraintGuide_percent="0.3" />
-
-
-    <!--
-    <TextView
-        android:id="@+id/lblDesignateContact"
-        android:layout_width="350dp"
-        android:layout_height="wrap_content"
-
-        android:layout_marginTop="76dp"
-        android:fontFamily="sans-serif-black"
-        android:text="Designate Emergency Contact"
-        android:layout_marginStart="40dp"
-
-        android:textColor="@color/white"
-        android:textSize="33sp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/backArrow" />
-
-
-
-    <RelativeLayout
-        android:id="@+id/btnAddContact"
-        android:layout_width="320dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="65dp"
-
-        android:paddingTop="17dp"
-        android:paddingBottom="17dp"
-
-        android:clickable="true"
-        android:onClick="addContact"
-
-        android:background="@drawable/white_container"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/lblDesignateContact">
-
-        <TextView
-            android:id="@+id/lblDesignate"
-            android:layout_width="230dp"
-            android:layout_height="wrap_content"
-            android:layout_alignParentStart="true"
-
-            android:layout_marginStart="20dp"
-
-            android:text="Add Emergency Contact"
-            android:textSize="18sp"
-            android:fontFamily="sans-serif"
-            android:textColor="@color/dark_blue"/>
-
-        <ImageView
-            android:id="@+id/imgContacts"
-            android:layout_width="35dp"
-            android:layout_height="25dp"
-
-            android:src="@drawable/add_user"
-            android:layout_alignParentEnd="true"
-
-            android:layout_marginEnd="20dp"/>
-    </RelativeLayout>
-
-    <RelativeLayout
-        android:id="@+id/btnUpdateContact"
-        android:layout_width="320dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-
-        android:paddingTop="17dp"
-        android:paddingBottom="17dp"
-
-        android:clickable="true"
-        android:onClick="updateContact"
-
-        android:background="@drawable/white_container"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btnAddContact">
-
-        <TextView
-            android:id="@+id/lblContactDev"
-            android:layout_width="230dp"
-            android:layout_height="wrap_content"
-            android:layout_alignParentStart="true"
-
-            android:layout_marginStart="20dp"
-
-            android:text="Update Emergency Contact"
-            android:textSize="18sp"
-            android:fontFamily="sans-serif"
-            android:textColor="@color/dark_blue"/>
-
-        <ImageView
-            android:id="@+id/imgContactDev"
-            android:layout_width="30dp"
-            android:layout_height="25dp"
-
-            android:src="@drawable/update_user"
-            android:layout_alignParentEnd="true"
-
-            android:layout_marginEnd="20dp"/>
-    </RelativeLayout>
-
-    <ImageView
-        android:id="@+id/imgDesignate"
-        android:layout_width="250dp"
-        android:layout_height="350dp"
-
-        android:layout_alignParentEnd="true"
-        android:src="@drawable/holdsafety_designate"
-
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" /> -->
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/mainGuidelineV1"

@@ -17,6 +17,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -34,7 +35,6 @@ import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -51,18 +51,18 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class RegisterGoogleActivity extends AppCompatActivity {
+    FirebaseAuth mAuth;
+    FirebaseUser user;
+    FirebaseFirestore db;
+    StorageReference imageRef;
+
+    ImageView btnBack;
     EditText etMiddleName, etMobileNo, etBirthDate;
     TextView lblName;
     Button btnProceed, btnUpload;
     Spinner spinnerSex;
     static Uri imageURI;
-    String idUri;
-
-    FirebaseUser user;
-    FirebaseAuth mAuth;
-    FirebaseFirestore db = FirebaseFirestore.getInstance();
-    StorageReference imageRef;
-    DocumentReference docRef;
+    String idPicUri;
 
     final Calendar calendar = Calendar.getInstance();
 
@@ -81,6 +81,7 @@ public class RegisterGoogleActivity extends AppCompatActivity {
         //Get data from db and auto-input in the form
         mAuth = FirebaseAuth.getInstance();
         user = mAuth.getCurrentUser();
+        db = FirebaseFirestore.getInstance();
         imageRef = FirebaseStorage.getInstance().getReference("id");
 
         Intent intent = getIntent();
@@ -93,10 +94,11 @@ public class RegisterGoogleActivity extends AppCompatActivity {
         etMiddleName = findViewById(R.id.txtMiddleName);
         etMobileNo = findViewById(R.id.txtMobileNumber);
         etBirthDate = findViewById(R.id.txtBirthDate);
-        btnProceed = findViewById(R.id.btnProceed);
-        btnUpload = findViewById(R.id.btnUploadID);
         spinnerSex = findViewById(R.id.txtSex);
         lblName = findViewById(R.id.lblGoogleName);
+        btnBack = findViewById(R.id.backArrow);
+        btnProceed = findViewById(R.id.btnProceed);
+        btnUpload = findViewById(R.id.btnUploadID);
 
         // check if a user is signed in
         GoogleSignInAccount signInAccount = GoogleSignIn.getLastSignedInAccount(this);
@@ -115,29 +117,14 @@ public class RegisterGoogleActivity extends AppCompatActivity {
         lblName.setText(username);
 
         //Upload Image
-        btnUpload.setOnClickListener(v -> pickImage());
-        btnProceed.setOnClickListener(this::userRegister);
+        btnBack.setOnClickListener(view -> goBack());
+        btnUpload.setOnClickListener(view -> pickImage());
+        btnProceed.setOnClickListener(view -> userRegister());
 
-        /*
-
-        if(user != null) {
-            docRef = db.collection("users").document(user.getUid());
-            docRef.get().addOnSuccessListener(documentSnapshot -> {
-                if(documentSnapshot.exists()) {
-                    //REFACTORED FUNCTIONALITY TO SHOW ACCOUNT NAME AS LABEL
-                    firstName = documentSnapshot.getString("FirstName");
-                    lastName = documentSnapshot.getString("LastName");
-                    String username =  lastName + ", " + firstName;
-                    lblName.setText(username);
-                }
-            });
-        }
-
-         */
     }
 
     //refactored userRegister onClickListener into independent function
-    public void userRegister(View view){
+    public void userRegister(){
         user = mAuth.getCurrentUser();
         String mobileNumberRegex = "^(09|\\+639)\\d{9}$";
         Pattern mobileNumberPattern = Pattern.compile(mobileNumberRegex);
@@ -180,9 +167,6 @@ public class RegisterGoogleActivity extends AppCompatActivity {
 
             db.collection("users").document(userId).set(docUsers)
                     .addOnSuccessListener(aVoid -> {
-//                            Toast.makeText(getApplicationContext(), "DocumentSnapshot successfully written!", Toast.LENGTH_SHORT).show();
-//                            Log.i("passed", "url"+idUri);
-
                         Intent landing = new Intent(RegisterGoogleActivity.this,
                                 LandingActivity.class);
                         startActivity(landing);
@@ -202,31 +186,28 @@ public class RegisterGoogleActivity extends AppCompatActivity {
             imageRef.child(user.getUid())
                     .putFile(Uri.parse(lblLink.getText().toString()))
                     .addOnSuccessListener(taskSnapshot -> imageRef.child(user.getUid()).getDownloadUrl().addOnSuccessListener(uri -> {
-                        idUri = String.valueOf(uri);
-                        docUsers.put("imgUri", idUri);
-                        Log.i("URI gDUrl()", idUri);
+                        idPicUri = String.valueOf(uri);
+                        docUsers.put("imgUri", idPicUri);
+                        Log.i("URI gDUrl()", idPicUri);
 
                         db.collection("users").document(user.getUid()).set(docUsers)
                                 .addOnSuccessListener(aVoid -> {
-                                    Toast.makeText(getApplicationContext(),
-                                            "pushed image to document",
-                                            Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(getApplicationContext(), "pushed image to document", Toast.LENGTH_SHORT).show();
                                     Log.i(TAG, "Image pushed");
                                 })
                                 .addOnFailureListener(e -> {
-                                    Toast.makeText(getApplicationContext(),
-                                            "Error writing document",
-                                            Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(getApplicationContext(), "Error writing document", Toast.LENGTH_SHORT).show();
                                     Log.w(TAG, "Error writing document", e);
                                 });
-                    })).addOnFailureListener(e -> Toast.makeText(RegisterGoogleActivity.this, "Upload failed.",
-                            Toast.LENGTH_SHORT).show());
+                    }))
+                    .addOnFailureListener(e -> Toast.makeText(RegisterGoogleActivity.this, "Upload failed.",
+                            Toast.LENGTH_SHORT).show()
+                    );
     }
 
     private void pickImage() {
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
-                == PackageManager.PERMISSION_DENIED) {
-            //DENIED PERMISSION
+                == PackageManager.PERMISSION_DENIED) { //DENIED PERMISSION
             ActivityCompat.requestPermissions(this,
                     new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
                     EXTERNAL_STORAGE_REQ_CODE);
@@ -249,12 +230,10 @@ public class RegisterGoogleActivity extends AppCompatActivity {
             new ActivityResultCallback<ActivityResult>() {
                 @Override
                 public void onActivityResult(ActivityResult result) {
-
                     if (result.getResultCode() == RESULT_OK) {
                         Intent data = result.getData();
                         if (data != null) {
                             if (data.getData() != null) {
-
                                 imageURI = data.getData();
                                 lblLink.setText(imageURI.toString());
                             }
@@ -268,7 +247,6 @@ public class RegisterGoogleActivity extends AppCompatActivity {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
         if (requestCode == EXTERNAL_STORAGE_REQ_CODE) {
-
             if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.READ_EXTERNAL_STORAGE)) {
                 //DENIED ONCE
                 ActivityCompat.requestPermissions(this,
@@ -306,9 +284,9 @@ public class RegisterGoogleActivity extends AppCompatActivity {
                 View view = super.getDropDownView(position, convertView, parent);
                 TextView tv = (TextView) view;
 
-                if(position==0){
+                if(position==0) {
                     tv.setTextColor(getResources().getColor(R.color.hint_color));
-                } else{
+                } else {
                     tv.setTextColor(Color.BLACK);
                 }
                 return view;
@@ -363,7 +341,7 @@ public class RegisterGoogleActivity extends AppCompatActivity {
         );
     }
 
-    public void goBack(View view){
+    public void goBack(){
         startActivity(new Intent(getApplicationContext(), LoginActivity.class));
         finish();
     }

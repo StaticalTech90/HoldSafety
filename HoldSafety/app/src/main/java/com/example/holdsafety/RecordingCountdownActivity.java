@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.CountDownTimer;
-import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -46,16 +45,15 @@ public class RecordingCountdownActivity extends AppCompatActivity {
 
                 if(ActivityCompat.checkSelfPermission(RecordingCountdownActivity.this,
                         Manifest.permission.CAMERA) == PackageManager.PERMISSION_DENIED){
-                    Intent recordAudio = new Intent(RecordingCountdownActivity.this, AudioRecording.class);
+                    Intent recordAudio = new Intent(RecordingCountdownActivity.this, AudioRecordingActivity.class);
                     recordAudio.putExtra("vidLinkRequirements", vidLinkRequirements);
                     startActivity(recordAudio);
                 } else {
-                    Intent recordVideo = new Intent(RecordingCountdownActivity.this, AutoRecordingActivity.class);
+                    Intent recordVideo = new Intent(RecordingCountdownActivity.this, VideoRecordingActivity.class);
                     recordVideo.putExtra("vidLinkRequirements", vidLinkRequirements);
                     startActivity(recordVideo);
                 }
             }
-
         };
 
         btnCancel.setOnClickListener(view -> {
@@ -63,9 +61,7 @@ public class RecordingCountdownActivity extends AppCompatActivity {
             Toast.makeText(getApplicationContext(), "Cancel", Toast.LENGTH_SHORT).show();
             startActivity(new Intent(RecordingCountdownActivity.this, LandingActivity.class));
             finish();
-
         });
-
         timer.start();
     }
 }

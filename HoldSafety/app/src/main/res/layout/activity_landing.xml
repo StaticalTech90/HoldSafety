@@ -17,7 +17,7 @@
         app:layout_constraintTop_toTopOf="@+id/mainGuidelineH1">
 
         <ImageView
-            android:id="@+id/menuButton"
+            android:id="@+id/btnMenu"
             android:layout_width="wrap_content"
             android:layout_height="0dp"
             app:layout_constraintEnd_toEndOf="parent"
@@ -27,7 +27,7 @@
             app:layout_constraintDimensionRatio="1:1"/>
 
         <ImageView
-            android:id="@+id/bluetooth"
+            android:id="@+id/btnBluetooth"
             android:layout_width="wrap_content"
             android:layout_height="0dp"
             app:layout_constraintStart_toStartOf="parent"
@@ -174,18 +174,18 @@
     <!--
 
     <ImageView
-        android:id="@+id/bluetooth"
+        android:id="@+id/btnBluetooth"
         android:layout_width="30dp"
         android:layout_height="30dp"
 
         android:layout_marginTop="30dp"
         android:layout_marginStart="40dp"
-        android:src="@drawable/bluetooth"
+        android:src="@drawable/btnBluetooth"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <ImageView
-        android:id="@+id/menuButton"
+        android:id="@+id/btnMenu"
         android:layout_width="30dp"
         android:layout_height="35dp"
 
@@ -201,7 +201,7 @@
         android:id="@+id/containerInstruction"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@+id/bluetooth"
+        app:layout_constraintTop_toBottomOf="@+id/btnBluetooth"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         android:layout_marginTop="60dp">

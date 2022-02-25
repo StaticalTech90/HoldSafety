@@ -16,6 +16,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -23,13 +24,11 @@ import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
-import com.google.android.gms.tasks.OnFailureListener;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.EmailAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
@@ -50,14 +49,14 @@ public class AccountDetailsActivity extends AppCompatActivity {
     DocumentReference docRef;
 
     Boolean isNumberChanged = false, isEmailChanged = false;
-    String imageLink;
     String userPassword = "";
     String idUri, userId;
     HashMap<String, Object> docUsers = new HashMap<>();
 
-    TextView txtLastName, txtFirstName, txtMiddleName, txtBirthDate, txtSex, lblAccountStatus, txtImage;
+    ImageView btnBack;
+    TextView txtLastName, txtFirstName, txtMiddleName, txtBirthDate, txtSex, lblAccountStatus, txtImage, btnRemoveAccount, btnChangePass;
     EditText txtMobileNumber, txtEmail;
-    Button btnSave, btnUpload;
+    Button btnSave, btnUploadID;
 
     private static final int EXTERNAL_STORAGE_REQ_CODE = 1000;
 
@@ -70,7 +69,6 @@ public class AccountDetailsActivity extends AppCompatActivity {
         user = mAuth.getCurrentUser();
         db = FirebaseFirestore.getInstance();
         userId = user.getUid();
-        //Toast.makeText(AccountDetailsActivity.this, user.getUid(), Toast.LENGTH_SHORT).show();
         docRef = db.collection("users").document(userId);
 
         txtLastName = findViewById(R.id.txtLastName);
@@ -82,10 +80,13 @@ public class AccountDetailsActivity extends AppCompatActivity {
         txtEmail = findViewById(R.id.txtEmail);
         txtImage = findViewById(R.id.txtImageLink);
         lblAccountStatus = findViewById(R.id.lblAccountStatus);
+        btnBack = findViewById(R.id.backArrow);
+        btnRemoveAccount = findViewById(R.id.btnRemoveAccount);
+        btnChangePass = findViewById(R.id.btnChangePassword);
         btnSave = findViewById(R.id.btnSave);
-        btnUpload = findViewById(R.id.btnUploadID);
-        //show details
+        btnUploadID = findViewById(R.id.btnUploadID);
 
+        //show details
         docRef.get().addOnSuccessListener(documentSnapshot -> {
             if(documentSnapshot.exists()){
                 String lastName = documentSnapshot.getString("LastName");
@@ -161,6 +162,11 @@ public class AccountDetailsActivity extends AppCompatActivity {
             }
         });
 
+        btnBack.setOnClickListener(view -> goBack());
+        btnRemoveAccount.setOnClickListener(view -> removeAccount());
+        btnChangePass.setOnClickListener(view -> changePassword());
+        btnUploadID.setOnClickListener(v -> pickImage());
+
         btnSave.setOnClickListener(view -> {
             String newMobileNumber, newEmail;
 
@@ -228,26 +234,20 @@ public class AccountDetailsActivity extends AppCompatActivity {
                     }
                 });
 
-                dialogSaveChanges.setPositiveButton("Done", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        //Do nothing here, override this button later to change the close behaviour
-                    }
+                dialogSaveChanges.setPositiveButton("Done", (dialogInterface, i) -> {
+                    //Do nothing here, override this button later to change the close behaviour
                 });
 
-                dialogSaveChanges.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        dialogInterface.dismiss();
+                dialogSaveChanges.setNegativeButton("Cancel", (dialogInterface, i) -> {
+                    dialogInterface.dismiss();
 
-                        //reset values
-                        isEmailChanged = false;
-                        isNumberChanged = false;
-                        userPassword = "";
+                    //reset values
+                    isEmailChanged = false;
+                    isNumberChanged = false;
+                    userPassword = "";
 
-                        finish();
-                        startActivity(getIntent());
-                    }
+                    finish();
+                    startActivity(getIntent());
                 });
 
                 AlertDialog changeEmailDialog = dialogSaveChanges.create();
@@ -275,13 +275,6 @@ public class AccountDetailsActivity extends AppCompatActivity {
                 }); //end of dialog code
             }
         });
-
-        btnUpload.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                pickImage();
-            }
-        });
     }
 
     private void setAccountStatus(Boolean isVerified, Boolean isProfileComplete) {
@@ -301,30 +294,28 @@ public class AccountDetailsActivity extends AppCompatActivity {
     private void uploadPhotoToStorage() {
         imageRef.child(user.getUid())
                 .putFile(Uri.parse(txtImage.getText().toString()))
-                .addOnSuccessListener(taskSnapshot -> {
-                    imageRef.child(user.getUid()).getDownloadUrl().addOnSuccessListener(uri -> {
-                        idUri = String.valueOf(uri);
-                        docUsers.put("imgUri", idUri);
-                        docUsers.put("profileComplete", true);
-                        Log.i("URI gDUrl()", idUri);
+                .addOnSuccessListener(taskSnapshot -> imageRef.child(user.getUid()).getDownloadUrl().addOnSuccessListener(uri -> {
+                    idUri = String.valueOf(uri);
+                    docUsers.put("imgUri", idUri);
+                    docUsers.put("profileComplete", true);
+                    Log.i("URI gDUrl()", idUri);
 
-                        db.collection("users").document(user.getUid()).update(docUsers)
-                                .addOnSuccessListener(aVoid -> {
-                                    Toast.makeText(getApplicationContext(),
-                                            "pushed image to document",
-                                            Toast.LENGTH_SHORT).show();
-                                    Log.i(TAG, "Image pushed");
-                                })
-                                .addOnFailureListener(e -> {
-                                    Toast.makeText(getApplicationContext(),
-                                            "Error writing document",
-                                            Toast.LENGTH_SHORT).show();
-                                    Log.w(TAG, "Error writing document", e);
-                                });
+                    db.collection("users").document(user.getUid()).update(docUsers)
+                            .addOnSuccessListener(aVoid -> {
+                                Toast.makeText(getApplicationContext(),
+                                        "pushed image to document",
+                                        Toast.LENGTH_SHORT).show();
+                                Log.i(TAG, "Image pushed");
+                            })
+                            .addOnFailureListener(e -> {
+                                Toast.makeText(getApplicationContext(),
+                                        "Error writing document",
+                                        Toast.LENGTH_SHORT).show();
+                                Log.w(TAG, "Error writing document", e);
+                            });
 
-                        setAccountStatus(false, true);
-                    });
-                }).addOnFailureListener(e -> Toast.makeText(AccountDetailsActivity.this, "Upload failed.",
+                    setAccountStatus(false, true);
+                })).addOnFailureListener(e -> Toast.makeText(AccountDetailsActivity.this, "Upload failed.",
                 Toast.LENGTH_SHORT).show());
     }
 
@@ -359,11 +350,9 @@ public class AccountDetailsActivity extends AppCompatActivity {
                         Intent data = result.getData();
                         if (data != null) {
                             if (data.getData() != null) {
-
                                 Uri imageUri = data.getData();
                                 txtImage.setText(imageUri.toString());
                                 uploadPhotoToStorage();
-
                             }
                         }
                     }
@@ -380,7 +369,7 @@ public class AccountDetailsActivity extends AppCompatActivity {
         }
     }
 
-    public void changePassword(View view){
+    public void changePassword(){
         startActivity(new Intent(AccountDetailsActivity.this, ChangePasswordActivity.class));
         finish();
     }
@@ -413,33 +402,24 @@ public class AccountDetailsActivity extends AppCompatActivity {
                                         startActivity(getIntent());
                                     }
                                 })
-                                .addOnFailureListener(new OnFailureListener() {
-                                    @Override
-                                    public void onFailure(@NonNull Exception e) {
-                                        isNumberChanged = false;
-                                        isEmailChanged = false;
-                                        userPassword = "";
-
-                                        //Toast.makeText(AccountDetailsActivity.this, "Update Email Failed" + "\nChanges not Saved", Toast.LENGTH_LONG).show();
-
-                                        finish();
-                                        startActivity(getIntent());
-                                    }
+                                .addOnFailureListener(e -> {
+                                    isNumberChanged = false;
+                                    isEmailChanged = false;
+                                    userPassword = "";
+                                    finish();
+                                    startActivity(getIntent());
                                 });
                     }
                 })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        isNumberChanged = false;
-                        isEmailChanged = false;
-                        userPassword = "";
+                .addOnFailureListener(e -> {
+                    isNumberChanged = false;
+                    isEmailChanged = false;
+                    userPassword = "";
 
-                        //Toast.makeText(AccountDetailsActivity.this, "Reauthentication Failed" + "\nChanges not Saved", Toast.LENGTH_LONG).show();
+                    //Toast.makeText(AccountDetailsActivity.this, "Reauthentication Failed" + "\nChanges not Saved", Toast.LENGTH_LONG).show();
 
-                        finish();
-                        startActivity(getIntent());
-                    }
+                    finish();
+                    startActivity(getIntent());
                 });
     }
 
@@ -464,18 +444,15 @@ public class AccountDetailsActivity extends AppCompatActivity {
                         }
                     }
                 })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        isNumberChanged = false;
-                        isEmailChanged = false;
-                        userPassword = "";
+                .addOnFailureListener(e -> {
+                    isNumberChanged = false;
+                    isEmailChanged = false;
+                    userPassword = "";
 
-                        Toast.makeText(AccountDetailsActivity.this, "Incorrect Password" + "\nChanges not Saved", Toast.LENGTH_LONG).show();
+                    Toast.makeText(AccountDetailsActivity.this, "Incorrect Password" + "\nChanges not Saved", Toast.LENGTH_LONG).show();
 
-                        finish();
-                        startActivity(getIntent());
-                    }
+                    finish();
+                    startActivity(getIntent());
                 });
     }
 
@@ -526,19 +503,16 @@ public class AccountDetailsActivity extends AppCompatActivity {
             }
         });
 
-        dialogSaveChanges.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-                dialogInterface.dismiss();
+        dialogSaveChanges.setNegativeButton("Cancel", (dialogInterface, i) -> {
+            dialogInterface.dismiss();
 
-                //reset values
-                isEmailChanged = false;
-                isNumberChanged = false;
-                userPassword = "";
+            //reset values
+            isEmailChanged = false;
+            isNumberChanged = false;
+            userPassword = "";
 
-                finish();
-                startActivity(getIntent());
-            }
+            finish();
+            startActivity(getIntent());
         });
 
         AlertDialog changeEmailDialog = dialogSaveChanges.create();
@@ -563,7 +537,7 @@ public class AccountDetailsActivity extends AppCompatActivity {
         });
     }
 
-    public void removeAccount(View view){
+    public void removeAccount(){
         //add password reauthentication after delete photo works
         user = FirebaseAuth.getInstance().getCurrentUser();
 
@@ -573,14 +547,11 @@ public class AccountDetailsActivity extends AppCompatActivity {
         dialogRemoveAccount.setMessage("Are you sure you want to delete your account? " +
                 "Keep in mind that all information and files would be deleted from the system.");
 
-        dialogRemoveAccount.setPositiveButton("Delete", (dialogInterface, i) ->
-                user.delete().addOnCompleteListener(task -> {
+        dialogRemoveAccount.setPositiveButton("Delete", (dialogInterface, i) -> user.delete().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
                 //DELETE IMAGE
                 imageRef.child(user.getUid()).delete()
-                .addOnSuccessListener(v -> {
-                    Toast.makeText(AccountDetailsActivity.this, "Deleted Image", Toast.LENGTH_LONG).show();
-                }).addOnFailureListener(v1 -> {
+                .addOnSuccessListener(v -> Toast.makeText(AccountDetailsActivity.this, "Deleted Image", Toast.LENGTH_LONG).show()).addOnFailureListener(v1 -> {
                     //Toast.makeText(AccountDetailsActivity.this, "Failed", Toast.LENGTH_LONG).show();
                 });
 
@@ -590,18 +561,8 @@ public class AccountDetailsActivity extends AppCompatActivity {
                 startActivity(new Intent(AccountDetailsActivity.this, LoginActivity.class));
                 finish();
             }
-            else{
-                //Toast.makeText(AccountDetailsActivity.this, "Error: " + task.getException().getMessage(), Toast.LENGTH_LONG).show();
-            }
         }));
-
-        dialogRemoveAccount.setNegativeButton("Dismiss", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-                dialogInterface.dismiss();
-            }
-        });
-
+        dialogRemoveAccount.setNegativeButton("Dismiss", (dialogInterface, i) -> dialogInterface.dismiss());
         AlertDialog alertDialog = dialogRemoveAccount.create();
         alertDialog.show();
     }
@@ -614,6 +575,11 @@ public class AccountDetailsActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         super.onBackPressed();
+        startActivity(new Intent(AccountDetailsActivity.this, MenuActivity.class));
+        finish();
+    }
+
+    private void goBack(){
         startActivity(new Intent(AccountDetailsActivity.this, MenuActivity.class));
         finish();
     }

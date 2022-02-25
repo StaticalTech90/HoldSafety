@@ -21,6 +21,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -55,33 +56,22 @@ import java.util.regex.Pattern;
 
 public class RegisterActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
-
-    FirebaseFirestore db = FirebaseFirestore.getInstance();
-    StorageReference imageRef = FirebaseStorage.getInstance().getReference("id");
+    FirebaseFirestore db;
+    StorageReference imageRef;
     FirebaseUser user;
 
     HashMap<String, Object> docUsers = new HashMap<>();
     Intent otp;
 
     final Calendar calendar = Calendar.getInstance();
-    String idUri;
-
+    String idPicUri;
     TextView lblLink;
 
-    private EditText etLastName;
-    private EditText etFirstName;
-    private EditText etMiddleName;
-    private EditText etBirthdate;
+    private EditText etLastName, etFirstName, etMiddleName, etBirthdate, etMobileNumber, etEmail, etPassword, etConPassword;
     private Spinner spinnerSex;
-    private EditText etMobileNumber;
-    private EditText etEmail;
-    private EditText etPassword;
-    private EditText etConPassword;
-
     TextView txtTogglePass, txtToggleConfirmPass;
-
-    Button btnRegister;
-    Button btnUpload;
+    ImageView btnBack;
+    Button btnUpload, btnRegister;
 
     private static final int EXTERNAL_STORAGE_REQ_CODE = 1000;
 
@@ -91,9 +81,9 @@ public class RegisterActivity extends AppCompatActivity {
         setContentView(R.layout.activity_register);
 
         mAuth = FirebaseAuth.getInstance();
+        db = FirebaseFirestore.getInstance();
+        imageRef = FirebaseStorage.getInstance().getReference("id");
         user = mAuth.getCurrentUser();
-
-
 
         lblLink = findViewById(R.id.txtImageLink);
 
@@ -106,12 +96,12 @@ public class RegisterActivity extends AppCompatActivity {
         etEmail = findViewById(R.id.txtEmail);
         etPassword = findViewById(R.id.txtPassword);
         etConPassword = findViewById(R.id.txtConfirmPassword);
+        btnBack = findViewById(R.id.backArrow);
+        btnUpload = findViewById(R.id.btnUploadID);
         btnRegister = findViewById(R.id.registerButton);
 
         txtTogglePass = findViewById(R.id.txtTogglePass);
         txtToggleConfirmPass = findViewById(R.id.txtToggleConfirmPass);
-
-
 
         txtTogglePass.setVisibility(View.GONE);
         txtToggleConfirmPass.setVisibility(View.GONE);
@@ -120,11 +110,8 @@ public class RegisterActivity extends AppCompatActivity {
 
         otp = new Intent(RegisterActivity.this, RegisterOTPActivity.class);
 
-        btnUpload = findViewById(R.id.btnUploadID);
-
         String[] sex = new String[]{"Sex *", "M", "F"};
         List<String> sexList = new ArrayList<>(Arrays.asList(sex));
-
         ArrayAdapter<String> spinnerSexAdapter = new ArrayAdapter<String>(this, R.layout.spinner_sex, sexList){
             @Override
             public boolean isEnabled(int position){
@@ -141,14 +128,12 @@ public class RegisterActivity extends AppCompatActivity {
                 } else{
                     tv.setTextColor(Color.BLACK);
                 }
-
                 return view;
             }
         };
 
         spinnerSexAdapter.setDropDownViewResource(R.layout.spinner_sex);
         spinnerSex.setAdapter(spinnerSexAdapter);
-
         spinnerSex.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -175,7 +160,6 @@ public class RegisterActivity extends AppCompatActivity {
             calendar.set(Calendar.DAY_OF_MONTH,day);
             updateDate();
         };
-
         //show DatePickerDialog using this listener
         etBirthdate.setOnClickListener(view -> new DatePickerDialog(
                 RegisterActivity.this,
@@ -185,16 +169,11 @@ public class RegisterActivity extends AppCompatActivity {
                 calendar.get(Calendar.DAY_OF_MONTH)).show()
         );
 
-
-        //Upload Image
-        btnUpload.setOnClickListener(v -> pickImage());
-
-        btnRegister.setOnClickListener(v -> {
-            try {
-                userRegister();
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
+        btnBack.setOnClickListener(view -> goBack());
+        btnUpload.setOnClickListener(view -> pickImage());
+        btnRegister.setOnClickListener(view -> {
+            try { userRegister(); }
+            catch (ParseException e) { e.printStackTrace(); }
         });
 
         //masking pass
@@ -428,9 +407,9 @@ public class RegisterActivity extends AppCompatActivity {
                 .putFile(Uri.parse(lblLink.getText().toString()))
                 .addOnSuccessListener(taskSnapshot -> {
                     imageRef.child(user.getUid()).getDownloadUrl().addOnSuccessListener(uri -> {
-                        idUri = String.valueOf(uri);
-                        docUsers.put("imgUri", idUri);
-                        Log.i("URI gDUrl()", idUri);
+                        idPicUri = String.valueOf(uri);
+                        docUsers.put("imgUri", idPicUri);
+                        Log.i("URI gDUrl()", idPicUri);
                         //otp.putExtra("imgUri", idUri);
                         //otp.putExtra("UserDetails", docUsers);
 
@@ -511,15 +490,15 @@ public class RegisterActivity extends AppCompatActivity {
         }
     }
 
-    public void goBack(View view){
-        finish();
+    public void goBack() {
         startActivity(new Intent(getApplicationContext(), LoginActivity.class));
+        finish();
     }
 
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        finish();
         startActivity(new Intent(getApplicationContext(), LoginActivity.class));
+        finish();
     }
 }

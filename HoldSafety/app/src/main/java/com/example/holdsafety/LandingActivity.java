@@ -52,7 +52,6 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.io.IOException;
 import java.sql.Timestamp;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -62,19 +61,20 @@ import java.util.Locale;
 import java.util.Map;
 
 public class LandingActivity extends AppCompatActivity {
-    String coordsLon, coordsLat;
     FirebaseAuth mAuth;
     FirebaseFirestore db;
     DocumentReference docRef;
     CollectionReference docRefBrgy;
     FirebaseUser user;
+
     String userID, isFromWidget, nearestBrgy;
     String lastName, firstName, mobileNumber, googleMapLink, message;
     String brgyName, brgyCity, brgyEmail, brgyMobileNumber;
+    String coordsLon, coordsLat;
     String reportID;
 
     Button btnSafetyButton;
-    ImageView btnMenu;
+    ImageView btnBluetooth, btnMenu;
     TextView seconds, description;
     private int timer;
     long remainTime;
@@ -90,7 +90,6 @@ public class LandingActivity extends AppCompatActivity {
     private final int AUDIO_REQ_CODE = 1004;
     private final int STORAGE_WRITE_REQ_CODE = 1005;
 
-
     @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -100,14 +99,12 @@ public class LandingActivity extends AppCompatActivity {
         //Get logged in user
         mAuth = FirebaseAuth.getInstance();
         user = mAuth.getCurrentUser();
-        assert user != null;
         userID = user.getUid();
         db = FirebaseFirestore.getInstance();
         docRef = db.collection("users").document(userID);
         docRefBrgy = db.collection("barangay");
 
         isFromWidget = getIntent().getStringExtra("isFromWidget");
-        //Toast.makeText(getApplicationContext(), "isFromWidget: " + isFromWidget, Toast.LENGTH_SHORT).show();
 
         //FLPC DECLARATION
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
@@ -116,12 +113,9 @@ public class LandingActivity extends AppCompatActivity {
         description = findViewById(R.id.description);
 
         btnSafetyButton = findViewById(R.id.btnSafetyButton);
-        btnMenu = findViewById(R.id.menuButton);
+        btnBluetooth = findViewById(R.id.btnBluetooth);
+        btnMenu = findViewById(R.id.btnMenu);
 
-        btnMenu.setOnClickListener(v -> startActivity(new Intent(LandingActivity.this,
-                MenuActivity.class)));
-
-        //handle method for holdsafety button
         btnSafetyButton.setOnTouchListener(new View.OnTouchListener() {
 
             //Declare timer instance
@@ -169,23 +163,27 @@ public class LandingActivity extends AppCompatActivity {
                 return false;
             }
         });
+        btnBluetooth.setOnClickListener(v -> setUpBluetooth());
+        btnMenu.setOnClickListener(v -> menuRedirect());
 
         //handle method for holdsafety widget
         if(isFromWidget!=null && isFromWidget.equals("true")){
             getCurrentLocation();
             //Toast.makeText(getApplicationContext(), "Inside IF" , Toast.LENGTH_SHORT).show();
         }
-
     }
 
-    public void menuRedirect(View view) {
+    public void setUpBluetooth() {
+        //TODO: bluetooth connection
+    }
+
+    public void menuRedirect() {
         startActivity(new Intent(LandingActivity.this, MenuActivity.class));
     }
 
     //cancel timer
     public void cancelTimer(CountDownTimer cTimer) {
         if (cTimer != null) {
-            //Toast.makeText(getApplicationContext(), "Cancel", Toast.LENGTH_SHORT).show();
             cTimer.cancel();
         }
     }
@@ -317,14 +315,11 @@ public class LandingActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == GPS_REQ_CODE) {
-            if (resultCode == RESULT_OK) {
-                //USER PRESSED OK
+            if (resultCode == RESULT_OK) { //USER PRESSED OK
                 getCurrentLocation();
-            } else {
-                //USER PRESSED NO THANKS
+            } else { //USER PRESSED NO THANKS
                 showGPSDialog();
             }
-
         }
     }
 
@@ -333,12 +328,10 @@ public class LandingActivity extends AppCompatActivity {
     private void getCurrentLocation() {
         fusedLocationProviderClient.getLastLocation()
                 .addOnCompleteListener(task -> {
-
                     Location location = task.getResult();
                     if (location == null) {
                         //TODO DISPLAY GPS DIALOG
                         showGPSDialog();
-
                     } else {
                         String address="";
                         Geocoder geocoder = new Geocoder(this, Locale.getDefault());
@@ -359,7 +352,6 @@ public class LandingActivity extends AppCompatActivity {
                             }
                             //String address = addresses.get(1).getAddressLine(0);
                             //Toast.makeText(this, "Current Location: " + location.getLatitude() + "," + location.getLongitude(), Toast.LENGTH_SHORT).show();
-
                             coordsLat = Double.toString(location.getLatitude());
                             coordsLon = Double.toString(location.getLongitude());
                             docDetails.put("Lat", coordsLat);
@@ -384,8 +376,7 @@ public class LandingActivity extends AppCompatActivity {
         Task<LocationSettingsResponse> locationSettingsResponseTask = LocationServices.getSettingsClient(this)
                 .checkLocationSettings(builder.build());
 
-        locationSettingsResponseTask.addOnCompleteListener(
-                task -> {
+        locationSettingsResponseTask.addOnCompleteListener(task -> {
                     try {
                         LocationSettingsResponse locationSettingsResponse = task.getResult(ApiException.class);
                         getCurrentLocation();
@@ -414,13 +405,10 @@ public class LandingActivity extends AppCompatActivity {
                 .collection("barangay")
                 .get()
                 .addOnCompleteListener(task -> {
-
                     HashMap<String, Object> hashBrgys = new HashMap<>();
 
                     for (QueryDocumentSnapshot brgySnap : task.getResult()) {
-
                         HashMap<String, Object> brgySnapHash = new HashMap<>();
-
                         String brgyID = brgySnap.getId();
 
                         String brgyName = brgySnap.getString("Barangay");
@@ -452,18 +440,14 @@ public class LandingActivity extends AppCompatActivity {
                     QueryDocumentSnapshot nearestBrgySnap = null;
                     float nearestDistance = 0;
                     for (String key : hashBrgys.keySet()) {
-
                         HashMap<String, Object> hashDistances = (HashMap<String, Object>) hashBrgys.get(key);
                         if (hashDistances != null) {
-
                             QueryDocumentSnapshot brgySnap = (QueryDocumentSnapshot) hashDistances.get("brgySnap");
                             float distance = (float) hashDistances.get("distance");
 
-                            if(nearestDistance == 0){
-                                //FIRST KEY
+                            if(nearestDistance == 0){ //FIRST KEY
                                 nearestDistance = distance;
                                 nearestBrgySnap = brgySnap;
-
                             } else if(distance < nearestDistance){
                                 nearestDistance = distance;
                                 nearestBrgySnap = brgySnap;
@@ -478,10 +462,6 @@ public class LandingActivity extends AppCompatActivity {
                     wifiManager.setWifiEnabled(true);
 
                     String nearestBrgyID = nearestBrgySnap.getId();
-                    //Toast.makeText(LandingActivity.this, "Nearest Brgyv ID: " + nearestBrgySnap.getId(), Toast.LENGTH_SHORT).show();
-                    //Toast.makeText(LandingActivity.this, "Nearest Brgy: " + nearestBrgySnap.getString("Barangay"), Toast.LENGTH_SHORT).show();
-                    //sendLocationToContacts(location, address);
-                    //Toast.makeText(LandingActivity.this, "Geolocation: " + address, Toast.LENGTH_SHORT).show();
                     sendAlertMessage(location, address, nearestBrgyID);
                 });
     }
@@ -501,9 +481,7 @@ public class LandingActivity extends AppCompatActivity {
                         "\nPhone Number: " + mobileNumber +
                         "\nLocation: " + address +
                         "\nPlease go here immediately: " + googleMapLink;
-
-            }
-            else{
+            } else {
                 Toast.makeText(getApplicationContext(), "No current user", Toast.LENGTH_LONG).show();
                 finish();
             }
@@ -524,8 +502,7 @@ public class LandingActivity extends AppCompatActivity {
                         @Override
                         public void onReceive(Context context, Intent intent) {
                             switch (getResultCode()) {
-                                case Activity.RESULT_OK:
-                                    //MESSAGE SENT
+                                case Activity.RESULT_OK: //MESSAGE SENT
                                     break;
                                 case SmsManager.RESULT_ERROR_GENERIC_FAILURE:
                                     break;
@@ -572,9 +549,6 @@ public class LandingActivity extends AppCompatActivity {
 
                     Toast.makeText(LandingActivity.this, "Email Sent to Brgy", Toast.LENGTH_LONG).show();
                 }
-
-
-
             }
             else{
                 Toast.makeText(getApplicationContext(), "No barangay", Toast.LENGTH_LONG).show();
@@ -592,7 +566,6 @@ public class LandingActivity extends AppCompatActivity {
                     //Get each contact details
                     for (QueryDocumentSnapshot snapshot : task.getResult()) {
                         String contactID = snapshot.getId();
-
                         String mobileNumber = snapshot.getString("mobileNumber");
                         String firstName = snapshot.getString("firstName");
                         String lastName = snapshot.getString("lastName");
@@ -606,9 +579,7 @@ public class LandingActivity extends AppCompatActivity {
                                 @Override
                                 public void onReceive(Context context, Intent intent) {
                                     switch (getResultCode()) {
-
-                                        case Activity.RESULT_OK:
-                                            //MESSAGE SENT
+                                        case Activity.RESULT_OK: //MESSAGE SENT
                                             break;
                                         case SmsManager.RESULT_ERROR_GENERIC_FAILURE:
                                             break;
@@ -641,7 +612,6 @@ public class LandingActivity extends AppCompatActivity {
                                 Toast.makeText(getApplicationContext(), "SMS Error: " + ex.getMessage(), Toast.LENGTH_LONG).show();
                                 ex.printStackTrace();
                             }
-
                             //SEND SMS
                     /*
                     SmsManager manager = SmsManager.getDefault();
@@ -652,6 +622,7 @@ public class LandingActivity extends AppCompatActivity {
                     Toast.makeText(getApplicationContext(), "SMS Sent to: " + mobileNumber, Toast.LENGTH_LONG).show();
                     */
                         }
+
                         if (email != null) {
                             //Send Email
                             String username = "holdsafety.ph@gmail.com";
@@ -661,8 +632,6 @@ public class LandingActivity extends AppCompatActivity {
                             List<String> recipients = Collections.singletonList(email);
                             //email of sender, password of sender, list of recipients, email subject, email body
                             new MailTask(LandingActivity.this).execute(username, password, recipients, subject, message);
-
-                            //Toast.makeText(LandingActivity.this, "Email Sent", Toast.LENGTH_LONG).show();
                         }
                     }
                     saveToDB();
@@ -688,25 +657,17 @@ public class LandingActivity extends AppCompatActivity {
 
                         db = FirebaseFirestore.getInstance();
 
-                        //MAKE THE USER ID VISIBLE TO QUERIES BY ADDING FIELD
-                        /*
-                        Map<String, Object> fillerField = new HashMap<>();
-                        fillerField.put("Field", "filler_for_visibility");
-                        db.collection("reportUser").document(userID).set(fillerField);
-                        db.collection("reportAdmin").document(nearestBrgy).set(fillerField);
-                         */
-
                         //GET THE ID OF THE REPORT TO BE SAVED IN DB
                         DocumentReference docRefDetails = db.collection("reports").document();
                         reportID = docRefDetails.getId();
                         Log.d("DocID", "documentId: " + reportID);
 
                         //putExtras for evidence push to reportId
-                        Intent audioRecordIntent = new Intent(this, AudioRecording.class);
+                        Intent audioRecordIntent = new Intent(this, AudioRecordingActivity.class);
                         audioRecordIntent.putExtra("reportId", reportID);
                         audioRecordIntent.putExtra("userId", userID);
 
-                        Intent videoRecordIntent = new Intent(this, AutoRecordingActivity.class);
+                        Intent videoRecordIntent = new Intent(this, VideoRecordingActivity.class);
                         videoRecordIntent.putExtra("reportId", reportID);
                         videoRecordIntent.putExtra("userId", userID);
 
@@ -729,10 +690,8 @@ public class LandingActivity extends AppCompatActivity {
                 .addOnFailureListener(documentSnapshot -> {
                     docDetails.put("FirstName", "");
                     docDetails.put("LastName", "");
-
                     docDetails.put("Barangay", nearestBrgy);
                     docDetails.put("Report Date", timestamp);
-
 
                     db = FirebaseFirestore.getInstance();
 
@@ -752,7 +711,7 @@ public class LandingActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        //TODO: IF USER DETAILS INCOMPLETE, GO BACK TO FILL UP DETAILS (GOOGLE SIGN IN)
+        //IF USER DETAILS INCOMPLETE, GO BACK TO FILL UP DETAILS (GOOGLE SIGN IN)
 //        db.collection("users").document(userID).get()
 //                .addOnSuccessListener(documentSnapshot -> {
 //                    if(!documentSnapshot.getBoolean("profileComplete")) { // not null or true
@@ -766,4 +725,5 @@ public class LandingActivity extends AppCompatActivity {
         //});
     }
 
+    // idk bat nakacomment out tong onstart, if it's not used, just delete it.
 }
