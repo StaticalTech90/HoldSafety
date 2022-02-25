@@ -31,7 +31,7 @@ import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class AddContactActivity extends AppCompatActivity {
-    private FirebaseAuth mAuth;
+    FirebaseAuth mAuth;
     FirebaseUser user;
     FirebaseFirestore db = FirebaseFirestore.getInstance();
 
@@ -179,8 +179,7 @@ public class AddContactActivity extends AppCompatActivity {
                 });
     }
 
-    private void goBack(){
-        startActivity(new Intent(AddContactActivity.this, DesignateContactActivity.class));
+    private void goBack() {
         finish();
     }
 }

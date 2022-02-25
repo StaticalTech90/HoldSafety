@@ -283,11 +283,9 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                                         googleSignInMap.put("firstName", account.getGivenName());
                                         googleSignInMap.put("email", account.getEmail());
 
-                                        Intent intent = new Intent(this, RegisterGoogleActivity.class);
-                                        intent.putExtra("googleSignInMap",googleSignInMap);
-                                        startActivity(intent);
-
-                                        Toast.makeText(getApplicationContext(), "User does not exist", Toast.LENGTH_SHORT).show();
+                                        Intent googleReg = new Intent(this, RegisterGoogleActivity.class);
+                                        googleReg.putExtra("googleSignInMap", googleSignInMap);
+                                        startActivity(googleReg);
                                     } else { //ACCOUNT EXISTS, COMPLETE THE PROFILE
                                         colRef.document(user.getUid()).get().addOnSuccessListener(existingDocumentSnapshot -> {
                                             Boolean isComplete = documentSnapshot.getBoolean("profileComplete");
@@ -339,7 +337,6 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
     public void forgotPassword() {
         Intent forgotPass = new Intent(LoginActivity.this, ForgotPasswordActivity.class);
         startActivity(forgotPass);
-        finish();
     }
 
     public void userSignUp() {

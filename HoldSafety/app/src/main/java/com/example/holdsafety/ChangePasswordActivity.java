@@ -197,11 +197,9 @@ public class ChangePasswordActivity extends AppCompatActivity {
 
     public void forgotPassword() {
         startActivity(new Intent(ChangePasswordActivity.this, ForgotPasswordActivity.class));
-        finish();
     }
 
-    private void goBack(){
-        startActivity(new Intent(ChangePasswordActivity.this, AccountDetailsActivity.class));
+    private void goBack() {
         finish();
     }
 }

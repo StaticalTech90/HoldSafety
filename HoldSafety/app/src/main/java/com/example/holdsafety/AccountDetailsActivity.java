@@ -371,7 +371,6 @@ public class AccountDetailsActivity extends AppCompatActivity {
 
     public void changePassword(){
         startActivity(new Intent(AccountDetailsActivity.this, ChangePasswordActivity.class));
-        finish();
     }
 
     public void changeEmail(String newEmail){
@@ -567,20 +566,7 @@ public class AccountDetailsActivity extends AppCompatActivity {
         alertDialog.show();
     }
 
-    public void goBack(View view){
-        startActivity(new Intent(AccountDetailsActivity.this, MenuActivity.class));
-        finish();
-    }
-
-    @Override
-    public void onBackPressed() {
-        super.onBackPressed();
-        startActivity(new Intent(AccountDetailsActivity.this, MenuActivity.class));
-        finish();
-    }
-
     private void goBack(){
-        startActivity(new Intent(AccountDetailsActivity.this, MenuActivity.class));
         finish();
     }
 }

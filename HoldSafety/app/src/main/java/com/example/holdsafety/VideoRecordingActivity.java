@@ -66,7 +66,6 @@ public class VideoRecordingActivity extends AppCompatActivity {
 
     CountDownTimer timer;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -101,7 +100,6 @@ public class VideoRecordingActivity extends AppCompatActivity {
             }
         };
 
-
         btnRecord.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -128,15 +126,12 @@ public class VideoRecordingActivity extends AppCompatActivity {
                                 long timeRemaining = (l/1000) + 1;
                                 //txtAudioRecording.setText("Recording will stop in " + timeRemaining + " seconds");
                             }
-
                             @Override
                             public void onFinish() {
                                 //3. STOP RECORDING
                                 btnRecord.performClick();
                             }
-
                         }.start();
-
                          */
                     } else {
                         releaseMediaRecorder();
@@ -194,19 +189,7 @@ public class VideoRecordingActivity extends AppCompatActivity {
                     Log.d("Video to Document", "Fetching video URI success");
                     idUri = String.valueOf(uri);
                     docUsers.put("Evidence", idUri);
-                    Log.d("Video to Document", idUri); // WORKING. FETCHES CORRECT VID. JUST NEED TO PUT IT IN THE DB
-//                                Log.i("URI gDUrl()", idUri);
-
-                    //TODO: make this part work
-                    //UPDATE THE "Evidence" FIELD IN REPORT DB (USER)
-                    /*
-                    db.collection("reportUser").document(userID).collection("reportDetails").document(reportID).update(docUsers)
-                            .addOnSuccessListener(unused -> Log.d("Video to Document", "Success! pushed to reportUser, id " + userID + " w/vid ID " + idUri))
-                            .addOnFailureListener(e -> Log.d("Video to Document", "Failed to save to reportUser"));
-                    //UPDATE THE "Evidence" FIELD IN REPORT DB (ADMIN)
-                    db.collection("reportAdmin").document(nearestBrgy).collection("reportDetails").document(reportID).update(docUsers)
-                            .addOnSuccessListener(unused -> Log.d("Video to Document", "Success! pushed to reportAdmin, id " + nearestBrgy + " w/vid ID " + idUri))
-                            .addOnFailureListener(e -> Log.d("Video to Document", "Failed to save to reportAdmin"));*/
+                    Log.d("Video to Document", idUri);
 
                     //UPDATE THE "Evidence" FIELD IN REPORT DB (GENERAL)
                     db.collection("reports").document(reportID).update(docUsers)
@@ -241,11 +224,10 @@ public class VideoRecordingActivity extends AppCompatActivity {
         if(isRecording){
             txtIsRecording.setVisibility(View.VISIBLE);
             btnRecord.setImageResource(R.drawable.recording_shape);
-        } else{
+        } else {
             //txtIsRecording.setText("Not Recording");
             txtIsRecording.setVisibility(View.INVISIBLE);
             btnRecord.setImageResource(0);
-            //TODO: ADD TO FIREBASE
         }
     }
 
@@ -306,13 +288,9 @@ public class VideoRecordingActivity extends AppCompatActivity {
         }
     }
 
-    /**
-     * Create a File for saving a video
-     */
     private File getOutputMediaFile() {
         // To be safe, you should check that the SDCard is mounted
         // using Environment.getExternalStorageState() before doing this.
-
         File mediaStorageDir = new File(Environment.getExternalStoragePublicDirectory(
                 Environment.DIRECTORY_PICTURES), "EmergencyVideo");
         // This location works best if you want the created images to be shared
@@ -326,50 +304,10 @@ public class VideoRecordingActivity extends AppCompatActivity {
             }
         }
 
-        // Create a media file name
-//        Date date = new Date();
-//        Timestamp timestamp = new Timestamp(date.getTime());
-//        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd_HH:mm", Locale.getDefault());
-//        String currentDateandTime = sdf.format(timestamp);
-//
-//        File mediaFile = new File(mediaStorageDir.getPath() + File.separator +
-//                "HoldSafety_" + currentDateandTime + ".mp4");
-//        recordingFile = mediaFile;
-//        return mediaFile;
-
         Date date = new Date();
         File mediaFile = new File(mediaStorageDir.getPath() + File.separator + "HoldSafety_" + date.getTime() + ".mp4");
         recordingFile = mediaFile;
         return mediaFile;
-
-        /*
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd_HH:mma", Locale.getDefault());
-        String currentDateandTime = sdf.format(new Date());
-        File mediaFile = new File(mediaStorageDir.getPath() + File.separator +
-                "VID_" + currentDateandTime + ".mp4");
-        recordingFile = mediaFile;
-        return mediaFile;
-         */
-
-        // Create a media file name
-//        Date date = new Date();
-//        Timestamp timestamp = new Timestamp(date.getTime());
-//        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd_HH:mm", Locale.getDefault());
-//        String currentDateandTime = sdf.format(timestamp);
-//
-//        File mediaFile = new File(mediaStorageDir.getPath() + File.separator +
-//                "HoldSafety_" + currentDateandTime + ".mp4");
-//        recordingFile = mediaFile;
-//        return mediaFile;
-
-        /*
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd_HH:mma", Locale.getDefault());
-        String currentDateandTime = sdf.format(new Date());
-        File mediaFile = new File(mediaStorageDir.getPath() + File.separator +
-                "VID_" + currentDateandTime + ".mp4");
-        recordingFile = mediaFile;
-        return mediaFile;
-         */
     }
 
     private void setHandler() {

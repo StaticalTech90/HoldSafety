@@ -162,7 +162,6 @@ public class SelectContactActivity extends AppCompatActivity {
     }
 
     private void goBack(){
-        startActivity(new Intent(SelectContactActivity.this, DesignateContactActivity.class));
         finish();
     }
 }

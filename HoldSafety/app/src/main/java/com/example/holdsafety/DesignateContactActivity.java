@@ -28,16 +28,13 @@ public class DesignateContactActivity extends AppCompatActivity {
 
     public void addContact() {
         startActivity(new Intent (DesignateContactActivity.this, AddContactActivity.class));
-        finish();
     }
 
     public void updateContact() {
         startActivity(new Intent (DesignateContactActivity.this, SelectContactActivity.class));
-        finish();
     }
 
     private void goBack() {
-        startActivity(new Intent(DesignateContactActivity.this, MenuActivity.class));
         finish();
     }
 }

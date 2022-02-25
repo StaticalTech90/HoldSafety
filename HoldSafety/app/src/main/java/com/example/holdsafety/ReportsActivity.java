@@ -130,7 +130,6 @@ public class ReportsActivity extends AppCompatActivity {
     }
 
     private void goBack(){
-        startActivity(new Intent(ReportsActivity.this, MenuActivity.class));
         finish();
     }
 }

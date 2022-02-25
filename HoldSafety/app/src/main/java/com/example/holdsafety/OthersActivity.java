@@ -49,7 +49,6 @@ public class OthersActivity extends AppCompatActivity {
     }
 
     private void goBack(){
-        startActivity(new Intent(OthersActivity.this, LoginActivity.class));
         finish();
     }
 }

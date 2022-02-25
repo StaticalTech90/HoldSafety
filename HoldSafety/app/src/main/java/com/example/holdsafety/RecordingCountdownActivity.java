@@ -59,7 +59,6 @@ public class RecordingCountdownActivity extends AppCompatActivity {
         btnCancel.setOnClickListener(view -> {
             timer.cancel();
             Toast.makeText(getApplicationContext(), "Cancel", Toast.LENGTH_SHORT).show();
-            startActivity(new Intent(RecordingCountdownActivity.this, LandingActivity.class));
             finish();
         });
         timer.start();

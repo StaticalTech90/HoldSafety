@@ -56,8 +56,7 @@ public class ForgotPasswordActivity extends AppCompatActivity {
         }
     }
 
-    private void goBack(){
-        startActivity(new Intent(ForgotPasswordActivity.this, LoginActivity.class));
+    private void goBack() {
         finish();
     }
 }

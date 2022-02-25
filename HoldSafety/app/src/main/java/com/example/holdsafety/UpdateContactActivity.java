@@ -15,7 +15,7 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 public class UpdateContactActivity extends AppCompatActivity {
-    private FirebaseAuth mAuth;
+    FirebaseAuth mAuth;
     FirebaseUser user;
     FirebaseFirestore db;
 
@@ -76,7 +76,6 @@ public class UpdateContactActivity extends AppCompatActivity {
         } else {
             Toast.makeText(this, "unable to get extras", Toast.LENGTH_SHORT).show();
         }
-
     }
 
     public void updateContact(){
@@ -97,7 +96,6 @@ public class UpdateContactActivity extends AppCompatActivity {
                 Toast.makeText(this, "Successfully updated", Toast.LENGTH_SHORT).show();
 
                 startActivity(new Intent(this, SelectContactActivity.class));
-                finish();
             }
             else {
                 Toast.makeText(UpdateContactActivity.this, "Failed to update", Toast.LENGTH_SHORT).show();
@@ -105,8 +103,7 @@ public class UpdateContactActivity extends AppCompatActivity {
         });
     }
 
-    private void goBack(){
-        startActivity(new Intent(UpdateContactActivity.this, SelectContactActivity.class));
+    private void goBack() {
         finish();
     }
 }

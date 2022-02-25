@@ -104,8 +104,7 @@ public class MenuActivity extends AppCompatActivity {
             });
     }
 
-    private void goBack(){
-        startActivity(new Intent(MenuActivity.this, LandingActivity.class));
+    private void goBack() {
         finish();
     }
 }

@@ -120,7 +120,6 @@ public class AudioRecordingActivity extends AppCompatActivity {
                 isRecording = !isRecording;
             }
         });
-
         setRecorder();
     }
 
@@ -220,7 +219,6 @@ public class AudioRecordingActivity extends AppCompatActivity {
                 btnAudio.performClick();
             }
         }.start();
-
          */
         btnAudio.setEnabled(true);
         btnAudio.performClick();
@@ -294,7 +292,6 @@ public class AudioRecordingActivity extends AppCompatActivity {
             btnAudio.setText("Stop Recording");
             Toast.makeText(AudioRecordingActivity.this, "Audio Recording Started", Toast.LENGTH_SHORT).show();
 
-
             //2. SET TIMER (5 SECONDS) - Limit of the recording
             new CountDownTimer(5000, 1000){
 
@@ -316,12 +313,8 @@ public class AudioRecordingActivity extends AppCompatActivity {
             Toast.makeText(AudioRecordingActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
             e.printStackTrace();
         }
-
     }
 
-    /**
-     * Create a File for saving audio
-     */
     private File getOutputMediaFile() {
         // To be safe, you should check that the SDCard is mounted
         // using Environment.getExternalStorageState() before doing this.

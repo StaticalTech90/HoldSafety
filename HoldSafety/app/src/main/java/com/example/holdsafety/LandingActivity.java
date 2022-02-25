@@ -131,7 +131,6 @@ public class LandingActivity extends AppCompatActivity {
 
                 //timer executes this code once finished
                 public void onFinish() {
-                    //Toast.makeText(getApplicationContext(), "2 seconds finished", Toast.LENGTH_SHORT).show();
                     getCurrentLocation();
                 }
             };
@@ -151,9 +150,6 @@ public class LandingActivity extends AppCompatActivity {
                     description.setVisibility(View.VISIBLE);
                     seconds.setVisibility(View.INVISIBLE);
 
-                    //for debug
-                    //Toast.makeText(getApplicationContext(), "Time Pressed: " + timer, Toast.LENGTH_SHORT).show();
-
                     //cancels countdown; invalidates startActivity
                     cTimer.cancel();
 
@@ -169,7 +165,6 @@ public class LandingActivity extends AppCompatActivity {
         //handle method for holdsafety widget
         if(isFromWidget!=null && isFromWidget.equals("true")){
             getCurrentLocation();
-            //Toast.makeText(getApplicationContext(), "Inside IF" , Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -301,13 +296,13 @@ public class LandingActivity extends AppCompatActivity {
 //                    == PackageManager.PERMISSION_GRANTED){
 //
 //            }
-////            else {
-////                Intent settingsIntent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-////                Uri uri = Uri.fromParts("package", getPackageName(), null);
-////                settingsIntent.setData(uri);
-////                startActivity(settingsIntent);
-////                Toast.makeText(this, "Please Grant Camera Permission.", Toast.LENGTH_SHORT).show();
-////            }
+//            else {
+//                Intent settingsIntent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+//                Uri uri = Uri.fromParts("package", getPackageName(), null);
+//                settingsIntent.setData(uri);
+//                startActivity(settingsIntent);
+//                Toast.makeText(this, "Please Grant Camera Permission.", Toast.LENGTH_SHORT).show();
+//            }
 //        }
     }
 
@@ -411,12 +406,8 @@ public class LandingActivity extends AppCompatActivity {
                         HashMap<String, Object> brgySnapHash = new HashMap<>();
                         String brgyID = brgySnap.getId();
 
-                        String brgyName = brgySnap.getString("Barangay");
-                        String city = brgySnap.getString("City");
-                        String email = brgySnap.getString("Email");
                         String lat = brgySnap.getString("Latitude");
                         String lon = brgySnap.getString("Longitude");
-                        String brgyMNumber = brgySnap.getString("MobileNumber");
 
                         //COMPARE BRGY LAT & LON TO USER
                         if (lat != null && lon != null) {
@@ -433,7 +424,6 @@ public class LandingActivity extends AppCompatActivity {
                             //ADD TO ALL BRGY SNAP
                             hashBrgys.put(brgyID, brgySnapHash);
                         }
-
                     }
 
                     //COMPARE DISTANCES BETWEEN BARANGAYS
@@ -483,19 +473,16 @@ public class LandingActivity extends AppCompatActivity {
                         "\nPlease go here immediately: " + googleMapLink;
             } else {
                 Toast.makeText(getApplicationContext(), "No current user", Toast.LENGTH_LONG).show();
-                finish();
             }
         });
 
         //get nearest brgy details
         docRefBrgy.document(nearestBrgyID).get().addOnSuccessListener(documentSnapshot -> {
-            //Toast.makeText(getApplicationContext(), "Inside Doc Ref", Toast.LENGTH_LONG).show();
             if(documentSnapshot.exists()){
                 brgyName = documentSnapshot.getString("Barangay");
                 brgyCity = documentSnapshot.getString("City");
                 brgyEmail = documentSnapshot.getString("Email");
                 brgyMobileNumber = documentSnapshot.getString("MobileNumber");
-                //Toast.makeText(getApplicationContext(), "Brgy Name [Inside docRefBrgy]: " + brgyName, Toast.LENGTH_LONG).show();
 
                 if (brgyMobileNumber != null) {
                     registerReceiver(new BroadcastReceiver() {
@@ -549,10 +536,8 @@ public class LandingActivity extends AppCompatActivity {
 
                     Toast.makeText(LandingActivity.this, "Email Sent to Brgy", Toast.LENGTH_LONG).show();
                 }
-            }
-            else{
+            } else {
                 Toast.makeText(getApplicationContext(), "No barangay", Toast.LENGTH_LONG).show();
-                finish();
             }
         });
 
@@ -613,14 +598,14 @@ public class LandingActivity extends AppCompatActivity {
                                 ex.printStackTrace();
                             }
                             //SEND SMS
-                    /*
-                    SmsManager manager = SmsManager.getDefault();
-                    PendingIntent sentPI = PendingIntent.getBroadcast(LandingActivity.this,
-                            SEND_SMS_REQ_CODE, new Intent("SMS_SENT"), 0);
-                    manager.sendTextMessage(mobileNumber, null, message, sentPI, null);
-                    Toast.makeText(getApplicationContext(), "SMS Sent", Toast.LENGTH_LONG).show();
-                    Toast.makeText(getApplicationContext(), "SMS Sent to: " + mobileNumber, Toast.LENGTH_LONG).show();
-                    */
+                            /*
+                            SmsManager manager = SmsManager.getDefault();
+                            PendingIntent sentPI = PendingIntent.getBroadcast(LandingActivity.this,
+                                    SEND_SMS_REQ_CODE, new Intent("SMS_SENT"), 0);
+                            manager.sendTextMessage(mobileNumber, null, message, sentPI, null);
+                            Toast.makeText(getApplicationContext(), "SMS Sent", Toast.LENGTH_LONG).show();
+                            Toast.makeText(getApplicationContext(), "SMS Sent to: " + mobileNumber, Toast.LENGTH_LONG).show();
+                            */
                         }
 
                         if (email != null) {

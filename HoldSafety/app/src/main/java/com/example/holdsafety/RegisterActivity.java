@@ -366,7 +366,6 @@ public class RegisterActivity extends AppCompatActivity {
                                                otp.putExtra("Email", etEmail.getText().toString());
                                                otp.putExtra("UserDetails", docUsers);
                                                startActivity(otp);
-                                               finish();
                                            } else {
                                                // If sign up fails, display a message to the user.
                                                Log.w(TAG, "signUpWithEmailPassword:failure", task.getException());
@@ -389,8 +388,6 @@ public class RegisterActivity extends AppCompatActivity {
                }
            }
         });
-
-
     }
 
     //update edittext value
@@ -491,14 +488,6 @@ public class RegisterActivity extends AppCompatActivity {
     }
 
     public void goBack() {
-        startActivity(new Intent(getApplicationContext(), LoginActivity.class));
-        finish();
-    }
-
-    @Override
-    public void onBackPressed() {
-        super.onBackPressed();
-        startActivity(new Intent(getApplicationContext(), LoginActivity.class));
         finish();
     }
 }

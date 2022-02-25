@@ -116,11 +116,9 @@ public class RegisterGoogleActivity extends AppCompatActivity {
         String username =  lastName + ", " + firstName;
         lblName.setText(username);
 
-        //Upload Image
         btnBack.setOnClickListener(view -> goBack());
         btnUpload.setOnClickListener(view -> pickImage());
         btnProceed.setOnClickListener(view -> userRegister());
-
     }
 
     //refactored userRegister onClickListener into independent function
@@ -342,7 +340,6 @@ public class RegisterGoogleActivity extends AppCompatActivity {
     }
 
     public void goBack(){
-        startActivity(new Intent(getApplicationContext(), LoginActivity.class));
         finish();
     }
 }
