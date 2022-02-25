@@ -147,7 +147,6 @@ public class ContactDevelopersActivity extends AppCompatActivity {
     }
 
     private void goBack(){
-        startActivity(new Intent(ContactDevelopersActivity.this, MenuActivity.class));
         finish();
     }
 }
