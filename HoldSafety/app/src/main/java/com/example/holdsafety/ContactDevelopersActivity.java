@@ -1,13 +1,6 @@
 package com.example.holdsafety;
 
-import android.app.Activity;
-import android.app.PendingIntent;
-import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
 import android.os.Bundle;
-import android.telephony.SmsManager;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.AdapterView;
@@ -16,19 +9,14 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Spinner;
-import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -88,7 +76,7 @@ public class ContactDevelopersActivity extends AppCompatActivity {
         Pattern emailPattern = Pattern.compile(emailRegex);
         Matcher emailMatcher = emailPattern.matcher(etEmail.getText());
 
-        if(TextUtils.isEmpty(email)){
+        if(TextUtils.isEmpty(email)) {
             etEmail.setError("Please enter email");
         } else if (!emailMatcher.matches()) {
             etEmail.setError("Please enter valid email");
@@ -99,47 +87,33 @@ public class ContactDevelopersActivity extends AppCompatActivity {
             FirebaseFirestore.getInstance()
                     .collection("admin")
                     .get()
-                    .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                        @Override
-                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                            //Get each contact details
-                            for(QueryDocumentSnapshot snapshot : task.getResult()){
-                                String contactID = snapshot.getId();
+                    .addOnCompleteListener(task -> {
+                        //Get each contact details
+                        for(QueryDocumentSnapshot snapshot : task.getResult()){
+                            String email1 = snapshot.getString("Email");
 
-                                //String mobileNumber = snapshot.getString("mobileNumber");
-                                //String firstName = snapshot.getString("firstName");
-                                //String lastName = snapshot.getString("lastName");
-                                String email = snapshot.getString("Email");
+                            if(email1 !=null){
+                                //Send Email
+                                String username = "holdsafety.ph@gmail.com";
+                                String password = "HoldSafety@4qmag";
+                                String subject = "HOLDSAFETY CONTACT DEVELOPERS: " + selectedConcern ;
+                                String message1 = "Sender: " + etEmail.getText().toString().trim()
+                                        + " Message: " + etMessage.getText().toString().trim();
 
-                                //Toast.makeText(getApplicationContext(), "Developer: " + email, Toast.LENGTH_LONG).show();
-                                if(email!=null){
-                                    //Send Email
-                                    String username = "holdsafety.ph@gmail.com";
-                                    String password = "HoldSafety@4qmag";
-                                    String subject = "HOLDSAFETY CONTACT DEVELOPERS: " + selectedConcern ;
-                                    String message = "Sender: " + etEmail.getText().toString().trim()
-                                            + " Message: " + etMessage.getText().toString().trim();
+                                List<String> recipients = Collections.singletonList(email1);
+                                //email of sender, password of sender, list of recipients, email subject, email body
+                                new MailTask(ContactDevelopersActivity.this).execute(username, password, recipients, subject, message1);
 
-                                    List<String> recipients = Collections.singletonList(email);
-                                    //email of sender, password of sender, list of recipients, email subject, email body
-                                    new MailTask(ContactDevelopersActivity.this).execute(username, password, recipients, subject, message);
-
-                                    Toast.makeText(ContactDevelopersActivity.this, "Email Sent", Toast.LENGTH_LONG).show();
-                                }
+                                Toast.makeText(ContactDevelopersActivity.this, "Email Sent", Toast.LENGTH_LONG).show();
                             }
                         }
                     });
-
             Toast.makeText(getApplicationContext(), "Successfully sent a message to developers", Toast.LENGTH_SHORT).show();
-            finish();
-            overridePendingTransition(0, 0);
-            startActivity(getIntent());
-            overridePendingTransition(0, 0);
+            goBack();
         }
-
     }
 
-    public String dropdownContact(){
+    public void dropdownContact(){
         Spinner spinnerAction = findViewById(R.id.txtAction);
         String[] action = new String[]{"Concern", "Report a bug", "Feedback"};
         List<String> actionList = new ArrayList<>(Arrays.asList(action));
@@ -166,7 +140,6 @@ public class ContactDevelopersActivity extends AppCompatActivity {
 
             }
         });
-        return selectedConcern;
     }
 
     private void goBack(){

@@ -3,7 +3,6 @@ package com.example.holdsafety;
 import static android.content.ContentValues.TAG;
 
 import android.Manifest;
-import android.accessibilityservice.AccessibilityService;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -84,7 +83,7 @@ public class LandingActivity extends AppCompatActivity {
     private int timer;
     long remainTime;
     Map<String, Object> docDetails = new HashMap<>(); // for reports in db
-    HashMap<String, String> vidLinkRequirements = new HashMap<>(); // for vid in db
+    HashMap<String, String> evidenceLinkRequirements = new HashMap<>(); // for vid in db
 
     FusedLocationProviderClient fusedLocationProviderClient;
 
@@ -681,9 +680,9 @@ public class LandingActivity extends AppCompatActivity {
                         videoRecordIntent.putExtra("reportId", reportID);
                         videoRecordIntent.putExtra("userId", userID);
 
-                        vidLinkRequirements.put("userID", userID);
-                        vidLinkRequirements.put("nearestBrgy", nearestBrgy);
-                        vidLinkRequirements.put("reportID", reportID);
+                        evidenceLinkRequirements.put("userID", userID);
+                        evidenceLinkRequirements.put("nearestBrgy", nearestBrgy);
+                        evidenceLinkRequirements.put("reportID", reportID);
 
                         //ADD TO GENERAL REPORTS COLLECTION
                         //docDetails.put("Barangay", nearestBrgy); adding of brgy will happen if nagsend ng alert msg sakanila
@@ -693,7 +692,7 @@ public class LandingActivity extends AppCompatActivity {
                                 .addOnFailureListener(e -> Log.w(TAG, "General Report saving to Error!!", e));
 
                         Intent recordingCountdown = new Intent(LandingActivity.this, RecordingCountdownActivity.class);
-                        recordingCountdown.putExtra("vidLinkRequirements", vidLinkRequirements);
+                        recordingCountdown.putExtra("evidenceLinkRequirements", evidenceLinkRequirements);
                         startActivity(recordingCountdown);
                     }
                 })

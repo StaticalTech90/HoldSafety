@@ -82,11 +82,9 @@ public class AddContactActivity extends AppCompatActivity {
                 View view = super.getDropDownView(position, convertView, parent);
                 TextView tv = (TextView) view;
 
-                if(position==0){
+                if(position==0) {
                     tv.setTextColor(getResources().getColor(R.color.hint_color));
-                }
-
-                else{
+                } else {
                     tv.setTextColor(Color.BLACK);
                 }
                 return view;
@@ -117,7 +115,7 @@ public class AddContactActivity extends AppCompatActivity {
     }
 
     public void saveContact(){
-        if(emergencyContactCount<5){
+        if(emergencyContactCount < 5){
             Map<String, Object> docContacts = new HashMap<>();
 
             String contactLastName = etContactLastName.getText().toString().trim();
@@ -158,10 +156,7 @@ public class AddContactActivity extends AppCompatActivity {
                         .add(docContacts).addOnCompleteListener(this, task -> {
                     if (task.isSuccessful()) {
                         Toast.makeText(getApplicationContext(), "Successfully Added Contact", Toast.LENGTH_SHORT).show();
-                        finish();
-                        overridePendingTransition(0, 0);
-                        startActivity(getIntent());
-                        overridePendingTransition(0, 0);
+                        goBack();
                     } else {
                         Toast.makeText(getApplicationContext(),
                                 Objects.requireNonNull(task.getException()).toString(),
@@ -172,7 +167,6 @@ public class AddContactActivity extends AppCompatActivity {
         } else {
             Toast.makeText(getApplicationContext(), "Number of Emergency Contact exceeds to limit", Toast.LENGTH_SHORT).show();
         }
-
     }
 
     public void getContactCount(){

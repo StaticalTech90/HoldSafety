@@ -17,7 +17,7 @@ import java.util.HashMap;
 public class RecordingCountdownActivity extends AppCompatActivity {
     TextView countdownTimer;
     Button btnCancel;
-    HashMap<String, String> vidLinkRequirements;
+    HashMap<String, String> evidenceLinkRequirements;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,8 +28,8 @@ public class RecordingCountdownActivity extends AppCompatActivity {
         countdownTimer = findViewById(R.id.countdown);
 
         Intent intent = getIntent();
-        vidLinkRequirements = (HashMap<String, String>) intent.getSerializableExtra("vidLinkRequirements");
-        Toast.makeText(getApplicationContext(), "Recording Hashmap: " + vidLinkRequirements , Toast.LENGTH_SHORT).show();
+        evidenceLinkRequirements = (HashMap<String, String>) intent.getSerializableExtra("evidenceLinkRequirements");
+        Toast.makeText(getApplicationContext(), "Recording Hashmap: " + evidenceLinkRequirements, Toast.LENGTH_SHORT).show();
 
         CountDownTimer timer = new CountDownTimer(3000, 1000)
         {
@@ -46,12 +46,14 @@ public class RecordingCountdownActivity extends AppCompatActivity {
                 if(ActivityCompat.checkSelfPermission(RecordingCountdownActivity.this,
                         Manifest.permission.CAMERA) == PackageManager.PERMISSION_DENIED){
                     Intent recordAudio = new Intent(RecordingCountdownActivity.this, AudioRecordingActivity.class);
-                    recordAudio.putExtra("vidLinkRequirements", vidLinkRequirements);
+                    recordAudio.putExtra("evidenceLinkRequirements", evidenceLinkRequirements);
                     startActivity(recordAudio);
+                    finish();
                 } else {
                     Intent recordVideo = new Intent(RecordingCountdownActivity.this, VideoRecordingActivity.class);
-                    recordVideo.putExtra("vidLinkRequirements", vidLinkRequirements);
+                    recordVideo.putExtra("evidenceLinkRequirements", evidenceLinkRequirements);
                     startActivity(recordVideo);
+                    finish();
                 }
             }
         };

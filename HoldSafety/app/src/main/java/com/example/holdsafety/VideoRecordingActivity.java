@@ -1,10 +1,5 @@
 package com.example.holdsafety;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.cardview.widget.CardView;
-import androidx.core.content.ContextCompat;
-
 import android.content.Intent;
 import android.graphics.PorterDuff;
 import android.hardware.Camera;
@@ -21,16 +16,16 @@ import android.widget.FrameLayout;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.cardview.widget.CardView;
+import androidx.core.content.ContextCompat;
+
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
-import com.google.firebase.storage.UploadTask;
 
 import java.io.File;
 import java.io.IOException;
@@ -44,7 +39,6 @@ public class VideoRecordingActivity extends AppCompatActivity {
     MediaRecorder mediaRecorder;
     FrameLayout cameraLayout;
     File recordingFile;
-    final String tag = "AUTORECORD";
     FirebaseAuth mAuth;
 
     FloatingActionButton btnRecord;
@@ -52,9 +46,8 @@ public class VideoRecordingActivity extends AppCompatActivity {
     CardView txtIsRecording;
 
     ProgressBar progressBar;
-    private final int RECORDING_REQ_CODE = 1000;
 
-    HashMap<String, String> vidLinkRequirements;
+    HashMap<String, String> evidenceLinkRequirements;
     String userID, nearestBrgy, reportID;
 
     StorageReference videoRef;
@@ -80,11 +73,11 @@ public class VideoRecordingActivity extends AppCompatActivity {
         videoRef = FirebaseStorage.getInstance().getReference("emergencyVideos/");
 
         Intent intent = getIntent();
-        vidLinkRequirements = (HashMap<String, String>) intent.getSerializableExtra("vidLinkRequirements");
+        evidenceLinkRequirements = (HashMap<String, String>) intent.getSerializableExtra("evidenceLinkRequirements");
 
-        userID = vidLinkRequirements.get("userID");
-        nearestBrgy = vidLinkRequirements.get("nearestBrgy");
-        reportID = vidLinkRequirements.get("reportID");
+        userID = evidenceLinkRequirements.get("userID");
+        nearestBrgy = evidenceLinkRequirements.get("nearestBrgy");
+        reportID = evidenceLinkRequirements.get("reportID");
 
         Toast.makeText(getApplicationContext(), "HasmapID: " + userID , Toast.LENGTH_SHORT).show();
         Toast.makeText(getApplicationContext(), "HasmapBrgy: " + nearestBrgy , Toast.LENGTH_SHORT).show();
@@ -100,46 +93,28 @@ public class VideoRecordingActivity extends AppCompatActivity {
             }
         };
 
-        btnRecord.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                timer.cancel();
-                if(isRecording){
-                    //user is currently recording
-                    //stop option
-                    mediaRecorder.stop();
-                    camera.lock();
+        btnRecord.setOnClickListener(view -> {
+            timer.cancel();
+            if(isRecording){
+                //user is currently recording
+                //stop option
+                mediaRecorder.stop();
+                camera.lock();
 
-                    //add file to db
-                    addFileToFirebase();
+                //add file to db
+                addFileToFirebase();
+            } else {
+                //user is not recording
+                //play option
+                if(prepareVideoRecorder()){
+                    mediaRecorder.start();
+                    timer.start();
                 } else {
-                    //user is not recording
-                    //play option
-                    if(prepareVideoRecorder()){
-                        mediaRecorder.start();
-                        timer.start();
-                        /*
-                        //2. SET TIMER (5 SECONDS) - Limit of the recording
-                        new CountDownTimer(5000, 1000){
-                            @Override
-                            public void onTick(long l) {
-                                long timeRemaining = (l/1000) + 1;
-                                //txtAudioRecording.setText("Recording will stop in " + timeRemaining + " seconds");
-                            }
-                            @Override
-                            public void onFinish() {
-                                //3. STOP RECORDING
-                                btnRecord.performClick();
-                            }
-                        }.start();
-                         */
-                    } else {
-                        releaseMediaRecorder();
-                    }
+                    releaseMediaRecorder();
                 }
-                isRecording = !isRecording;
-                updateButtonUI();
             }
+            isRecording = !isRecording;
+            updateButtonUI();
         });
         setCamera();
     }
@@ -154,31 +129,21 @@ public class VideoRecordingActivity extends AppCompatActivity {
                 .child(mAuth.getCurrentUser().getUid())
                 .child(recordingFile.getName())
                 .putFile(Uri.fromFile(recordingFile))
-                .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                    @Override
-                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                        Toast.makeText(VideoRecordingActivity.this, "Upload successful", Toast.LENGTH_SHORT).show();
-                        setHandler();
-
-                        getVideoLink();
-
-                    }
+                .addOnSuccessListener(taskSnapshot -> {
+                    Toast.makeText(VideoRecordingActivity.this, "Upload successful", Toast.LENGTH_SHORT).show();
+                    setHandler();
+                    getVideoLink();
+                    finish(); // return to landing
                 })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Toast.makeText(VideoRecordingActivity.this, "Upload failed: " +e.getMessage(), Toast.LENGTH_SHORT).show();
-                        setHandler();
+                .addOnFailureListener(e -> {
+                    Toast.makeText(VideoRecordingActivity.this, "Upload failed: " +e.getMessage(), Toast.LENGTH_SHORT).show();
+                    setHandler();
 
-                    }
                 })
-                .addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
-                    @Override
-                    public void onProgress(@NonNull UploadTask.TaskSnapshot snapshot) {
-                        double progress = (100.0 * snapshot.getBytesTransferred() / snapshot.getTotalByteCount());
-                        progressBar.getProgressDrawable().setColorFilter(ContextCompat.getColor(VideoRecordingActivity.this,R.color.light_blue), PorterDuff.Mode.MULTIPLY);
-                        progressBar.setProgress((int) progress);
-                    }
+                .addOnProgressListener(snapshot -> {
+                    double progress = (100.0 * snapshot.getBytesTransferred() / snapshot.getTotalByteCount());
+                    progressBar.getProgressDrawable().setColorFilter(ContextCompat.getColor(VideoRecordingActivity.this,R.color.light_blue), PorterDuff.Mode.MULTIPLY);
+                    progressBar.setProgress((int) progress);
                 });
     }
 
@@ -303,7 +268,6 @@ public class VideoRecordingActivity extends AppCompatActivity {
                 return null;
             }
         }
-
         Date date = new Date();
         File mediaFile = new File(mediaStorageDir.getPath() + File.separator + "HoldSafety_" + date.getTime() + ".mp4");
         recordingFile = mediaFile;
@@ -324,7 +288,6 @@ public class VideoRecordingActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         finish();
-        startActivity(new Intent(this, LandingActivity.class));
     }
 
     @Override

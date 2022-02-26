@@ -226,7 +226,6 @@ public class UpdateContactActivity extends AppCompatActivity {
         Matcher emailMatcher = emailPattern.matcher(changedEmail);
         Matcher mobileNumberMatcher = mobileNumberPattern.matcher(changedMobileNumber);
 
-
         if(isLastNameChanged || isFirstNameChanged || isRelationChanged || isNumberChanged || isEmailChanged){
             if(TextUtils.isEmpty(changedLastName)) {
                 contactLastName.setError("Please enter last name");
@@ -252,7 +251,6 @@ public class UpdateContactActivity extends AppCompatActivity {
                         docRef.update("relation", changedRelation);
 
                         Toast.makeText(this, "Successfully updated", Toast.LENGTH_SHORT).show();
-                        startActivity(new Intent(this, SelectContactActivity.class));
                         finish();
                     }
                     else {
@@ -263,8 +261,6 @@ public class UpdateContactActivity extends AppCompatActivity {
         } else {
             Toast.makeText(UpdateContactActivity.this, "No changes made", Toast.LENGTH_SHORT).show();
         }
-
-
     }
 
     private void goBack() {
