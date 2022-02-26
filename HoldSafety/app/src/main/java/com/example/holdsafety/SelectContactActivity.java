@@ -64,7 +64,7 @@ public class SelectContactActivity extends AppCompatActivity {
                 .collection("emergencyContacts")
                 .document(user.getUid()).collection("contacts").get()
                 .addOnCompleteListener(task -> {
-                    Intent intent = new Intent(this, UpdateContactActivity.class);
+                    Intent updateContact = new Intent(this, UpdateContactActivity.class);
                     //Toast.makeText(this, user.getUid(), Toast.LENGTH_SHORT).show();
                     if (task.isSuccessful()) {
                         //FOR EACH
@@ -93,15 +93,14 @@ public class SelectContactActivity extends AppCompatActivity {
                             btnUpdate.setOnClickListener(view -> {
                                 Toast.makeText(this, email, Toast.LENGTH_SHORT).show();
                                 //PREPARE DATA TO PASS
-                                intent.putExtra("email", email);
-                                intent.putExtra("firstName", firstName);
-                                intent.putExtra("lastName", lastName);
-                                intent.putExtra("mobileNumber", mobileNumber);
-                                intent.putExtra("relation", relation);
-                                intent.putExtra("documentId", documentId);
+                                updateContact.putExtra("email", email);
+                                updateContact.putExtra("firstName", firstName);
+                                updateContact.putExtra("lastName", lastName);
+                                updateContact.putExtra("mobileNumber", mobileNumber);
+                                updateContact.putExtra("relation", relation);
+                                updateContact.putExtra("documentId", documentId);
 
-                                startActivity(intent);
-                                finish();
+                                startActivity(updateContact);
                             });
 
                             btnDelete.setOnClickListener(view -> {

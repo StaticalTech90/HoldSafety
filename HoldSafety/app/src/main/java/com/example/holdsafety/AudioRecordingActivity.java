@@ -1,10 +1,5 @@
 package com.example.holdsafety;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.ContextCompat;
-
 import android.content.Intent;
 import android.graphics.PorterDuff;
 import android.media.MediaRecorder;
@@ -21,23 +16,23 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
+import androidx.annotation.RequiresApi;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
+
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
-import com.google.firebase.storage.UploadTask;
 
 import java.io.File;
 import java.io.IOException;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Locale;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 public class AudioRecordingActivity extends AppCompatActivity {
@@ -46,7 +41,7 @@ public class AudioRecordingActivity extends AppCompatActivity {
     boolean isRecording = true;
     MediaRecorder mediaRecorder;
 
-    HashMap<String, String> vidLinkRequirements;
+    HashMap<String, String> evidenceLinkRequirements;
     String userID, nearestBrgy, reportID;
     String idUri;
 
@@ -75,11 +70,11 @@ public class AudioRecordingActivity extends AppCompatActivity {
         txtAudioRecording = findViewById(R.id.txtAudioRecord);
 
         Intent intent = getIntent();
-        vidLinkRequirements = (HashMap<String, String>) intent.getSerializableExtra("vidLinkRequirements");
+        evidenceLinkRequirements = (HashMap<String, String>) intent.getSerializableExtra("evidenceLinkRequirements");
 
-        userID = vidLinkRequirements.get("userID");
-        nearestBrgy = vidLinkRequirements.get("nearestBrgy");
-        reportID = vidLinkRequirements.get("reportID");
+        userID = evidenceLinkRequirements.get("userID");
+        nearestBrgy = evidenceLinkRequirements.get("nearestBrgy");
+        reportID = evidenceLinkRequirements.get("reportID");
 
         btnAudio.setOnClickListener(new View.OnClickListener() {
             @RequiresApi(api = Build.VERSION_CODES.O)
@@ -93,7 +88,6 @@ public class AudioRecordingActivity extends AppCompatActivity {
                 } else {
                     if(prepareAudioRecorder()){
                         mediaRecorder.start();
-
                         //2. SET TIMER (5 SECONDS) - Limit of the recording
                         new CountDownTimer(5000, 1000){
                             @Override
@@ -107,7 +101,6 @@ public class AudioRecordingActivity extends AppCompatActivity {
                                 //3. STOP RECORDING
                                 btnAudio.performClick();
                             }
-
                         }.start();
                     } else {
                         releaseMediaRecorder();
@@ -123,7 +116,6 @@ public class AudioRecordingActivity extends AppCompatActivity {
         setRecorder();
     }
 
-
     @RequiresApi(api = Build.VERSION_CODES.O)
     private void onRecord(boolean start) {
         if (start) {
@@ -138,8 +130,6 @@ public class AudioRecordingActivity extends AppCompatActivity {
         mediaRecorder.release();
         //mediaRecorder = null;
         addToFirebase();
-//        btnAudio.setText("Start Recording");
-//        Toast.makeText(AudioRecordingActivity.this, "Recording Stopped", Toast.LENGTH_SHORT).show();
     }
 
     private void addToFirebase() {
@@ -152,30 +142,20 @@ public class AudioRecordingActivity extends AppCompatActivity {
                 .child(mAuth.getCurrentUser().getUid())
                 .child(recordingFile.getName())
                 .putFile(Uri.fromFile(recordingFile))
-                .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                    @Override
-                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                        Toast.makeText(AudioRecordingActivity.this, "Upload successful", Toast.LENGTH_SHORT).show();
-                        setHandler();
-
-                        getAudioLink();
-                    }
+                .addOnSuccessListener(taskSnapshot -> {
+                    Toast.makeText(AudioRecordingActivity.this, "Upload successful", Toast.LENGTH_SHORT).show();
+                    setHandler();
+                    getAudioLink();
+                    finish(); // return to landing
                 })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Toast.makeText(AudioRecordingActivity.this, "Upload failed: " +e.getMessage(), Toast.LENGTH_SHORT).show();
-                        setHandler();
-
-                    }
+                .addOnFailureListener(e -> {
+                    Toast.makeText(AudioRecordingActivity.this, "Upload failed: " +e.getMessage(), Toast.LENGTH_SHORT).show();
+                    setHandler();
                 })
-                .addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
-                    @Override
-                    public void onProgress(@NonNull UploadTask.TaskSnapshot snapshot) {
-                        double progress = (100.0 * snapshot.getBytesTransferred() / snapshot.getTotalByteCount());
-                        progressBar.getProgressDrawable().setColorFilter(ContextCompat.getColor(AudioRecordingActivity.this,R.color.light_blue), PorterDuff.Mode.MULTIPLY);
-                        progressBar.setProgress((int) progress);
-                    }
+                .addOnProgressListener(snapshot -> {
+                    double progress = (100.0 * snapshot.getBytesTransferred() / snapshot.getTotalByteCount());
+                    progressBar.getProgressDrawable().setColorFilter(ContextCompat.getColor(AudioRecordingActivity.this,R.color.light_blue), PorterDuff.Mode.MULTIPLY);
+                    progressBar.setProgress((int) progress);
                 });
     }
 
@@ -186,8 +166,7 @@ public class AudioRecordingActivity extends AppCompatActivity {
                     Log.d("Video to Document", "Fetching video URI success");
                     idUri = String.valueOf(uri);
                     docUsers.put("Evidence", idUri);
-                    Log.d("Video to Document", idUri); // WORKING. FETCHES CORRECT VID. JUST NEED TO PUT IT IN THE DB
-//                                Log.i("URI gDUrl()", idUri);
+                    Log.d("Video to Document", idUri);
 
                     //UPDATE THE "Evidence" FIELD IN REPORT DB (GENERAL)
                     db.collection("reports").document(reportID).update(docUsers)
@@ -347,19 +326,15 @@ public class AudioRecordingActivity extends AppCompatActivity {
 
     private void setHandler() {
         Handler handler = new Handler();
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                progressBar.setVisibility(View.INVISIBLE);
-                progressBar.setProgress(0);
-            }
+        handler.postDelayed(() -> {
+            progressBar.setVisibility(View.INVISIBLE);
+            progressBar.setProgress(0);
         }, 2000);
     }
 
     @Override
     public void onBackPressed() {
         finish();
-        startActivity(new Intent(this, LandingActivity.class));
     }
 
     @Override

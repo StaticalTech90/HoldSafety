@@ -54,7 +54,6 @@ public class ChangePasswordActivity extends AppCompatActivity {
         txtToggleNewPass = findViewById(R.id.txtToggleNewPass);
         txtToggleConfirmPass = findViewById(R.id.txtToggleConfirmPass);
 
-
         btnConfirm = findViewById(R.id.btnConfirm);
         btnCancel = findViewById(R.id.btnCancel);
         btnForgotPassword = findViewById(R.id.btnForgotPassword);
