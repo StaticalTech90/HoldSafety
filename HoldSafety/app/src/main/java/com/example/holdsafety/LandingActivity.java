@@ -111,10 +111,6 @@ public class LandingActivity extends AppCompatActivity {
 
         isFromWidget = getIntent().getStringExtra("isFromWidget");
 
-        //enable wifi - only works on outdated apis????? or android version ng phone????????
-        WifiManager wifiManager = (WifiManager) this.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
-        wifiManager.setWifiEnabled(true);
-
         //wifi and loc status
         statusCheck();
 
@@ -461,8 +457,8 @@ public class LandingActivity extends AppCompatActivity {
                     }
 
                     //Enable wifi when button is held
-                    WifiManager wifiManager = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
-                    wifiManager.setWifiEnabled(true);
+                    //WifiManager wifiManager = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+                    //wifiManager.setWifiEnabled(true);
 
                     String nearestBrgyID = nearestBrgySnap.getId();
                     sendAlertMessage(location, address, nearestBrgyID);
