@@ -35,7 +35,6 @@ public class LandingActivity extends Activity {
 
         //handle method for holdsafety button
         btnSafetyButton.setOnTouchListener(new View.OnTouchListener() {
-
             //Declare timer instance
             CountDownTimer cTimer = new CountDownTimer(2000, 1000) {
                 //wait for timer to countdown
