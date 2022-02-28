@@ -14,6 +14,7 @@
         <entry key="..\:/School/THESIS/HoldSafety/HoldSafety/app/src/main/res/layout/activity_reports.xml" value="0.225" />
         <entry key="..\:/School/THESIS/HoldSafety/HoldSafety/app/src/main/res/layout/dialog_verification.xml" value="0.36666666666666664" />
         <entry key="..\:/School/THESIS/HoldSafety/HoldSafety/app/src/main/res/layout/report_row.xml" value="0.225" />
+        <entry key="..\:/School/THESIS/HoldSafety/HoldSafety/holdsafetysmartwatch/src/main/res/layout/activity_landing.xml" value="1.5526315789473684" />
         <entry key="..\:/Users/nhoriza/Desktop/HoldSafety/HoldSafety/app/src/main/res/drawable/recording_shape.xml" value="0.6444444444444445" />
         <entry key="..\:/Users/nhoriza/Desktop/HoldSafety/HoldSafety/app/src/main/res/drawable/round_shape.xml" value="0.12083333333333333" />
         <entry key="..\:/Users/nhoriza/Desktop/HoldSafety/HoldSafety/app/src/main/res/drawable/safetybutton_selector.xml" value="0.2703125" />
@@ -88,7 +89,7 @@
       </map>
     </option>
   </component>
-  <component name="ProjectRootManager" version="2" languageLevel="JDK_15" project-jdk-name="16" project-jdk-type="JavaSDK">
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_16_PREVIEW" project-jdk-name="16" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/build/classes" />
   </component>
   <component name="ProjectType">

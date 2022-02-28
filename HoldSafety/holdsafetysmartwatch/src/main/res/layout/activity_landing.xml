@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.wear.widget.BoxInsetLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="@dimen/box_inset_layout_padding"
+    tools:context=".LandingActivity"
+    tools:deviceIds="wear"
+    android:background="#080518">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="@dimen/inner_frame_layout_padding"
+        >
+
+        <TextView
+            android:id="@+id/instruction"
+            android:layout_marginTop="20dp"
+            android:layout_width="120dp"
+            android:layout_height="wrap_content"
+            android:fontFamily="sans-serif-black"
+            android:layout_centerHorizontal="true"
+            android:textAlignment="center"
+            android:text="HOLD THE BUTTON IN CASE OF EMERGENCY"
+            android:textColor="#ffff"
+            android:textSize="10sp" />
+
+        <TextView
+            android:id="@+id/signal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="20dp"
+            android:fontFamily="sans-serif-black"
+            android:text="Sending Signal in"
+            android:textAlignment="center"
+            android:textColor="#ffff"
+            android:textSize="10sp"
+            android:visibility="invisible" />
+
+        <TextView
+            android:id="@+id/timer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/signal"
+            android:layout_centerHorizontal="true"
+            android:fontFamily="sans-serif-black"
+            android:text="3"
+            android:textAlignment="center"
+            android:textColor="#B73F2A"
+            android:textSize="18sp"
+
+            android:visibility="invisible" />
+
+        <TextView
+            android:id="@+id/textView"
+            android:layout_width="172dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="-10dp"
+            android:layout_marginTop="60dp"
+            android:alpha=".1"
+            android:fontFamily="sans-serif-black"
+            android:text="HOLD SAFETY"
+            android:textColor="#a8a8a8"
+            android:textSize="48sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <Button
+            android:id="@+id/btnSafetyButton"
+            android:layout_width="120dp"
+            android:layout_height="120dp"
+            android:layout_below="@+id/timer"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="5dp"
+            android:background="@drawable/safetybutton_selector" />
+    </RelativeLayout>
+</androidx.wear.widget.BoxInsetLayout>
