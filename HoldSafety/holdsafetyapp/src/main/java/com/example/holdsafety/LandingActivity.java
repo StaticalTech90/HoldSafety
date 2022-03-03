@@ -71,7 +71,7 @@ public class LandingActivity extends AppCompatActivity {
     FirebaseUser user;
 
     String userID, isFromWidget, nearestBrgy;
-    String lastName, firstName, mobileNumber, googleMapLink, message;
+    String lastName, firstName, mobileNumber, googleMapLink, txtMessage, emailMessage;
     Boolean isVerified;
     String brgyName, brgyCity, brgyEmail, brgyMobileNumber;
     String coordsLon, coordsLat;
@@ -166,13 +166,14 @@ public class LandingActivity extends AppCompatActivity {
                 return false;
             }
         });
-        btnBluetooth.setOnClickListener(v -> setUpBluetooth());
-        btnMenu.setOnClickListener(v -> menuRedirect());
 
         //handle method for holdsafety widget
         if(isFromWidget!=null && isFromWidget.equals("true")){
             getCurrentLocation();
         }
+
+        btnBluetooth.setOnClickListener(v -> setUpBluetooth());
+        btnMenu.setOnClickListener(v -> menuRedirect());
     }
 
     public void setUpBluetooth() {
@@ -476,11 +477,7 @@ public class LandingActivity extends AppCompatActivity {
 
                 //Declare and initialize alert message contents
                 googleMapLink = "https://maps.google.com/?q=" + location.getLatitude() + "," + location.getLongitude();
-                message = "User Details:" +
-                        "\nFull Name: " + lastName + ", " + firstName +
-                        "\nPhone Number: " + mobileNumber +
-                        "\nLocation: " + address +
-                        "\nPlease go here immediately: " + googleMapLink;
+
 
                 //Only send msg to barangay if verified
                 if(isVerified){
@@ -494,6 +491,19 @@ public class LandingActivity extends AppCompatActivity {
                             brgyMobileNumber = brgySnapshot.getString("MobileNumber");
                             //Toast.makeText(getApplicationContext(), "Brgy Name [Inside docRefBrgy]: " + brgyName, Toast.LENGTH_LONG).show();
 
+                            txtMessage = "[EMERGENCY] HoldSafety Alert Message! \n\nUser Details:" +
+                                    "\nFull Name: " + lastName + ", " + firstName +
+                                    "\nPhone Number: " + mobileNumber +
+                                    "\nLocation: " + address +
+                                    "\nPlease go here immediately: " + googleMapLink +
+                                    "\n\nAlert Message for Barangay: " + brgyName;
+
+                            emailMessage = "[EMERGENCY] HoldSafety Alert Message! <br /><br />User Details:" +
+                                    "<br />Full Name: " + lastName + ", " + firstName +
+                                    "<br />Phone Number: " + mobileNumber +
+                                    "<br />Location: " + address +
+                                    "<br />Please go here immediately: " + googleMapLink +
+                                    "<br /><br />Alert Message for Barangay: " + brgyName;
                             if (brgyMobileNumber != null) {
                                 registerReceiver(new BroadcastReceiver() {
                                     @Override
@@ -522,7 +532,7 @@ public class LandingActivity extends AppCompatActivity {
                                 try {
                                     SmsManager manager = SmsManager.getDefault();
                                     //For long messages to work
-                                    ArrayList<String> msgArray = manager.divideMessage(message);
+                                    ArrayList<String> msgArray = manager.divideMessage(txtMessage);
 
                                     for (int i = 0; i < msgArray.size(); i++) {
                                         sentPendingIntents.add(i, sentPI);
@@ -544,7 +554,7 @@ public class LandingActivity extends AppCompatActivity {
 
                                 List<String> recipients = Collections.singletonList(brgyEmail);
                                 //email of sender, password of sender, list of recipients, email subject, email body
-                                new MailTask(LandingActivity.this).execute(username, password, recipients, subject, message);
+                                new MailTask(LandingActivity.this).execute(username, password, recipients, subject, emailMessage);
 
                                 Toast.makeText(LandingActivity.this, "Email Sent to Brgy", Toast.LENGTH_LONG).show();
                             }
@@ -575,15 +585,29 @@ public class LandingActivity extends AppCompatActivity {
                     //Get each contact details
                     for (QueryDocumentSnapshot snapshot : task.getResult()) {
                         String contactID = snapshot.getId();
-                        String mobileNumber = snapshot.getString("mobileNumber");
-                        String firstName = snapshot.getString("firstName");
-                        String lastName = snapshot.getString("lastName");
-                        String email = snapshot.getString("email");
+                        String contactMobileNumber = snapshot.getString("mobileNumber");
+                        String contactFirstName = snapshot.getString("firstName");
+                        String contactLastName = snapshot.getString("lastName");
+                        String contactEmail = snapshot.getString("email");
+
+                        txtMessage = "[EMERGENCY] HoldSafety Alert Message! \n\nUser Details:" +
+                                "\nFull Name: " + lastName + ", " + firstName +
+                                "\nPhone Number: " + mobileNumber +
+                                "\nLocation: " + address +
+                                "\nPlease go here immediately: " + googleMapLink +
+                                "\n\nAlert Message for: " + contactFirstName + " " + contactLastName;
+
+                        emailMessage = "[EMERGENCY] HoldSafety Alert Message! <br /><br />User Details:" +
+                                "<br />Full Name: " + lastName + ", " + firstName +
+                                "<br />Phone Number: " + mobileNumber +
+                                "<br />Location: " + address +
+                                "<br />Please go here immediately: " + googleMapLink +
+                                "<br /><br />Alert Message for: " + contactFirstName + " " + contactLastName;
 
                         //Toast.makeText(getApplicationContext(), message, Toast.LENGTH_LONG).show();
 
                         //Send Text Message
-                        if (mobileNumber != null) {
+                        if (contactMobileNumber != null) {
                             registerReceiver(new BroadcastReceiver() {
                                 @Override
                                 public void onReceive(Context context, Intent intent) {
@@ -610,12 +634,12 @@ public class LandingActivity extends AppCompatActivity {
                             try {
                                 SmsManager manager = SmsManager.getDefault();
                                 //For long messages to work
-                                ArrayList<String> msgArray = manager.divideMessage(message);
+                                ArrayList<String> msgArray = manager.divideMessage(txtMessage);
 
                                 for (int i = 0; i < msgArray.size(); i++) {
                                     sentPendingIntents.add(i, sentPI);
                                 }
-                                manager.sendMultipartTextMessage(mobileNumber, null, msgArray, sentPendingIntents, null);
+                                manager.sendMultipartTextMessage(contactMobileNumber, null, msgArray, sentPendingIntents, null);
                                 //Toast.makeText(getApplicationContext(), "Message Sent", Toast.LENGTH_LONG).show();
                             } catch (Exception ex) {
                                 Toast.makeText(getApplicationContext(), "SMS Error: " + ex.getMessage(), Toast.LENGTH_LONG).show();
@@ -632,15 +656,15 @@ public class LandingActivity extends AppCompatActivity {
                             */
                         }
 
-                        if (email != null) {
+                        if (contactEmail != null) {
                             //Send Email
                             String username = "holdsafety.ph@gmail.com";
                             String password = "HoldSafety@4qmag";
                             String subject = "[EMERGENCY] Alert Message - HoldSafety";
 
-                            List<String> recipients = Collections.singletonList(email);
+                            List<String> recipients = Collections.singletonList(contactEmail);
                             //email of sender, password of sender, list of recipients, email subject, email body
-                            new MailTask(LandingActivity.this).execute(username, password, recipients, subject, message);
+                            new MailTask(LandingActivity.this).execute(username, password, recipients, subject, emailMessage);
                         }
                     }
                     saveToDB();
@@ -694,6 +718,7 @@ public class LandingActivity extends AppCompatActivity {
                         Intent recordingCountdown = new Intent(LandingActivity.this, RecordingCountdownActivity.class);
                         recordingCountdown.putExtra("evidenceLinkRequirements", evidenceLinkRequirements);
                         startActivity(recordingCountdown);
+                        finish();
                     }
                 })
                 .addOnFailureListener(documentSnapshot -> {

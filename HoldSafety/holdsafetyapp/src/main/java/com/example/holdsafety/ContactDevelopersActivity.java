@@ -98,7 +98,7 @@ public class ContactDevelopersActivity extends AppCompatActivity {
                                 String password = "HoldSafety@4qmag";
                                 String subject = "HOLDSAFETY CONTACT DEVELOPERS: " + selectedConcern ;
                                 String message1 = "Sender: " + etEmail.getText().toString().trim()
-                                        + " Message: " + etMessage.getText().toString().trim();
+                                        + "<br />Message: " + etMessage.getText().toString().trim();
 
                                 List<String> recipients = Collections.singletonList(email1);
                                 //email of sender, password of sender, list of recipients, email subject, email body

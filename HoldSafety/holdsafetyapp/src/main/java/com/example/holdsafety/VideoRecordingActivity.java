@@ -79,10 +79,6 @@ public class VideoRecordingActivity extends AppCompatActivity {
         nearestBrgy = evidenceLinkRequirements.get("nearestBrgy");
         reportID = evidenceLinkRequirements.get("reportID");
 
-        Toast.makeText(getApplicationContext(), "HasmapID: " + userID , Toast.LENGTH_SHORT).show();
-        Toast.makeText(getApplicationContext(), "HasmapBrgy: " + nearestBrgy , Toast.LENGTH_SHORT).show();
-        Toast.makeText(getApplicationContext(), "HasmapReportID: " + reportID , Toast.LENGTH_SHORT).show();
-
         timer = new CountDownTimer(10000, 1000) {
             @Override
             public void onTick(long millisUntilFinished) {
@@ -133,6 +129,10 @@ public class VideoRecordingActivity extends AppCompatActivity {
                     Toast.makeText(VideoRecordingActivity.this, "Upload successful", Toast.LENGTH_SHORT).show();
                     setHandler();
                     getVideoLink();
+
+                    Intent landingIntent = new Intent(VideoRecordingActivity.this, LandingActivity.class);
+                    landingIntent.putExtra("isFromWidget", "false");
+                    startActivity(landingIntent);
                     finish(); // return to landing
                 })
                 .addOnFailureListener(e -> {

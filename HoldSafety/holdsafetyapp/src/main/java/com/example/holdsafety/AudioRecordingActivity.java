@@ -188,12 +188,16 @@ public class AudioRecordingActivity extends AppCompatActivity {
                         Toast.makeText(AudioRecordingActivity.this, "Upload successful", Toast.LENGTH_SHORT).show();
                         getAudioLink();
                         setHandler();
+
+                        Intent landingIntent = new Intent(AudioRecordingActivity.this, LandingActivity.class);
+                        landingIntent.putExtra("isFromWidget", "false");
+                        startActivity(landingIntent);
+                        finish(); // return to landing
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
-
                         Toast.makeText(AudioRecordingActivity.this, "Upload failed.", Toast.LENGTH_SHORT).show();
                         setHandler();
 
