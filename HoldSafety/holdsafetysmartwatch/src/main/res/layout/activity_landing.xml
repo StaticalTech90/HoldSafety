@@ -64,9 +64,7 @@
             android:fontFamily="sans-serif-black"
             android:text="HOLD SAFETY"
             android:textColor="#a8a8a8"
-            android:textSize="48sp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
+            android:textSize="48sp" />
 
         <Button
             android:id="@+id/btnSafetyButton"

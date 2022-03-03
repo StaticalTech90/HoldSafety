@@ -60,13 +60,11 @@ public class RegisterActivity extends AppCompatActivity {
     StorageReference imageRef;
     FirebaseUser user;
 
-    HashMap<String, Object> docUsers = new HashMap<>();
-    Intent otp;
-
     final Calendar calendar = Calendar.getInstance();
     String idPicUri;
     TextView lblLink;
 
+    HashMap<String, Object> docUsers = new HashMap<>();
     private EditText etLastName, etFirstName, etMiddleName, etBirthdate, etMobileNumber, etEmail, etPassword, etConPassword;
     private Spinner spinnerSex;
     TextView txtTogglePass, txtToggleConfirmPass;
@@ -108,8 +106,6 @@ public class RegisterActivity extends AppCompatActivity {
         etPassword.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
         etConPassword.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
 
-        otp = new Intent(RegisterActivity.this, RegisterOTPActivity.class);
-
         String[] sex = new String[]{"Sex *", "M", "F"};
         List<String> sexList = new ArrayList<>(Arrays.asList(sex));
         ArrayAdapter<String> spinnerSexAdapter = new ArrayAdapter<String>(this, R.layout.spinner_sex, sexList){
@@ -123,9 +119,9 @@ public class RegisterActivity extends AppCompatActivity {
                 View view = super.getDropDownView(position, convertView, parent);
                 TextView tv = (TextView) view;
 
-                if(position==0){
+                if(position==0) {
                     tv.setTextColor(getResources().getColor(R.color.hint_color));
-                } else{
+                } else {
                     tv.setTextColor(Color.BLACK);
                 }
                 return view;
@@ -140,7 +136,7 @@ public class RegisterActivity extends AppCompatActivity {
                 String selectedItemText = (String) parent.getItemAtPosition(position);
                 // If user change the default selection
                 // First item is disable and it is used for hint
-                if(position > 0){
+                if(position > 0) {
                     // Notify the selected item text
                     Toast.makeText
                             (getApplicationContext(), "Selected : " + selectedItemText, Toast.LENGTH_SHORT)
@@ -149,11 +145,8 @@ public class RegisterActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {
-
-            }
+            public void onNothingSelected(AdapterView<?> adapterView) { }
         });
-
 
         DatePickerDialog.OnDateSetListener date = (view, year, month, day) -> {
             calendar.set(Calendar.YEAR, year);
@@ -180,71 +173,65 @@ public class RegisterActivity extends AppCompatActivity {
         //masking pass
         etPassword.addTextChangedListener(new TextWatcher() {
             @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-            }
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) { }
 
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
                 if(etPassword.getText().length() > 0){
                     txtTogglePass.setVisibility(View.VISIBLE);
-                }
-                else{
+                } else {
                     txtTogglePass.setVisibility(View.GONE);
                 }
             }
 
             @Override
-            public void afterTextChanged(Editable editable) {
-
-            }
+            public void afterTextChanged(Editable editable) { }
         });
         txtTogglePass.setOnClickListener(view -> {
             if(txtTogglePass.getText() == "SHOW"){
                 txtTogglePass.setText("HIDE");
                 etPassword.setInputType(InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
-            }
-            else{
+            } else {
                 txtTogglePass.setText("SHOW");
                 etPassword.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
             }
             etPassword.setSelection(etPassword.length());
         });
 
-
         //masking confirm pass
         etConPassword.addTextChangedListener(new TextWatcher() {
             @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) { }
 
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
                 if(etConPassword.getText().length() > 0){
                     txtToggleConfirmPass.setVisibility(View.VISIBLE);
-                }
-                else{
+                } else {
                     txtToggleConfirmPass.setVisibility(View.GONE);
                 }
             }
 
             @Override
-            public void afterTextChanged(Editable editable) {
-
-            }
+            public void afterTextChanged(Editable editable) { }
         });
         txtToggleConfirmPass.setOnClickListener(view -> {
             if(txtToggleConfirmPass.getText() == "SHOW"){
                 txtToggleConfirmPass.setText("HIDE");
                 etConPassword.setInputType(InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
-            }
-            else{
+            } else {
                 txtToggleConfirmPass.setText("SHOW");
                 etConPassword.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
             }
             etConPassword.setSelection(etConPassword.length());
         });
+    }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+        //TODO: CHECK IF EMAIL IS ALREADY IN FIREBASE AUTH. IF YES, COMPLETE REG. ELSE PROCEED WITH NORMAL REG
+        Log.d("USER", "Current User: " + user);
     }
 
     public void userRegister() throws ParseException {
@@ -301,6 +288,7 @@ public class RegisterActivity extends AppCompatActivity {
                            docUsers.put("MobileNumber", mobileNumber);
                            docUsers.put("Email", email);
                            docUsers.put("profileComplete", false);
+                           docUsers.put("isVerified", false);
 
                            //Data validation and register
                            try{
@@ -355,16 +343,14 @@ public class RegisterActivity extends AppCompatActivity {
                                            user = mAuth.getCurrentUser();
                                            assert user != null;
                                            docUsers.put("ID", user.getUid());
-                                           docUsers.put("isVerified", false);
 
                                            if (!lblLink.getText().equals("")) {
                                                uploadPhotoToStorage();
                                                docUsers.put("profileComplete", true);
-                                           } else {
-                                               docUsers.put("profileComplete", false);
                                            }
 
                                            //Verify user's email
+                                           Intent otp = new Intent(RegisterActivity.this, RegisterOTPActivity.class);
                                            otp.putExtra("Email", etEmail.getText().toString());
                                            otp.putExtra("UserDetails", docUsers);
                                            startActivity(otp);
@@ -377,7 +363,6 @@ public class RegisterActivity extends AppCompatActivity {
                                        }
                                    });
                                }
-
                            } catch(ParseException pe){
                                etBirthdate.getText().clear();
                                etBirthdate.setHint("Please enter valid birthdate");
@@ -406,29 +391,25 @@ public class RegisterActivity extends AppCompatActivity {
     private void uploadPhotoToStorage() {
         imageRef.child(user.getUid())
                 .putFile(Uri.parse(lblLink.getText().toString()))
-                .addOnSuccessListener(taskSnapshot -> {
-                    imageRef.child(user.getUid()).getDownloadUrl().addOnSuccessListener(uri -> {
-                        idPicUri = String.valueOf(uri);
-                        docUsers.put("imgUri", idPicUri);
-                        Log.i("URI gDUrl()", idPicUri);
-                        //otp.putExtra("imgUri", idUri);
-                        //otp.putExtra("UserDetails", docUsers);
+                .addOnSuccessListener(taskSnapshot -> imageRef.child(user.getUid()).getDownloadUrl().addOnSuccessListener(uri -> {
+                    idPicUri = String.valueOf(uri);
+                    docUsers.put("imgUri", idPicUri);
+                    Log.i("URI gDUrl()", idPicUri);
 
-                        db.collection("users").document(user.getUid()).update(docUsers)
-                                .addOnSuccessListener(aVoid -> {
-                                    Toast.makeText(getApplicationContext(),
-                                            "pushed image to document",
-                                            Toast.LENGTH_SHORT).show();
-                                    Log.i(TAG, "Image pushed");
-                                })
-                                .addOnFailureListener(e -> {
-                                    Toast.makeText(getApplicationContext(),
-                                            "Error writing document",
-                                            Toast.LENGTH_SHORT).show();
-                                    Log.w(TAG, "Error writing document", e);
-                                });
-                    });
-                }).addOnFailureListener(e -> Toast.makeText(RegisterActivity.this, "Upload failed.",
+                    db.collection("users").document(user.getUid()).update(docUsers)
+                            .addOnSuccessListener(aVoid -> {
+                                Toast.makeText(getApplicationContext(),
+                                        "pushed image to document",
+                                        Toast.LENGTH_SHORT).show();
+                                Log.i(TAG, "Image pushed");
+                            })
+                            .addOnFailureListener(e -> {
+                                Toast.makeText(getApplicationContext(),
+                                        "Error writing document",
+                                        Toast.LENGTH_SHORT).show();
+                                Log.w(TAG, "Error writing document", e);
+                            });
+                })).addOnFailureListener(e -> Toast.makeText(RegisterActivity.this, "Upload failed.",
                         Toast.LENGTH_SHORT).show());
     }
 
@@ -441,7 +422,6 @@ public class RegisterActivity extends AppCompatActivity {
                     EXTERNAL_STORAGE_REQ_CODE);
             return;
         }
-
         //PICK IMAGE
         //PERMISSION GRANTED
         //OPEN IMAGE PICKER
@@ -458,12 +438,10 @@ public class RegisterActivity extends AppCompatActivity {
             new ActivityResultCallback<ActivityResult>() {
                 @Override
                 public void onActivityResult(ActivityResult result) {
-
                     if (result.getResultCode() == RESULT_OK) {
                         Intent data = result.getData();
                         if (data != null) {
                             if (data.getData() != null) {
-
                                 Uri imageUri = data.getData();
                                 lblLink.setText(imageUri.toString());
                             }
