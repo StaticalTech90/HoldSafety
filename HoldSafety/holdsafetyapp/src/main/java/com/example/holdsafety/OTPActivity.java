@@ -15,7 +15,6 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -29,7 +28,7 @@ import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class RegisterOTPActivity extends AppCompatActivity {
+public class OTPActivity extends AppCompatActivity {
     FirebaseAuth mAuth;
     FirebaseFirestore db;
     FirebaseUser user;
@@ -40,9 +39,11 @@ public class RegisterOTPActivity extends AppCompatActivity {
     EditText etEmail;
     TextView txtTimeRemaining;
 
+    private String intentSource = null;
     String userEmail, idUri;
     String code = null; //OTP code
     HashMap<String, Object> docUsers;
+    HashMap<String, Object> newEmail = new HashMap<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,6 +62,7 @@ public class RegisterOTPActivity extends AppCompatActivity {
         btnSendCode = findViewById(R.id.btnSendCode);
 
         //Get extras
+        intentSource = getIntent().getStringExtra("Source");
         userEmail = getIntent().getStringExtra("Email");
         docUsers = (HashMap<String, Object>) getIntent().getSerializableExtra("UserDetails");
 
@@ -71,6 +73,8 @@ public class RegisterOTPActivity extends AppCompatActivity {
 
         btnBack.setOnClickListener(view -> goBack());
         btnSendCode.setOnClickListener(view -> sendCode());
+
+        Log.d("INTENT", "Intent started by: " + intentSource);
     }
 
     private void sendCode() {
@@ -100,40 +104,60 @@ public class RegisterOTPActivity extends AppCompatActivity {
         String message = "Please enter the verification code in your HoldSafety app:" +
                 "\n\n" + code;
 
-        new MailTask(RegisterOTPActivity.this).execute(hsEmail, hsPass, recipients, subject, message);
+        new MailTask(OTPActivity.this).execute(hsEmail, hsPass, recipients, subject, message);
+
+        Log.d("Email", user.getUid());
 
         //Dialog Box for entering code
         dialog.btnSubmit.setOnClickListener(view -> {
-            if(dialog.etCode.getText() == null || dialog.etCode.length() != 6) {
-                dialog.etCode.setError("Invalid verification code.");
-            } else if(!code.equals(dialog.etCode.getText().toString())) {
-                dialog.etCode.setError("Invalid verification code.\nPlease check your email.");
-            } else if(code.equals(dialog.etCode.getText().toString())) {
+            if(code.equals(dialog.etCode.getText().toString())) {
                 Toast.makeText(this, "Verification Success", Toast.LENGTH_LONG).show();
-                //Head to landing page and close dialog box
+                //Close dialog box
                 dialog.dismissDialog();
 
-                //insert to db with success/failure listeners
-                db.collection("users").document(user.getUid()).set(docUsers)
-                        .addOnSuccessListener(unused -> imageRef.child(user.getUid()).getDownloadUrl().addOnSuccessListener(uri -> {
-                            idUri = String.valueOf(uri);
-                            docUsers.put("imgUri", idUri);
-                            Log.i("URI gDUrl()", idUri);
+                //insert to db depending on which activity started this
+                if(intentSource.equals("RegisterActivity")) { //put both image and user details in db
+                    db.collection("users").document(user.getUid()).set(docUsers)
+                            .addOnSuccessListener(unused -> imageRef.child(user.getUid()).getDownloadUrl().addOnSuccessListener(uri -> {
+                                idUri = String.valueOf(uri);
+                                docUsers.put("imgUri", idUri);
+                                Log.i("URI gDUrl()", idUri);
 
-                            db.collection("users").document(user.getUid()).update(docUsers)
-                                    .addOnSuccessListener(aVoid -> {
-                                        Toast.makeText(getApplicationContext(), "pushed image to document", Toast.LENGTH_SHORT).show();
-                                        Log.i(TAG, "Image pushed");
-                                    })
-                                    .addOnFailureListener(e -> {
-                                        Toast.makeText(getApplicationContext(), "Error writing document", Toast.LENGTH_SHORT).show();
-                                        Log.w(TAG, "Error writing document", e);
-                                    });
-                        }))
-                        .addOnFailureListener(e -> Log.w(TAG, "error", e));
+                                db.collection("users").document(user.getUid()).update(docUsers)
+                                        .addOnSuccessListener(aVoid -> {
+                                            Toast.makeText(getApplicationContext(), "pushed image to document", Toast.LENGTH_SHORT).show();
+                                            Log.i(TAG, "Image pushed");
+                                        })
+                                        .addOnFailureListener(e -> {
+                                            Toast.makeText(getApplicationContext(), "Error writing document", Toast.LENGTH_SHORT).show();
+                                            Log.w(TAG, "Error writing document", e);
+                                        });
+                            }))
+                            .addOnFailureListener(e -> Log.w(TAG, "error", e));
+                    startActivity(new Intent(this, LandingActivity.class));
+                    finish();
+                } else if(intentSource.equals("AccountDetailsActivity")) { //update the user's email
+                    Log.d("Email", "Changing user's email in progress...");
+                    newEmail.put("Email", userEmail);
+                    Log.d("Email", "email put in hashmap");
 
-                startActivity(new Intent(this, LandingActivity.class));
-                finish();
+                    db.collection("users").document(user.getUid()).update(newEmail)
+                            .addOnSuccessListener(aVoid -> {
+                                Toast.makeText(getApplicationContext(), "Email updated", Toast.LENGTH_SHORT).show();
+                                Log.i(TAG, "Email updated");
+
+                                Log.d("Email", "Sending RESULT_OK back to AccountDetailsActivity...");
+                                Intent otpResult = new Intent(OTPActivity.this, AccountDetailsActivity.class);
+                                setResult(RESULT_OK, otpResult);
+                            })
+                            .addOnFailureListener(e -> {
+                                Toast.makeText(getApplicationContext(), "Error updating email", Toast.LENGTH_SHORT).show();
+                                Log.w(TAG, "Error updating email", e);
+                            });
+                    finish();
+                }
+            } else {
+                dialog.etCode.setError("Invalid verification code.\nPlease check your email.");
             }
         });
         dialog.showDialog();
@@ -174,8 +198,10 @@ public class RegisterOTPActivity extends AppCompatActivity {
     }
 
     private void goBack() {
-        //delete the user who just registered (because they didn't want to otp)
-        user.delete();
+        if(intentSource.equals("RegisterActivity")) {
+            //delete the user who just registered (because they didn't want to otp)
+            user.delete();
+        }
         finish();
     }
 }

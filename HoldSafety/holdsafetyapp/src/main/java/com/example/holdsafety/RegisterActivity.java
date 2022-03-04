@@ -350,7 +350,8 @@ public class RegisterActivity extends AppCompatActivity {
                                            }
 
                                            //Verify user's email
-                                           Intent otp = new Intent(RegisterActivity.this, RegisterOTPActivity.class);
+                                           Intent otp = new Intent(RegisterActivity.this, OTPActivity.class);
+                                           otp.putExtra("Source", "RegisterActivity");
                                            otp.putExtra("Email", etEmail.getText().toString());
                                            otp.putExtra("UserDetails", docUsers);
                                            startActivity(otp);
