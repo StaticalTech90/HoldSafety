@@ -263,17 +263,14 @@ public class AccountDetailsActivity extends AppCompatActivity {
                     changeEmailDialog.show();
 
                     //Override
-                    changeEmailDialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            if (TextUtils.isEmpty(userPassword)) {
-                                txtInputPassword.setError("Password is required");
-                            } else {
-                                userPassword = txtInputPassword.getText().toString();
+                    changeEmailDialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(v -> {
+                        if (TextUtils.isEmpty(userPassword)) {
+                            txtInputPassword.setError("Password is required");
+                        } else {
+                            userPassword = txtInputPassword.getText().toString();
 
-                                if (isNumberChanged) { changeNumber(newMobileNumber); }
-                                if (isEmailChanged) { changeEmail(newEmail); }
-                            }
+                            if (isNumberChanged) { changeNumber(newMobileNumber); }
+                            if (isEmailChanged) { changeEmail(newEmail); }
                         }
                     }); //end of dialog code
                 }
@@ -351,7 +348,6 @@ public class AccountDetailsActivity extends AppCompatActivity {
             new ActivityResultCallback<ActivityResult>() {
                 @Override
                 public void onActivityResult(ActivityResult result) {
-
                     if (result.getResultCode() == RESULT_OK) {
                         Intent data = result.getData();
                         if (data != null) {
