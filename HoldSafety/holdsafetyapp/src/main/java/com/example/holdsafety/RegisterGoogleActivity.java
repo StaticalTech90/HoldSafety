@@ -112,7 +112,7 @@ public class RegisterGoogleActivity extends AppCompatActivity {
         }
 
         dropdownSex();
-        selectBirthdate();
+        selectBirthDate();
 
         //get details from prev intent
         lastName = googleSignInMap.get("lastName");
@@ -138,8 +138,6 @@ public class RegisterGoogleActivity extends AppCompatActivity {
         Pattern mobileNumberPattern = Pattern.compile(mobileNumberRegex);
 
         SimpleDateFormat dateFormat = new SimpleDateFormat("MM-dd-yyyy");
-        String valid = "01-01-2004"; //age restriction 18
-        Date validDate = dateFormat.parse(valid);
 
         String userId = user.getUid();
         String uEmail = googleSignInMap.get("email");
@@ -152,22 +150,30 @@ public class RegisterGoogleActivity extends AppCompatActivity {
 
         try{
             Date parsedDate = dateFormat.parse(birthDate);
-            if(parsedDate.after(validDate)){
-                etBirthDate.getText().clear();
-                etBirthDate.setHint("Please enter valid birthdate");
-                etBirthDate.setError("Please enter valid birthdate");
-            }else if(TextUtils.isEmpty(birthDate)) {
+            Boolean validInput = true;
+            if(TextUtils.isEmpty(birthDate)) {
                 //assert parsedDate != null;
                 etBirthDate.setError("Please enter birthdate (mm-dd-yyyy)");
-            }else if(spinnerSex.getSelectedItem().equals("Sex")) {
+                validInput = false;
+            }
+
+            if(spinnerSex.getSelectedItem().equals("Sex")) {
                 ((TextView)spinnerSex.getSelectedView()).setError("please select sex");
-            } else if(TextUtils.isEmpty(etMobileNo.getText())) {
+                validInput = false;
+            }
+
+            if(TextUtils.isEmpty(etMobileNo.getText())) {
                 etMobileNo.setError("Enter Mobile number");
+                validInput = false;
             } else if (!mobileNumberMatcher.matches()) {
                 etMobileNo.setError("Please enter a valid mobile number");
+                validInput = false;
             } else if(etMobileNo.getText().length() != 11) {
                 etMobileNo.setError("Please enter a valid mobile number");
-            } else {
+                validInput = false;
+            }
+
+            if(validInput){
                 docUsers.put("ID", user.getUid());
                 docUsers.put("Email", uEmail);
                 docUsers.put("LastName", lastName);
@@ -341,31 +347,33 @@ public class RegisterGoogleActivity extends AppCompatActivity {
         return selectedSex;
     }
 
-    //update edittext value
-    private void updateDate(){
-        //matched with line 174
-        String myFormat="MM-dd-yyyy";
-        SimpleDateFormat dateFormat=new SimpleDateFormat(myFormat, Locale.US);
+    //update BIRTHDATE value
+    private void updateBirthDate() {
+        String myFormat = "MM-dd-yyyy";
+        SimpleDateFormat dateFormat = new SimpleDateFormat(myFormat, Locale.US);
         etBirthDate.setText(dateFormat.format(calendar.getTime()));
         etBirthDate.setError(null);
     }
 
-    private void selectBirthdate() {
-        DatePickerDialog.OnDateSetListener date = (view, year, month, day) -> {
+    private void selectBirthDate() {
+        Calendar maxCal = Calendar.getInstance();
+        maxCal.add(Calendar.YEAR, -18);
+        int mYear = maxCal.get(Calendar.YEAR);
+        int mMonth = maxCal.get(Calendar.MONTH);
+        int mDay = maxCal.get(Calendar.DAY_OF_MONTH);
+
+        DatePickerDialog.OnDateSetListener startDateListener = (arg0, year, monthOfYear, dayOfMonth) -> {
             calendar.set(Calendar.YEAR, year);
-            calendar.set(Calendar.MONTH,month);
-            calendar.set(Calendar.DAY_OF_MONTH,day);
-            updateDate();
+            calendar.set(Calendar.MONTH,monthOfYear);
+            calendar.set(Calendar.DAY_OF_MONTH,dayOfMonth);
+            updateBirthDate();
         };
 
-        //show DatePickerDialog using this listener
-        etBirthDate.setOnClickListener(view -> new DatePickerDialog(
-                RegisterGoogleActivity.this,
-                date,
-                calendar.get(Calendar.YEAR),
-                calendar.get(Calendar.MONTH),
-                calendar.get(Calendar.DAY_OF_MONTH)).show()
-        );
+        etBirthDate.setOnClickListener(view -> {
+            DatePickerDialog dpDialog = new DatePickerDialog(RegisterGoogleActivity.this, startDateListener, mYear, mMonth, mDay);
+            dpDialog.getDatePicker().setMaxDate(maxCal.getTimeInMillis());
+            dpDialog.show();
+        });
     }
 
     public void goBack(){

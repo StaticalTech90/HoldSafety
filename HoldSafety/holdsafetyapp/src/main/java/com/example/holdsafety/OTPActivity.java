@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.text.TextUtils;
 import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
@@ -110,7 +111,12 @@ public class OTPActivity extends AppCompatActivity {
 
         //Dialog Box for entering code
         dialog.btnSubmit.setOnClickListener(view -> {
-            if(code.equals(dialog.etCode.getText().toString())) {
+            if(TextUtils.isEmpty(dialog.etCode.toString())){
+                dialog.etCode.setError("Please enter your code.");
+            } else if(code==null){
+                dialog.etCode.setError("Your code expired. Please retry.");
+                //Toast.makeText(this, "Your code expired. Please retry.", Toast.LENGTH_LONG).show();
+            } else if(code.equals(dialog.etCode.getText().toString())) {
                 Toast.makeText(this, "Verification Success", Toast.LENGTH_LONG).show();
                 //Close dialog box
                 dialog.dismissDialog();

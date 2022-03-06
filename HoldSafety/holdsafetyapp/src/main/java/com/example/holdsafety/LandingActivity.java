@@ -168,6 +168,7 @@ public class LandingActivity extends AppCompatActivity {
 
         //handle method for holdsafety widget
         if(isFromWidget!=null && isFromWidget.equals("true")){
+            isFromWidget = null;
             getCurrentLocation();
         }
 
@@ -769,4 +770,9 @@ public class LandingActivity extends AppCompatActivity {
         super.onStart();
         setPermissions();
     }
+
+    @Override
+    public void onBackPressed() {
+    }
+
 }

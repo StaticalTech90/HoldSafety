@@ -1,0 +1,1382 @@
+[33mcommit 879ea858399b43aa6a5c81b3c9e72a4c2124808f[m[33m ([m[1;36mHEAD -> [m[1;32mmain[m[33m)[m
+Author: NCIcaro <nhoriza008@gmail.com>
+Date:   Sun Feb 27 01:10:48 2022 +0800
+
+    Fixed audio recording
+
+[33mcommit 4edf64e174a74110d536a866071f775aab82e8f7[m
+Merge: 3b63473 220b6ae
+Author: NCIcaro <nhoriza008@gmail.com>
+Date:   Sat Feb 26 18:18:46 2022 +0800
+
+    Merge branch 'main' of https://github.com/StaticalTech90/HoldSafety into main
+    merge main to icaro-branch
+
+[33mcommit 3b63473e22b5a3cba3012df1bb6e4af64349db2b[m
+Author: NCIcaro <nhoriza008@gmail.com>
+Date:   Sat Feb 26 18:14:26 2022 +0800
+
+    Delete wifimanager
+
+[33mcommit 220b6aeafbb676c20e0269bb828915ef05d56703[m
+Author: Jm Mandigma <fusionmadrack@gmail.com>
+Date:   Sat Feb 26 12:26:00 2022 +0800
+
+    navigation fixes, refactored hashmap for evidence link
+
+[33mcommit 8914643dab2eba20df2d1348921afb3312b70ccd[m
+Author: NCIcaro <nhoriza008@gmail.com>
+Date:   Sat Feb 26 10:20:24 2022 +0800
+
+    Redirect to loc or wifi settings when disabled, set all activities to portrait only
+
+[33mcommit e5b9e41fd3b73c741819c75b4d7aa13815e985a8[m
+Author: NCIcaro <nhoriza008@gmail.com>
+Date:   Sat Feb 26 06:18:01 2022 +0800
+
+    Input validations
+
+[33mcommit b88fcbe89ca3994d2048b946d4bea100a7140cd9[m
+Merge: fe1a02c 5096b8c
+Author: FRDFBL <37649179+StaticalTech90@users.noreply.github.com>
+Date:   Fri Feb 25 22:33:40 2022 +0800
+
+    Merge branch 'icaro-branch'
+
+[33mcommit fe1a02cb35dd9e54132da5c201ecc389861a1107[m
+Author: Jm Mandigma <fusionmadrack@gmail.com>
+Date:   Fri Feb 25 22:09:05 2022 +0800
+
+    CLEANED CODE v1.2
+
+[33mcommit 43030bf4c72fdd215dda89c897c2d9341bb316e1[m
+Author: Jm Mandigma <fusionmadrack@gmail.com>
+Date:   Fri Feb 25 13:19:24 2022 +0800
+
+    CLEANED CODE v1.1
+
+[33mcommit 74e335625bf6c95b77a025eeb0a6c506df00246a[m
+Author: Jm Mandigma <fusionmadrack@gmail.com>
+Date:   Fri Feb 25 13:10:02 2022 +0800
+
+    CLEANED CODE
+
+[33mcommit 5096b8c5654539803ed197f663db64df4e724372[m
+Author: NCIcaro <nhoriza008@gmail.com>
+Date:   Fri Feb 25 07:22:22 2022 +0800
+
+    Send Report If Condition
+
+[33mcommit f922fc47312af4ad387b274bacc51535bf424fc4[m
+Author: FRDFBL <37649179+StaticalTech90@users.noreply.github.com>
+Date:   Thu Feb 24 22:33:28 2022 +0800
+
+    optimized gradle
+
+[33mcommit 634a89cb2a227e1ee33fb6f11086fd4244cf0945[m
+Author: FRDFBL <37649179+StaticalTech90@users.noreply.github.com>
+Date:   Thu Feb 24 22:19:44 2022 +0800
+
+    fixed conflict error
+
+[33mcommit 3c0809c8c6372713e3742a432fe4e177626dd1c1[m
+Merge: 19affb5 72a884e
+Author: NCIcaro <nhoriza008@gmail.com>
+Date:   Wed Feb 23 06:03:14 2022 +0800
+
+    merged with main
+
+[33mcommit 19affb579faf3417a48b62138946c0934d2d9fd8[m
+Author: NCIcaro <nhoriza008@gmail.com>
+Date:   Wed Feb 23 05:58:07 2022 +0800
+
+    Google Sign In DB, ID and Report Links, OTP Layout, Account Details Layout
+
+[33mcommit 72a884ed0e2f9b5488985b1b0206838c0f0601a5[m
+Author: FRDFBL <37649179+StaticalTech90@users.noreply.github.com>
+Date:   Mon Feb 21 22:15:55 2022 +0800
+
+    added image uri to user collection
+
+[33mcommit d5e736e0a555dc49642c01c02a029519d47fa5af[m
+Merge: 46a2902 ef0af0d
+Author: FRDFBL <37649179+StaticalTech90@users.noreply.github.com>
+Date:   Mon Feb 21 21:22:13 2022 +0800
+
+    Merge branch 'icaro-branch'
+
+[33mcommit ef0af0d89a53eca03ff55c6f7b63cd5ead7f7e9f[m
+Author: NCIcaro <nhoriza008@gmail.com>
+Date:   Mon Feb 21 18:36:12 2022 +0800
+
+    Fixed Auto Recording Issue + Count Items
+
+[33mcommit 46a290280a4943e9690f8d33d00624567faad66d[m
+Author: Jm Mandigma <fusionmadrack@gmail.com>
+Date:   Mon Feb 21 11:01:39 2022 +0800
+
+    OTP timer
+
+[33mcommit 827756b979b4d8b725efc4eb686f5d34d6cad5a4[m
+Merge: b89e045 d002b3d
+Author: FRDFBL <37649179+StaticalTech90@users.noreply.github.com>
+Date:   Sun Feb 20 16:45:29 2022 +0800
+
+    Merge branch 'icaro-branch'
+
+[33mcommit d002b3d4316477446efebed411c8aa37d8e4af26[m
+Author: NCIcaro <nhoriza008@gmail.com>
+Date:   Sun Feb 20 05:07:58 2022 +0800
+
+    All Activity's Responsiveness, Reports Query
+
+[33mcommit b89e045dfabc0f790e0f2d9158f3f8a89a4fbf01[m
+Author: FRDFBL <37649179+StaticalTech90@users.noreply.github.com>
+Date:   Fri Feb 18 19:48:41 2022 +0800
+
+    fixed autorecording bug
+
+[33mcommit 2303a86da62b517c6d14a0cde651d0310b0a3d86[m
+Author: FRDFBL <37649179+StaticalTech90@users.noreply.github.com>
+Date:   Fri Feb 18 19:31:54 2022 +0800
+
+    fixed onStart
+
+[33mcommit bd4349ad63ec2075f077c2becbb64946fc59a03e[m
+Author: FRDFBL <37649179+StaticalTech90@users.noreply.github.com>
+Date:   Fri Feb 18 17:50:43 2022 +0800
+
+    minor fixes
+
+[33mcommit e9bf9d6fb745628b8a53f94635fa62ca284b0789[m
+Author: FRDFBL <37649179+StaticalTech90@users.noreply.github.com>
+Date:   Fri Feb 18 17:20:51 2022 +0800
+
+    fixed accountdetails upload
+
+[33mcommit f29eda0d42b6ac3c67fd30d98c1683fdadb900c0[m
+Merge: d5ca559 75c1766
+Author: FRDFBL <37649179+StaticalTech90@users.noreply.github.com>
+Date:   Fri Feb 18 17:16:14 2022 +0800
+
+    Merge branch 'fabul-branch'
+
+[33mcommit d5ca559ad14890ee0e911d7c7b554866024ff610[m
+Merge: 8b22ba6 f135ab2
+Author: FRDFBL <37649179+StaticalTech90@users.noreply.github.com>
+Date:   Fri Feb 18 17:14:21 2022 +0800
+
+    Merge branch 'icaro-branch'
+
+[33mcommit f135ab255a91ac5900e318c9b2cdfcffa5f1020f[m
+Author: NCIcaro <nhoriza008@gmail.com>
+Date:   Fri Feb 18 03:29:14 2022 +0800
+
+    Responsiveness - Register, Register with Google, Menu, Account Details & Update on View Report Date
+
+[33mcommit 8b22ba684babee97dc49eb90132ed2842961b116[m
+Author: Jm Mandigma <fusionmadrack@gmail.com>
+Date:   Fri Feb 18 02:30:23 2022 +0800
+
+    Fill up details before going to Landing
+
+[33mcommit 75c17663dac33968584b0df56d6014bbbfe1ae50[m
+Author: FRDFBL <37649179+StaticalTech90@users.noreply.github.com>
+Date:   Fri Feb 18 00:26:46 2022 +0800
+
+    added updat Id image to account details
+
+[33mcommit 2af344476f89efcbaaa69817d33db2829ef7f1d5[m
+Author: NCIcaro <nhoriza008@gmail.com>
+Date:   Thu Feb 17 16:40:02 2022 +0800
+
+    Responsiveness - Login, Landing, Countdown, Recording
+
+[33mcommit 3ecd55aabfb3a05982c028d7755a7e873f89fcff[m
+Merge: fb3d245 653ee16
+Author: FRDFBL <37649179+StaticalTech90@users.noreply.github.com>
+Date:   Wed Feb 16 02:39:47 2022 +0800
+
+    Merge branch 'main' into fabul-branch
+
+[33mcommit fb3d2457c928b691d26fcfe9ce76e92d36e3f109[m
+Author: FRDFBL <37649179+StaticalTech90@users.noreply.github.com>
+Date:   Wed Feb 16 02:39:23 2022 +0800
+
+    modified permission requests; working on audio recording
+
+[33mcommit 653ee16eb2da632cb11e00e68baadc079d1c5887[m
+Author: Jm Mandigma <fusionmadrack@gmail.com>
+Date:   Mon Feb 14 23:05:51 2022 +0800
+
+    Fixed more registration/google issues
+
+[33mcommit 73996c004ddbc0f0678e16bad26980a3b627fb0b[m
+Author: Jm Mandigma <fusionmadrack@gmail.com>
+Date:   Mon Feb 14 20:45:58 2022 +0800
+
+    Date in DB is now Timestamp
+
+[33mcommit 03fc755f3c3ec10e0f684f2c2b4d118ca4454c9e[m
+Author: FRDFBL <37649179+StaticalTech90@users.noreply.github.com>
+Date:   Mon Feb 14 18:45:26 2022 +0800
+
+    refactored recording activity
+
+[33mcommit d1eb4b9c180c00212b185c6ce3ad786c0f5e4e71[m
+Merge: c7a87c2 145efab
+Author: FRDFBL <37649179+StaticalTech90@users.noreply.github.com>
+Date:   Mon Feb 14 18:14:32 2022 +0800
+
+    Merge branch 'main' into fabul-branch
+
+[33mcommit 145efab8ef358552ec1715191441e295a7c53a83[m
+Author: FRDFBL <37649179+StaticalTech90@users.noreply.github.com>
+Date:   Mon Feb 14 18:14:21 2022 +0800
+
+    fixed Login whitescreen
+
+[33mcommit c7a87c2ee96c7c93207bfa56460d4bee3c499762[m
+Author: FRDFBL <37649179+StaticalTech90@users.noreply.github.com>
+Date:   Mon Feb 14 17:50:42 2022 +0800
+
+    refactored method body
+
+[33mcommit 197b29e338269787f846bb6c259ef10811b7dffe[m
+Merge: 9248021 a8760a6
+Author: FRDFBL <37649179+StaticalTech90@users.noreply.github.com>
+Date:   Mon Feb 14 17:45:39 2022 +0800
+
+    Merge branch 'main' into fabul-branch
+
+[33mcommit a8760a631ddd08301c4c15935530cc0f38b63ca0[m
+Author: FRDFBL <37649179+StaticalTech90@users.noreply.github.com>
+Date:   Mon Feb 14 17:45:01 2022 +0800
+
+    refactored onStart method
+
+[33mcommit f698d02fe2d461279f5024e401759e41103dcbd0[m
+Merge: a2e36d2 4b078fb
+Author: FRDFBL <37649179+StaticalTech90@users.noreply.github.com>
+Date:   Mon Feb 14 17:34:16 2022 +0800
+
+    Merge branch 'icaro-branch'
+
+[33mcommit 4b078fb235332dfa3da0b90bc89e31177bc6633b[m
+Author: NCIcaro <nhoriza008@gmail.com>
+Date:   Mon Feb 14 17:31:13 2022 +0800
+
+    remove anything reportadmin and reportuser related
+
+[33mcommit a2e36d2719994867bd4bd14141e59b31a7c9409e[m
+Author: FRDFBL <37649179+StaticalTech90@users.noreply.github.com>
+Date:   Mon Feb 14 13:27:52 2022 +0800
+
+    optimized imports
+
+[33mcommit e19418276c08996ecd6d921ae20ffa6d78710aa1[m
+Merge: f326db9 8a7d4cb
+Author: FRDFBL <37649179+StaticalTech90@users.noreply.github.com>
+Date:   Mon Feb 14 13:24:55 2022 +0800
+
+    Merge branch 'icaro-branch'
+
+[33mcommit 8a7d4cb0e4b9632016a09f7fcd9a2a117ed42505[m
+Author: NCIcaro <nhoriza008@gmail.com>
+Date:   Mon Feb 14 03:28:57 2022 +0800
+
+    Remove sorted reports db queries
+
+[33mcommit d6a541304693cf3517f3620169580073c776ca74[m
+Author: NCIcaro <nhoriza008@gmail.com>
+Date:   Mon Feb 14 02:58:16 2022 +0800
+
+    GeoLoc + Filtering Data using WhereEqualTo query [No need for sorted database]
+
+[33mcommit 13325447ae228ff0f9230a410ac4b9f8c76c11ae[m
+Author: NCIcaro <nhoriza008@gmail.com>
+Date:   Mon Feb 14 02:05:07 2022 +0800
+
+    Fixed Recording Evidence on Report Docu
+
+[33mcommit 924802161b838da6a6382a75a562d2a6ed1a3f03[m
+Merge: 081e61d f326db9
+Author: FRDFBL <37649179+StaticalTech90@users.noreply.github.com>
+Date:   Sun Feb 13 18:34:09 2022 +0800
+
+    Merge branch 'main' into fabul-branch
+
+[33mcommit 081e61d9b15ccac08d7a08944fd62a885f831639[m
+Author: FRDFBL <37649179+StaticalTech90@users.noreply.github.com>
+Date:   Sun Feb 13 18:33:01 2022 +0800
+
+    push changes
+
+[33mcommit f326db9bfe84a17740a357aa4b088f62860b3d8b[m
+Author: FRDFBL <37649179+StaticalTech90@users.noreply.github.com>
+Date:   Fri Feb 11 17:36:23 2022 +0800
+
+    declared TextView description
+
+[33mcommit 67ea60e396c5eefa652e65cce5727b5e7b736cff[m
+Merge: a1033c2 9766e40
+Author: FRDFBL <37649179+StaticalTech90@users.noreply.github.com>
+Date:   Fri Feb 11 17:31:34 2022 +0800
+
+    Merge branch 'mandigma-branch'
+
+[33mcommit a1033c20e26ccc041703121f0f4c4b67fa019988[m
+Merge: defa864 26d9450
+Author: FRDFBL <37649179+StaticalTech90@users.noreply.github.com>
+Date:   Fri Feb 11 15:05:22 2022 +0800
+
+    Merge branch 'icaro-branch'
+
+[33mcommit 26d9450d1e3b9a1065cba31a706b7c1e2784e9ff[m
+Author: NCIcaro <nhoriza008@gmail.com>
+Date:   Fri Feb 11 08:34:12 2022 +0800
+
+    Add Report DB [for sorting]
+
+[33mcommit f322c5a5b67e6ec1963595218dd57f89b813ab6a[m
+Author: NCIcaro <nhoriza008@gmail.com>
+Date:   Fri Feb 11 08:11:29 2022 +0800
+
+    Fix Report Layout
+
+[33mcommit 9766e409d931b7a17dc215d065dcaf56759eb14e[m
+Author: Jm Mandigma <fusionmadrack@gmail.com>
+Date:   Thu Feb 10 21:47:03 2022 +0800
+
+    optimized code
+
+[33mcommit d9c838ff3720fd598e50221e2212adf8350942f9[m
+Author: Jm Mandigma <fusionmadrack@gmail.com>
+Date:   Thu Feb 10 21:18:28 2022 +0800
+
+    Fixed duplicate account creation in RegisterActivity
+
+[33mcommit defa864287c10dece6e9e820e25bc4068105c5e9[m
+Author: FRDFBL <37649179+StaticalTech90@users.noreply.github.com>
+Date:   Thu Feb 10 20:57:09 2022 +0800
+
+    modified gitignore
+
+[33mcommit 213025d928a72b2076be4fabdc6c2111c1ac0461[m
+Author: Jm Mandigma <fusionmadrack@gmail.com>
+Date:   Thu Feb 10 20:51:09 2022 +0800
+
+    fetch vid working. need to add to report doc in db
+
+[33mcommit fc28b528f094447e9e793a40bcd5fcefcf69326f[m
+Author: NCIcaro <nhoriza008@gmail.com>
+Date:   Thu Feb 10 03:18:00 2022 +0800
+
+    Fixed Layout (Landing, Account Details, Change Pass
+
+[33mcommit 2df36f0989fd59da05a405614a8e3232b2791072[m
+Merge: 641ff0e 64f2c8d
+Author: FRDFBL <37649179+StaticalTech90@users.noreply.github.com>
+Date:   Thu Feb 10 03:11:04 2022 +0800
+
+    Merge branch 'icaro-branch'
+
+[33mcommit 641ff0e8e0460e47393f4dd16f5d9f19bd13438f[m
+Author: FRDFBL <37649179+StaticalTech90@users.noreply.github.com>
+Date:   Wed Feb 9 23:02:42 2022 +0800
+
+    [WIP] insert code to add links to userReportDb
+
+[33mcommit 5b414a4e9a216bbe90ee0e41bebe18df6ab4fa42[m
+Author: Jm Mandigma <fusionmadrack@gmail.com>
+Date:   Wed Feb 9 22:20:48 2022 +0800
+
+    Evidence link in report doc WIP
+
+[33mcommit ce40c822791b017f748e9b8af9ce316c5486b73c[m
+Author: Jm Mandigma <fusionmadrack@gmail.com>
+Date:   Wed Feb 9 19:33:28 2022 +0800
+
+    Vid Link in document wip
+
+[33mcommit 872e2e84603b676a0ba1df56ea1c4106d8f598b4[m
+Merge: ea6355f 9a2b931
+Author: Jm Mandigma <fusionmadrack@gmail.com>
+Date:   Wed Feb 9 02:12:35 2022 +0800
+
+    merge w/mandigma-branch
+
+[33mcommit ea6355f65823e56ee997547f7459238a92f9782a[m
+Author: Jm Mandigma <fusionmadrack@gmail.com>
+Date:   Wed Feb 9 02:08:30 2022 +0800
+
+    Fixed google reg issues
+
+[33mcommit 9a2b931e9b02a25775ce6dde8152de3822e1f9d1[m
+Author: FRDFBL <37649179+StaticalTech90@users.noreply.github.com>
+Date:   Tue Feb 8 23:36:54 2022 +0800
+
+    added audio/video to firestore
+
+[33mcommit f843eeac912ae8e3b571afdde814620c99a27142[m
+Author: Jm Mandigma <fusionmadrack@gmail.com>
+Date:   Tue Feb 8 22:09:57 2022 +0800
+
+    new wip
+
+[33mcommit 9c89b632f693b22a832968c400ed1eb3adad5dc9[m
+Author: Jm Mandigma <fusionmadrack@gmail.com>
+Date:   Tue Feb 8 19:56:06 2022 +0800
+
+    Report Date now includes time wow
+
+[33mcommit b03d3fdf04ad4e6979093d707efd318c9f4ae530[m
+Author: Jm Mandigma <fusionmadrack@gmail.com>
+Date:   Tue Feb 8 18:33:18 2022 +0800
+
+    Changed filename for vid/audio recording
+
+[33mcommit 0140ff350e33e07f10949432f77a5877df639f8d[m
+Merge: e7f385e c3d56d1
+Author: Jm Mandigma <fusionmadrack@gmail.com>
+Date:   Tue Feb 8 18:23:17 2022 +0800
+
+    merge main
+
+[33mcommit c3d56d19fb60cac54777390c31d584661fda6ee1[m
+Author: FRDFBL <37649179+StaticalTech90@users.noreply.github.com>
+Date:   Tue Feb 8 03:45:33 2022 +0800
+
+    added imageURI for user id validation in firestore
+
+[33mcommit 64f2c8d68f73f60a958b5d69b489a0379796f526[m
+Merge: ea32262 f77d27e
+Author: FRDFBL <37649179+StaticalTech90@users.noreply.github.com>
+Date:   Tue Feb 8 00:09:20 2022 +0800
+
+    Merge branch 'main' into icaro-branch
+
+[33mcommit e7f385e3bb782f37fe9399676c4c2a8e8f034c4a[m
+Author: Jm Mandigma <fusionmadrack@gmail.com>
+Date:   Mon Feb 7 20:39:24 2022 +0800
+
+    Google Registration issue
+
+[33mcommit ea32262efad46aef33984daa6c693c4a404c82a8[m
+Author: NCIcaro <nhoriza008@gmail.com>
+Date:   Mon Feb 7 17:30:33 2022 +0800
+
+    Google Sign Out
+
+[33mcommit f77d27e4b4e71ea7893d761401500a8c2f38cd4e[m
+Author: FRDFBL <37649179+StaticalTech90@users.noreply.github.com>
+Date:   Fri Feb 4 02:52:08 2022 +0800
+
+    refactored permission requests to ask in LandingActivity
+
+[33mcommit f625b42282d979a61623e8cd412e02ae40b6d8cd[m
+Author: Jm Mandigma <fusionmadrack@gmail.com>
+Date:   Thu Feb 3 23:12:32 2022 +0800
+
+    Added fields in db for visibility
+
+[33mcommit b0e1b0553645529b32c18ba6f3b345e0c446e9eb[m
+Author: Jm Mandigma <fusionmadrack@gmail.com>
+Date:   Thu Feb 3 19:18:58 2022 +0800
+
+    Rename Patch Notes to PatchNotes.txt
+
+[33mcommit 6e284ad960cf8506954e72f9abf83c78e94e594b[m
+Author: Jm Mandigma <fusionmadrack@gmail.com>
+Date:   Thu Feb 3 19:10:42 2022 +0800
+
+    Created patch notes
+
+[33mcommit ff9345b848ea0861214d09a4b81ffd2cb4586543[m
+Author: Jm Mandigma <fusionmadrack@gmail.com>
+Date:   Thu Feb 3 18:58:19 2022 +0800
+
+    Google Reg upload img
+
+[33mcommit d6883027e0716b0f56fd4f1a4ec37d8cda308e78[m
+Author: Jm Mandigma <fusionmadrack@gmail.com>
+Date:   Thu Feb 3 17:27:45 2022 +0800
+
+    Registration saved after OTP
+
+[33mcommit 90eeb556be3822a5ca5a54756584a39acd86f838[m
+Author: Jm Mandigma <fusionmadrack@gmail.com>
+Date:   Tue Feb 1 15:23:55 2022 +0800
+
+    Reports use same ID
+
+[33mcommit 897710e603ee334314223c72383004f020a6fafc[m
+Author: FRDFBL <37649179+StaticalTech90@users.noreply.github.com>
+Date:   Fri Jan 28 17:46:50 2022 +0800
+
+    fixed report display
+
+[33mcommit a526210c96b8f66a7eeca2355fc224889c4c7d58[m
+Merge: 5d6a315 142ad18
+Author: FRDFBL <37649179+StaticalTech90@users.noreply.github.com>
+Date:   Fri Jan 28 17:46:24 2022 +0800
+
+    Merge branch 'icaro-branch'
+
+[33mcommit 142ad1802815decfe7b3667c34ffb79ae78571da[m
+Author: NCIcaro <nhoriza008@gmail.com>
+Date:   Fri Jan 28 16:04:11 2022 +0800
+
+    Fixed Widget, Redirect to Landing if logged in, Minor fixes on Landing
+
+[33mcommit 5d6a315d3d82e50006a37ccac529bbf95d939331[m
+Author: FRDFBL <37649179+StaticalTech90@users.noreply.github.com>
+Date:   Fri Jan 28 15:05:29 2022 +0800
+
+    Refactored LandingActivity
+
+[33mcommit a7ed8d2620a674195346c4da0496eb0a5c522991[m
+Merge: 1705736 b0cfa3a
+Author: FRDFBL <37649179+StaticalTech90@users.noreply.github.com>
+Date:   Thu Jan 27 21:15:22 2022 +0800
+
+    Merge branch 'mandigma-branch'
+
+[33mcommit 1705736a255d14da858381b3f731e23e347749f1[m
+Merge: 5388321 1107a47
+Author: FRDFBL <37649179+StaticalTech90@users.noreply.github.com>
+Date:   Thu Jan 27 21:12:45 2022 +0800
+
+    Merge branch 'fabul-branch'
+
+[33mcommit 538832139264a444dd82e885b9a8b74510b746c8[m
+Merge: 3cd8e3c 6a948f5
+Author: FRDFBL <37649179+StaticalTech90@users.noreply.github.com>
+Date:   Thu Jan 27 20:38:14 2022 +0800
+
+    Merge branch 'icaro-branch'
+
+[33mcommit b0cfa3a353e1818de1b43f6502b74e28fb96437d[m
+Author: Jm Mandigma <fusionmadrack@gmail.com>
+Date:   Wed Jan 26 16:23:41 2022 +0800
+
+    Display My Reports
+
+[33mcommit 1107a473534c26be303786fb0f85ae58404a2976[m
+Author: FRDFBL <37649179+StaticalTech90@users.noreply.github.com>
+Date:   Wed Jan 26 14:56:45 2022 +0800
+
+    added SendReports functionality
+
+[33mcommit e6e785370a9f9b61ca0c28345a604fcf86291881[m
+Merge: 70c106d 7656df7
+Author: FRDFBL <37649179+StaticalTech90@users.noreply.github.com>
+Date:   Wed Jan 26 14:50:53 2022 +0800
+
+    Merge branch 'mandigma-branch' into fabul-branch
+
+[33mcommit 7656df70b063ca5e42b9c9a67e827d0cf891ba14[m
+Author: Jm Mandigma <fusionmadrack@gmail.com>
+Date:   Wed Jan 26 12:57:50 2022 +0800
+
+    saveToDB() in LandingActivity
+
+[33mcommit 70c106dfde4430569def35a3ed5870370553ce66[m
+Merge: e724641 3cd8e3c
+Author: FRDFBL <37649179+StaticalTech90@users.noreply.github.com>
+Date:   Tue Jan 25 11:30:29 2022 +0800
+
+    Merge branch 'main' into fabul-branch
+
+[33mcommit 3cd8e3c02422e3a41bf44dadcf3b56049d2f6588[m
+Merge: 1c4a6a6 1a130c6
+Author: FRDFBL <37649179+StaticalTech90@users.noreply.github.com>
+Date:   Tue Jan 25 11:29:32 2022 +0800
+
+    Merge branch 'mandigma-branch'
+
+[33mcommit e724641ab29f3ef4b0a851be694733dd27541982[m
+Author: FRDFBL <37649179+StaticalTech90@users.noreply.github.com>
+Date:   Tue Jan 25 11:28:52 2022 +0800
+
+    minor changes
+
+[33mcommit 6a948f5385b1e4e30673bbc362432c9a6373b5f7[m
+Author: NCIcaro <nhoriza008@gmail.com>
+Date:   Mon Jan 24 16:49:52 2022 +0800
+
+    Recording limit, Send message to brgy, Cancel Auto Recording
+
+[33mcommit ba593b4708e79bf72905e779fa9922fffc2d1ae6[m
+Author: NCIcaro <nhoriza008@gmail.com>
+Date:   Sat Jan 15 03:44:30 2022 +0800
+
+    Fixed Layout: Register, OTP Dialog, OTP Activity
+
+[33mcommit 1a130c613c032a41ef455c8b39db6c104bd023cb[m
+Author: Jm Mandigma <fusionmadrack@gmail.com>
+Date:   Fri Jan 14 18:38:14 2022 +0800
+
+    Reports recorded in DB
+
+[33mcommit 1c4a6a6092dad2fe3d8bbaee9d9f79c2d5522636[m
+Author: NCIcaro <nhoriza008@gmail.com>
+Date:   Fri Jan 14 02:03:42 2022 +0800
+
+    Auto Audio Recording
+
+[33mcommit af90b6576cc1c9b25f3aa1ebec5c200881b7cc98[m
+Author: NCIcaro <nhoriza008@gmail.com>
+Date:   Thu Jan 13 03:20:56 2022 +0800
+
+    Contact Developers + Register With Google Fix
+
+[33mcommit d3de1311d011dcbfa4e2b2b1b4a7d6c9a92af818[m
+Author: FRDFBL <37649179+StaticalTech90@users.noreply.github.com>
+Date:   Thu Jan 13 01:44:03 2022 +0800
+
+    fixed overridden RegisterGoogleActivity
+
+[33mcommit 303a2841f6bb924e5c717cec3c090a348be35df9[m[33m ([m[1;31morigin/temp[m[33m)[m
+Author: FRDFBL <37649179+StaticalTech90@users.noreply.github.com>
+Date:   Wed Jan 12 18:06:01 2022 +0800
+
+    temporarily disabled timer
+
+[33mcommit 02d5d8f768c2792ed530bc7e5abba1a8c40b30ae[m
+Merge: ef32341 8cfb96b
+Author: FRDFBL <37649179+StaticalTech90@users.noreply.github.com>
+Date:   Wed Jan 12 17:41:07 2022 +0800
+
+    Merge branch 'mandigma-branch'
+
+[33mcommit ef323419b1f4c21746b908a156603d8eab704c21[m
+Merge: 854c7fa 7f06d62
+Author: FRDFBL <37649179+StaticalTech90@users.noreply.github.com>
+Date:   Wed Jan 12 17:38:29 2022 +0800
+
+    Merge branch 'icaro-branch'
+
+[33mcommit 7f06d62d06d53b3be1773c74cc421c1cb6610115[m
+Author: NCIcaro <nhoriza008@gmail.com>
+Date:   Wed Jan 12 15:51:47 2022 +0800
+
+    Auto Video Recording - Add to Firebase
+
+[33mcommit 854c7fae79e605a5946d2bf0b12438885168ee95[m
+Author: FRDFBL <37649179+StaticalTech90@users.noreply.github.com>
+Date:   Wed Jan 12 13:51:18 2022 +0800
+
+    added Functionalities for Contact Activities
+
+[33mcommit 47d3d5ec8f1730353a429130b098639a29591732[m
+Author: NCIcaro <nhoriza008@gmail.com>
+Date:   Wed Jan 12 02:00:04 2022 +0800
+
+    Auto Video Recording - Save to Device
+
+[33mcommit 8cfb96bb2c4f3fd7cccc223e24308d90e48eb96f[m
+Author: Jm Mandigma <fusionmadrack@gmail.com>
+Date:   Tue Jan 11 20:51:40 2022 +0800
+
+    OTP, still needs UI design
+
+[33mcommit 00e935222652962d274f16665eafe92bcece9dae[m
+Author: NCIcaro <nhoriza008@gmail.com>
+Date:   Tue Jan 11 17:53:34 2022 +0800
+
+    Auto Video Recording - With Error
+
+[33mcommit c30a838401de68fa9f627b3e4b56bed02cf02e46[m
+Author: FRDFBL <37649179+StaticalTech90@users.noreply.github.com>
+Date:   Sun Jan 9 17:15:33 2022 +0800
+
+    added comment
+
+[33mcommit 2f75c5b7142052f436a0edc25af7cc5f99fc0b34[m
+Author: NCIcaro <nhoriza008@gmail.com>
+Date:   Sun Jan 9 04:46:57 2022 +0800
+
+    Widget Functionality
+
+[33mcommit d6c93724d8d614644bede08faf78814b577f28d2[m
+Author: NCIcaro <nhoriza008@gmail.com>
+Date:   Sun Jan 9 02:48:20 2022 +0800
+
+    Minor fixes on Send SMS
+
+[33mcommit 3e59e0cf7b7d7aafb05d97cd110678d54d194e42[m
+Author: NCIcaro <nhoriza008@gmail.com>
+Date:   Sat Jan 8 03:20:14 2022 +0800
+
+    Fixed Register & Register With Google Layout + Others
+
+[33mcommit 3387cf0bea4b85f6be9581fd1f4d93910e24db9d[m
+Author: FRDFBL <37649179+StaticalTech90@users.noreply.github.com>
+Date:   Fri Jan 7 20:42:44 2022 +0800
+
+    added Permission Requests on LandingActivity Start
+
+[33mcommit 92c23047e0ae8031f62ca82966cc0353dc6c19af[m
+Merge: 4f5e826 d2922fe
+Author: FRDFBL <37649179+StaticalTech90@users.noreply.github.com>
+Date:   Fri Jan 7 19:31:13 2022 +0800
+
+    Merge branch 'mandigma-branch' into temp
+
+[33mcommit d2922fe993cab9dad80929469a6ecbcc3767686f[m
+Author: Jm Mandigma <fusionmadrack@gmail.com>
+Date:   Fri Jan 7 18:41:16 2022 +0800
+
+    Google SignIn improvement, fixed some Data Validation
+
+[33mcommit 4f5e826249733a201a9cf5cb8d0fc555f80426ef[m
+Author: FRDFBL <37649179+StaticalTech90@users.noreply.github.com>
+Date:   Fri Jan 7 17:59:46 2022 +0800
+
+    optimized imports
+
+[33mcommit 723f8b0ee17f5e6cc8a3b1e9979aaf553acb142a[m
+Merge: 8f2ea32 77cdcd9
+Author: FRDFBL <37649179+StaticalTech90@users.noreply.github.com>
+Date:   Fri Jan 7 17:57:59 2022 +0800
+
+    Merge branch 'mandigma-branch' into temp
+
+[33mcommit 8f2ea322eef1eb28c5e3066bfa515b1a53bb0efb[m
+Author: FRDFBL <37649179+StaticalTech90@users.noreply.github.com>
+Date:   Fri Jan 7 17:43:24 2022 +0800
+
+    minor changes
+
+[33mcommit 19a48e7f339a613640cca0754a55f25cbad63cdc[m
+Author: FRDFBL <37649179+StaticalTech90@users.noreply.github.com>
+Date:   Fri Jan 7 17:31:03 2022 +0800
+
+    added Mail Task
+
+[33mcommit b44aa9fd2493312166a3bdc46616b0ebe75a74be[m
+Merge: 17c6861 dad6322
+Author: FRDFBL <37649179+StaticalTech90@users.noreply.github.com>
+Date:   Fri Jan 7 17:21:39 2022 +0800
+
+    Merge branch 'icaro-branch' into temp
+
+[33mcommit 17c68610e04b818b51caee4d1e780efca514c79d[m
+Author: FRDFBL <37649179+StaticalTech90@users.noreply.github.com>
+Date:   Fri Jan 7 17:15:50 2022 +0800
+
+    added Mailing Functionality
+
+[33mcommit 02dc186fd00bb478e42bee32a14db17fb7d24ea2[m
+Author: FRDFBL <37649179+StaticalTech90@users.noreply.github.com>
+Date:   Fri Jan 7 17:05:03 2022 +0800
+
+    minor fix: modified toast values
+
+[33mcommit b8c04677a88ef843bc512fa5630cd39ac14c6d77[m
+Merge: a550fdb 81d3d91
+Author: FRDFBL <37649179+StaticalTech90@users.noreply.github.com>
+Date:   Fri Jan 7 16:57:27 2022 +0800
+
+    Merge branch 'fabul-branch' into temp
+
+[33mcommit a550fdb7b0d44b88a0b2eee7b166684241d3bd1e[m
+Author: FRDFBL <37649179+StaticalTech90@users.noreply.github.com>
+Date:   Fri Jan 7 16:55:32 2022 +0800
+
+    minor fixes
+
+[33mcommit 9e74ee378d4b0e4220781a8afe0c46665740b744[m
+Merge: f6f241f c2bf46f
+Author: FRDFBL <37649179+StaticalTech90@users.noreply.github.com>
+Date:   Fri Jan 7 16:46:42 2022 +0800
+
+    Merge branch 'david-branch' into temp
+
+[33mcommit 77cdcd9e4e6041075bee0f6da3b19b723f4bd5c3[m
+Author: Jm Mandigma <fusionmadrack@gmail.com>
+Date:   Fri Jan 7 03:19:28 2022 +0800
+
+    Data Validation for Google, Enable WiFi
+
+[33mcommit 81d3d916e60485182bc2baa677583c0503d461ab[m
+Author: FRDFBL <37649179+StaticalTech90@users.noreply.github.com>
+Date:   Fri Jan 7 01:54:04 2022 +0800
+
+    added Image Upload and GPS Functionalities
+
+[33mcommit dad6322c2e3827c2d67bb7037cacfe37e9f5fb7b[m
+Author: NCIcaro <nhoriza008@gmail.com>
+Date:   Fri Jan 7 00:49:30 2022 +0800
+
+    SMS and Email
+
+[33mcommit c2bf46f9c02cb5b18fb72007a390ca84890c76fc[m
+Author: unknown <vera.david1214@gmail.com>
+Date:   Thu Jan 6 23:14:03 2022 +0800
+
+    role based login & forgot password
+
+[33mcommit c02be7e2a4aca6f64b631b293b54b61d9f5ce10d[m
+Author: Jm Mandigma <fusionmadrack@gmail.com>
+Date:   Thu Jan 6 19:10:23 2022 +0800
+
+    Validation for RegisterActivity
+
+[33mcommit f6f241fb0f3b6fabddbae019be70c6814c67523b[m
+Merge: 9cc4cc4 5f39a7a
+Author: FRDFBL <37649179+StaticalTech90@users.noreply.github.com>
+Date:   Thu Jan 6 17:41:26 2022 +0800
+
+    Merge branch 'mandigma-branch'
+
+[33mcommit 5f39a7ad8a282ed77518c6e9f16dc07765296014[m
+Author: Jm Mandigma <fusionmadrack@gmail.com>
+Date:   Thu Jan 6 17:20:52 2022 +0800
+
+    Data sent/received from db
+
+[33mcommit 9cc4cc4e39e73434fcda7b0bc85825dccff87ebb[m
+Merge: 4dbf02b 62ca3a7
+Author: FRDFBL <37649179+StaticalTech90@users.noreply.github.com>
+Date:   Thu Jan 6 12:37:43 2022 +0800
+
+    Merge pull request #3 from StaticalTech90/icaro-branch
+    
+    Merge Icaro-Branch with main
+
+[33mcommit 62ca3a7b99928e67ad6e574e25e4be489bf15256[m
+Author: NCIcaro <nhoriza008@gmail.com>
+Date:   Thu Jan 6 03:11:25 2022 +0800
+
+    Add Emergency Contacts - With Spinner
+
+[33mcommit bb3bea948f98e0bce9e40c25d083e9613eac2c8f[m
+Author: NCIcaro <nhoriza008@gmail.com>
+Date:   Wed Jan 5 20:00:26 2022 +0800
+
+    Add Emergenecy Contacts - No Spinner
+
+[33mcommit 6291489f47b610c0acce3197e48591fa7973cc76[m
+Author: Jm Mandigma <fusionmadrack@gmail.com>
+Date:   Wed Jan 5 18:52:22 2022 +0800
+
+    Sign In Google to DB
+
+[33mcommit 4dbf02b99f7127e7f49d8ef86c18f264ef4d714e[m
+Merge: e02cb77 ced6ab0
+Author: FRDFBL <37649179+StaticalTech90@users.noreply.github.com>
+Date:   Tue Jan 4 21:34:51 2022 +0800
+
+    Merge pull request #2 from StaticalTech90/fabul-branch
+    
+    refactored RegisterActivity
+
+[33mcommit ced6ab0cb4060aa0f68ece32e7c0792f03fa400d[m
+Author: FRDFBL <37649179+StaticalTech90@users.noreply.github.com>
+Date:   Tue Jan 4 21:33:48 2022 +0800
+
+    refactored RegisterActivity
+    
+    Added in DatePickerDialog for birthdate input; Refactored Register button be invoked with OnClickListener
+
+[33mcommit e02cb77fae48bc08b5e7001544f68054133a271a[m
+Author: FRDFBL <37649179+StaticalTech90@users.noreply.github.com>
+Date:   Tue Jan 4 18:32:16 2022 +0800
+
+    refactored RegisterActivity
+
+[33mcommit 8b737c5f05133b8e1438d306cdcc3d3a02e0d6f6[m
+Merge: 51c229e 65b710f
+Author: FRDFBL <37649179+StaticalTech90@users.noreply.github.com>
+Date:   Tue Jan 4 17:42:27 2022 +0800
+
+    Merge branch 'main' into fabul-branch
+
+[33mcommit 65b710fbfcabc745c546c624010e6e182ad765f9[m
+Merge: a8332ef 1c3da0f
+Author: FRDFBL <37649179+StaticalTech90@users.noreply.github.com>
+Date:   Tue Jan 4 17:39:23 2022 +0800
+
+    Merge branch 'icaro-branch'
+
+[33mcommit 1c3da0fccb2328fa3b101efbb8fab8b555c84b94[m
+Author: NCIcaro <nhoriza008@gmail.com>
+Date:   Tue Jan 4 17:20:23 2022 +0800
+
+    Google Sign In and Updated Register Layout
+
+[33mcommit 51c229e24086a7d623aad18612033da86acf7316[m
+Merge: acaec04 d3556f9
+Author: FRDFBL <37649179+StaticalTech90@users.noreply.github.com>
+Date:   Tue Jan 4 15:43:19 2022 +0800
+
+    Merge branch 'icaro-branch' into fabul-branch
+
+[33mcommit d3556f97b25fd5173d65e97d1301b41beef1d273[m
+Author: NCIcaro <nhoriza008@gmail.com>
+Date:   Tue Jan 4 02:27:38 2022 +0800
+
+    Sign In With Google - With Error
+
+[33mcommit a8332efbd18b04061c6c03e2cb6f669613225609[m
+Author: FRDFBL <37649179+StaticalTech90@users.noreply.github.com>
+Date:   Mon Oct 4 21:26:31 2021 +0800
+
+    fixed merge issues
+
+[33mcommit 2d0218941651806fc0619e16ede7fc55dbdfd73c[m
+Merge: acaec04 8d73728
+Author: FRDFBL <37649179+StaticalTech90@users.noreply.github.com>
+Date:   Mon Oct 4 21:12:11 2021 +0800
+
+    Merge branch 'david-branch'
+
+[33mcommit 8d73728a0ab6416672d1cbfccb7e5004b2d219c2[m
+Author: unknown <vera.david1214@gmail.com>
+Date:   Sun Oct 3 19:18:33 2021 +0800
+
+    change password
+
+[33mcommit acaec0497489e49368983e1628d1694ac0805a9a[m
+Author: FRDFBL <37649179+StaticalTech90@users.noreply.github.com>
+Date:   Sat Sep 18 18:29:52 2021 +0800
+
+    update .gitignore
+
+[33mcommit 87e34e2f60a0acdfea9b16e0cfedbab163fdc29b[m
+Author: FRDFBL <37649179+StaticalTech90@users.noreply.github.com>
+Date:   Mon Sep 13 23:27:00 2021 +0800
+
+    WIP - AccountDetails
+
+[33mcommit b1c62bfdd85a1a0f8901dff054469dde36601f33[m
+Merge: e7b4fbd 5fd8041
+Author: FRDFBL <37649179+StaticalTech90@users.noreply.github.com>
+Date:   Mon Sep 13 22:41:40 2021 +0800
+
+    Merge branch 'david-branch'
+
+[33mcommit e7b4fbdc2f1471f933021a00091f03022e73116b[m
+Author: FRDFBL <37649179+StaticalTech90@users.noreply.github.com>
+Date:   Mon Sep 13 22:40:07 2021 +0800
+
+    fixed countdown timer
+
+[33mcommit 541acc8fdf61f2174d420a4fcd43192fea12f065[m
+Merge: 8913d18 56b7827
+Author: FRDFBL <37649179+StaticalTech90@users.noreply.github.com>
+Date:   Mon Sep 13 21:30:51 2021 +0800
+
+    Merge branch 'mandigma-branch'
+
+[33mcommit 8913d18b8867be7eaba26806775d42d739bb21ca[m
+Merge: c4ed037 8ae4511
+Author: FRDFBL <37649179+StaticalTech90@users.noreply.github.com>
+Date:   Mon Sep 13 21:28:37 2021 +0800
+
+    Merge branch 'icaro-branch'
+
+[33mcommit c4ed037608d3e7d414d2b348808043356cc57b60[m
+Author: FRDFBL <37649179+StaticalTech90@users.noreply.github.com>
+Date:   Mon Sep 13 21:12:15 2021 +0800
+
+    implemented upload activity
+
+[33mcommit 5fd80411b6b96df7b26d211f9cbb1440702e8798[m
+Author: unknown <vera.david1214@gmail.com>
+Date:   Mon Sep 13 19:25:48 2021 +0800
+
+    fixed login layout
+
+[33mcommit 6c1fd12c7fc34884402de89ab648ed0fbfa9f850[m
+Author: unknown <vera.david1214@gmail.com>
+Date:   Mon Sep 13 19:05:19 2021 +0800
+
+    email reauthentication
+
+[33mcommit d46158d512a35aa90225f94b108717b2bc2278a3[m
+Author: unknown <vera.david1214@gmail.com>
+Date:   Thu Sep 9 20:58:44 2021 +0800
+
+    update account (75% complete)
+
+[33mcommit 56b7827c2fdd05f2b1e827aee09828f915feb622[m
+Author: Jm Mandigma <fusionmadrack@gmail.com>
+Date:   Mon Sep 6 03:42:06 2021 +0800
+
+    Password reset via email
+
+[33mcommit 8ae451187cd900d54c3e6b08213e286e44b7f203[m
+Author: NCIcaro <nhoriza008@gmail.com>
+Date:   Mon Sep 6 03:39:54 2021 +0800
+
+    App Icon
+
+[33mcommit 31bbd99ef41bb6ab72c246f2f9f1daa56a126491[m
+Author: NCIcaro <nhoriza008@gmail.com>
+Date:   Mon Sep 6 03:12:50 2021 +0800
+
+    Widget
+
+[33mcommit ea3fbfd9209dafe7b35514538f7a28f6d8b73917[m
+Author: NCIcaro <nhoriza008@gmail.com>
+Date:   Mon Sep 6 02:20:47 2021 +0800
+
+    Other and Contact Developers UI
+
+[33mcommit ce4cc803dad454cc337c91e2627e5abe164c54eb[m
+Author: unknown <vera.david1214@gmail.com>
+Date:   Mon Sep 6 01:22:23 2021 +0800
+
+    update account (incomplete)
+
+[33mcommit d42857340fbc1a26c61c0b7c3ee687e27e73c622[m
+Author: NCIcaro <nhoriza008@gmail.com>
+Date:   Fri Sep 3 17:50:20 2021 +0800
+
+    Recording Countdown
+
+[33mcommit 92e5f493b1fbecd4bb36fbceca3e25d1adde366b[m
+Author: NCIcaro <nhoriza008@gmail.com>
+Date:   Fri Sep 3 17:21:44 2021 +0800
+
+    Landing Page and Countdown
+
+[33mcommit e32b9ca21a439a0d791047604bcc8d8eb78872f7[m
+Author: unknown <vera.david1214@gmail.com>
+Date:   Fri Sep 3 16:53:30 2021 +0800
+
+    delete ID not working
+
+[33mcommit 1611ff725529911ec99ac258b5fac56766c41443[m
+Author: NCIcaro <nhoriza008@gmail.com>
+Date:   Thu Sep 2 18:07:46 2021 +0800
+
+    My Reports UI and Minor changes to other layouts
+
+[33mcommit aedf83ab36515b806e9a23c4ae00c057654ff3cd[m
+Author: unknown <vera.david1214@gmail.com>
+Date:   Wed Sep 1 00:11:37 2021 +0800
+
+    completed delete function
+
+[33mcommit 913346edcce91578e60a60df98a55352ea28c320[m
+Author: FRDFBL <37649179+StaticalTech90@users.noreply.github.com>
+Date:   Tue Aug 31 20:47:57 2021 +0800
+
+    Update README.md
+
+[33mcommit b2075519c2ddb0007b62979cced596b4632b2ebc[m
+Author: FRDFBL <37649179+StaticalTech90@users.noreply.github.com>
+Date:   Tue Aug 31 20:46:45 2021 +0800
+
+    Update README.md
+
+[33mcommit 4cf1954654122957345f5c9b5a1c6129093014b4[m
+Author: FRDFBL <37649179+StaticalTech90@users.noreply.github.com>
+Date:   Mon Aug 30 21:35:07 2021 +0800
+
+    refactored codes
+
+[33mcommit 57e4e0bc8e22d9b396b0de4ee656f976bd755a59[m
+Merge: 403d78c 43ee0a0
+Author: FRDFBL <37649179+StaticalTech90@users.noreply.github.com>
+Date:   Mon Aug 30 21:09:01 2021 +0800
+
+    Merge branch 'david-branch'
+
+[33mcommit 43ee0a0de5dced713c41377cf656485ef4cb977e[m
+Author: unknown <vera.david1214@gmail.com>
+Date:   Mon Aug 30 20:09:03 2021 +0800
+
+    delete account (inc)
+
+[33mcommit 403d78c481176e193304aa50722e148efb20cffd[m
+Author: FRDFBL <37649179+StaticalTech90@users.noreply.github.com>
+Date:   Sun Aug 29 15:49:56 2021 +0800
+
+    update .gitignore
+
+[33mcommit 8039c8f486ac856345194fed674077eab7b5021c[m
+Author: FRDFBL <37649179+StaticalTech90@users.noreply.github.com>
+Date:   Sun Aug 29 15:47:00 2021 +0800
+
+    Update .gitignore
+
+[33mcommit 7c3c3cb6e0babe40150789fb1a4e1fd57054da7c[m
+Merge: 7ad3952 5f5ced6
+Author: FRDFBL <37649179+StaticalTech90@users.noreply.github.com>
+Date:   Sat Aug 28 22:19:37 2021 +0800
+
+    Merge branch 'fabul-branch'
+
+[33mcommit 5f5ced63d17ef2e637d74227a5707872d176fc6e[m
+Author: FRDFBL <37649179+StaticalTech90@users.noreply.github.com>
+Date:   Sat Aug 28 22:14:50 2021 +0800
+
+    added Google Sign-in save to DB
+
+[33mcommit 7ad395237e1a31b47f920876dc7888b3af6bd353[m
+Merge: 59f01be 1f0c313
+Author: FRDFBL <37649179+StaticalTech90@users.noreply.github.com>
+Date:   Sat Aug 28 18:07:50 2021 +0800
+
+    Merge pull request #1 from StaticalTech90/fabul-branch
+    
+    removed duplicate AccountDetails class
+
+[33mcommit 1f0c3137121a668b2d49228f3af5a02dd62b6752[m
+Author: FRDFBL <37649179+StaticalTech90@users.noreply.github.com>
+Date:   Sat Aug 28 18:06:52 2021 +0800
+
+    removed duplicate AccountDetails class
+
+[33mcommit 59f01be1f78e9827e7a1612f2697a2199386d55f[m
+Merge: a0e652d afc59d9
+Author: FRDFBL <37649179+StaticalTech90@users.noreply.github.com>
+Date:   Sat Aug 28 17:51:54 2021 +0800
+
+    Merge branch 'mandigma-branch'
+
+[33mcommit afc59d9832b3d01260c8711dae266c1b09061899[m
+Author: Jm Mandigma <fusionmadrack@gmail.com>
+Date:   Sat Aug 28 16:33:29 2021 +0800
+
+    Working Google Auth, not on DB
+
+[33mcommit e5eb845c455fa55a90408699259b32f5b64f1c72[m
+Author: FRDFBL <37649179+StaticalTech90@users.noreply.github.com>
+Date:   Thu Aug 26 17:39:01 2021 +0800
+
+    fixed login issue
+
+[33mcommit 72ebbf95985acf2b7afe6295014f5e75210a4804[m
+Author: unknown <vera.david1214@gmail.com>
+Date:   Wed Aug 25 02:35:40 2021 +0800
+
+    login/logout (not working)
+
+[33mcommit bb5a693160b4370fe7684292350f96eba6aa440f[m
+Author: Jm Mandigma <fusionmadrack@gmail.com>
+Date:   Mon Aug 23 23:15:58 2021 +0800
+
+    added Google Auth Part 2
+
+[33mcommit 739dee9b67c0d9f5e65851785856e9b9e87cf419[m
+Merge: 40a086a a0e652d
+Author: unknown <vera.david1214@gmail.com>
+Date:   Mon Aug 23 22:42:38 2021 +0800
+
+    updated branch
+
+[33mcommit ebdbfeed93b97230693ac1f428514b4600faeaa8[m
+Merge: 0240c1c 0ab9a61
+Author: NCIcaro <nhoriza008@gmail.com>
+Date:   Mon Aug 23 22:34:59 2021 +0800
+
+    Merge branch 'main' into icaro-branch
+
+[33mcommit a0e652d2cdcb3b2e96daa42d9046600539dc7d1b[m
+Author: FRDFBL <37649179+StaticalTech90@users.noreply.github.com>
+Date:   Mon Aug 23 21:49:41 2021 +0800
+
+    merged Icaro and Fabul branch; added google-services json
+
+[33mcommit f8b652e2830985af0bfc83ce3472d4f949fd3839[m
+Merge: 79bdf85 a770482
+Author: FRDFBL <37649179+StaticalTech90@users.noreply.github.com>
+Date:   Mon Aug 23 21:33:17 2021 +0800
+
+    Merge branch 'fabul-branch'
+
+[33mcommit 79bdf851f45122bc84bc71b3c317d01220cf9c7b[m
+Merge: 0ab9a61 0240c1c
+Author: FRDFBL <37649179+StaticalTech90@users.noreply.github.com>
+Date:   Mon Aug 23 21:31:46 2021 +0800
+
+    Merge branch 'icaro-branch'
+
+[33mcommit 0240c1ca357d81dd413128a2ec7e52ecd22476e5[m
+Author: NCIcaro <nhoriza008@gmail.com>
+Date:   Mon Aug 23 21:25:43 2021 +0800
+
+    Sprint 2 UI
+
+[33mcommit 77fcf3ae8942a03758b3a535afcad2c4a3dabf4c[m
+Author: Jm Mandigma <fusionmadrack@gmail.com>
+Date:   Mon Aug 23 21:18:44 2021 +0800
+
+    added Google Auth Part 1
+
+[33mcommit 40a086a6d1ff9663d588142ee6904a178e37d5cb[m
+Author: unknown <vera.david1214@gmail.com>
+Date:   Mon Aug 23 16:42:44 2021 +0800
+
+    test push
+
+[33mcommit a770482e86d14c7f40f751ff9f5998fd01749790[m
+Author: FRDFBL <37649179+StaticalTech90@users.noreply.github.com>
+Date:   Sat Aug 21 18:17:40 2021 +0800
+
+    added register function with database insertion
+
+[33mcommit e5acb75378b3859ee717e70975705e7b78f4652e[m
+Author: unknown <vera.david1214@gmail.com>
+Date:   Thu Aug 19 22:20:02 2021 +0800
+
+    update branch
+
+[33mcommit 1fdeda68f3f01c7006bf4ca5ed8c92cedddba5ca[m
+Merge: d02d2df 0ab9a61
+Author: unknown <vera.david1214@gmail.com>
+Date:   Thu Aug 19 22:16:17 2021 +0800
+
+    Merge branch 'main' of https://github.com/StaticalTech90/HoldSafety into david-branch
+
+[33mcommit d02d2df9940e258768b59a950ba8bd9398fdde84[m
+Author: unknown <vera.david1214@gmail.com>
+Date:   Thu Aug 19 22:12:49 2021 +0800
+
+    clean branch
+
+[33mcommit 213fcea7d6f4ef215bcb71c16ff9a9ef8c9d8875[m
+Author: FRDFBL <37649179+StaticalTech90@users.noreply.github.com>
+Date:   Tue Aug 17 20:00:52 2021 +0800
+
+    added registration function [WIP]
+
+[33mcommit 0ab9a6168b380a22b5b8931b5241665973969642[m
+Author: FRDFBL <37649179+StaticalTech90@users.noreply.github.com>
+Date:   Sun Aug 15 22:21:26 2021 +0800
+
+    Update README.md
+
+[33mcommit 6f6a62605ebf79aca613d01736433d81ed53a789[m
+Author: NCIcaro <nhoriza008@gmail.com>
+Date:   Sun Aug 15 07:16:46 2021 +0800
+
+    Forgot Password and Menu
+
+[33mcommit fd88a96be9a21ffd3cf4558f35a0a5e0edc37c42[m
+Author: NCIcaro <nhoriza008@gmail.com>
+Date:   Sun Aug 15 07:11:05 2021 +0800
+
+    Forgot Password and Menu
+
+[33mcommit fb9973ae36d0bff0cb2b10d8091a8762cc574297[m
+Author: unknown <vera.david1214@gmail.com>
+Date:   Thu Aug 12 18:10:40 2021 +0800
+
+    delete test
+
+[33mcommit 9443ffa2053861763818af7b4682cb1b050e9b2e[m
+Merge: 2e4c1ee bdff061
+Author: unknown <vera.david1214@gmail.com>
+Date:   Thu Aug 12 18:08:17 2021 +0800
+
+    Merge branch 'icaro-branch' of https://github.com/StaticalTech90/HoldSafety into david-branch
+    Front-end
+
+[33mcommit bdff0612e5b33be1745b4aa3fb36644d1507bc2c[m
+Author: NCIcaro <nhoriza008@gmail.com>
+Date:   Thu Aug 12 04:58:57 2021 +0800
+
+    Register with Google and Account Details
+
+[33mcommit fb0d87c64f21a1d898f89466a39696db674e1830[m
+Author: NCIcaro <nhoriza008@gmail.com>
+Date:   Wed Aug 11 03:10:33 2021 +0800
+
+    deleted some redundant file
+
+[33mcommit 4b560b7a7dfde1f0dbb3f231a43b4911f374a4c8[m
+Author: NCIcaro <nhoriza008@gmail.com>
+Date:   Wed Aug 11 03:07:14 2021 +0800
+
+    User Login and Registration
+
+[33mcommit 2e4c1ee60688d2875d2031bb436d15f4a3c07ef2[m
+Author: unknown <vera.david1214@gmail.com>
+Date:   Tue Aug 10 23:18:47 2021 +0800
+
+    test commit
+
+[33mcommit 0d28443360e29ca4b556a0a7c441dd6c16ff9499[m
+Author: FRDFBL <37649179+StaticalTech90@users.noreply.github.com>
+Date:   Mon Aug 9 21:39:55 2021 +0800
+
+    Update README.md
+
+[33mcommit 88e6e6cad2467fed0c00fa073f85f5ccd957d58b[m
+Author: FRDFBL <37649179+StaticalTech90@users.noreply.github.com>
+Date:   Sun Aug 8 22:01:05 2021 +0800
+
+    Update .gitignore
+
+[33mcommit 33749ed121ace76a0a0692ba1065cb47cd0eafad[m
+Author: FRDFBL <37649179+StaticalTech90@users.noreply.github.com>
+Date:   Sun Aug 8 22:00:37 2021 +0800
+
+    Update README.md
+
+[33mcommit 4500fda4f882308ab8fa0e327976f8a344f11ae7[m
+Author: FRDFBL <37649179+StaticalTech90@users.noreply.github.com>
+Date:   Sun Aug 8 21:52:05 2021 +0800
+
+    Update README.md
+
+[33mcommit c619c418bed9cd2b542d94e108fb6124e3f4465f[m
+Author: FRDFBL <37649179+StaticalTech90@users.noreply.github.com>
+Date:   Sun Aug 8 21:51:01 2021 +0800
+
+    Delete test
+
+[33mcommit 1339b92de937df5a18371dfe5f6801c29f1e0389[m
+Author: FRDFBL <37649179+StaticalTech90@users.noreply.github.com>
+Date:   Sun Aug 8 21:50:44 2021 +0800
+
+    Update .gitignore
+
+[33mcommit be02a0e75d2905042c320a39a6df66990b0fa40c[m
+Author: FRDFBL <37649179+StaticalTech90@users.noreply.github.com>
+Date:   Sun Aug 8 21:50:21 2021 +0800
+
+    Add files via upload
+
+[33mcommit a602279917c02dd025800c6ee86b90fc9f577ac2[m
+Author: FRDFBL <37649179+StaticalTech90@users.noreply.github.com>
+Date:   Sun Aug 8 21:50:08 2021 +0800
+
+    Create test
+
+[33mcommit 3ec890ab877e9c65a27cba35bb2d31865475b4c4[m
+Author: FRDFBL <37649179+StaticalTech90@users.noreply.github.com>
+Date:   Sun Aug 8 21:45:34 2021 +0800
+
+    Update README.md
+
+[33mcommit 2d783b6d9b39f308c53331df3c629dc9f79071fc[m
+Author: FRDFBL <37649179+StaticalTech90@users.noreply.github.com>
+Date:   Sun Aug 8 21:45:04 2021 +0800
+
+    Update README.md
+
+[33mcommit ce988eb5f93c8f72899fafb06ab3852db34ea42b[m
+Author: FRDFBL <37649179+StaticalTech90@users.noreply.github.com>
+Date:   Sun Aug 8 21:37:28 2021 +0800
+
+    Update README.md
+
+[33mcommit 4f1fa4d020d45f81c4710cfce3cdeac5d2f4fd80[m
+Author: FRDFBL <37649179+StaticalTech90@users.noreply.github.com>
+Date:   Sat Aug 7 15:03:03 2021 +0800
+
+    Update README.md
+
+[33mcommit a2b17f31b70edd549910e96c6c4f013701ce8023[m
+Author: FRDFBL <37649179+StaticalTech90@users.noreply.github.com>
+Date:   Sat Aug 7 14:19:15 2021 +0800
+
+    Initial commit

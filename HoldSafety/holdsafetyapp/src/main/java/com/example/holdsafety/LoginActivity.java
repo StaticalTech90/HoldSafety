@@ -70,6 +70,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
 
             //handle method for holdsafety widget
             if(isFromWidget != null && isFromWidget.equals("true")) {
+                isFromWidget = null;
                 landing.putExtra("isFromWidget", "true");
                 Toast.makeText(getApplicationContext(), "Inside IF Widget" , Toast.LENGTH_SHORT).show();
             }
@@ -243,7 +244,6 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         Log.d("USER", data.toString());
-        Toast.makeText(getApplicationContext(), "On Activity Result", Toast.LENGTH_SHORT).show();
 
         //GOOGLE SIGN IN
         if (requestCode == SIGN_IN_REQUEST_CODE) {
@@ -256,7 +256,6 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                 mAuth.signInWithCredential(credential)
                         .addOnCompleteListener(this, task1 -> {
                             if (task1.isSuccessful()) {
-                                Toast.makeText(getApplicationContext(), "Task Successful", Toast.LENGTH_SHORT).show();
                                 // Sign in success, update UI with the signed-in user's information
                                 Log.d("googlesignin", "signInWithCredential:success");
                                 FirebaseUser user = mAuth.getCurrentUser();
@@ -268,7 +267,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
 
                                 docRef.get().addOnSuccessListener(documentSnapshot -> {
                                     if(!documentSnapshot.exists()) {
-                                        Toast.makeText(getApplicationContext(), "Does not exist yet", Toast.LENGTH_SHORT).show();
+                                        //Toast.makeText(getApplicationContext(), "Does not exist yet", Toast.LENGTH_SHORT).show();
 
                                         //ADD KNOWN AND PLACEHOLDER VALUES
                                         HashMap<String, String> googleSignInMap = new HashMap<>();
@@ -282,6 +281,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                                     } else { //ACCOUNT EXISTS, COMPLETE THE PROFILE
                                         Intent landingPage = new Intent (LoginActivity.this, LandingActivity.class);
                                         startActivity(landingPage);
+                                        finish();
                                     }
                                 });
                             } else {
@@ -293,7 +293,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                             }
                         });
             } catch (ApiException e) {
-                Toast.makeText(getApplicationContext(), "Catch", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), "Sign In Failed", Toast.LENGTH_SHORT).show();
                 e.printStackTrace();
             }
         }

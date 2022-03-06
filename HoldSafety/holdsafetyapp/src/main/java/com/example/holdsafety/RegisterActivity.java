@@ -148,12 +148,19 @@ public class RegisterActivity extends AppCompatActivity {
             public void onNothingSelected(AdapterView<?> adapterView) { }
         });
 
+        selectBirthDate();
+
+        /*
+
+        calendar.add(Calendar.YEAR, -18);
         DatePickerDialog.OnDateSetListener date = (view, year, month, day) -> {
-            calendar.set(Calendar.YEAR, year);
+            calendar.set(Calendar.YEAR, year-18);
             calendar.set(Calendar.MONTH,month);
             calendar.set(Calendar.DAY_OF_MONTH,day);
+            view.setMaxDate(calendar.getTimeInMillis());
             updateDate();
         };
+
         //show DatePickerDialog using this listener
         etBirthdate.setOnClickListener(view -> new DatePickerDialog(
                 RegisterActivity.this,
@@ -162,6 +169,8 @@ public class RegisterActivity extends AppCompatActivity {
                 calendar.get(Calendar.MONTH),
                 calendar.get(Calendar.DAY_OF_MONTH)).show()
         );
+
+         */
 
         btnBack.setOnClickListener(view -> goBack());
         btnUpload.setOnClickListener(view -> pickImage());
@@ -253,8 +262,6 @@ public class RegisterActivity extends AppCompatActivity {
         String cPassword = etConPassword.getText().toString().trim();
 
         @SuppressLint("SimpleDateFormat") SimpleDateFormat dateFormat = new SimpleDateFormat("MM-dd-yyyy");
-        String valid = "01-01-2004"; //age restriction 18
-        Date validDate = dateFormat.parse(valid);
 
         //CHECK IF EMAIL IS ALREADY IN DB
         CollectionReference colRef = db.collection("users");
@@ -293,6 +300,7 @@ public class RegisterActivity extends AppCompatActivity {
                            //Data validation and register
                            try{
                                Date parsedDate = dateFormat.parse(birthDate);
+                               Boolean validInput = true;
 
                                //assert parsedDate != null;
                                Matcher emailMatcher = emailPattern.matcher(etEmail.getText());
@@ -301,41 +309,68 @@ public class RegisterActivity extends AppCompatActivity {
 
                                if(TextUtils.isEmpty(lastName)) {
                                    etLastName.setError("Please enter last name");
-                               } else if(TextUtils.isEmpty(firstName)) {
+                                   validInput = false;
+                               }
+
+                               if(TextUtils.isEmpty(firstName)) {
                                    etFirstName.setError("Please enter first name");
-                               } else if(parsedDate.after(validDate)){
-                                   etBirthdate.getText().clear();
-                                   etBirthdate.setHint("Please enter valid birthdate");
-                                   etBirthdate.setError("Please enter valid birthdate");
-                               }else if(TextUtils.isEmpty(birthDate)) {
+                                   validInput = false;
+                               }
+
+                               if(TextUtils.isEmpty(birthDate)) {
                                    //assert parsedDate != null;
                                    etBirthdate.setError("Please enter birthdate (mm-dd-yyyy)");
-                               } else if(spinnerSex.getSelectedItem().equals("Sex *")) {
-                                   ((TextView)spinnerSex.getSelectedView()).setError("Please select sex");
-                               } else if(TextUtils.isEmpty(mobileNumber)) {
+                                   validInput = false;
+                               }
+
+                               if(spinnerSex.getSelectedItem().equals("Sex *")) {
+                                   ((TextView) spinnerSex.getSelectedView()).setError("Please select sex");
+                                   validInput = false;
+                               }
+
+                               if(TextUtils.isEmpty(mobileNumber)) {
                                    etMobileNumber.setError("Please enter mobile number");
+                                   validInput = false;
                                } else if (!mobileNumberMatcher.matches()) {
                                    etMobileNumber.setError("Please enter a valid mobile number");
+                                   validInput = false;
                                } else if(etMobileNumber.getText().length() != 11) {
                                    etMobileNumber.setError("Please enter a valid mobile number");
-                               } else if(TextUtils.isEmpty(email)) {
+                                   validInput = false;
+                               }
+
+                               if(TextUtils.isEmpty(email)) {
                                    etEmail.setError("Please enter email");
+                                   validInput = false;
                                } else if (!emailMatcher.matches()) {
                                    etEmail.setError("Please enter valid email");
-                               } else if(TextUtils.isEmpty(etPassword.getText())) {
+                                   validInput = false;
+                               }
+
+                               if(TextUtils.isEmpty(etPassword.getText())) {
                                    etPassword.setError("Please enter password");
+                                   validInput = false;
                                } else if(!passMatcher.matches()) {
+                                   txtTogglePass.setVisibility(View.GONE);
                                    etPassword.setError("Password must contain the following: " +
                                            "\n - At least 8 characters" +
                                            "\n - At least 1 digit" +
                                            "\n - At least one upper and lower case letter" +
                                            "\n - A special character (such as @, #, etc.)" +
                                            "\n - No spaces or tabs");
-                               } else if(TextUtils.isEmpty(password)) {
+                                   validInput = false;
+                               }
+
+                               if(TextUtils.isEmpty(cPassword)) {
                                    etConPassword.setError("Please re-enter password");
+                                   validInput = false;
                                } else if(!password.equals(cPassword)) {
+                                   txtToggleConfirmPass.setVisibility(View.GONE);
                                    etConPassword.setError("Passwords don't match");
-                               } else {
+                                   validInput = false;
+                               }
+
+                               if(validInput){
                                    mAuth.createUserWithEmailAndPassword(email,password).addOnCompleteListener(this, task -> {
                                        if (task.isSuccessful()) {
                                            // Sign up success
@@ -364,6 +399,7 @@ public class RegisterActivity extends AppCompatActivity {
                                        }
                                    });
                                }
+
                            } catch(ParseException pe){
                                etBirthdate.getText().clear();
                                etBirthdate.setHint("Please enter valid birthdate");
@@ -468,6 +504,35 @@ public class RegisterActivity extends AppCompatActivity {
                 pickImage();
             }
         }
+    }
+
+    //update BIRTHDATE value
+    private void updateBirthDate() {
+        String myFormat = "MM-dd-yyyy";
+        SimpleDateFormat dateFormat = new SimpleDateFormat(myFormat, Locale.US);
+        etBirthdate.setText(dateFormat.format(calendar.getTime()));
+        etBirthdate.setError(null);
+    }
+
+    private void selectBirthDate() {
+        Calendar maxCal = Calendar.getInstance();
+        maxCal.add(Calendar.YEAR, -18);
+        int mYear = maxCal.get(Calendar.YEAR);
+        int mMonth = maxCal.get(Calendar.MONTH);
+        int mDay = maxCal.get(Calendar.DAY_OF_MONTH);
+
+        DatePickerDialog.OnDateSetListener startDateListener = (arg0, year, monthOfYear, dayOfMonth) -> {
+            calendar.set(Calendar.YEAR, year);
+            calendar.set(Calendar.MONTH,monthOfYear);
+            calendar.set(Calendar.DAY_OF_MONTH,dayOfMonth);
+            updateBirthDate();
+        };
+
+        etBirthdate.setOnClickListener(view -> {
+            DatePickerDialog dpDialog = new DatePickerDialog(RegisterActivity.this, startDateListener, mYear, mMonth, mDay);
+            dpDialog.getDatePicker().setMaxDate(maxCal.getTimeInMillis());
+            dpDialog.show();
+        });
     }
 
     public void goBack() {

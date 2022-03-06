@@ -162,12 +162,12 @@ public class AddContactActivity extends AppCompatActivity {
                            String mobileNumber = contactSnap.getString("mobileNumber");
                            Log.d("CONTACT_CHECK", "Contact email: " + email + " mobileNumber: " + mobileNumber);
 
-                           if(contactEmail.equals(email)) {
-                               existing = true;
-                               etContactEmail.setError("This email is already an emergency contact");
-                           } else if(contactMobileNumber.equals(mobileNumber)) {
+                           if(contactMobileNumber.equals(mobileNumber)) {
                                existing = true;
                                etContactMobileNumber.setError("This number is already an emergency contact");
+                           } else if(contactEmail.equals(email)) {
+                               existing = true;
+                               etContactEmail.setError("This email is already an emergency contact");
                            }
 
                            //now at the last contact, final check if it exists

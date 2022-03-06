@@ -29,7 +29,7 @@ public class RecordingCountdownActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
         evidenceLinkRequirements = (HashMap<String, String>) intent.getSerializableExtra("evidenceLinkRequirements");
-        Toast.makeText(getApplicationContext(), "Recording Hashmap: " + evidenceLinkRequirements, Toast.LENGTH_SHORT).show();
+        //Toast.makeText(getApplicationContext(), "Recording Hashmap: " + evidenceLinkRequirements, Toast.LENGTH_SHORT).show();
 
         CountDownTimer timer = new CountDownTimer(3000, 1000)
         {
@@ -61,7 +61,11 @@ public class RecordingCountdownActivity extends AppCompatActivity {
         btnCancel.setOnClickListener(view -> {
             timer.cancel();
             Toast.makeText(getApplicationContext(), "Cancel", Toast.LENGTH_SHORT).show();
-            finish();
+
+            Intent landingIntent = new Intent(RecordingCountdownActivity.this, LandingActivity.class);
+            landingIntent.putExtra("isFromWidget", "false");
+            startActivity(landingIntent);
+            finish(); // return to landing
         });
         timer.start();
     }

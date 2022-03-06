@@ -83,33 +83,34 @@ public class ContactDevelopersActivity extends AppCompatActivity {
         } else if (TextUtils.isEmpty(message)) {
             etMessage.setError("Please input a message");
         } else {
-            //Get user's emergency contacts
-            FirebaseFirestore.getInstance()
-                    .collection("admin")
-                    .get()
-                    .addOnCompleteListener(task -> {
-                        //Get each contact details
-                        for(QueryDocumentSnapshot snapshot : task.getResult()){
-                            String email1 = snapshot.getString("Email");
+            try{
+                //Get user's emergency contacts
+                FirebaseFirestore.getInstance()
+                        .collection("admin")
+                        .get()
+                        .addOnCompleteListener(task -> {
+                            //Get each contact details
+                            for(QueryDocumentSnapshot snapshot : task.getResult()){
+                                String email1 = snapshot.getString("Email");
+                                if(email1 !=null){
+                                    //Send Email
+                                    String username = "holdsafety.ph@gmail.com";
+                                    String password = "HoldSafety@4qmag";
+                                    String subject = "HOLDSAFETY CONTACT DEVELOPERS: " + selectedConcern ;
+                                    String message1 = "Sender: " + etEmail.getText().toString().trim()
+                                            + "<br />Message: " + etMessage.getText().toString().trim();
 
-                            if(email1 !=null){
-                                //Send Email
-                                String username = "holdsafety.ph@gmail.com";
-                                String password = "HoldSafety@4qmag";
-                                String subject = "HOLDSAFETY CONTACT DEVELOPERS: " + selectedConcern ;
-                                String message1 = "Sender: " + etEmail.getText().toString().trim()
-                                        + "<br />Message: " + etMessage.getText().toString().trim();
-
-                                List<String> recipients = Collections.singletonList(email1);
-                                //email of sender, password of sender, list of recipients, email subject, email body
-                                new MailTask(ContactDevelopersActivity.this).execute(username, password, recipients, subject, message1);
-
-                                Toast.makeText(ContactDevelopersActivity.this, "Email Sent", Toast.LENGTH_LONG).show();
+                                    List<String> recipients = Collections.singletonList(email1);
+                                    //email of sender, password of sender, list of recipients, email subject, email body
+                                    new MailTask(ContactDevelopersActivity.this).execute(username, password, recipients, subject, message1);
+                                    goBack();
+                                }
                             }
-                        }
-                    });
-            Toast.makeText(getApplicationContext(), "Successfully sent a message to developers", Toast.LENGTH_SHORT).show();
-            goBack();
+                        });
+            } catch (Exception e) {
+                Toast.makeText(getApplicationContext(), "Message Failed:" + e.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+
         }
     }
 
