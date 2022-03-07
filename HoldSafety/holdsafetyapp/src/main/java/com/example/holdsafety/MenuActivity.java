@@ -55,39 +55,42 @@ public class MenuActivity extends AppCompatActivity {
         btnLogout.setOnClickListener(view -> logoutUser());
     }
 
-    private void userAccount(){
+    private void userAccount() {
         Intent userAccount = new Intent (MenuActivity.this, AccountDetailsActivity.class);
         startActivity(userAccount);
     }
 
-    private void designateContacts(){
+    private void designateContacts() {
         Intent designateContacts = new Intent (getApplicationContext(), DesignateContactActivity.class);
         startActivity(designateContacts);
     }
 
-    private void contactDevelopers(){
+    private void contactDevelopers() {
         Intent contactDevelopers = new Intent (getApplicationContext(), ContactDevelopersActivity.class);
         startActivity(contactDevelopers);
     }
 
-    private void userManual(){
-        Toast.makeText(getApplicationContext(), "User Manual", Toast.LENGTH_SHORT).show();
+    private void userManual() {
+        Intent userManual = new Intent (getApplicationContext(), UserManualActivity.class);
+        startActivity(userManual);
     }
 
-    private void termsAndConditions(){
-        Toast.makeText(getApplicationContext(), "Terms and Conditions", Toast.LENGTH_SHORT).show();
+    private void termsAndConditions() {
+        Intent termsAndConditions = new Intent (getApplicationContext(), TermsAndConditionsActivity.class);
+        startActivity(termsAndConditions);
     }
 
-    private void aboutSystem(){
-        Toast.makeText(getApplicationContext(), "About the System", Toast.LENGTH_SHORT).show();
+    private void aboutSystem() {
+        Intent aboutSystem = new Intent (getApplicationContext(), AboutSystemActivity.class);
+        startActivity(aboutSystem);
     }
 
-    private void viewReports(){
+    private void viewReports() {
         Intent viewReports = new Intent (getApplicationContext(), ReportsActivity.class);
         startActivity(viewReports);
     }
 
-    private void logoutUser(){
+    private void logoutUser() {
             GoogleSignInOptions gso = new GoogleSignInOptions
                     .Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                     .requestIdToken("233680747912-m8q45hor79go5n8aqfkuneklnkshudqs.apps.googleusercontent.com")

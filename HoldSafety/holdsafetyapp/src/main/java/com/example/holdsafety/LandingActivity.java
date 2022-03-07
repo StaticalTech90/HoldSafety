@@ -130,15 +130,10 @@ public class LandingActivity extends AppCompatActivity {
 
             if(result == 0) {
                 Log.d("SIGNAL", "INSERT REPORT METHOD HERE");
+                getCurrentLocation();
             } else {
                 Log.d("SIGNAL", "FUCK");
             }
-
-//            if(messageEvent.getData() == "1".getBytes(StandardCharsets.UTF_8)) {
-//                Log.d("SIGNAL", "INSERT REPORT METHOD HERE");
-//            } else {
-//                Log.d("SIGNAL", "FUCK");
-//            }
         });
 
         //Get available nodes
