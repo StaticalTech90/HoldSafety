@@ -155,36 +155,52 @@ public class AddContactActivity extends AppCompatActivity {
                        Log.d("CONTACT_CHECK", "Contacts fetched.");
                        boolean existing = false;
                        int contactAmount = task.getResult().size();
+                       Log.d("CONTACT_CHECK", "Contact list size: " + contactAmount);
                        int counter = 0;
-                       for(QueryDocumentSnapshot contactSnap : task.getResult()) {
-                           counter++;
-                           String email = contactSnap.getString("email");
-                           String mobileNumber = contactSnap.getString("mobileNumber");
-                           Log.d("CONTACT_CHECK", "Contact email: " + email + " mobileNumber: " + mobileNumber);
 
-                           if(contactMobileNumber.equals(mobileNumber)) {
-                               existing = true;
-                               etContactMobileNumber.setError("This number is already an emergency contact");
-                           } else if(contactEmail.equals(email)) {
-                               existing = true;
-                               etContactEmail.setError("This email is already an emergency contact");
-                           }
-
-                           //now at the last contact, final check if it exists
-                           if(counter == contactAmount) {
-                               if(!existing) {
-                                   db.collection("emergencyContacts").document(user.getUid()).collection("contacts")
-                                           .add(docContacts).addOnCompleteListener(this, task1 -> {
-                                       if (task1.isSuccessful()) {
-                                           Toast.makeText(getApplicationContext(), "Successfully Added Contact", Toast.LENGTH_SHORT).show();
-                                           goBack();
-                                       } else {
-                                           Toast.makeText(getApplicationContext(),
-                                                   Objects.requireNonNull(task1.getException()).toString(),
-                                                   Toast.LENGTH_SHORT).show();
-                                       }
-                                   });
+                       if(contactAmount == 0) { // NO CONTACTS YET
+                           db.collection("emergencyContacts").document(user.getUid()).collection("contacts")
+                                   .add(docContacts).addOnCompleteListener(this, task1 -> {
+                               if (task1.isSuccessful()) {
+                                   Toast.makeText(getApplicationContext(), "Successfully Added Contact", Toast.LENGTH_SHORT).show();
+                                   goBack();
+                               } else {
+                                   Toast.makeText(getApplicationContext(),
+                                           Objects.requireNonNull(task1.getException()).toString(),
+                                           Toast.LENGTH_SHORT).show();
                                }
+                           });
+                       } else {
+                           for(QueryDocumentSnapshot contactSnap : task.getResult()) {
+                               String email = contactSnap.getString("email");
+                               String mobileNumber = contactSnap.getString("mobileNumber");
+                               Log.d("CONTACT_CHECK", "Contact email: " + email + " mobileNumber: " + mobileNumber);
+
+                               if(contactMobileNumber.equals(mobileNumber)) {
+                                   existing = true;
+                                   etContactMobileNumber.setError("This number is already an emergency contact");
+                               } else if(contactEmail.equals(email)) {
+                                   existing = true;
+                                   etContactEmail.setError("This email is already an emergency contact");
+                               }
+
+                               //now at the last contact, final check if it exists
+                               if(counter == contactAmount) {
+                                   if(!existing) {
+                                       db.collection("emergencyContacts").document(user.getUid()).collection("contacts")
+                                               .add(docContacts).addOnCompleteListener(this, task1 -> {
+                                           if (task1.isSuccessful()) {
+                                               Toast.makeText(getApplicationContext(), "Successfully Added Contact", Toast.LENGTH_SHORT).show();
+                                               goBack();
+                                           } else {
+                                               Toast.makeText(getApplicationContext(),
+                                                       Objects.requireNonNull(task1.getException()).toString(),
+                                                       Toast.LENGTH_SHORT).show();
+                                           }
+                                       });
+                                   }
+                               }
+                               counter++;
                            }
                        }
                    } else {
