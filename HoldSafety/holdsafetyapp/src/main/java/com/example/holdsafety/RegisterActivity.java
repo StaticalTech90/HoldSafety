@@ -60,13 +60,11 @@ public class RegisterActivity extends AppCompatActivity {
     StorageReference imageRef;
     FirebaseUser user;
 
-    HashMap<String, Object> docUsers = new HashMap<>();
-    Intent otp;
-
     final Calendar calendar = Calendar.getInstance();
     String idPicUri;
     TextView lblLink;
 
+    HashMap<String, Object> docUsers = new HashMap<>();
     private EditText etLastName, etFirstName, etMiddleName, etBirthdate, etMobileNumber, etEmail, etPassword, etConPassword;
     private Spinner spinnerSex;
     TextView txtTogglePass, txtToggleConfirmPass;
@@ -108,8 +106,6 @@ public class RegisterActivity extends AppCompatActivity {
         etPassword.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
         etConPassword.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
 
-        otp = new Intent(RegisterActivity.this, RegisterOTPActivity.class);
-
         String[] sex = new String[]{"Sex *", "M", "F"};
         List<String> sexList = new ArrayList<>(Arrays.asList(sex));
         ArrayAdapter<String> spinnerSexAdapter = new ArrayAdapter<String>(this, R.layout.spinner_sex, sexList){
@@ -123,9 +119,9 @@ public class RegisterActivity extends AppCompatActivity {
                 View view = super.getDropDownView(position, convertView, parent);
                 TextView tv = (TextView) view;
 
-                if(position==0){
+                if(position==0) {
                     tv.setTextColor(getResources().getColor(R.color.hint_color));
-                } else{
+                } else {
                     tv.setTextColor(Color.BLACK);
                 }
                 return view;
@@ -140,7 +136,7 @@ public class RegisterActivity extends AppCompatActivity {
                 String selectedItemText = (String) parent.getItemAtPosition(position);
                 // If user change the default selection
                 // First item is disable and it is used for hint
-                if(position > 0){
+                if(position > 0) {
                     // Notify the selected item text
                     Toast.makeText
                             (getApplicationContext(), "Selected : " + selectedItemText, Toast.LENGTH_SHORT)
@@ -149,18 +145,22 @@ public class RegisterActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {
-
-            }
+            public void onNothingSelected(AdapterView<?> adapterView) { }
         });
 
+        selectBirthDate();
 
+        /*
+
+        calendar.add(Calendar.YEAR, -18);
         DatePickerDialog.OnDateSetListener date = (view, year, month, day) -> {
-            calendar.set(Calendar.YEAR, year);
+            calendar.set(Calendar.YEAR, year-18);
             calendar.set(Calendar.MONTH,month);
             calendar.set(Calendar.DAY_OF_MONTH,day);
+            view.setMaxDate(calendar.getTimeInMillis());
             updateDate();
         };
+
         //show DatePickerDialog using this listener
         etBirthdate.setOnClickListener(view -> new DatePickerDialog(
                 RegisterActivity.this,
@@ -169,6 +169,8 @@ public class RegisterActivity extends AppCompatActivity {
                 calendar.get(Calendar.MONTH),
                 calendar.get(Calendar.DAY_OF_MONTH)).show()
         );
+
+         */
 
         btnBack.setOnClickListener(view -> goBack());
         btnUpload.setOnClickListener(view -> pickImage());
@@ -180,71 +182,65 @@ public class RegisterActivity extends AppCompatActivity {
         //masking pass
         etPassword.addTextChangedListener(new TextWatcher() {
             @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-            }
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) { }
 
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
                 if(etPassword.getText().length() > 0){
                     txtTogglePass.setVisibility(View.VISIBLE);
-                }
-                else{
+                } else {
                     txtTogglePass.setVisibility(View.GONE);
                 }
             }
 
             @Override
-            public void afterTextChanged(Editable editable) {
-
-            }
+            public void afterTextChanged(Editable editable) { }
         });
         txtTogglePass.setOnClickListener(view -> {
             if(txtTogglePass.getText() == "SHOW"){
                 txtTogglePass.setText("HIDE");
                 etPassword.setInputType(InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
-            }
-            else{
+            } else {
                 txtTogglePass.setText("SHOW");
                 etPassword.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
             }
             etPassword.setSelection(etPassword.length());
         });
 
-
         //masking confirm pass
         etConPassword.addTextChangedListener(new TextWatcher() {
             @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) { }
 
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
                 if(etConPassword.getText().length() > 0){
                     txtToggleConfirmPass.setVisibility(View.VISIBLE);
-                }
-                else{
+                } else {
                     txtToggleConfirmPass.setVisibility(View.GONE);
                 }
             }
 
             @Override
-            public void afterTextChanged(Editable editable) {
-
-            }
+            public void afterTextChanged(Editable editable) { }
         });
         txtToggleConfirmPass.setOnClickListener(view -> {
             if(txtToggleConfirmPass.getText() == "SHOW"){
                 txtToggleConfirmPass.setText("HIDE");
                 etConPassword.setInputType(InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
-            }
-            else{
+            } else {
                 txtToggleConfirmPass.setText("SHOW");
                 etConPassword.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
             }
             etConPassword.setSelection(etConPassword.length());
         });
+    }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+        //TODO: CHECK IF EMAIL IS ALREADY IN FIREBASE AUTH. IF YES, COMPLETE REG. ELSE PROCEED WITH NORMAL REG
+        Log.d("USER", "Current User: " + user);
     }
 
     public void userRegister() throws ParseException {
@@ -266,8 +262,6 @@ public class RegisterActivity extends AppCompatActivity {
         String cPassword = etConPassword.getText().toString().trim();
 
         @SuppressLint("SimpleDateFormat") SimpleDateFormat dateFormat = new SimpleDateFormat("MM-dd-yyyy");
-        String valid = "01-01-2004"; //age restriction 18
-        Date validDate = dateFormat.parse(valid);
 
         //CHECK IF EMAIL IS ALREADY IN DB
         CollectionReference colRef = db.collection("users");
@@ -301,10 +295,12 @@ public class RegisterActivity extends AppCompatActivity {
                            docUsers.put("MobileNumber", mobileNumber);
                            docUsers.put("Email", email);
                            docUsers.put("profileComplete", false);
+                           docUsers.put("isVerified", false);
 
                            //Data validation and register
                            try{
                                Date parsedDate = dateFormat.parse(birthDate);
+                               Boolean validInput = true;
 
                                //assert parsedDate != null;
                                Matcher emailMatcher = emailPattern.matcher(etEmail.getText());
@@ -313,41 +309,68 @@ public class RegisterActivity extends AppCompatActivity {
 
                                if(TextUtils.isEmpty(lastName)) {
                                    etLastName.setError("Please enter last name");
-                               } else if(TextUtils.isEmpty(firstName)) {
+                                   validInput = false;
+                               }
+
+                               if(TextUtils.isEmpty(firstName)) {
                                    etFirstName.setError("Please enter first name");
-                               } else if(parsedDate.after(validDate)){
-                                   etBirthdate.getText().clear();
-                                   etBirthdate.setHint("Please enter valid birthdate");
-                                   etBirthdate.setError("Please enter valid birthdate");
-                               }else if(TextUtils.isEmpty(birthDate)) {
+                                   validInput = false;
+                               }
+
+                               if(TextUtils.isEmpty(birthDate)) {
                                    //assert parsedDate != null;
                                    etBirthdate.setError("Please enter birthdate (mm-dd-yyyy)");
-                               } else if(spinnerSex.getSelectedItem().equals("Sex *")) {
-                                   ((TextView)spinnerSex.getSelectedView()).setError("Please select sex");
-                               } else if(TextUtils.isEmpty(mobileNumber)) {
+                                   validInput = false;
+                               }
+
+                               if(spinnerSex.getSelectedItem().equals("Sex *")) {
+                                   ((TextView) spinnerSex.getSelectedView()).setError("Please select sex");
+                                   validInput = false;
+                               }
+
+                               if(TextUtils.isEmpty(mobileNumber)) {
                                    etMobileNumber.setError("Please enter mobile number");
+                                   validInput = false;
                                } else if (!mobileNumberMatcher.matches()) {
                                    etMobileNumber.setError("Please enter a valid mobile number");
+                                   validInput = false;
                                } else if(etMobileNumber.getText().length() != 11) {
                                    etMobileNumber.setError("Please enter a valid mobile number");
-                               } else if(TextUtils.isEmpty(email)) {
+                                   validInput = false;
+                               }
+
+                               if(TextUtils.isEmpty(email)) {
                                    etEmail.setError("Please enter email");
+                                   validInput = false;
                                } else if (!emailMatcher.matches()) {
                                    etEmail.setError("Please enter valid email");
-                               } else if(TextUtils.isEmpty(etPassword.getText())) {
+                                   validInput = false;
+                               }
+
+                               if(TextUtils.isEmpty(etPassword.getText())) {
                                    etPassword.setError("Please enter password");
+                                   validInput = false;
                                } else if(!passMatcher.matches()) {
+                                   txtTogglePass.setVisibility(View.GONE);
                                    etPassword.setError("Password must contain the following: " +
                                            "\n - At least 8 characters" +
                                            "\n - At least 1 digit" +
                                            "\n - At least one upper and lower case letter" +
                                            "\n - A special character (such as @, #, etc.)" +
                                            "\n - No spaces or tabs");
-                               } else if(TextUtils.isEmpty(password)) {
+                                   validInput = false;
+                               }
+
+                               if(TextUtils.isEmpty(cPassword)) {
                                    etConPassword.setError("Please re-enter password");
+                                   validInput = false;
                                } else if(!password.equals(cPassword)) {
+                                   txtToggleConfirmPass.setVisibility(View.GONE);
                                    etConPassword.setError("Passwords don't match");
-                               } else {
+                                   validInput = false;
+                               }
+
+                               if(validInput){
                                    mAuth.createUserWithEmailAndPassword(email,password).addOnCompleteListener(this, task -> {
                                        if (task.isSuccessful()) {
                                            // Sign up success
@@ -355,16 +378,15 @@ public class RegisterActivity extends AppCompatActivity {
                                            user = mAuth.getCurrentUser();
                                            assert user != null;
                                            docUsers.put("ID", user.getUid());
-                                           docUsers.put("isVerified", false);
 
                                            if (!lblLink.getText().equals("")) {
                                                uploadPhotoToStorage();
                                                docUsers.put("profileComplete", true);
-                                           } else {
-                                               docUsers.put("profileComplete", false);
                                            }
 
                                            //Verify user's email
+                                           Intent otp = new Intent(RegisterActivity.this, OTPActivity.class);
+                                           otp.putExtra("Source", "RegisterActivity");
                                            otp.putExtra("Email", etEmail.getText().toString());
                                            otp.putExtra("UserDetails", docUsers);
                                            startActivity(otp);
@@ -406,29 +428,25 @@ public class RegisterActivity extends AppCompatActivity {
     private void uploadPhotoToStorage() {
         imageRef.child(user.getUid())
                 .putFile(Uri.parse(lblLink.getText().toString()))
-                .addOnSuccessListener(taskSnapshot -> {
-                    imageRef.child(user.getUid()).getDownloadUrl().addOnSuccessListener(uri -> {
-                        idPicUri = String.valueOf(uri);
-                        docUsers.put("imgUri", idPicUri);
-                        Log.i("URI gDUrl()", idPicUri);
-                        //otp.putExtra("imgUri", idUri);
-                        //otp.putExtra("UserDetails", docUsers);
+                .addOnSuccessListener(taskSnapshot -> imageRef.child(user.getUid()).getDownloadUrl().addOnSuccessListener(uri -> {
+                    idPicUri = String.valueOf(uri);
+                    docUsers.put("imgUri", idPicUri);
+                    Log.i("URI gDUrl()", idPicUri);
 
-                        db.collection("users").document(user.getUid()).update(docUsers)
-                                .addOnSuccessListener(aVoid -> {
-                                    Toast.makeText(getApplicationContext(),
-                                            "pushed image to document",
-                                            Toast.LENGTH_SHORT).show();
-                                    Log.i(TAG, "Image pushed");
-                                })
-                                .addOnFailureListener(e -> {
-                                    Toast.makeText(getApplicationContext(),
-                                            "Error writing document",
-                                            Toast.LENGTH_SHORT).show();
-                                    Log.w(TAG, "Error writing document", e);
-                                });
-                    });
-                }).addOnFailureListener(e -> Toast.makeText(RegisterActivity.this, "Upload failed.",
+                    db.collection("users").document(user.getUid()).update(docUsers)
+                            .addOnSuccessListener(aVoid -> {
+                                Toast.makeText(getApplicationContext(),
+                                        "pushed image to document",
+                                        Toast.LENGTH_SHORT).show();
+                                Log.i(TAG, "Image pushed");
+                            })
+                            .addOnFailureListener(e -> {
+                                Toast.makeText(getApplicationContext(),
+                                        "Error writing document",
+                                        Toast.LENGTH_SHORT).show();
+                                Log.w(TAG, "Error writing document", e);
+                            });
+                })).addOnFailureListener(e -> Toast.makeText(RegisterActivity.this, "Upload failed.",
                         Toast.LENGTH_SHORT).show());
     }
 
@@ -441,7 +459,6 @@ public class RegisterActivity extends AppCompatActivity {
                     EXTERNAL_STORAGE_REQ_CODE);
             return;
         }
-
         //PICK IMAGE
         //PERMISSION GRANTED
         //OPEN IMAGE PICKER
@@ -458,12 +475,10 @@ public class RegisterActivity extends AppCompatActivity {
             new ActivityResultCallback<ActivityResult>() {
                 @Override
                 public void onActivityResult(ActivityResult result) {
-
                     if (result.getResultCode() == RESULT_OK) {
                         Intent data = result.getData();
                         if (data != null) {
                             if (data.getData() != null) {
-
                                 Uri imageUri = data.getData();
                                 lblLink.setText(imageUri.toString());
                             }
@@ -489,6 +504,35 @@ public class RegisterActivity extends AppCompatActivity {
                 pickImage();
             }
         }
+    }
+
+    //update BIRTHDATE value
+    private void updateBirthDate() {
+        String myFormat = "MM-dd-yyyy";
+        SimpleDateFormat dateFormat = new SimpleDateFormat(myFormat, Locale.US);
+        etBirthdate.setText(dateFormat.format(calendar.getTime()));
+        etBirthdate.setError(null);
+    }
+
+    private void selectBirthDate() {
+        Calendar maxCal = Calendar.getInstance();
+        maxCal.add(Calendar.YEAR, -18);
+        int mYear = maxCal.get(Calendar.YEAR);
+        int mMonth = maxCal.get(Calendar.MONTH);
+        int mDay = maxCal.get(Calendar.DAY_OF_MONTH);
+
+        DatePickerDialog.OnDateSetListener startDateListener = (arg0, year, monthOfYear, dayOfMonth) -> {
+            calendar.set(Calendar.YEAR, year);
+            calendar.set(Calendar.MONTH,monthOfYear);
+            calendar.set(Calendar.DAY_OF_MONTH,dayOfMonth);
+            updateBirthDate();
+        };
+
+        etBirthdate.setOnClickListener(view -> {
+            DatePickerDialog dpDialog = new DatePickerDialog(RegisterActivity.this, startDateListener, mYear, mMonth, mDay);
+            dpDialog.getDatePicker().setMaxDate(maxCal.getTimeInMillis());
+            dpDialog.show();
+        });
     }
 
     public void goBack() {

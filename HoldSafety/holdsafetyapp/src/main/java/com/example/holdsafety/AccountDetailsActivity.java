@@ -3,7 +3,6 @@ package com.example.holdsafety;
 import static android.content.ContentValues.TAG;
 
 import android.Manifest;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
@@ -50,9 +49,10 @@ public class AccountDetailsActivity extends AppCompatActivity {
     StorageReference imageRef = FirebaseStorage.getInstance().getReference("id");
     DocumentReference docRef;
 
+    public static final int OTP_REQUEST_CODE = 1000;
     Boolean isNumberChanged = false, isEmailChanged = false;
     String userPassword = "";
-    String idUri, userId;
+    String idUri, userId, newEmail;
     HashMap<String, Object> docUsers = new HashMap<>();
 
     ImageView btnBack;
@@ -137,7 +137,6 @@ public class AccountDetailsActivity extends AppCompatActivity {
                 });
 
                 txtEmail.addTextChangedListener(new TextWatcher() {
-                    String newEmail;
                     @Override
                     public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
                     }
@@ -152,7 +151,7 @@ public class AccountDetailsActivity extends AppCompatActivity {
                         if(currentEmail.equals(newEmail)){
                             isEmailChanged = false;
                             Toast.makeText(AccountDetailsActivity.this, "No Changes", Toast.LENGTH_SHORT).show();
-                        } else{
+                        } else {
                             isEmailChanged = true;
                             Toast.makeText(AccountDetailsActivity.this, "New Email", Toast.LENGTH_SHORT).show();
                         }
@@ -170,7 +169,7 @@ public class AccountDetailsActivity extends AppCompatActivity {
         btnUploadID.setOnClickListener(v -> pickImage());
 
         btnSave.setOnClickListener(view -> {
-            String newMobileNumber, newEmail;
+            String newMobileNumber;
 
             newMobileNumber = txtMobileNumber.getText().toString().trim();
             newEmail = txtEmail.getText().toString().trim();
@@ -192,11 +191,9 @@ public class AccountDetailsActivity extends AppCompatActivity {
                 return;
             }
 
-            //not empty fields, no changes
-            if (!isEmailChanged && !isNumberChanged) {
+            if (!isEmailChanged && !isNumberChanged) { //not empty fields, no changes
                 Toast.makeText(AccountDetailsActivity.this, "No Changes Made", Toast.LENGTH_LONG).show();
-            }
-            else if (isEmailChanged || isNumberChanged){
+            } else { //one or both fields changed
                 String emailRegex = "^[a-zA-Z0-9_!#$%&'*+/=?`{|}~^.-]+@[a-zA-Z0-9.-]+$";
                 String mobileNumberRegex = "^(09|\\+639)\\d{9}$";
                 Pattern emailPattern = Pattern.compile(emailRegex);
@@ -206,7 +203,7 @@ public class AccountDetailsActivity extends AppCompatActivity {
 
                 if (!mobileNumberMatcher.matches()) {
                     txtMobileNumber.setError("Please enter a valid mobile number");
-                } else if (!emailMatcher.matches()){
+                } else if (!emailMatcher.matches()) {
                     txtEmail.setError("Please enter a valid email");
                 } else {
                     //pop up for re-enter password
@@ -235,8 +232,7 @@ public class AccountDetailsActivity extends AppCompatActivity {
                     //saves user input if not empty
                     txtInputPassword.addTextChangedListener(new TextWatcher() {
                         @Override
-                        public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                        }
+                        public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) { }
 
                         @Override
                         public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
@@ -244,8 +240,7 @@ public class AccountDetailsActivity extends AppCompatActivity {
                         }
 
                         @Override
-                        public void afterTextChanged(Editable editable) {
-                        }
+                        public void afterTextChanged(Editable editable) { }
                     });
 
                     dialogSaveChanges.setPositiveButton("Done", (dialogInterface, i) -> {
@@ -268,23 +263,14 @@ public class AccountDetailsActivity extends AppCompatActivity {
                     changeEmailDialog.show();
 
                     //Override
-                    changeEmailDialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            if (TextUtils.isEmpty(userPassword)) {
-                                txtInputPassword.setError("Password is required");
-                            } else {
-                                userPassword = txtInputPassword.getText().toString();
+                    changeEmailDialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(v -> {
+                        if (TextUtils.isEmpty(userPassword)) {
+                            txtInputPassword.setError("Password is required");
+                        } else {
+                            userPassword = txtInputPassword.getText().toString();
 
-                                if (isNumberChanged) {
-                                    changeNumber(newMobileNumber);
-                                }
-
-                                if (isEmailChanged) {
-                                    changeEmail(newEmail);
-                                }
-
-                            }
+                            if (isNumberChanged) { changeNumber(newMobileNumber); }
+                            if (isEmailChanged) { changeEmail(newEmail); }
                         }
                     }); //end of dialog code
                 }
@@ -293,15 +279,15 @@ public class AccountDetailsActivity extends AppCompatActivity {
     }
 
     private void setAccountStatus(Boolean isVerified, Boolean isProfileComplete) {
-        if(isVerified){
+        if(isVerified){ //verified and profile complete
             lblAccountStatus.setTextColor(getResources().getColor(R.color.green));
             lblAccountStatus.setText("Verified Account");
             btnUploadID.setVisibility(View.GONE);
-        } else if (!isVerified && isProfileComplete){
+        } else if (isProfileComplete){ //not verified but profile complete
             lblAccountStatus.setTextColor(getResources().getColor(R.color.yellow));
             lblAccountStatus.setText("Pending Verification");
             btnUploadID.setVisibility(View.GONE);
-        } else if (!isProfileComplete && !isVerified){
+        } else { //not verified and profile incomplete
             lblAccountStatus.setTextColor(getResources().getColor(R.color.red));
             lblAccountStatus.setText("Not Verified");
         }
@@ -362,7 +348,6 @@ public class AccountDetailsActivity extends AppCompatActivity {
             new ActivityResultCallback<ActivityResult>() {
                 @Override
                 public void onActivityResult(ActivityResult result) {
-
                     if (result.getResultCode() == RESULT_OK) {
                         Intent data = result.getData();
                         if (data != null) {
@@ -379,10 +364,53 @@ public class AccountDetailsActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if(requestCode==1 && resultCode==RESULT_OK && data!=null && data.getData()!=null){
+        if(requestCode == 1 && resultCode == RESULT_OK && data!=null && data.getData()!=null){
             imageURI = data.getData();
-            //Toast.makeText(getApplicationContext(), "Selected " + imageURI, Toast.LENGTH_SHORT).show();
-            //uploadPicture();
+        }
+
+        //For email change
+        if (requestCode == OTP_REQUEST_CODE && resultCode == RESULT_OK) {
+            AuthCredential credential = EmailAuthProvider
+                    .getCredential(user.getEmail(),userPassword);
+
+            user.reauthenticate(credential)
+                    .addOnCompleteListener(task -> {
+                        if (task.isSuccessful()) {
+                            //updates email in Auth
+                            user.updateEmail(newEmail)
+                                    .addOnCompleteListener(task1 -> {
+                                        if (task1.isSuccessful()) {
+                                            Log.d(TAG, "User email address updated.");
+
+                                            //updates email in document
+                                            docRef.update("Email", newEmail);
+
+                                            //reset values
+                                            isEmailChanged = false;
+                                            userPassword = "";
+
+                                            //refresh activity
+                                            finish();
+                                            startActivity(getIntent());
+                                        }
+                                    })
+                                    .addOnFailureListener(e -> {
+                                        isNumberChanged = false;
+                                        isEmailChanged = false;
+                                        userPassword = "";
+                                        finish();
+                                        startActivity(getIntent());
+                                    });
+                        }
+                    })
+                    .addOnFailureListener(e -> {
+                        isNumberChanged = false;
+                        isEmailChanged = false;
+                        userPassword = "";
+
+                        finish();
+                        startActivity(getIntent());
+                    });
         }
     }
 
@@ -391,52 +419,11 @@ public class AccountDetailsActivity extends AppCompatActivity {
     }
 
     public void changeEmail(String newEmail){
-        AuthCredential credential = EmailAuthProvider
-                .getCredential(user.getEmail(),userPassword);
-
-        user.reauthenticate(credential)
-                .addOnCompleteListener(task -> {
-                    if (task.isSuccessful()) {
-                        //updates email in Auth
-                        user.updateEmail(newEmail)
-                                .addOnCompleteListener(task1 -> {
-                                    if (task1.isSuccessful()) {
-                                        Log.d(TAG, "User email address updated.");
-
-                                        //updates email in document
-                                        docRef.update("Email", newEmail);
-
-                                        //reset values
-                                        isEmailChanged = false;
-                                        userPassword = "";
-
-                                        //Toast.makeText(AccountDetailsActivity.this, "Changes Saved", Toast.LENGTH_LONG).show();
-
-                                        //insert email verification here
-
-                                        finish();
-                                        startActivity(getIntent());
-                                    }
-                                })
-                                .addOnFailureListener(e -> {
-                                    isNumberChanged = false;
-                                    isEmailChanged = false;
-                                    userPassword = "";
-                                    finish();
-                                    startActivity(getIntent());
-                                });
-                    }
-                })
-                .addOnFailureListener(e -> {
-                    isNumberChanged = false;
-                    isEmailChanged = false;
-                    userPassword = "";
-
-                    //Toast.makeText(AccountDetailsActivity.this, "Reauthentication Failed" + "\nChanges not Saved", Toast.LENGTH_LONG).show();
-
-                    finish();
-                    startActivity(getIntent());
-                });
+        //insert email verification here
+        Intent otpResult = new Intent(AccountDetailsActivity.this, OTPActivity.class);
+        otpResult.putExtra("Source", "AccountDetailsActivity");
+        otpResult.putExtra("Email", newEmail);
+        startActivityForResult(otpResult, OTP_REQUEST_CODE);
     }
 
     public void changeNumber(String newMobileNumber){
@@ -466,91 +453,9 @@ public class AccountDetailsActivity extends AppCompatActivity {
                     userPassword = "";
 
                     Toast.makeText(AccountDetailsActivity.this, "Incorrect Password" + "\nChanges not Saved", Toast.LENGTH_LONG).show();
-
                     finish();
                     startActivity(getIntent());
                 });
-    }
-
-    //ignore this - will delete
-    public void reAuthenticate(String  newEmail, String newMobileNumber){
-        EditText txtInputPassword;
-
-        AlertDialog.Builder dialogSaveChanges;
-        dialogSaveChanges = new AlertDialog.Builder(AccountDetailsActivity.this);
-        dialogSaveChanges.setTitle("Save Changes");
-
-        //if only number is changed
-        if (isNumberChanged && !isEmailChanged){
-            dialogSaveChanges.setMessage("Re-enter password to save changes:");
-        }
-
-        //if both
-        if (isEmailChanged){
-            dialogSaveChanges.setMessage("You have 48 hours to verify your new email. Failure to do so will delete your account." +
-                    "\n\nRe-enter password to save changes:");
-        }
-
-        txtInputPassword = new EditText(AccountDetailsActivity.this);
-        dialogSaveChanges.setView(txtInputPassword);
-
-        txtInputPassword.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
-
-        //saves new details input if not empty
-        txtInputPassword.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                userPassword = txtInputPassword.getText().toString().trim();
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
-            }
-        });
-
-        dialogSaveChanges.setPositiveButton("Done", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-                //Do nothing here, override this button later to change the close behaviour
-            }
-        });
-
-        dialogSaveChanges.setNegativeButton("Cancel", (dialogInterface, i) -> {
-            dialogInterface.dismiss();
-
-            //reset values
-            isEmailChanged = false;
-            isNumberChanged = false;
-            userPassword = "";
-
-            finish();
-            startActivity(getIntent());
-        });
-
-        AlertDialog changeEmailDialog = dialogSaveChanges.create();
-        changeEmailDialog.show();
-
-        //Override  - only continues if there is a password input
-        changeEmailDialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(v -> {
-            if(TextUtils.isEmpty(userPassword)){
-                txtInputPassword.setError("Password is required");
-            }
-            else {
-                userPassword = txtInputPassword.getText().toString();
-
-                if (isNumberChanged){
-                    changeNumber(newMobileNumber);
-                }
-
-                if (isEmailChanged){
-                    changeEmail(newEmail);
-                }
-            }
-        });
     }
 
     public void removeAccount(){

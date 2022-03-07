@@ -17,8 +17,11 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 public class MenuActivity extends AppCompatActivity {
+    FirebaseFirestore db;
     FirebaseAuth mAuth;
     ImageView btnBack;
     ConstraintLayout btnUserAccount, btnDesignateContact, btnContactDevelopers, btnUserManual, btnTermsAndConditions, btnAbout;
@@ -30,6 +33,7 @@ public class MenuActivity extends AppCompatActivity {
         setContentView(R.layout.activity_menu);
 
         mAuth = FirebaseAuth.getInstance();
+        db = FirebaseFirestore.getInstance();
 
         btnBack = findViewById(R.id.backArrow);
         btnUserAccount = findViewById(R.id.layoutAccountDetails);
@@ -42,7 +46,7 @@ public class MenuActivity extends AppCompatActivity {
         btnLogout = findViewById(R.id.txtLogout);
         txtName = findViewById(R.id.txtName);
 
-        txtName.setText(mAuth.getCurrentUser().getDisplayName());
+        displayName();
 
         btnBack.setOnClickListener(view -> goBack());
         btnUserAccount.setOnClickListener(view -> userAccount());
@@ -53,6 +57,22 @@ public class MenuActivity extends AppCompatActivity {
         btnAbout.setOnClickListener(view -> aboutSystem());
         btnViewReports.setOnClickListener(view -> viewReports());
         btnLogout.setOnClickListener(view -> logoutUser());
+    }
+
+    private void displayName() {
+        //txtName.setText(mAuth.getCurrentUser().getDisplayName());
+        db.collection("users").document(mAuth.getCurrentUser().getUid()).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            @Override
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                String username;
+                String lastName = documentSnapshot.getString("LastName");
+                String firstName = documentSnapshot.getString("FirstName");
+
+                username = firstName + " " + lastName;
+                txtName.setText(username);
+            }
+        });
+
     }
 
     private void userAccount(){

@@ -124,7 +124,6 @@ public class LandingActivity extends AppCompatActivity {
         btnMenu = findViewById(R.id.btnMenu);
 
         btnSafetyButton.setOnTouchListener(new View.OnTouchListener() {
-
             //Declare timer instance
             CountDownTimer cTimer = new CountDownTimer(2000, 1000) {
 
@@ -169,6 +168,7 @@ public class LandingActivity extends AppCompatActivity {
 
         //handle method for holdsafety widget
         if(isFromWidget!=null && isFromWidget.equals("true")){
+            isFromWidget = null;
             getCurrentLocation();
         }
 
@@ -564,7 +564,7 @@ public class LandingActivity extends AppCompatActivity {
                             finish();
                         }
                     });
-                } else if (!isVerified){
+                } else {
                     Toast.makeText(getApplicationContext(), "You're not yet verified. Can't send alert to barangay", Toast.LENGTH_LONG).show();
                 }
 
@@ -645,15 +645,6 @@ public class LandingActivity extends AppCompatActivity {
                                 Toast.makeText(getApplicationContext(), "SMS Error: " + ex.getMessage(), Toast.LENGTH_LONG).show();
                                 ex.printStackTrace();
                             }
-                            //SEND SMS
-                            /*
-                            SmsManager manager = SmsManager.getDefault();
-                            PendingIntent sentPI = PendingIntent.getBroadcast(LandingActivity.this,
-                                    SEND_SMS_REQ_CODE, new Intent("SMS_SENT"), 0);
-                            manager.sendTextMessage(mobileNumber, null, message, sentPI, null);
-                            Toast.makeText(getApplicationContext(), "SMS Sent", Toast.LENGTH_LONG).show();
-                            Toast.makeText(getApplicationContext(), "SMS Sent to: " + mobileNumber, Toast.LENGTH_LONG).show();
-                            */
                         }
 
                         if (contactEmail != null) {
@@ -758,16 +749,8 @@ public class LandingActivity extends AppCompatActivity {
         final AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setMessage("Your Wifi seems to be disabled, do you want to enable it?")
                 .setCancelable(false)
-                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                    public void onClick(final DialogInterface dialog, final int id) {
-                        startActivity(new Intent(Settings.ACTION_WIFI_SETTINGS));
-                    }
-                })
-                .setNegativeButton("No", new DialogInterface.OnClickListener() {
-                    public void onClick(final DialogInterface dialog, final int id) {
-                        dialog.cancel();
-                    }
-                });
+                .setPositiveButton("Yes", (dialog, id) -> startActivity(new Intent(Settings.ACTION_WIFI_SETTINGS)))
+                .setNegativeButton("No", (dialog, id) -> dialog.cancel());
         final AlertDialog alert = builder.create();
         alert.show();
     }
@@ -776,24 +759,20 @@ public class LandingActivity extends AppCompatActivity {
         final AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setMessage("Your GPS seems to be disabled, do you want to enable it?")
                 .setCancelable(false)
-                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                    public void onClick(final DialogInterface dialog, final int id) {
-                        startActivity(new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS));
-                    }
-                })
-                .setNegativeButton("No", new DialogInterface.OnClickListener() {
-                    public void onClick(final DialogInterface dialog, final int id) {
-                        dialog.cancel();
-                    }
-                });
+                .setPositiveButton("Yes", (dialog, id) -> startActivity(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)))
+                .setNegativeButton("No", (dialog, id) -> dialog.cancel());
         final AlertDialog alert = builder.create();
         alert.show();
     }
-
 
     @Override
     protected void onStart() {
         super.onStart();
         setPermissions();
     }
+
+    @Override
+    public void onBackPressed() {
+    }
+
 }

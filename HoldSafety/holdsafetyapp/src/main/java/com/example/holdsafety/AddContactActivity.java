@@ -1,9 +1,9 @@
 package com.example.holdsafety;
 
-import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -28,7 +28,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -50,7 +49,7 @@ public class AddContactActivity extends AppCompatActivity {
         setContentView(R.layout.activity_add_contact);
 
         mAuth = FirebaseAuth.getInstance();
-        user = FirebaseAuth.getInstance().getCurrentUser();
+        user = mAuth.getCurrentUser();
 
         Toast.makeText(getApplicationContext(), "Designate Contacts", Toast.LENGTH_SHORT).show();
 
@@ -82,7 +81,7 @@ public class AddContactActivity extends AppCompatActivity {
                 View view = super.getDropDownView(position, convertView, parent);
                 TextView tv = (TextView) view;
 
-                if(position==0) {
+                if(position == 0) {
                     tv.setTextColor(getResources().getColor(R.color.hint_color));
                 } else {
                     tv.setTextColor(Color.BLACK);
@@ -108,9 +107,7 @@ public class AddContactActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {
-
-            }
+            public void onNothingSelected(AdapterView<?> adapterView) { }
         });
     }
 
@@ -152,16 +149,47 @@ public class AddContactActivity extends AppCompatActivity {
             } else if (!emailMatcher.matches()) {
                 etContactEmail.setError("Please enter valid email");
             } else {
-                db.collection("emergencyContacts").document(user.getUid()).collection("contacts")
-                        .add(docContacts).addOnCompleteListener(this, task -> {
-                    if (task.isSuccessful()) {
-                        Toast.makeText(getApplicationContext(), "Successfully Added Contact", Toast.LENGTH_SHORT).show();
-                        goBack();
-                    } else {
-                        Toast.makeText(getApplicationContext(),
-                                Objects.requireNonNull(task.getException()).toString(),
-                                Toast.LENGTH_SHORT).show();
-                    }
+                //check if contact exists in the user's profile
+                db.collection("emergencyContacts").document(user.getUid()).collection("contacts").get().addOnCompleteListener(task -> {
+                   if(task.isSuccessful()) {
+                       Log.d("CONTACT_CHECK", "Contacts fetched.");
+                       boolean existing = false;
+                       int contactAmount = task.getResult().size();
+                       int counter = 0;
+                       for(QueryDocumentSnapshot contactSnap : task.getResult()) {
+                           counter++;
+                           String email = contactSnap.getString("email");
+                           String mobileNumber = contactSnap.getString("mobileNumber");
+                           Log.d("CONTACT_CHECK", "Contact email: " + email + " mobileNumber: " + mobileNumber);
+
+                           if(contactMobileNumber.equals(mobileNumber)) {
+                               existing = true;
+                               etContactMobileNumber.setError("This number is already an emergency contact");
+                           } else if(contactEmail.equals(email)) {
+                               existing = true;
+                               etContactEmail.setError("This email is already an emergency contact");
+                           }
+
+                           //now at the last contact, final check if it exists
+                           if(counter == contactAmount) {
+                               if(!existing) {
+                                   db.collection("emergencyContacts").document(user.getUid()).collection("contacts")
+                                           .add(docContacts).addOnCompleteListener(this, task1 -> {
+                                       if (task1.isSuccessful()) {
+                                           Toast.makeText(getApplicationContext(), "Successfully Added Contact", Toast.LENGTH_SHORT).show();
+                                           goBack();
+                                       } else {
+                                           Toast.makeText(getApplicationContext(),
+                                                   Objects.requireNonNull(task1.getException()).toString(),
+                                                   Toast.LENGTH_SHORT).show();
+                                       }
+                                   });
+                               }
+                           }
+                       }
+                   } else {
+                       Log.d("CONTACT_CHECK", "Failed to fetch contacts");
+                   }
                 });
             }
         } else {
@@ -169,19 +197,17 @@ public class AddContactActivity extends AppCompatActivity {
         }
     }
 
-    public void getContactCount(){
+    public void getContactCount() {
         FirebaseFirestore.getInstance()
                 .collection("emergencyContacts")
                 .document(user.getUid()).collection("contacts").get()
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
-                        for (QueryDocumentSnapshot contactSnap : task.getResult()) {
+                        for (QueryDocumentSnapshot ignored : task.getResult()) {
                             emergencyContactCount++;
                         }
                         lblContactCount.setText(emergencyContactCount + " out of 5");
-                    }
-
-                    else{
+                    } else {
                         Toast.makeText(this, "No Contacts Available", Toast.LENGTH_SHORT).show();
                     }
                 });

@@ -64,17 +64,17 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
     protected void onStart() {
         super.onStart();
         //check if user is already logged in
-        //Log.d("userSnap", user.getEmail());
         if(user != null) {
-            Intent intent = new Intent(LoginActivity.this, LandingActivity.class);
+            Intent landing = new Intent(LoginActivity.this, LandingActivity.class);
             isFromWidget = getIntent().getStringExtra("isFromWidget");
 
             //handle method for holdsafety widget
             if(isFromWidget != null && isFromWidget.equals("true")) {
-                intent.putExtra("isFromWidget", "true");
+                isFromWidget = null;
+                landing.putExtra("isFromWidget", "true");
                 Toast.makeText(getApplicationContext(), "Inside IF Widget" , Toast.LENGTH_SHORT).show();
             }
-            startActivity(intent);
+            startActivity(landing);
         }
     }
 
@@ -126,38 +126,31 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
 
         txtPassword.addTextChangedListener(new TextWatcher() {
             @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) { }
 
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
                 if(txtPassword.getText().length() > 0) {
                     txtToggle.setVisibility(View.VISIBLE);
-                }
-                else{
+                } else {
                     txtToggle.setVisibility(View.GONE);
                 }
             }
 
             @Override
-            public void afterTextChanged(Editable editable) {
-
-            }
+            public void afterTextChanged(Editable editable) { }
         });
 
         txtToggle.setOnClickListener(view -> {
             if(txtToggle.getText() == "SHOW") {
                 txtToggle.setText("HIDE");
                 txtPassword.setInputType(InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
-            }
-            else{
+            } else {
                 txtToggle.setText("SHOW");
                 txtPassword.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
             }
             txtPassword.setSelection(txtPassword.length());
         });
-
         btnLogin.setOnClickListener(view -> {
             String email, password;
 
@@ -169,12 +162,10 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                 txtPassword.setError("Password is required");
                 return;
             }
-
             if(TextUtils.isEmpty(email)) {
                 txtEmailOrMobileNum.setError("Email is required");
                 return;
             }
-
             if(TextUtils.isEmpty(password)) {
                 txtPassword.setError("Password is required");
                 return;
@@ -182,7 +173,6 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
 
             loginUser(email,password);
         });
-
         btnForgotPass.setOnClickListener(view -> forgotPassword());
         btnSignUp.setOnClickListener(view -> userSignUp());
         btnMenu.setOnClickListener(view -> othersRedirect());
@@ -208,7 +198,6 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                    Log.d("isAccountComplete", "updateUI(): else if(): Result: Profile does not exist, creating...");
                    completeGoogleProfile();
                }
-
             });
             finish();
         }
@@ -254,7 +243,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        Toast.makeText(getApplicationContext(), "On Activity Result", Toast.LENGTH_SHORT).show();
+        Log.d("USER", data.toString());
 
         //GOOGLE SIGN IN
         if (requestCode == SIGN_IN_REQUEST_CODE) {
@@ -267,7 +256,6 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                 mAuth.signInWithCredential(credential)
                         .addOnCompleteListener(this, task1 -> {
                             if (task1.isSuccessful()) {
-                                Toast.makeText(getApplicationContext(), "Task Successful", Toast.LENGTH_SHORT).show();
                                 // Sign in success, update UI with the signed-in user's information
                                 Log.d("googlesignin", "signInWithCredential:success");
                                 FirebaseUser user = mAuth.getCurrentUser();
@@ -279,7 +267,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
 
                                 docRef.get().addOnSuccessListener(documentSnapshot -> {
                                     if(!documentSnapshot.exists()) {
-                                        Toast.makeText(getApplicationContext(), "Does not exist yet", Toast.LENGTH_SHORT).show();
+                                        //Toast.makeText(getApplicationContext(), "Does not exist yet", Toast.LENGTH_SHORT).show();
 
                                         //ADD KNOWN AND PLACEHOLDER VALUES
                                         HashMap<String, String> googleSignInMap = new HashMap<>();
@@ -293,6 +281,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                                     } else { //ACCOUNT EXISTS, COMPLETE THE PROFILE
                                         Intent landingPage = new Intent (LoginActivity.this, LandingActivity.class);
                                         startActivity(landingPage);
+                                        finish();
                                     }
                                 });
                             } else {
@@ -304,7 +293,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                             }
                         });
             } catch (ApiException e) {
-                Toast.makeText(getApplicationContext(), "Catch", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), "Sign In Failed", Toast.LENGTH_SHORT).show();
                 e.printStackTrace();
             }
         }
