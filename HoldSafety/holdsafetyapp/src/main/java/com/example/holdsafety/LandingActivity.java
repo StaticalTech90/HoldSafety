@@ -45,7 +45,14 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.LocationSettingsRequest;
 import com.google.android.gms.location.LocationSettingsResponse;
 import com.google.android.gms.location.LocationSettingsStatusCodes;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.gms.wearable.CapabilityClient;
+import com.google.android.gms.wearable.CapabilityInfo;
+import com.google.android.gms.wearable.MessageClient;
+import com.google.android.gms.wearable.MessageEvent;
+import com.google.android.gms.wearable.Node;
+import com.google.android.gms.wearable.Wearable;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
@@ -54,14 +61,17 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 
 public class LandingActivity extends AppCompatActivity {
     FirebaseAuth mAuth;
@@ -70,6 +80,7 @@ public class LandingActivity extends AppCompatActivity {
     CollectionReference docRefBrgy;
     FirebaseUser user;
 
+    private static final String CAPABILITY_WATCH_APP = "send_signal";
     String userID, isFromWidget, nearestBrgy;
     String lastName, firstName, mobileNumber, googleMapLink, txtMessage, emailMessage;
     Boolean isVerified;
@@ -109,6 +120,35 @@ public class LandingActivity extends AppCompatActivity {
         docRefBrgy = db.collection("barangay");
 
         isFromWidget = getIntent().getStringExtra("isFromWidget");
+
+        //Receive message
+        Wearable.getMessageClient(LandingActivity.this).addListener(messageEvent -> {
+            byte compareID = 1;
+            int result = Byte.compare(messageEvent.getData()[0], compareID);
+
+            Log.d("SIGNAL", "message:  " + messageEvent.getData()[0]);
+
+            if(result == 0) {
+                Log.d("SIGNAL", "INSERT REPORT METHOD HERE");
+                getCurrentLocation();
+            } else {
+                Log.d("SIGNAL", "FUCK");
+            }
+        });
+
+        //Get available nodes
+        Task<CapabilityInfo> capabilityInfoTask = Wearable.getCapabilityClient(LandingActivity.this)
+                .getCapability(CAPABILITY_WATCH_APP, CapabilityClient.FILTER_REACHABLE);
+
+        capabilityInfoTask.addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                CapabilityInfo capabilityInfo = task.getResult();
+                Set<Node> nodes = capabilityInfo.getNodes();
+            } else {
+                Log.d("SIGNAL", "Capability request failed to return any results.");
+            }
+
+        });
 
         //wifi and loc status
         statusCheck();

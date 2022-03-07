@@ -8,14 +8,16 @@
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+    <uses-permission
+        android:name="android.permission.WRITE_EXTERNAL_STORAGE"
         tools:ignore="ScopedStorage" />
     <uses-permission android:name="android.permission.SEND_SMS" />
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
+
     <uses-feature
         android:name="android.hardware.camera2"
         android:required="false" />
@@ -30,60 +32,80 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.HoldSafety">
         <activity
+            android:name=".AboutSystemActivity"
+            android:exported="false" />
+        <activity
+            android:name=".TermsAndConditionsActivity"
+            android:exported="false" />
+        <activity
+            android:name=".UserManualActivity"
+            android:exported="false" />
+        <activity
             android:name=".AudioRecordingActivity"
             android:exported="true"
-            android:screenOrientation="portrait"/>
+            android:screenOrientation="portrait" />
         <activity
             android:name=".VideoRecordingActivity"
             android:exported="true"
-            android:screenOrientation="portrait"/>
+            android:screenOrientation="portrait" />
         <activity
             android:name=".OTPActivity"
             android:exported="false"
-            android:screenOrientation="portrait"/>
+            android:screenOrientation="portrait" />
         <activity
             android:name=".ContactDevelopersActivity"
             android:exported="true"
-            android:screenOrientation="portrait"/>
+            android:screenOrientation="portrait" />
         <activity
             android:name=".OthersActivity"
             android:exported="true"
-            android:screenOrientation="portrait"/>
+            android:screenOrientation="portrait" />
         <activity
             android:name=".RecordingCountdownActivity"
             android:exported="true"
-            android:screenOrientation="portrait"/>
+            android:screenOrientation="portrait" />
         <activity
             android:name=".LandingActivity"
             android:exported="true"
-            android:screenOrientation="portrait"/>
-        <activity android:name=".RegisterActivity"
-            android:screenOrientation="portrait"/>
-        <activity android:name=".AccountDetailsActivity"
-            android:screenOrientation="portrait"/>
-        <activity android:name=".AddContactActivity"
-            android:screenOrientation="portrait"/>
-        <activity android:name=".DesignateContactActivity"
-            android:screenOrientation="portrait"/>
-        <activity android:name=".ReportsActivity"
-            android:screenOrientation="portrait"/>
-        <activity android:name=".RegisterGoogleActivity"
-            android:screenOrientation="portrait"/>
-        <activity android:name=".SelectContactActivity"
-            android:screenOrientation="portrait"/>
-        <activity android:name=".UpdateContactActivity"
-            android:screenOrientation="portrait"/>
-        <activity android:name=".ChangePasswordActivity"
-            android:screenOrientation="portrait"/>
-        <activity android:name=".ForgotPasswordActivity"
-            android:screenOrientation="portrait"/>
-        <activity android:name=".MenuActivity"
-            android:screenOrientation="portrait"/>
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".RegisterActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".AccountDetailsActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".AddContactActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".DesignateContactActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ReportsActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".RegisterGoogleActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".SelectContactActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".UpdateContactActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ChangePasswordActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ForgotPasswordActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".MenuActivity"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".LoginActivity"
             android:exported="true"
-            android:screenOrientation="portrait"
-            android:launchMode="singleTop">
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

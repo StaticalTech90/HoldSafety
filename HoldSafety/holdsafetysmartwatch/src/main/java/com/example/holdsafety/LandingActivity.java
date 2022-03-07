@@ -1,4 +1,4 @@
-package qmag.holdsafetysmartwatch;
+package com.example.holdsafety;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -10,7 +10,17 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
-import qmag.holdsafetysmartwatch.databinding.ActivityLandingBinding;
+import com.example.holdsafety.databinding.ActivityLandingBinding;
+import com.google.android.gms.common.internal.Constants;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.android.gms.wearable.CapabilityClient;
+import com.google.android.gms.wearable.CapabilityInfo;
+import com.google.android.gms.wearable.Node;
+import com.google.android.gms.wearable.Wearable;
+
+import java.nio.charset.StandardCharsets;
+import java.util.Set;
 
 public class LandingActivity extends Activity {
     private TextView mTextView;
@@ -18,6 +28,8 @@ public class LandingActivity extends Activity {
     Button btnSafetyButton;
     TextView instruction, signal, seconds;
     long remainTime;
+
+    private static final String CAPABILITY_PHONE_APP = "send_signal";
 
     @SuppressLint("ClickableViewAccessibility")
     @Override
@@ -33,6 +45,15 @@ public class LandingActivity extends Activity {
         signal = findViewById(R.id.signal);
         seconds = findViewById(R.id.timer);
 
+        //receive message
+        Wearable.getMessageClient(LandingActivity.this).addListener(messageEvent -> {
+            if(messageEvent.getData() == "1".getBytes(StandardCharsets.UTF_8)) {
+                Log.d("SIGNAL", "INSERT REPORT METHOD HERE");
+            } else {
+                Log.d("SIGNAL", "FUCK");
+            }
+        });
+
         //handle method for holdsafety button
         btnSafetyButton.setOnTouchListener(new View.OnTouchListener() {
             //Declare timer instance
@@ -47,6 +68,33 @@ public class LandingActivity extends Activity {
                 public void onFinish() {
                     Log.i("STATUS", "Button pressed for 2s, signal phone");
                     //TODO: send signal to phone here
+                    //Get available nodes
+                    Task<CapabilityInfo> capabilityInfoTask = Wearable.getCapabilityClient(LandingActivity.this)
+                            .getCapability(CAPABILITY_PHONE_APP, CapabilityClient.FILTER_REACHABLE);
+
+                    capabilityInfoTask.addOnCompleteListener(task -> {
+                        if (task.isSuccessful()) {
+                            CapabilityInfo capabilityInfo = task.getResult();
+                            Set<Node> nodes = capabilityInfo.getNodes();
+                            Log.d("SIGNAL", "Node list: " + nodes);
+
+//                            Node list: [Node{1jI41ZKfhniwBMR2J_801SAAAAABFBbmRyb2lkU2hhcmVfNjA5NA==, id=af51ad9, hops=1, isNearby=true}]
+
+//                            Wearable.getMessageClient(LandingActivity.this).sendMessage(nodes.)
+
+                            if(nodes != null) {
+                                for(Node node : nodes) { //send to all nodes?
+                                    byte[] message = {1};
+                                    Wearable.getMessageClient(LandingActivity.this).sendMessage(
+                                            node.getId(), "Sending signal to phone...", message);
+                                    Log.d("SIGNAL", "message: " + message[0]);
+                                    Log.d("SIGNAL", "Sending signal to connected device: " + node.getId());
+                                }
+                            }
+                        } else {
+                            Log.d("SIGNAL", "Capability request failed to return any results.");
+                        }
+                    });
                 }
             };
             private long firstTouchTS = 0;

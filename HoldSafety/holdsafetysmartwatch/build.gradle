@@ -3,11 +3,10 @@ plugins {
 }
 
 android {
-    compileSdk 30
     compileSdkVersion 31
 
     defaultConfig {
-        applicationId "qmag.holdsafetysmartwatch"
+        applicationId "com.example.holdsafety"
         minSdk 25
         targetSdk 31
         versionCode 1
