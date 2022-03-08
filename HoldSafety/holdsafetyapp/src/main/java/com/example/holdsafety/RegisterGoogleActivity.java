@@ -34,6 +34,11 @@ import androidx.core.app.ActivityCompat;
 
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -148,67 +153,62 @@ public class RegisterGoogleActivity extends AppCompatActivity {
 
         Matcher mobileNumberMatcher = mobileNumberPattern.matcher(etMobileNo.getText());
 
-        try{
-            Date parsedDate = dateFormat.parse(birthDate);
-            Boolean validInput = true;
-            if(TextUtils.isEmpty(birthDate)) {
-                //assert parsedDate != null;
-                etBirthDate.setError("Please enter birthdate (mm-dd-yyyy)");
-                validInput = false;
-            }
-
-            if(spinnerSex.getSelectedItem().equals("Sex")) {
-                ((TextView)spinnerSex.getSelectedView()).setError("please select sex");
-                validInput = false;
-            }
-
-            if(TextUtils.isEmpty(etMobileNo.getText())) {
-                etMobileNo.setError("Enter Mobile number");
-                validInput = false;
-            } else if (!mobileNumberMatcher.matches()) {
-                etMobileNo.setError("Please enter a valid mobile number");
-                validInput = false;
-            } else if(etMobileNo.getText().length() != 11) {
-                etMobileNo.setError("Please enter a valid mobile number");
-                validInput = false;
-            }
-
-            if(validInput){
-                docUsers.put("ID", user.getUid());
-                docUsers.put("Email", uEmail);
-                docUsers.put("LastName", lastName);
-                docUsers.put("FirstName", firstName);
-                docUsers.put("MiddleName", middleName);
-                docUsers.put("BirthDate", birthDate);
-                docUsers.put("Sex", sex);
-                docUsers.put("MobileNumber", mobileNo);
-                docUsers.put("isVerified", false);
-
-                if (!lblLink.getText().equals("")) {
-                    uploadPhotoToStorage();
-                    docUsers.put("profileComplete", true);
-                } else {
-                    docUsers.put("profileComplete", false);
-                }
-
-                db.collection("users").document(userId).set(docUsers)
-                        .addOnSuccessListener(aVoid -> {
-                            Intent landing = new Intent(RegisterGoogleActivity.this,
-                                    LandingActivity.class);
-                            startActivity(landing);
-                            finish();
-                        })
-                        .addOnFailureListener(e -> {
-                            Toast.makeText(getApplicationContext(),
-                                    "Error writing document",
-                                    Toast.LENGTH_SHORT).show();
-                            Log.w(TAG, "Error writing document", e);
-                        });
-            }
-        } catch(ParseException pe){
+        Boolean validInput = true;
+        if(TextUtils.isEmpty(birthDate)) {
+            //assert parsedDate != null;
             etBirthDate.getText().clear();
             etBirthDate.setHint("Please enter valid birthdate");
             etBirthDate.setError("Please enter valid birthdate");
+            validInput = false;
+        }
+
+        if(spinnerSex.getSelectedItem().equals("Sex")) {
+            ((TextView)spinnerSex.getSelectedView()).setError("please select sex");
+            validInput = false;
+        }
+
+        if(TextUtils.isEmpty(etMobileNo.getText())) {
+            etMobileNo.setError("Enter Mobile number");
+            validInput = false;
+        } else if (!mobileNumberMatcher.matches()) {
+            etMobileNo.setError("Please enter a valid mobile number");
+            validInput = false;
+        } else if(etMobileNo.getText().length() != 11) {
+            etMobileNo.setError("Please enter a valid mobile number");
+            validInput = false;
+        }
+
+        if(validInput){
+            docUsers.put("ID", user.getUid());
+            docUsers.put("Email", uEmail);
+            docUsers.put("LastName", lastName);
+            docUsers.put("FirstName", firstName);
+            docUsers.put("MiddleName", middleName);
+            docUsers.put("BirthDate", birthDate);
+            docUsers.put("Sex", sex);
+            docUsers.put("MobileNumber", mobileNo);
+            docUsers.put("isVerified", false);
+
+            if (!lblLink.getText().equals("")) {
+                uploadPhotoToStorage();
+                docUsers.put("profileComplete", true);
+            } else {
+                docUsers.put("profileComplete", false);
+            }
+
+            db.collection("users").document(userId).set(docUsers)
+                    .addOnSuccessListener(aVoid -> {
+                        Intent landing = new Intent(RegisterGoogleActivity.this,
+                                LandingActivity.class);
+                        startActivity(landing);
+                        finish();
+                    })
+                    .addOnFailureListener(e -> {
+                        Toast.makeText(getApplicationContext(),
+                                "Error writing document",
+                                Toast.LENGTH_SHORT).show();
+                        Log.w(TAG, "Error writing document", e);
+                    });
         }
 
     }
@@ -374,6 +374,27 @@ public class RegisterGoogleActivity extends AppCompatActivity {
             dpDialog.getDatePicker().setMaxDate(maxCal.getTimeInMillis());
             dpDialog.show();
         });
+    }
+
+    @Override
+    public void onBackPressed() {
+        //remobve any instance of the selected google acocunt
+        GoogleSignInOptions gso = new GoogleSignInOptions
+                .Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestIdToken("233680747912-m8q45hor79go5n8aqfkuneklnkshudqs.apps.googleusercontent.com")
+                .requestEmail()
+                .build();
+
+        mAuth.signOut();
+        user.delete();
+
+        GoogleSignInClient gsc = GoogleSignIn.getClient(RegisterGoogleActivity.this, gso);
+        gsc.signOut().addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void unused) {
+            }
+        });
+        super.onBackPressed();
     }
 
     public void goBack(){

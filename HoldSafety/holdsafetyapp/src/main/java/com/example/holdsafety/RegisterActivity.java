@@ -277,95 +277,91 @@ public class RegisterActivity extends AppCompatActivity {
                            docUsers.put("isVerified", false);
 
                            //Data validation and register
-                           try{
-                               Date parsedDate = dateFormat.parse(birthDate);
-                               Boolean validInput = true;
+                           //Date parsedDate = dateFormat.parse(birthDate);
+                           Boolean validInput = true;
 
+                           //assert parsedDate != null;
+                           Matcher emailMatcher = emailPattern.matcher(etEmail.getText());
+                           Matcher passMatcher = passPattern.matcher(etPassword.getText());
+                           Matcher mobileNumberMatcher = mobileNumberPattern.matcher(etMobileNumber.getText());
+
+                           if(TextUtils.isEmpty(lastName)) {
+                               etLastName.setError("Please enter last name");
+                               validInput = false;
+                           }
+
+                           if(TextUtils.isEmpty(firstName)) {
+                               etFirstName.setError("Please enter first name");
+                               validInput = false;
+                           }
+
+                           if(TextUtils.isEmpty(birthDate)) {
                                //assert parsedDate != null;
-                               Matcher emailMatcher = emailPattern.matcher(etEmail.getText());
-                               Matcher passMatcher = passPattern.matcher(etPassword.getText());
-                               Matcher mobileNumberMatcher = mobileNumberPattern.matcher(etMobileNumber.getText());
-
-                               if(TextUtils.isEmpty(lastName)) {
-                                   etLastName.setError("Please enter last name");
-                                   validInput = false;
-                               }
-
-                               if(TextUtils.isEmpty(firstName)) {
-                                   etFirstName.setError("Please enter first name");
-                                   validInput = false;
-                               }
-
-                               if(TextUtils.isEmpty(birthDate)) {
-                                   //assert parsedDate != null;
-                                   etBirthdate.setError("Please enter birthdate (mm-dd-yyyy)");
-                                   validInput = false;
-                               }
-
-                               if(spinnerSex.getSelectedItem().equals("Sex *")) {
-                                   ((TextView) spinnerSex.getSelectedView()).setError("Please select sex");
-                                   validInput = false;
-                               }
-
-                               if(TextUtils.isEmpty(mobileNumber)) {
-                                   etMobileNumber.setError("Please enter mobile number");
-                                   validInput = false;
-                               } else if (!mobileNumberMatcher.matches()) {
-                                   etMobileNumber.setError("Please enter a valid mobile number");
-                                   validInput = false;
-                               } else if(etMobileNumber.getText().length() != 11) {
-                                   etMobileNumber.setError("Please enter a valid mobile number");
-                                   validInput = false;
-                               }
-
-                               if(TextUtils.isEmpty(email)) {
-                                   etEmail.setError("Please enter email");
-                                   validInput = false;
-                               } else if (!emailMatcher.matches()) {
-                                   etEmail.setError("Please enter valid email");
-                                   validInput = false;
-                               }
-
-                               if(TextUtils.isEmpty(etPassword.getText())) {
-                                   etPassword.setError("Please enter password");
-                                   validInput = false;
-                               } else if(!passMatcher.matches()) {
-                                   txtTogglePass.setVisibility(View.GONE);
-                                   etPassword.setError("Password must contain the following: " +
-                                           "\n - At least 8 characters" +
-                                           "\n - At least 1 digit" +
-                                           "\n - At least one upper and lower case letter" +
-                                           "\n - A special character (such as @, #, etc.)" +
-                                           "\n - No spaces or tabs");
-                                   validInput = false;
-                               }
-
-                               if(TextUtils.isEmpty(cPassword)) {
-                                   etConPassword.setError("Please re-enter password");
-                                   validInput = false;
-                               } else if(!password.equals(cPassword)) {
-                                   txtToggleConfirmPass.setVisibility(View.GONE);
-                                   etConPassword.setError("Passwords don't match");
-                                   validInput = false;
-                               }
-
-                               if(validInput) {
-                                   //Verify user's email
-                                   Intent otp = new Intent(RegisterActivity.this, OTPActivity.class);
-                                   otp.putExtra("Source", "RegisterActivity");
-                                   otp.putExtra("Email", email);
-                                   otp.putExtra("Password", password);
-
-                                   Log.d("REQUEST", "STARTING OTPACTIVITY...");
-                                   Log.d("REQUEST", "mAuth = " + mAuth);
-                                   startActivityForResult(otp, OTP_REQUEST_CODE);
-                               }
-
-                           } catch(ParseException pe){
                                etBirthdate.getText().clear();
                                etBirthdate.setHint("Please enter valid birthdate");
                                etBirthdate.setError("Please enter valid birthdate");
+                               validInput = false;
                            }
+
+                           if(spinnerSex.getSelectedItem().equals("Sex *")) {
+                               ((TextView) spinnerSex.getSelectedView()).setError("Please select sex");
+                               validInput = false;
+                           }
+
+                           if(TextUtils.isEmpty(mobileNumber)) {
+                               etMobileNumber.setError("Please enter mobile number");
+                               validInput = false;
+                           } else if (!mobileNumberMatcher.matches()) {
+                               etMobileNumber.setError("Please enter a valid mobile number");
+                               validInput = false;
+                           } else if(etMobileNumber.getText().length() != 11) {
+                               etMobileNumber.setError("Please enter a valid mobile number");
+                               validInput = false;
+                           }
+
+                           if(TextUtils.isEmpty(email)) {
+                               etEmail.setError("Please enter email");
+                               validInput = false;
+                           } else if (!emailMatcher.matches()) {
+                               etEmail.setError("Please enter valid email");
+                               validInput = false;
+                           }
+
+                           if(TextUtils.isEmpty(etPassword.getText())) {
+                               etPassword.setError("Please enter password");
+                               validInput = false;
+                           } else if(!passMatcher.matches()) {
+                               txtTogglePass.setVisibility(View.GONE);
+                               etPassword.setError("Password must contain the following: " +
+                                       "\n - At least 8 characters" +
+                                       "\n - At least 1 digit" +
+                                       "\n - At least one upper and lower case letter" +
+                                       "\n - A special character (such as @, #, etc.)" +
+                                       "\n - No spaces or tabs");
+                               validInput = false;
+                           }
+
+                           if(TextUtils.isEmpty(cPassword)) {
+                               etConPassword.setError("Please re-enter password");
+                               validInput = false;
+                           } else if(!password.equals(cPassword)) {
+                               txtToggleConfirmPass.setVisibility(View.GONE);
+                               etConPassword.setError("Passwords don't match");
+                               validInput = false;
+                           }
+
+                           if(validInput) {
+                               //Verify user's email
+                               Intent otp = new Intent(RegisterActivity.this, OTPActivity.class);
+                               otp.putExtra("Source", "RegisterActivity");
+                               otp.putExtra("Email", email);
+                               otp.putExtra("Password", password);
+
+                               Log.d("REQUEST", "STARTING OTPACTIVITY...");
+                               Log.d("REQUEST", "mAuth = " + mAuth);
+                               startActivityForResult(otp, OTP_REQUEST_CODE);
+                           }
+
                        } else { //ACCOUNT EXISTS, DISPLAY ERROR
                            Toast.makeText(RegisterActivity.this, "Email already in use", Toast.LENGTH_LONG).show();
                            etEmail.setError("This email is already in use");
