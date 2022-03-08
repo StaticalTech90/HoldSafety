@@ -150,28 +150,6 @@ public class RegisterActivity extends AppCompatActivity {
 
         selectBirthDate();
 
-        /*
-
-        calendar.add(Calendar.YEAR, -18);
-        DatePickerDialog.OnDateSetListener date = (view, year, month, day) -> {
-            calendar.set(Calendar.YEAR, year-18);
-            calendar.set(Calendar.MONTH,month);
-            calendar.set(Calendar.DAY_OF_MONTH,day);
-            view.setMaxDate(calendar.getTimeInMillis());
-            updateDate();
-        };
-
-        //show DatePickerDialog using this listener
-        etBirthdate.setOnClickListener(view -> new DatePickerDialog(
-                RegisterActivity.this,
-                date,
-                calendar.get(Calendar.YEAR),
-                calendar.get(Calendar.MONTH),
-                calendar.get(Calendar.DAY_OF_MONTH)).show()
-        );
-
-         */
-
         btnBack.setOnClickListener(view -> goBack());
         btnUpload.setOnClickListener(view -> pickImage());
         btnRegister.setOnClickListener(view -> {
@@ -239,7 +217,6 @@ public class RegisterActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        //TODO: CHECK IF EMAIL IS ALREADY IN FIREBASE AUTH. IF YES, COMPLETE REG. ELSE PROCEED WITH NORMAL REG
         Log.d("USER", "Current User: " + user);
     }
 

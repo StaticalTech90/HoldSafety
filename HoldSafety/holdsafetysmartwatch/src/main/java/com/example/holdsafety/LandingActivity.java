@@ -9,6 +9,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.holdsafety.databinding.ActivityLandingBinding;
 import com.google.android.gms.common.internal.Constants;
@@ -45,12 +46,15 @@ public class LandingActivity extends Activity {
         signal = findViewById(R.id.signal);
         seconds = findViewById(R.id.timer);
 
-        //receive message
+        //Receive message from phone
         Wearable.getMessageClient(LandingActivity.this).addListener(messageEvent -> {
-            if(messageEvent.getData() == "1".getBytes(StandardCharsets.UTF_8)) {
-                Log.d("SIGNAL", "INSERT REPORT METHOD HERE");
+            byte compareID = 1;
+            int result = Byte.compare(messageEvent.getData()[0], compareID);
+
+            if(result == 0) {
+                Log.d("SIGNAL", "MESSAGE RECEIVED FROM CONNECTED DEVICE");
             } else {
-                Log.d("SIGNAL", "FUCK");
+                Log.d("SIGNAL", "MESSAGE NOT RECEIVED");
             }
         });
 
@@ -67,7 +71,6 @@ public class LandingActivity extends Activity {
                 //send signal to the phone to do the report function
                 public void onFinish() {
                     Log.i("STATUS", "Button pressed for 2s, signal phone");
-                    //TODO: send signal to phone here
                     //Get available nodes
                     Task<CapabilityInfo> capabilityInfoTask = Wearable.getCapabilityClient(LandingActivity.this)
                             .getCapability(CAPABILITY_PHONE_APP, CapabilityClient.FILTER_REACHABLE);
@@ -78,18 +81,12 @@ public class LandingActivity extends Activity {
                             Set<Node> nodes = capabilityInfo.getNodes();
                             Log.d("SIGNAL", "Node list: " + nodes);
 
-//                            Node list: [Node{1jI41ZKfhniwBMR2J_801SAAAAABFBbmRyb2lkU2hhcmVfNjA5NA==, id=af51ad9, hops=1, isNearby=true}]
-
-//                            Wearable.getMessageClient(LandingActivity.this).sendMessage(nodes.)
-
-                            if(nodes != null) {
-                                for(Node node : nodes) { //send to all nodes?
-                                    byte[] message = {1};
-                                    Wearable.getMessageClient(LandingActivity.this).sendMessage(
-                                            node.getId(), "Sending signal to phone...", message);
-                                    Log.d("SIGNAL", "message: " + message[0]);
-                                    Log.d("SIGNAL", "Sending signal to connected device: " + node.getId());
-                                }
+                            for(Node node : nodes) { //send to all nodes?
+                                byte[] message = {1};
+                                Wearable.getMessageClient(LandingActivity.this).sendMessage(
+                                        node.getId(), "Sending signal to phone...", message);
+                                Toast.makeText(LandingActivity.this, "Report signal sent to your phone.\nPlease ensure the app is open.", Toast.LENGTH_LONG).show();
+                                Log.d("SIGNAL", "Sending signal to connected device: " + node.getId());
                             }
                         } else {
                             Log.d("SIGNAL", "Capability request failed to return any results.");
@@ -112,10 +109,7 @@ public class LandingActivity extends Activity {
                     seconds.setVisibility(View.VISIBLE);
                 } else if (event.getAction() == MotionEvent.ACTION_UP) { //button released
                     int timer = (int) (System.currentTimeMillis() - this.firstTouchTS) / 1000; //2 second timer
-
-                    //for debug
-                    //Toast.makeText(getApplicationContext(), "Time Pressed: " + timer, Toast.LENGTH_SHORT).show();
-
+                    
                     //cancels countdown; invalidates startActivity
                     cTimer.cancel();
                     instruction.setVisibility(View.VISIBLE);
