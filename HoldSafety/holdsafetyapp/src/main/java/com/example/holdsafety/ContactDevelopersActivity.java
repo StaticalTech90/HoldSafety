@@ -1,5 +1,8 @@
 package com.example.holdsafety;
 
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
@@ -84,29 +87,35 @@ public class ContactDevelopersActivity extends AppCompatActivity {
             etMessage.setError("Please input a message");
         } else {
             try{
-                //Get user's emergency contacts
-                FirebaseFirestore.getInstance()
-                        .collection("admin")
-                        .get()
-                        .addOnCompleteListener(task -> {
-                            //Get each contact details
-                            for(QueryDocumentSnapshot snapshot : task.getResult()){
-                                String email1 = snapshot.getString("Email");
-                                if(email1 !=null){
-                                    //Send Email
-                                    String username = "holdsafety.ph@gmail.com";
-                                    String password = "HoldSafety@4qmag";
-                                    String subject = "HOLDSAFETY CONTACT DEVELOPERS: " + selectedConcern ;
-                                    String message1 = "Sender: " + etEmail.getText().toString().trim()
-                                            + "<br />Message: " + etMessage.getText().toString().trim();
+                if(haveNetworkConnection()){
+                    //Get user's emergency contacts
+                    FirebaseFirestore.getInstance()
+                            .collection("admin")
+                            .get()
+                            .addOnCompleteListener(task -> {
+                                //Get each contact details
+                                for(QueryDocumentSnapshot snapshot : task.getResult()){
+                                    String email1 = snapshot.getString("Email");
+                                    if(email1 !=null){
+                                        //Send Email
+                                        String username = "holdsafety.ph@gmail.com";
+                                        String password = "HoldSafety@4qmag";
+                                        String subject = "HOLDSAFETY CONTACT DEVELOPERS: " + selectedConcern ;
+                                        String message1 = "Sender: " + etEmail.getText().toString().trim()
+                                                + "<br />Message: " + etMessage.getText().toString().trim();
 
-                                    List<String> recipients = Collections.singletonList(email1);
-                                    //email of sender, password of sender, list of recipients, email subject, email body
-                                    new MailTask(ContactDevelopersActivity.this).execute(username, password, recipients, subject, message1);
-                                    goBack();
+                                        List<String> recipients = Collections.singletonList(email1);
+                                        //email of sender, password of sender, list of recipients, email subject, email body
+                                        new MailTask(ContactDevelopersActivity.this).execute(username, password, recipients, subject, message1);
+                                        Toast.makeText(getApplicationContext(), "Messaged sent to the admins.", Toast.LENGTH_SHORT).show();
+                                        goBack();
+                                    }
                                 }
-                            }
-                        });
+                            });
+                } else {
+                    Toast.makeText(getApplicationContext(), "Your internet is not connected or unstable. Message Failed.", Toast.LENGTH_SHORT).show();
+                }
+
             } catch (Exception e) {
                 Toast.makeText(getApplicationContext(), "Message Failed:" + e.getMessage(), Toast.LENGTH_SHORT).show();
             }
@@ -141,6 +150,23 @@ public class ContactDevelopersActivity extends AppCompatActivity {
 
             }
         });
+    }
+
+    private boolean haveNetworkConnection() {
+        boolean haveConnectedWifi = false;
+        boolean haveConnectedMobile = false;
+
+        ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo[] netInfo = cm.getAllNetworkInfo();
+        for (NetworkInfo ni : netInfo) {
+            if (ni.getTypeName().equalsIgnoreCase("WIFI"))
+                if (ni.isConnected())
+                    haveConnectedWifi = true;
+            if (ni.getTypeName().equalsIgnoreCase("MOBILE"))
+                if (ni.isConnected())
+                    haveConnectedMobile = true;
+        }
+        return haveConnectedWifi || haveConnectedMobile;
     }
 
     private void goBack(){
