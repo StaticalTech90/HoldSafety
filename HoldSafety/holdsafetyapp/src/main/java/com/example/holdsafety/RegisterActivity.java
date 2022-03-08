@@ -31,6 +31,7 @@ import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
@@ -61,7 +62,7 @@ public class RegisterActivity extends AppCompatActivity {
     FirebaseUser user;
 
     final Calendar calendar = Calendar.getInstance();
-    String idPicUri;
+    String email, password, idPicUri;
     TextView lblLink;
 
     HashMap<String, Object> docUsers = new HashMap<>();
@@ -72,6 +73,7 @@ public class RegisterActivity extends AppCompatActivity {
     Button btnUpload, btnRegister;
 
     private static final int EXTERNAL_STORAGE_REQ_CODE = 1000;
+    private static final int OTP_REQUEST_CODE = 5000;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -234,8 +236,8 @@ public class RegisterActivity extends AppCompatActivity {
         String sex = spinnerSex.getSelectedItem().toString().trim();
         String birthDate = etBirthdate.getText().toString().trim();
         String mobileNumber = etMobileNumber.getText().toString().trim();
-        String email = etEmail.getText().toString().trim();
-        String password = etPassword.getText().toString().trim();
+        email = etEmail.getText().toString().trim();
+        password = etPassword.getText().toString().trim();
         String cPassword = etConPassword.getText().toString().trim();
 
         @SuppressLint("SimpleDateFormat") SimpleDateFormat dateFormat = new SimpleDateFormat("MM-dd-yyyy");
@@ -347,34 +349,16 @@ public class RegisterActivity extends AppCompatActivity {
                                    validInput = false;
                                }
 
-                               if(validInput){
-                                   mAuth.createUserWithEmailAndPassword(email,password).addOnCompleteListener(this, task -> {
-                                       if (task.isSuccessful()) {
-                                           // Sign up success
-                                           Log.d(TAG, "signUpWithEmailPassword:success");
-                                           user = mAuth.getCurrentUser();
-                                           assert user != null;
-                                           docUsers.put("ID", user.getUid());
+                               if(validInput) {
+                                   //Verify user's email
+                                   Intent otp = new Intent(RegisterActivity.this, OTPActivity.class);
+                                   otp.putExtra("Source", "RegisterActivity");
+                                   otp.putExtra("Email", email);
+                                   otp.putExtra("Password", password);
 
-                                           if (!lblLink.getText().equals("")) {
-                                               uploadPhotoToStorage();
-                                               docUsers.put("profileComplete", true);
-                                           }
-
-                                           //Verify user's email
-                                           Intent otp = new Intent(RegisterActivity.this, OTPActivity.class);
-                                           otp.putExtra("Source", "RegisterActivity");
-                                           otp.putExtra("Email", etEmail.getText().toString());
-                                           otp.putExtra("UserDetails", docUsers);
-                                           startActivity(otp);
-                                       } else {
-                                           // If sign up fails, display a message to the user.
-                                           Log.w(TAG, "signUpWithEmailPassword:failure", task.getException());
-                                           Toast.makeText(getApplicationContext(),
-                                                   "Signup Failed",
-                                                   Toast.LENGTH_SHORT).show();
-                                       }
-                                   });
+                                   Log.d("REQUEST", "STARTING OTPACTIVITY...");
+                                   Log.d("REQUEST", "mAuth = " + mAuth);
+                                   startActivityForResult(otp, OTP_REQUEST_CODE);
                                }
 
                            } catch(ParseException pe){
@@ -390,15 +374,6 @@ public class RegisterActivity extends AppCompatActivity {
                }
            }
         });
-    }
-
-    //update edittext value
-    private void updateDate(){
-        //matched with line 174
-        String myFormat="MM-dd-yyyy";
-        SimpleDateFormat dateFormat=new SimpleDateFormat(myFormat, Locale.US);
-        etBirthdate.setText(dateFormat.format(calendar.getTime()));
-        etBirthdate.setError(null);
     }
 
     //PUT IMAGE UPLOAD HERE
@@ -463,6 +438,54 @@ public class RegisterActivity extends AppCompatActivity {
                     }
                 }
             });
+
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if(requestCode == OTP_REQUEST_CODE && resultCode == RESULT_OK) {
+            Log.i("REGISTRATION", "CREATING ACCOUNT...");
+            mAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(RegisterActivity.this, task -> {
+                if(task.isSuccessful()) {
+                    Log.i("REGISTRATION", "ACCOUNT CREATED!");
+                    // Sign up success
+                    user = mAuth.getCurrentUser();
+                    assert user != null;
+                    docUsers.put("ID", user.getUid());
+
+                    if(!lblLink.getText().equals("")) {
+                        uploadPhotoToStorage();
+                        docUsers.put("profileComplete", true);
+                    }
+
+                    db.collection("users").document(user.getUid()).set(docUsers)
+                            .addOnSuccessListener(unused -> imageRef.child(user.getUid()).getDownloadUrl().addOnSuccessListener(uri -> {
+                                idPicUri = String.valueOf(uri);
+                                docUsers.put("imgUri", idPicUri);
+                                Log.i("REGISTRATION", "ACCOUNT DETAILS SAVED TO DB");
+                                Log.i("URI gDUrl()", idPicUri);
+
+                                db.collection("users").document(user.getUid()).update(docUsers)
+                                        .addOnSuccessListener(aVoid -> {
+                                            Toast.makeText(getApplicationContext(), "pushed image to document", Toast.LENGTH_SHORT).show();
+                                            Log.i(TAG, "Image pushed");
+                                            startActivity(new Intent(RegisterActivity.this, LandingActivity.class));
+                                            finish();
+                                        })
+                                        .addOnFailureListener(e -> {
+                                            Toast.makeText(getApplicationContext(), "Error writing document", Toast.LENGTH_SHORT).show();
+                                            Log.w(TAG, "Error writing document", e);
+                                        });
+                            }))
+                            .addOnFailureListener(e -> Log.w(TAG, "error", e));
+                } else {
+                    // If sign up fails, display a message to the user.
+                    Log.w(TAG, "signUpWithEmailPassword:failure", task.getException());
+                    Toast.makeText(getApplicationContext(), "Signup Failed", Toast.LENGTH_SHORT).show();
+                }
+            });
+
+        }
+    }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {

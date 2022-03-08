@@ -2,7 +2,6 @@ package com.example.holdsafety;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -10,11 +9,9 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
-import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
-import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -53,7 +50,7 @@ public class MenuActivity extends AppCompatActivity {
         btnDesignateContact.setOnClickListener(view -> designateContacts());
         btnContactDevelopers.setOnClickListener(view -> contactDevelopers());
         btnUserManual.setOnClickListener(view -> userManual());
-        btnTermsAndConditions.setOnClickListener(view -> termsAndConditions());
+        btnTermsAndConditions.setOnClickListener(view -> termsOfService());
         btnAbout.setOnClickListener(view -> aboutSystem());
         btnViewReports.setOnClickListener(view -> viewReports());
         btnLogout.setOnClickListener(view -> logoutUser());
@@ -95,9 +92,9 @@ public class MenuActivity extends AppCompatActivity {
         startActivity(userManual);
     }
 
-    private void termsAndConditions() {
-        Intent termsAndConditions = new Intent (getApplicationContext(), TermsAndConditionsActivity.class);
-        startActivity(termsAndConditions);
+    private void termsOfService() {
+        Intent termsOfService = new Intent (getApplicationContext(), TermsOfServiceActivity.class);
+        startActivity(termsOfService);
     }
 
     private void aboutSystem() {

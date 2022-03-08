@@ -41,9 +41,8 @@ public class OTPActivity extends AppCompatActivity {
     TextView txtTimeRemaining;
 
     private String intentSource = null;
-    String userEmail, idUri;
+    String userEmail, userPassword;
     String code = null; //OTP code
-    HashMap<String, Object> docUsers;
     HashMap<String, Object> newEmail = new HashMap<>();
 
     @Override
@@ -65,7 +64,7 @@ public class OTPActivity extends AppCompatActivity {
         //Get extras
         intentSource = getIntent().getStringExtra("Source");
         userEmail = getIntent().getStringExtra("Email");
-        docUsers = (HashMap<String, Object>) getIntent().getSerializableExtra("UserDetails");
+        userPassword = getIntent().getStringExtra("Password");
 
         if(userEmail == null) { userEmail = "placeholdertext"; }
 
@@ -107,13 +106,11 @@ public class OTPActivity extends AppCompatActivity {
 
         new MailTask(OTPActivity.this).execute(hsEmail, hsPass, recipients, subject, message);
 
-        Log.d("Email", user.getUid());
-
         //Dialog Box for entering code
         dialog.btnSubmit.setOnClickListener(view -> {
-            if(TextUtils.isEmpty(dialog.etCode.toString())){
+            if(TextUtils.isEmpty(dialog.etCode.toString())) {
                 dialog.etCode.setError("Please enter your code.");
-            } else if(code==null){
+            } else if(code == null){
                 dialog.etCode.setError("Your code expired. Please retry.");
                 //Toast.makeText(this, "Your code expired. Please retry.", Toast.LENGTH_LONG).show();
             } else if(code.equals(dialog.etCode.getText().toString())) {
@@ -122,35 +119,19 @@ public class OTPActivity extends AppCompatActivity {
                 dialog.dismissDialog();
 
                 //insert to db depending on which activity started this
-                if(intentSource.equals("RegisterActivity")) { //put both image and user details in db
-                    db.collection("users").document(user.getUid()).set(docUsers)
-                            .addOnSuccessListener(unused -> imageRef.child(user.getUid()).getDownloadUrl().addOnSuccessListener(uri -> {
-                                idUri = String.valueOf(uri);
-                                docUsers.put("imgUri", idUri);
-                                Log.i("URI gDUrl()", idUri);
-
-                                db.collection("users").document(user.getUid()).update(docUsers)
-                                        .addOnSuccessListener(aVoid -> {
-                                            Toast.makeText(getApplicationContext(), "pushed image to document", Toast.LENGTH_SHORT).show();
-                                            Log.i(TAG, "Image pushed");
-                                        })
-                                        .addOnFailureListener(e -> {
-                                            Toast.makeText(getApplicationContext(), "Error writing document", Toast.LENGTH_SHORT).show();
-                                            Log.w(TAG, "Error writing document", e);
-                                        });
-                            }))
-                            .addOnFailureListener(e -> Log.w(TAG, "error", e));
-                    startActivity(new Intent(this, LandingActivity.class));
+                if(intentSource.equals("RegisterActivity")) {
+                    Log.i("REGISTRATION", "OTP Registration in progress...");
+                    Intent otpResult = new Intent(OTPActivity.this, RegisterActivity.class);
+                    setResult(RESULT_OK, otpResult);
                     finish();
                 } else if(intentSource.equals("AccountDetailsActivity")) { //update the user's email
-                    Log.d("Email", "Changing user's email in progress...");
+                    Log.i("Email", "Changing user's email in progress...");
                     newEmail.put("Email", userEmail);
-                    Log.d("Email", "email put in hashmap");
 
                     db.collection("users").document(user.getUid()).update(newEmail)
                             .addOnSuccessListener(aVoid -> {
                                 Toast.makeText(getApplicationContext(), "Email updated", Toast.LENGTH_SHORT).show();
-                                Log.i(TAG, "Email updated");
+                                Log.i("CHANGE EMAIL", "Email updated");
 
                                 Log.d("Email", "Sending RESULT_OK back to AccountDetailsActivity...");
                                 Intent otpResult = new Intent(OTPActivity.this, AccountDetailsActivity.class);
@@ -203,11 +184,5 @@ public class OTPActivity extends AppCompatActivity {
         return code;
     }
 
-    private void goBack() {
-        if(intentSource.equals("RegisterActivity")) {
-            //delete the user who just registered (because they didn't want to otp)
-            user.delete();
-        }
-        finish();
-    }
+    private void goBack() { finish(); }
 }

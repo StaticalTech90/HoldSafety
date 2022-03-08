@@ -35,7 +35,7 @@
             android:name=".AboutSystemActivity"
             android:exported="false" />
         <activity
-            android:name=".TermsAndConditionsActivity"
+            android:name=".TermsOfServiceActivity"
             android:exported="false" />
         <activity
             android:name=".UserManualActivity"
