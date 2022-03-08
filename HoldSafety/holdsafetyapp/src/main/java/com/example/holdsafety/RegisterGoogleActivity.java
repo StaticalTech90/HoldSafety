@@ -398,6 +398,7 @@ public class RegisterGoogleActivity extends AppCompatActivity {
     }
 
     public void goBack(){
-        finish();
+        //finish();
+        onBackPressed();
     }
 }
