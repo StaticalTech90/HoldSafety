@@ -1,4 +1,4 @@
-package qmag.holdsafetysmartwatch;
+package com.example.holdsafety;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -9,8 +9,19 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
-import qmag.holdsafetysmartwatch.databinding.ActivityLandingBinding;
+import com.example.holdsafety.databinding.ActivityLandingBinding;
+import com.google.android.gms.common.internal.Constants;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.android.gms.wearable.CapabilityClient;
+import com.google.android.gms.wearable.CapabilityInfo;
+import com.google.android.gms.wearable.Node;
+import com.google.android.gms.wearable.Wearable;
+
+import java.nio.charset.StandardCharsets;
+import java.util.Set;
 
 public class LandingActivity extends Activity {
     private TextView mTextView;
@@ -18,6 +29,8 @@ public class LandingActivity extends Activity {
     Button btnSafetyButton;
     TextView instruction, signal, seconds;
     long remainTime;
+
+    private static final String CAPABILITY_PHONE_APP = "send_signal";
 
     @SuppressLint("ClickableViewAccessibility")
     @Override
@@ -33,6 +46,18 @@ public class LandingActivity extends Activity {
         signal = findViewById(R.id.signal);
         seconds = findViewById(R.id.timer);
 
+        //Receive message from phone
+        Wearable.getMessageClient(LandingActivity.this).addListener(messageEvent -> {
+            byte compareID = 1;
+            int result = Byte.compare(messageEvent.getData()[0], compareID);
+
+            if(result == 0) {
+                Log.d("SIGNAL", "MESSAGE RECEIVED FROM CONNECTED DEVICE");
+            } else {
+                Log.d("SIGNAL", "MESSAGE NOT RECEIVED");
+            }
+        });
+
         //handle method for holdsafety button
         btnSafetyButton.setOnTouchListener(new View.OnTouchListener() {
             //Declare timer instance
@@ -46,7 +71,27 @@ public class LandingActivity extends Activity {
                 //send signal to the phone to do the report function
                 public void onFinish() {
                     Log.i("STATUS", "Button pressed for 2s, signal phone");
-                    //TODO: send signal to phone here
+                    //Get available nodes
+                    Task<CapabilityInfo> capabilityInfoTask = Wearable.getCapabilityClient(LandingActivity.this)
+                            .getCapability(CAPABILITY_PHONE_APP, CapabilityClient.FILTER_REACHABLE);
+
+                    capabilityInfoTask.addOnCompleteListener(task -> {
+                        if (task.isSuccessful()) {
+                            CapabilityInfo capabilityInfo = task.getResult();
+                            Set<Node> nodes = capabilityInfo.getNodes();
+                            Log.d("SIGNAL", "Node list: " + nodes);
+
+                            for(Node node : nodes) { //send to all nodes?
+                                byte[] message = {1};
+                                Wearable.getMessageClient(LandingActivity.this).sendMessage(
+                                        node.getId(), "Sending signal to phone...", message);
+                                Toast.makeText(LandingActivity.this, "Report signal sent to your phone.\nPlease ensure the app is open.", Toast.LENGTH_LONG).show();
+                                Log.d("SIGNAL", "Sending signal to connected device: " + node.getId());
+                            }
+                        } else {
+                            Log.d("SIGNAL", "Capability request failed to return any results.");
+                        }
+                    });
                 }
             };
             private long firstTouchTS = 0;
@@ -64,10 +109,7 @@ public class LandingActivity extends Activity {
                     seconds.setVisibility(View.VISIBLE);
                 } else if (event.getAction() == MotionEvent.ACTION_UP) { //button released
                     int timer = (int) (System.currentTimeMillis() - this.firstTouchTS) / 1000; //2 second timer
-
-                    //for debug
-                    //Toast.makeText(getApplicationContext(), "Time Pressed: " + timer, Toast.LENGTH_SHORT).show();
-
+                    
                     //cancels countdown; invalidates startActivity
                     cTimer.cancel();
                     instruction.setVisibility(View.VISIBLE);

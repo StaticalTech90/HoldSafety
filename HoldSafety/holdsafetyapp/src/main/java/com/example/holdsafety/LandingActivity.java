@@ -45,7 +45,14 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.LocationSettingsRequest;
 import com.google.android.gms.location.LocationSettingsResponse;
 import com.google.android.gms.location.LocationSettingsStatusCodes;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.gms.wearable.CapabilityClient;
+import com.google.android.gms.wearable.CapabilityInfo;
+import com.google.android.gms.wearable.MessageClient;
+import com.google.android.gms.wearable.MessageEvent;
+import com.google.android.gms.wearable.Node;
+import com.google.android.gms.wearable.Wearable;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
@@ -54,14 +61,17 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 
 public class LandingActivity extends AppCompatActivity {
     LogHelper logHelper;
@@ -88,6 +98,7 @@ public class LandingActivity extends AppCompatActivity {
 
     FusedLocationProviderClient fusedLocationProviderClient;
 
+    private static final String CAPABILITY_WATCH_APP = "send_signal";
     private static final int LOCATION_REQ_CODE = 1000;
     private static final int GPS_REQ_CODE = 1001;
     private static final int SEND_SMS_REQ_CODE = 1002;
@@ -110,6 +121,32 @@ public class LandingActivity extends AppCompatActivity {
         docRefBrgy = db.collection("barangay");
         logHelper = new LogHelper(getApplicationContext(), mAuth, user, this);
         isFromWidget = getIntent().getStringExtra("isFromWidget");
+
+        //Receive message from smartwatch
+        Wearable.getMessageClient(LandingActivity.this).addListener(messageEvent -> {
+            byte compareID = 1;
+            int result = Byte.compare(messageEvent.getData()[0], compareID);
+
+            if(result == 0) {
+                Log.d("SIGNAL", "MESSAGE RECEIVED FROM CONNECTED DEVICE");
+                getCurrentLocation();
+            } else {
+                Log.d("SIGNAL", "MESSAGE NOT RECEIVED");
+            }
+        });
+
+        //Get available nodes
+        Task<CapabilityInfo> capabilityInfoTask = Wearable.getCapabilityClient(LandingActivity.this)
+                .getCapability(CAPABILITY_WATCH_APP, CapabilityClient.FILTER_REACHABLE);
+
+        capabilityInfoTask.addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                CapabilityInfo capabilityInfo = task.getResult();
+                Set<Node> nodes = capabilityInfo.getNodes();
+            } else {
+                Log.d("SIGNAL", "Capability request failed to return any results.");
+            }
+        });
 
         //wifi and loc status
         statusCheck();
@@ -178,18 +215,11 @@ public class LandingActivity extends AppCompatActivity {
     }
 
     public void setUpBluetooth() {
-        //TODO: bluetooth connection
+        //TODO: bluetooth connection for arduino watch ?
     }
 
     public void menuRedirect() {
         startActivity(new Intent(LandingActivity.this, MenuActivity.class));
-    }
-
-    //cancel timer
-    public void cancelTimer(CountDownTimer cTimer) {
-        if (cTimer != null) {
-            cTimer.cancel();
-        }
     }
 
     //checks required permissions onStart()
@@ -298,21 +328,6 @@ public class LandingActivity extends AppCompatActivity {
                 Toast.makeText(this, "Please Grant Storage Permission.", Toast.LENGTH_SHORT).show();
             }
         }
-//        else if(requestCode == CAMERA_REQ_CODE){
-//            if(ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.CAMERA)){
-//                ActivityCompat.requestPermissions(this, permissions, CAMERA_REQ_CODE);
-//            } else if (ActivityCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
-//                    == PackageManager.PERMISSION_GRANTED){
-//
-//            }
-//            else {
-//                Intent settingsIntent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-//                Uri uri = Uri.fromParts("package", getPackageName(), null);
-//                settingsIntent.setData(uri);
-//                startActivity(settingsIntent);
-//                Toast.makeText(this, "Please Grant Camera Permission.", Toast.LENGTH_SHORT).show();
-//            }
-//        }
     }
 
     @Override
@@ -354,8 +369,6 @@ public class LandingActivity extends AppCompatActivity {
                             } else {
                                 Log.w("User Address", "No Address returned!");
                             }
-                            //String address = addresses.get(1).getAddressLine(0);
-                            //Toast.makeText(this, "Current Location: " + location.getLatitude() + "," + location.getLongitude(), Toast.LENGTH_SHORT).show();
                             coordsLat = Double.toString(location.getLatitude());
                             coordsLon = Double.toString(location.getLongitude());
                             docDetails.put("Lat", coordsLat);
@@ -363,7 +376,6 @@ public class LandingActivity extends AppCompatActivity {
 
                             logHelper.saveToFirebase("getCurrentLocation", "Success", "None");
                             getNearestBrgyLocation(location, address);
-                            //TODO COMPARE LOCATION TO CONTACTS
                         } catch (IOException e) {
                             e.printStackTrace();
                             logHelper.saveToFirebase("getCurrentLocation", "Error", e.getLocalizedMessage());
@@ -481,7 +493,6 @@ public class LandingActivity extends AppCompatActivity {
                 //Declare and initialize alert message contents
                 googleMapLink = "https://maps.google.com/?q=" + location.getLatitude() + "," + location.getLongitude();
 
-
                 //Only send msg to barangay if verified
                 if(isVerified){
                     //get nearest brgy details
@@ -564,8 +575,7 @@ public class LandingActivity extends AppCompatActivity {
 
                                 Toast.makeText(LandingActivity.this, "Email Sent to Brgy", Toast.LENGTH_LONG).show();
                             }
-                        }
-                        else{
+                        } else {
                             Toast.makeText(getApplicationContext(), "No barangay", Toast.LENGTH_LONG).show();
                             finish();
                         }
@@ -574,12 +584,10 @@ public class LandingActivity extends AppCompatActivity {
                     Toast.makeText(getApplicationContext(), "You're not yet verified. Can't send alert to barangay", Toast.LENGTH_LONG).show();
                 }
 
-            }
-            else{
+            } else {
                 Toast.makeText(getApplicationContext(), "No current user", Toast.LENGTH_LONG).show();
             }
         });
-
 
         //Get user's emergency contacts
         FirebaseFirestore.getInstance()
@@ -590,7 +598,6 @@ public class LandingActivity extends AppCompatActivity {
                 .addOnCompleteListener(task -> {
                     //Get each contact details
                     for (QueryDocumentSnapshot snapshot : task.getResult()) {
-                        String contactID = snapshot.getId();
                         String contactMobileNumber = snapshot.getString("mobileNumber");
                         String contactFirstName = snapshot.getString("firstName");
                         String contactLastName = snapshot.getString("lastName");
@@ -609,8 +616,6 @@ public class LandingActivity extends AppCompatActivity {
                                 "<br />Location: " + address +
                                 "<br />Please go here immediately: " + googleMapLink +
                                 "<br /><br />Alert Message for: " + contactFirstName + " " + contactLastName;
-
-                        //Toast.makeText(getApplicationContext(), message, Toast.LENGTH_LONG).show();
 
                         //Send Text Message
                         if (contactMobileNumber != null) {
@@ -683,7 +688,6 @@ public class LandingActivity extends AppCompatActivity {
                         String lastName = documentSnapshot.getString("LastName");
                         docDetails.put("FirstName", firstName);
                         docDetails.put("LastName", lastName);
-                        //docDetails.put("Barangay", nearestBrgy);
                         docDetails.put("Report Date", timestamp);
                         docDetails.put("Evidence", "");
 
@@ -708,7 +712,6 @@ public class LandingActivity extends AppCompatActivity {
                         evidenceLinkRequirements.put("reportID", reportID);
 
                         //ADD TO GENERAL REPORTS COLLECTION
-                        //docDetails.put("Barangay", nearestBrgy); adding of brgy will happen if nagsend ng alert msg sakanila
                         docDetails.put("User ID", userID);
                         db.collection("reports").document(reportID).set(docDetails)
                                 .addOnSuccessListener(aVoid ->
@@ -781,9 +784,4 @@ public class LandingActivity extends AppCompatActivity {
         super.onStart();
         setPermissions();
     }
-
-    @Override
-    public void onBackPressed() {
-    }
-
 }

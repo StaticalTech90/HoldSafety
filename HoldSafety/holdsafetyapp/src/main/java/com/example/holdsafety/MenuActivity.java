@@ -2,7 +2,6 @@ package com.example.holdsafety;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -10,11 +9,9 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
-import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
-import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -53,7 +50,7 @@ public class MenuActivity extends AppCompatActivity {
         btnDesignateContact.setOnClickListener(view -> designateContacts());
         btnContactDevelopers.setOnClickListener(view -> contactDevelopers());
         btnUserManual.setOnClickListener(view -> userManual());
-        btnTermsAndConditions.setOnClickListener(view -> termsAndConditions());
+        btnTermsAndConditions.setOnClickListener(view -> termsOfService());
         btnAbout.setOnClickListener(view -> aboutSystem());
         btnViewReports.setOnClickListener(view -> viewReports());
         btnLogout.setOnClickListener(view -> logoutUser());
@@ -75,39 +72,42 @@ public class MenuActivity extends AppCompatActivity {
 
     }
 
-    private void userAccount(){
+    private void userAccount() {
         Intent userAccount = new Intent (MenuActivity.this, AccountDetailsActivity.class);
         startActivity(userAccount);
     }
 
-    private void designateContacts(){
+    private void designateContacts() {
         Intent designateContacts = new Intent (getApplicationContext(), DesignateContactActivity.class);
         startActivity(designateContacts);
     }
 
-    private void contactDevelopers(){
+    private void contactDevelopers() {
         Intent contactDevelopers = new Intent (getApplicationContext(), ContactDevelopersActivity.class);
         startActivity(contactDevelopers);
     }
 
-    private void userManual(){
-        Toast.makeText(getApplicationContext(), "User Manual", Toast.LENGTH_SHORT).show();
+    private void userManual() {
+        Intent userManual = new Intent (getApplicationContext(), UserManualActivity.class);
+        startActivity(userManual);
     }
 
-    private void termsAndConditions(){
-        Toast.makeText(getApplicationContext(), "Terms and Conditions", Toast.LENGTH_SHORT).show();
+    private void termsOfService() {
+        Intent termsOfService = new Intent (getApplicationContext(), TermsOfServiceActivity.class);
+        startActivity(termsOfService);
     }
 
-    private void aboutSystem(){
-        Toast.makeText(getApplicationContext(), "About the System", Toast.LENGTH_SHORT).show();
+    private void aboutSystem() {
+        Intent aboutSystem = new Intent (getApplicationContext(), AboutSystemActivity.class);
+        startActivity(aboutSystem);
     }
 
-    private void viewReports(){
+    private void viewReports() {
         Intent viewReports = new Intent (getApplicationContext(), ReportsActivity.class);
         startActivity(viewReports);
     }
 
-    private void logoutUser(){
+    private void logoutUser() {
             GoogleSignInOptions gso = new GoogleSignInOptions
                     .Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                     .requestIdToken("233680747912-m8q45hor79go5n8aqfkuneklnkshudqs.apps.googleusercontent.com")

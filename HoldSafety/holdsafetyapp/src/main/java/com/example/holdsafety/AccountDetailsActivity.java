@@ -51,7 +51,7 @@ public class AccountDetailsActivity extends AppCompatActivity {
     StorageReference imageRef = FirebaseStorage.getInstance().getReference("id");
     DocumentReference docRef;
 
-    public static final int OTP_REQUEST_CODE = 1000;
+    public static final int OTP_REQUEST_CODE = 5000;
     Boolean isNumberChanged = false, isEmailChanged = false;
     String userPassword = "";
     String idUri, userId, newEmail;

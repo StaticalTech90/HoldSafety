@@ -27,25 +27,28 @@ public class OthersActivity extends AppCompatActivity {
         btnBack.setOnClickListener(view -> goBack());
         btnContactDevelopers.setOnClickListener(view -> contactDevelopers());
         btnUserManual.setOnClickListener(view -> userManual());
-        btnTermsAndConditions.setOnClickListener(view -> termsAndConditions());
+        btnTermsAndConditions.setOnClickListener(view -> termsOfService());
         btnAbout.setOnClickListener(view -> aboutSystem());
     }
 
-    public void contactDevelopers(){
-        Intent contactDevelopers = new Intent(getApplicationContext(), ContactDevelopersActivity.class);
+    private void contactDevelopers() {
+        Intent contactDevelopers = new Intent (getApplicationContext(), ContactDevelopersActivity.class);
         startActivity(contactDevelopers);
     }
 
-    public void userManual(){
-        Toast.makeText(getApplicationContext(), "User Manual", Toast.LENGTH_SHORT).show();
+    private void userManual() {
+        Intent userManual = new Intent (getApplicationContext(), UserManualActivity.class);
+        startActivity(userManual);
     }
 
-    public void termsAndConditions(){
-        Toast.makeText(getApplicationContext(), "Terms and Conditions", Toast.LENGTH_SHORT).show();
+    private void termsOfService() {
+        Intent termsOfService = new Intent (getApplicationContext(), TermsOfServiceActivity.class);
+        startActivity(termsOfService);
     }
 
-    public void aboutSystem(){
-        Toast.makeText(getApplicationContext(), "About the System", Toast.LENGTH_SHORT).show();
+    private void aboutSystem() {
+        Intent aboutSystem = new Intent (getApplicationContext(), AboutSystemActivity.class);
+        startActivity(aboutSystem);
     }
 
     private void goBack(){
