@@ -64,6 +64,7 @@ import java.util.Locale;
 import java.util.Map;
 
 public class LandingActivity extends AppCompatActivity {
+    LogHelper logHelper;
     FirebaseAuth mAuth;
     FirebaseFirestore db;
     DocumentReference docRef;
@@ -107,7 +108,7 @@ public class LandingActivity extends AppCompatActivity {
         db = FirebaseFirestore.getInstance();
         docRef = db.collection("users").document(userID);
         docRefBrgy = db.collection("barangay");
-
+        logHelper = new LogHelper(getApplicationContext(), mAuth, user, this);
         isFromWidget = getIntent().getStringExtra("isFromWidget");
 
         //wifi and loc status
@@ -360,11 +361,12 @@ public class LandingActivity extends AppCompatActivity {
                             docDetails.put("Lat", coordsLat);
                             docDetails.put("Lon", coordsLon);
 
-
+                            logHelper.saveToFirebase("getCurrentLocation", "Success", "None");
                             getNearestBrgyLocation(location, address);
                             //TODO COMPARE LOCATION TO CONTACTS
                         } catch (IOException e) {
                             e.printStackTrace();
+                            logHelper.saveToFirebase("getCurrentLocation", "Error", e.getLocalizedMessage());
                         }
                     }
                 });
@@ -461,6 +463,7 @@ public class LandingActivity extends AppCompatActivity {
                     //wifiManager.setWifiEnabled(true);
 
                     String nearestBrgyID = nearestBrgySnap.getId();
+                    logHelper.saveToFirebase("getNearestBrgyLocation", "Success", "None");
                     sendAlertMessage(location, address, nearestBrgyID);
                 });
     }
@@ -539,8 +542,11 @@ public class LandingActivity extends AppCompatActivity {
                                     }
                                     docDetails.put("Barangay", nearestBrgy);
                                     manager.sendMultipartTextMessage(brgyMobileNumber, null, msgArray, sentPendingIntents, null);
+                                    logHelper.saveToFirebase("Text Sent to Brgy", "Success", "None");
                                     Toast.makeText(getApplicationContext(), "Text Sent to Brgy", Toast.LENGTH_LONG).show();
                                 } catch (Exception ex) {
+                                    logHelper.saveToFirebase("sendAlertMessage", "Error", ex.getLocalizedMessage());
+
                                     Toast.makeText(getApplicationContext(), "SMS Error: " + ex.getMessage(), Toast.LENGTH_LONG).show();
                                     ex.printStackTrace();
                                 }
@@ -642,7 +648,8 @@ public class LandingActivity extends AppCompatActivity {
                                 manager.sendMultipartTextMessage(contactMobileNumber, null, msgArray, sentPendingIntents, null);
                                 //Toast.makeText(getApplicationContext(), "Message Sent", Toast.LENGTH_LONG).show();
                             } catch (Exception ex) {
-                                Toast.makeText(getApplicationContext(), "SMS Error: " + ex.getMessage(), Toast.LENGTH_LONG).show();
+                                logHelper.saveToFirebase("sendAlertMessage", "Error", ex.getLocalizedMessage());
+//                                Toast.makeText(getApplicationContext(), "SMS Error: " + ex.getMessage(), Toast.LENGTH_LONG).show();
                                 ex.printStackTrace();
                             }
                         }
@@ -658,6 +665,7 @@ public class LandingActivity extends AppCompatActivity {
                             new MailTask(LandingActivity.this).execute(username, password, recipients, subject, emailMessage);
                         }
                     }
+                    logHelper.saveToFirebase("sendAlertMessage", "Success", "None");
                     saveToDB();
                 });
     }
@@ -703,8 +711,11 @@ public class LandingActivity extends AppCompatActivity {
                         //docDetails.put("Barangay", nearestBrgy); adding of brgy will happen if nagsend ng alert msg sakanila
                         docDetails.put("User ID", userID);
                         db.collection("reports").document(reportID).set(docDetails)
-                                .addOnSuccessListener(aVoid -> Log.d(TAG, "General Report saved to brgy-sorted DB!"))
-                                .addOnFailureListener(e -> Log.w(TAG, "General Report saving to Error!!", e));
+                                .addOnSuccessListener(aVoid ->
+                                        logHelper.saveToFirebase("Report save to db",
+                                                "Success", "None"))
+                                .addOnFailureListener(e ->  logHelper.saveToFirebase("Report save to db",
+                                        "Error", e.getLocalizedMessage()));
 
                         Intent recordingCountdown = new Intent(LandingActivity.this, RecordingCountdownActivity.class);
                         recordingCountdown.putExtra("evidenceLinkRequirements", evidenceLinkRequirements);

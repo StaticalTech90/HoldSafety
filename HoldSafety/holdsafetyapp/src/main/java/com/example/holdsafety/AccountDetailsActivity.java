@@ -28,6 +28,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
+import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.EmailAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
@@ -46,6 +47,7 @@ public class AccountDetailsActivity extends AppCompatActivity {
     FirebaseAuth mAuth;
     FirebaseUser user;
     FirebaseFirestore db = FirebaseFirestore.getInstance();
+    FirebaseAnalytics mFirebaseAnalytics;
     StorageReference imageRef = FirebaseStorage.getInstance().getReference("id");
     DocumentReference docRef;
 
@@ -67,6 +69,7 @@ public class AccountDetailsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_account_details);
 
+        mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
         mAuth = FirebaseAuth.getInstance();
         user = mAuth.getCurrentUser();
         db = FirebaseFirestore.getInstance();

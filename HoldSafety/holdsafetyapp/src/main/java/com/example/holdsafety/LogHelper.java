@@ -1,17 +1,55 @@
 package com.example.holdsafety;
 
-import android.content.Context;
+import static android.content.ContentValues.TAG;
 
-import androidx.annotation.NonNull;
+import android.app.Activity;
+import android.content.Context;
+import android.util.Log;
+
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.sql.Timestamp;
+
+import java.util.Date;
+import java.util.HashMap;
 
 public class LogHelper {
-    Context applicationContext;
+    Date date;
+    Timestamp timestamp;
+    Context context;
 
-    public LogHelper(@NonNull Context context) {
-        context = applicationContext.getApplicationContext();
+    FirebaseAuth mAuth;
+    FirebaseFirestore db = FirebaseFirestore.getInstance();
+    FirebaseUser user;
+    Activity activity;
+    HashMap <String, Object> logMap = new HashMap<>();
+
+    public LogHelper(Context c, FirebaseAuth fAuth,
+                     FirebaseUser fUser, Activity classActivity){
+        context = c;
+        mAuth = fAuth;
+        user = fUser;
+        activity = classActivity;
     }
 
-    public void LogAction(){
+    protected void saveToFirebase(String action, String result, String error){
+        date = new  Date();
+        timestamp = new Timestamp(date.getTime());
 
+        logMap.put("Activity", activity.toString());
+        logMap.put("Action", action);
+        logMap.put("Result", result);
+        logMap.put("Timestamp", timestamp);
+
+        db.collection("logs").document(user.getUid())
+                .collection(String.valueOf(timestamp)).document(action).set(logMap)
+            .addOnSuccessListener(aVoid -> {
+                Log.i(TAG, "logging success");
+            })
+            .addOnFailureListener(e -> {
+                Log.w(TAG, "Error writing document", e);
+            });
     }
 }
