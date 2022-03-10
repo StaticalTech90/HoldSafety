@@ -72,6 +72,7 @@ public class Mail {
         emailMessage.setSubject(emailSubject);
         emailMessage.setContent(emailBody, "text/html");// for a html email
         // emailMessage.setText(emailBody);// for a text email
+
         Log.i("GMail", "Email Message created.");
         return emailMessage;
     }

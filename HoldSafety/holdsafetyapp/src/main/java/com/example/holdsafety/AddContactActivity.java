@@ -32,6 +32,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class AddContactActivity extends AppCompatActivity {
+    LogHelper logHelper;
     FirebaseAuth mAuth;
     FirebaseUser user;
     FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -50,6 +51,7 @@ public class AddContactActivity extends AppCompatActivity {
 
         mAuth = FirebaseAuth.getInstance();
         user = mAuth.getCurrentUser();
+        logHelper = new LogHelper(this, mAuth, user, this);
 
         Toast.makeText(getApplicationContext(), "Designate Contacts", Toast.LENGTH_SHORT).show();
 
@@ -162,9 +164,13 @@ public class AddContactActivity extends AppCompatActivity {
                            db.collection("emergencyContacts").document(user.getUid()).collection("contacts")
                                    .add(docContacts).addOnCompleteListener(this, task1 -> {
                                if (task1.isSuccessful()) {
+                                   logHelper.saveToFirebase("saveContact", "Added Contact", "NONE");
+
                                    Toast.makeText(getApplicationContext(), "Successfully Added Contact", Toast.LENGTH_SHORT).show();
                                    goBack();
                                } else {
+                                   logHelper.saveToFirebase("saveContact", "ERROR", task1.getException().getLocalizedMessage());
+
                                    Toast.makeText(getApplicationContext(),
                                            Objects.requireNonNull(task1.getException()).toString(),
                                            Toast.LENGTH_SHORT).show();
@@ -190,9 +196,13 @@ public class AddContactActivity extends AppCompatActivity {
                                        db.collection("emergencyContacts").document(user.getUid()).collection("contacts")
                                                .add(docContacts).addOnCompleteListener(this, task1 -> {
                                            if (task1.isSuccessful()) {
+                                               logHelper.saveToFirebase("saveContact", "Added Contact", "NONE");
+
                                                Toast.makeText(getApplicationContext(), "Successfully Added Contact", Toast.LENGTH_SHORT).show();
                                                goBack();
                                            } else {
+                                               logHelper.saveToFirebase("saveContact", "ERROR", task1.getException().getLocalizedMessage());
+
                                                Toast.makeText(getApplicationContext(),
                                                        Objects.requireNonNull(task1.getException()).toString(),
                                                        Toast.LENGTH_SHORT).show();
@@ -204,6 +214,8 @@ public class AddContactActivity extends AppCompatActivity {
                            }
                        }
                    } else {
+                       logHelper.saveToFirebase("saveContact", "ERROR", "Failed to fetch contacts");
+
                        Log.d("CONTACT_CHECK", "Failed to fetch contacts");
                    }
                 });
@@ -224,6 +236,8 @@ public class AddContactActivity extends AppCompatActivity {
                         }
                         lblContactCount.setText(emergencyContactCount + " out of 5");
                     } else {
+                        logHelper.saveToFirebase("getContactCount", "ERROR", "No Contacts Available");
+
                         Toast.makeText(this, "No Contacts Available", Toast.LENGTH_SHORT).show();
                     }
                 });

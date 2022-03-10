@@ -12,10 +12,12 @@ import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.sql.Timestamp;
 
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 
 public class LogHelper {
+    Calendar calendar;
     Date date;
     Timestamp timestamp;
     Context context;
@@ -34,17 +36,19 @@ public class LogHelper {
         activity = classActivity;
     }
 
-    protected void saveToFirebase(String action, String result, String error){
+    protected void saveToFirebase(String action, String result, String description){
+        calendar = Calendar.getInstance();
         date = new  Date();
         timestamp = new Timestamp(date.getTime());
 
-        logMap.put("Activity", activity.toString());
+        logMap.put("Activity", activity.getLocalClassName());
         logMap.put("Action", action);
         logMap.put("Result", result);
+        logMap.put("Description", description);
         logMap.put("Timestamp", timestamp);
 
-        db.collection("logs").document(user.getUid())
-                .collection(String.valueOf(timestamp)).document(action).set(logMap)
+        db.collection("logs").document(String.valueOf(calendar.get(Calendar.DATE)))
+                .collection(user.getUid()).document(action).set(logMap)
             .addOnSuccessListener(aVoid -> {
                 Log.i(TAG, "logging success");
             })

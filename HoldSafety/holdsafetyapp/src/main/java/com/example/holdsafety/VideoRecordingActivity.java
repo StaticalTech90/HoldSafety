@@ -57,6 +57,7 @@ public class VideoRecordingActivity extends AppCompatActivity {
     FirebaseUser user;
     FirebaseFirestore db = FirebaseFirestore.getInstance();
 
+    LogHelper logHelper;
     CountDownTimer timer;
 
     @Override
@@ -70,6 +71,8 @@ public class VideoRecordingActivity extends AppCompatActivity {
         cameraLayout = findViewById(R.id.camera_preview);
         mAuth = FirebaseAuth.getInstance();
         user = mAuth.getCurrentUser();
+        logHelper = new LogHelper(this, mAuth, user, this);
+
         videoRef = FirebaseStorage.getInstance().getReference("emergencyVideos/");
 
         Intent intent = getIntent();
@@ -126,6 +129,8 @@ public class VideoRecordingActivity extends AppCompatActivity {
                 .child(recordingFile.getName())
                 .putFile(Uri.fromFile(recordingFile))
                 .addOnSuccessListener(taskSnapshot -> {
+                    logHelper.saveToFirebase("addFileToFirebase", "SUCCESS",
+                            "Upload successful");
                     Toast.makeText(VideoRecordingActivity.this, "Upload successful", Toast.LENGTH_SHORT).show();
                     setHandler();
                     getVideoLink();
@@ -136,6 +141,8 @@ public class VideoRecordingActivity extends AppCompatActivity {
                     finish(); // return to landing
                 })
                 .addOnFailureListener(e -> {
+                    logHelper.saveToFirebase("addFileToFirebase", "ERROR",
+                            e.getLocalizedMessage());
                     Toast.makeText(VideoRecordingActivity.this, "Upload failed: " +e.getMessage(), Toast.LENGTH_SHORT).show();
                     setHandler();
 
@@ -158,8 +165,11 @@ public class VideoRecordingActivity extends AppCompatActivity {
 
                     //UPDATE THE "Evidence" FIELD IN REPORT DB (GENERAL)
                     db.collection("reports").document(reportID).update(docUsers)
-                            .addOnSuccessListener(unused -> Log.d("Video to Document", "Success! pushed to reportGeneral, id " + nearestBrgy + " w/vid ID " + idUri))
-                            .addOnFailureListener(e -> Log.d("Video to Document", "Failed to save to reportGeneral"));
+                            .addOnSuccessListener(unused ->
+                                logHelper.saveToFirebase("getVideoLink", "SUCCESS",
+                                        uri.toString()))
+                            .addOnFailureListener(e -> logHelper.saveToFirebase("getVideoLink", "ERROR",
+                                    e.getLocalizedMessage()));
                 })
                 .addOnFailureListener(e -> Log.d("Video to Document", "Fetching video URI failed. Log: " + e.getMessage()));
     }

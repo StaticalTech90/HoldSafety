@@ -119,7 +119,7 @@ public class LandingActivity extends AppCompatActivity {
         db = FirebaseFirestore.getInstance();
         docRef = db.collection("users").document(userID);
         docRefBrgy = db.collection("barangay");
-        logHelper = new LogHelper(getApplicationContext(), mAuth, user, this);
+        logHelper = new LogHelper(this, mAuth, user, this);
         isFromWidget = getIntent().getStringExtra("isFromWidget");
 
         //Receive message from smartwatch
@@ -128,10 +128,14 @@ public class LandingActivity extends AppCompatActivity {
             int result = Byte.compare(messageEvent.getData()[0], compareID);
 
             if(result == 0) {
+                logHelper.saveToFirebase("onCreate", "SUCCESS", "MESSAGE RECEIVED FROM CONNECTED DEVICE");
+
                 Log.d("SIGNAL", "MESSAGE RECEIVED FROM CONNECTED DEVICE");
                 getCurrentLocation();
             } else {
                 Log.d("SIGNAL", "MESSAGE NOT RECEIVED");
+                logHelper.saveToFirebase("onCreate", "ERROR", "MESSAGE NOT RECEIVED");
+
             }
         });
 
@@ -144,6 +148,8 @@ public class LandingActivity extends AppCompatActivity {
                 CapabilityInfo capabilityInfo = task.getResult();
                 Set<Node> nodes = capabilityInfo.getNodes();
             } else {
+                logHelper.saveToFirebase("onCreate", "SUCCESS", "Capability request failed to return any results");
+
                 Log.d("SIGNAL", "Capability request failed to return any results.");
             }
         });
@@ -243,6 +249,8 @@ public class LandingActivity extends AppCompatActivity {
         } else if(ActivityCompat.checkSelfPermission(this,
                 Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_DENIED){
             //DENIED AUDIO PERMISSION
+            logHelper.saveToFirebase("setPermissions", "NO PERMISSION", "Please Grant Audio Permission");
+
             Log.d("audio permission", "Please Grant Audio Permission");
             //SHOW PERMISSION
             ActivityCompat.requestPermissions(this,
@@ -250,6 +258,8 @@ public class LandingActivity extends AppCompatActivity {
         } else if(ActivityCompat.checkSelfPermission(this,
                 Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_DENIED){
             //DENIED STORAGE PERMISSION
+            logHelper.saveToFirebase("setPermissions", "NO PERMISSION", "Please Grant Storage Permission");
+
             Log.d("storage permission", "Please Grant Storage Permission");
             //SHOW PERMISSION
             ActivityCompat.requestPermissions(this,
@@ -257,6 +267,8 @@ public class LandingActivity extends AppCompatActivity {
         } else if(ActivityCompat.checkSelfPermission(this,
                 Manifest.permission.CAMERA) == PackageManager.PERMISSION_DENIED ){
             //DENIED CAMERA PERMISSION
+            logHelper.saveToFirebase("setPermissions", "NO PERMISSION", "Please Grant Camera Permission");
+
             Log.d("camera permission", "Please Grant Camera Permission");
             //SHOW PERMISSION
             ActivityCompat.requestPermissions(this,
@@ -282,6 +294,8 @@ public class LandingActivity extends AppCompatActivity {
                 Uri uri = Uri.fromParts("package", getPackageName(), null);
                 settingsIntent.setData(uri);
                 startActivity(settingsIntent);
+                logHelper.saveToFirebase("onRequestPermissionsResult", "NO PERMISSION", "Please Grant Location Permission");
+
                 Toast.makeText(this, "Please Grant Location Permission.", Toast.LENGTH_SHORT).show();
             }
         } else if (requestCode == SEND_SMS_REQ_CODE) {
@@ -298,6 +312,8 @@ public class LandingActivity extends AppCompatActivity {
                 Uri uri = Uri.fromParts("package", getPackageName(), null);
                 settingsIntent.setData(uri);
                 startActivity(settingsIntent);
+                logHelper.saveToFirebase("onRequestPermissionsResult", "No permission", "Please Grant SMS Permission");
+
                 Toast.makeText(this, "Please Grant SMS Permission.", Toast.LENGTH_SHORT).show();
             }
         } else if(requestCode == AUDIO_REQ_CODE){
@@ -311,6 +327,8 @@ public class LandingActivity extends AppCompatActivity {
                 Uri uri = Uri.fromParts("package", getPackageName(), null);
                 settingsIntent.setData(uri);
                 startActivity(settingsIntent);
+                logHelper.saveToFirebase("onRequestPermissionsResult", "No permission", "Please Grant Audio Permission");
+
                 Toast.makeText(this, "Please Grant Audio Permission.", Toast.LENGTH_SHORT).show();
             }
         } else if(requestCode == STORAGE_WRITE_REQ_CODE){
@@ -325,6 +343,8 @@ public class LandingActivity extends AppCompatActivity {
                 Uri uri = Uri.fromParts("package", getPackageName(), null);
                 settingsIntent.setData(uri);
                 startActivity(settingsIntent);
+                logHelper.saveToFirebase("onRequestPermissionsResult", "No permission", "Please Grant Storage Permission");
+
                 Toast.makeText(this, "Please Grant Storage Permission.", Toast.LENGTH_SHORT).show();
             }
         }
@@ -374,7 +394,7 @@ public class LandingActivity extends AppCompatActivity {
                             docDetails.put("Lat", coordsLat);
                             docDetails.put("Lon", coordsLon);
 
-                            logHelper.saveToFirebase("getCurrentLocation", "Success", "None");
+                            logHelper.saveToFirebase("getCurrentLocation", "Success", "");
                             getNearestBrgyLocation(location, address);
                         } catch (IOException e) {
                             e.printStackTrace();
@@ -475,7 +495,7 @@ public class LandingActivity extends AppCompatActivity {
                     //wifiManager.setWifiEnabled(true);
 
                     String nearestBrgyID = nearestBrgySnap.getId();
-                    logHelper.saveToFirebase("getNearestBrgyLocation", "Success", "None");
+                    logHelper.saveToFirebase("getNearestBrgyLocation", "Success", "Location found is "+nearestBrgy);
                     sendAlertMessage(location, address, nearestBrgyID);
                 });
     }
@@ -553,7 +573,7 @@ public class LandingActivity extends AppCompatActivity {
                                     }
                                     docDetails.put("Barangay", nearestBrgy);
                                     manager.sendMultipartTextMessage(brgyMobileNumber, null, msgArray, sentPendingIntents, null);
-                                    logHelper.saveToFirebase("Text Sent to Brgy", "Success", "None");
+                                    logHelper.saveToFirebase("sendAlertMessage", "Success", "Text Sent to Brgy");
                                     Toast.makeText(getApplicationContext(), "Text Sent to Brgy", Toast.LENGTH_LONG).show();
                                 } catch (Exception ex) {
                                     logHelper.saveToFirebase("sendAlertMessage", "Error", ex.getLocalizedMessage());
@@ -670,7 +690,7 @@ public class LandingActivity extends AppCompatActivity {
                             new MailTask(LandingActivity.this).execute(username, password, recipients, subject, emailMessage);
                         }
                     }
-                    logHelper.saveToFirebase("sendAlertMessage", "Success", "None");
+                    logHelper.saveToFirebase("sendAlertMessage", "Success", "SMS Sent");
                     saveToDB();
                 });
     }
@@ -715,9 +735,9 @@ public class LandingActivity extends AppCompatActivity {
                         docDetails.put("User ID", userID);
                         db.collection("reports").document(reportID).set(docDetails)
                                 .addOnSuccessListener(aVoid ->
-                                        logHelper.saveToFirebase("Report save to db",
-                                                "Success", "None"))
-                                .addOnFailureListener(e ->  logHelper.saveToFirebase("Report save to db",
+                                        logHelper.saveToFirebase("saveToDB",
+                                                "SUCCESS", "Report saved to db"))
+                                .addOnFailureListener(e ->  logHelper.saveToFirebase("saveToDB",
                                         "Error", e.getLocalizedMessage()));
 
                         Intent recordingCountdown = new Intent(LandingActivity.this, RecordingCountdownActivity.class);
@@ -742,8 +762,8 @@ public class LandingActivity extends AppCompatActivity {
 
                     //ADD TO GENERAL COLLECTION USING THE SAME ID
                     db.collection("reports").document(reportID).set(docDetails)
-                            .addOnSuccessListener(aVoid -> Log.d(TAG, "General Report saved to brgy-sorted DB!"))
-                            .addOnFailureListener(e -> Log.w(TAG, "General Report saving to Error!!", e));
+                            .addOnSuccessListener(aVoid -> logHelper.saveToFirebase("sendAlertMessage", "SUCCESS", "General Report saved to brgy-sorted DB"))
+                            .addOnFailureListener(e -> logHelper.saveToFirebase("sendAlertMessage", "ERROR", "General Report saving to Error"));
 
                 });
     }

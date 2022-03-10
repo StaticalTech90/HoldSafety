@@ -31,7 +31,8 @@ import java.util.regex.Pattern;
 
 public class ChangePasswordActivity extends AppCompatActivity {
     FirebaseUser user;
-
+    FirebaseAuth mAuth;
+    LogHelper logHelper;
     ImageView btnBack;
     Button btnConfirm, btnCancel;
     TextView btnForgotPassword;
@@ -45,7 +46,10 @@ public class ChangePasswordActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_change_password);
 
-        user = FirebaseAuth.getInstance().getCurrentUser();
+        mAuth = FirebaseAuth.getInstance();
+        user = mAuth.getCurrentUser();
+
+        logHelper = new LogHelper(this, mAuth, user, this);
 
         txtCurrentPassword = findViewById(R.id.txtCurrentPassword);
         txtNewPassword = findViewById(R.id.txtNewPassword);
@@ -242,17 +246,22 @@ public class ChangePasswordActivity extends AppCompatActivity {
                                 newPassword = "";
                                 confirmNewPassword = "";
 
+                                logHelper.saveToFirebase("changePassword", "SUCCESS", "Password Changed");
                                 FirebaseAuth.getInstance().signOut();
                                 Toast.makeText(ChangePasswordActivity.this, "Password Changed", Toast.LENGTH_SHORT).show();
 
                                 startActivity(new Intent(ChangePasswordActivity.this, LoginActivity.class));
                                 finish();
                             } else {
+                                logHelper.saveToFirebase("changePassword", "ERROR", "Enter Valid New Password");
+
                                 Log.d(TAG, "Error password not updated");
                                 Toast.makeText(ChangePasswordActivity.this, "Enter Valid New Password", Toast.LENGTH_SHORT).show();
                             }
                         });
                     } else {
+                        logHelper.saveToFirebase("changePassword", "ERROR", "Error auth failed");
+
                         Log.d(TAG, "Error auth failed");
                         Toast.makeText(ChangePasswordActivity.this, "Current Password Incorrect", Toast.LENGTH_SHORT).show();
                     }

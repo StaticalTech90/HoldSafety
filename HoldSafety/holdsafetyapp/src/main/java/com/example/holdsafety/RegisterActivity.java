@@ -60,6 +60,7 @@ public class RegisterActivity extends AppCompatActivity {
     FirebaseFirestore db;
     StorageReference imageRef;
     FirebaseUser user;
+    LogHelper logHelper;
 
     final Calendar calendar = Calendar.getInstance();
     String email, password, idPicUri;
@@ -84,6 +85,8 @@ public class RegisterActivity extends AppCompatActivity {
         db = FirebaseFirestore.getInstance();
         imageRef = FirebaseStorage.getInstance().getReference("id");
         user = mAuth.getCurrentUser();
+
+        logHelper = new LogHelper(this, mAuth, user, this);
 
         lblLink = findViewById(R.id.txtImageLink);
 
@@ -259,6 +262,8 @@ public class RegisterActivity extends AppCompatActivity {
                }
 
                if(isExisting) { //EMAIL ALREADY IN USE, DISPLAY ERROR
+                   logHelper.saveToFirebase("userRegister", "ERROR", "Duplicate email");
+
                    Toast.makeText(this, "Email already in use! Sign in instead", Toast.LENGTH_LONG).show();
                    etEmail.setError("Email already in use");
                } else { //EMAIL IS NEW, PROCEED WITH REGISTRATION
@@ -357,12 +362,15 @@ public class RegisterActivity extends AppCompatActivity {
                                otp.putExtra("Email", email);
                                otp.putExtra("Password", password);
 
+                               logHelper.saveToFirebase("userRegister", "OTP REQUEST", "Starting otp request");
+
                                Log.d("REQUEST", "STARTING OTPACTIVITY...");
                                Log.d("REQUEST", "mAuth = " + mAuth);
                                startActivityForResult(otp, OTP_REQUEST_CODE);
                            }
 
                        } else { //ACCOUNT EXISTS, DISPLAY ERROR
+                           logHelper.saveToFirebase("userRegister", "ERROR", "Duplicate email");
                            Toast.makeText(RegisterActivity.this, "Email already in use", Toast.LENGTH_LONG).show();
                            etEmail.setError("This email is already in use");
                        }
@@ -383,12 +391,17 @@ public class RegisterActivity extends AppCompatActivity {
 
                     db.collection("users").document(user.getUid()).update(docUsers)
                             .addOnSuccessListener(aVoid -> {
+                                logHelper.saveToFirebase("uploadPhotoToStorage", "SUCCESS", "Image inserted to db");
+
                                 Toast.makeText(getApplicationContext(),
                                         "pushed image to document",
                                         Toast.LENGTH_SHORT).show();
                                 Log.i(TAG, "Image pushed");
                             })
                             .addOnFailureListener(e -> {
+                                logHelper.saveToFirebase("uploadPhotoToStorage", "ERROR",
+                                        e.getLocalizedMessage());
+
                                 Toast.makeText(getApplicationContext(),
                                         "Error writing document",
                                         Toast.LENGTH_SHORT).show();

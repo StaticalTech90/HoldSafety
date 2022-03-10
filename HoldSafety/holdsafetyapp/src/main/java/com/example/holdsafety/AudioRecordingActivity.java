@@ -37,7 +37,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class AudioRecordingActivity extends AppCompatActivity {
-
+    LogHelper logHelper;
     Button btnAudio;
     boolean isRecording = false;
     MediaRecorder mediaRecorder;
@@ -62,6 +62,7 @@ public class AudioRecordingActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_audio_recording);
+        logHelper = new LogHelper(this, mAuth, user, this);
 
         btnAudio = findViewById(R.id.btnRecordAudio);
         mAuth = FirebaseAuth.getInstance();
@@ -163,6 +164,7 @@ public class AudioRecordingActivity extends AppCompatActivity {
 
         txtAudioRecording.setText("");
         btnAudio.setText("Start Recording");
+        logHelper.saveToFirebase("stopRecording", "SUCCESS", "Recording Stopped");
         Toast.makeText(AudioRecordingActivity.this, "Recording Stopped", Toast.LENGTH_SHORT).show();
         addToFirebase();
 
@@ -182,6 +184,7 @@ public class AudioRecordingActivity extends AppCompatActivity {
                 .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                     @Override
                     public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                        logHelper.saveToFirebase("addToFirebase", "SUCCESS", "Upload successful");
                         Toast.makeText(AudioRecordingActivity.this, "Upload successful", Toast.LENGTH_SHORT).show();
                         getAudioLink();
                         setHandler();
@@ -195,6 +198,8 @@ public class AudioRecordingActivity extends AppCompatActivity {
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
+                        logHelper.saveToFirebase("addToFirebase", "ERROR", "Upload failed");
+
                         Toast.makeText(AudioRecordingActivity.this, "Upload failed.", Toast.LENGTH_SHORT).show();
                         setHandler();
 
@@ -214,6 +219,8 @@ public class AudioRecordingActivity extends AppCompatActivity {
         //FETCH VIDEO LINK
         audioRef.child(user.getUid() + "/" + recordingFile.getName()).getDownloadUrl()
                 .addOnSuccessListener(uri -> {
+                    logHelper.saveToFirebase("getAudioLink", "SUCCESS", "Fetching audio URI success");
+
                     Log.d("Audio to Document", "Fetching audio URI success");
                     idUri = String.valueOf(uri);
                     docReportDetails.put("Evidence", idUri);
@@ -221,10 +228,13 @@ public class AudioRecordingActivity extends AppCompatActivity {
 
                     //UPDATE THE "Evidence" FIELD IN REPORT DB (GENERAL)
                     db.collection("reports").document(reportID).update(docReportDetails)
-                            .addOnSuccessListener(unused -> Log.d("Audio to Document", "Success! pushed to reportGeneral, id " + nearestBrgy + " w/ audio ID " + idUri))
-                            .addOnFailureListener(e -> Log.d("Audio to Document", "Failed to save to reportGeneral"));
-                })
-                .addOnFailureListener(e -> Log.d("Audio to Document", "Fetching audio URI failed. Log: " + e.getMessage()));
+                            .addOnSuccessListener(unused ->
+                                    logHelper.saveToFirebase("getAudioLink", "SUCCESS",
+                                            "Success! pushed to reportGeneral, id " + nearestBrgy + " w/ audio ID " + idUri))
+                            .addOnFailureListener(e -> logHelper.saveToFirebase("getAudioLink", "ERROR",
+                                    e.getLocalizedMessage()));
+                }).addOnFailureListener(e -> logHelper.saveToFirebase("getAudioLink", "ERROR",
+                        e.getLocalizedMessage()));
     }
 
     public void recordAudio(){

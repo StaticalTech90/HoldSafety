@@ -28,7 +28,6 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
-import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.EmailAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
@@ -43,11 +42,12 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class AccountDetailsActivity extends AppCompatActivity {
+    LogHelper logHelper;
+
     public Uri imageURI;
     FirebaseAuth mAuth;
     FirebaseUser user;
     FirebaseFirestore db = FirebaseFirestore.getInstance();
-    FirebaseAnalytics mFirebaseAnalytics;
     StorageReference imageRef = FirebaseStorage.getInstance().getReference("id");
     DocumentReference docRef;
 
@@ -69,12 +69,12 @@ public class AccountDetailsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_account_details);
 
-        mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
         mAuth = FirebaseAuth.getInstance();
         user = mAuth.getCurrentUser();
         db = FirebaseFirestore.getInstance();
         userId = user.getUid();
         docRef = db.collection("users").document(userId);
+        logHelper = new LogHelper(getApplicationContext(), mAuth, user, this);
 
         txtLastName = findViewById(R.id.txtLastName);
         txtFirstName = findViewById(R.id.txtFirstName);
@@ -131,6 +131,7 @@ public class AccountDetailsActivity extends AppCompatActivity {
                     public void afterTextChanged(Editable editable) {
                         if(currentMobileNumber.equals(newNumber)){
                             isNumberChanged = false;
+
                             Toast.makeText(AccountDetailsActivity.this, "No Changes", Toast.LENGTH_SHORT).show();
                         } else{
                             isNumberChanged = true;
@@ -308,9 +309,8 @@ public class AccountDetailsActivity extends AppCompatActivity {
 
                     db.collection("users").document(user.getUid()).update(docUsers)
                             .addOnSuccessListener(aVoid -> {
-                                Toast.makeText(getApplicationContext(),
-                                        "pushed image to document",
-                                        Toast.LENGTH_SHORT).show();
+                                logHelper.saveToFirebase("uploadPhotoToStorage", "SUCCESS", "Image pushed to Firestore");
+
                                 Log.i(TAG, "Image pushed");
                             })
                             .addOnFailureListener(e -> {
@@ -383,6 +383,8 @@ public class AccountDetailsActivity extends AppCompatActivity {
                             user.updateEmail(newEmail)
                                     .addOnCompleteListener(task1 -> {
                                         if (task1.isSuccessful()) {
+                                            logHelper.saveToFirebase("onActivityResult", "SUCCESS", "User email address updated");
+
                                             Log.d(TAG, "User email address updated.");
 
                                             //updates email in document
@@ -438,6 +440,8 @@ public class AccountDetailsActivity extends AppCompatActivity {
                     if (task.isSuccessful()) {
                         docRef.update("MobileNumber", newMobileNumber);
                         isNumberChanged = false;
+                        logHelper.saveToFirebase("changeNumber", "SUCCESS", "Mobile Number Successfully Changed");
+
                         Toast.makeText(AccountDetailsActivity.this, "Mobile Number Successfully Changed", Toast.LENGTH_LONG).show();
 
                         isNumberChanged = false;
@@ -455,6 +459,7 @@ public class AccountDetailsActivity extends AppCompatActivity {
                     isEmailChanged = false;
                     userPassword = "";
 
+                    logHelper.saveToFirebase("changeNumber", "ERROR", e.getLocalizedMessage());
                     Toast.makeText(AccountDetailsActivity.this, "Incorrect Password" + "\nChanges not Saved", Toast.LENGTH_LONG).show();
                     finish();
                     startActivity(getIntent());
@@ -479,9 +484,10 @@ public class AccountDetailsActivity extends AppCompatActivity {
                     //Toast.makeText(AccountDetailsActivity.this, "Failed", Toast.LENGTH_LONG).show();
                 });
 
+                logHelper.saveToFirebase("removeAccount", "SUCCESS", "Deleted Account" + user.getUid());
                 db.collection("users").document(user.getUid()).delete();
                 db.collection("emergencyContacts").document(user.getUid()).delete();
-
+                user = null;
                 startActivity(new Intent(AccountDetailsActivity.this, LoginActivity.class));
                 finish();
             }

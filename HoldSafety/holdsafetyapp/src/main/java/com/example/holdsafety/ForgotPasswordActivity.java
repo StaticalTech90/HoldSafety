@@ -15,9 +15,12 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 public class ForgotPasswordActivity extends AppCompatActivity {
     FirebaseAuth mAuth;
+    FirebaseUser user;
+    LogHelper logHelper;
     EditText txtEmail;
     ImageView btnBack;
     Button btnRecover;
@@ -28,6 +31,8 @@ public class ForgotPasswordActivity extends AppCompatActivity {
         setContentView(R.layout.activity_forgot_password);
 
         mAuth = FirebaseAuth.getInstance();
+        user = mAuth.getCurrentUser();
+        logHelper = new LogHelper(getApplicationContext(), mAuth, user, this);
 
         txtEmail = findViewById(R.id.txtEmail);
         btnBack = findViewById(R.id.backArrow);
@@ -45,12 +50,14 @@ public class ForgotPasswordActivity extends AppCompatActivity {
             mAuth.sendPasswordResetEmail(email).addOnCompleteListener(task -> {
                 if(task.isSuccessful()) {
                     //email exists
-                    Toast.makeText(ForgotPasswordActivity.this, "Recovery link is sent to your email", Toast.LENGTH_LONG).show();
+                    logHelper.saveToFirebase("recoverAccount", "SUCCESS", "Recovery link sent");
+                    //Toast.makeText(ForgotPasswordActivity.this, "Recovery link is sent to your email", Toast.LENGTH_LONG).show();
                     startActivity(new Intent(ForgotPasswordActivity.this, LoginActivity.class));
                     finish();
                 } else {
                     //email does not exist
-                    Toast.makeText(ForgotPasswordActivity.this, "Unable to send reset email. Please make sure your email is correct.", Toast.LENGTH_LONG).show();
+                    logHelper.saveToFirebase("recoverAccount", "SUCCESS", "Unable to send reset email");
+                    //Toast.makeText(ForgotPasswordActivity.this, "Unable to send reset email. Please make sure your email is correct.", Toast.LENGTH_LONG).show();
                 }
             });
         }
