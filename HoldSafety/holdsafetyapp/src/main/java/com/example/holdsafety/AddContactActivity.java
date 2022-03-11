@@ -178,6 +178,7 @@ public class AddContactActivity extends AppCompatActivity {
                            });
                        } else {
                            for(QueryDocumentSnapshot contactSnap : task.getResult()) {
+                               counter++;
                                String email = contactSnap.getString("email");
                                String mobileNumber = contactSnap.getString("mobileNumber");
                                Log.d("CONTACT_CHECK", "Contact email: " + email + " mobileNumber: " + mobileNumber);
@@ -210,7 +211,6 @@ public class AddContactActivity extends AppCompatActivity {
                                        });
                                    }
                                }
-                               counter++;
                            }
                        }
                    } else {
