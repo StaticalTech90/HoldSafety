@@ -34,7 +34,7 @@ public class OTPActivity extends AppCompatActivity {
     FirebaseFirestore db;
     FirebaseUser user;
     StorageReference imageRef;
-    LogHelper logHelper;
+    //LogHelper logHelper;
 
     ImageView btnBack;
     Button btnSendCode;
@@ -56,7 +56,7 @@ public class OTPActivity extends AppCompatActivity {
         user = mAuth.getCurrentUser();
         db = FirebaseFirestore.getInstance();
         imageRef = FirebaseStorage.getInstance().getReference("id");
-        logHelper = new LogHelper(getApplicationContext(), mAuth, user, this);
+        //logHelper = new LogHelper(getApplicationContext(), mAuth, user, this);
 
         etEmail = findViewById(R.id.txtEmail);
         txtTimeRemaining = findViewById(R.id.txtTimeRemaining);
@@ -89,7 +89,7 @@ public class OTPActivity extends AppCompatActivity {
 
             if(emailMatcher.matches()) {
                 DialogEmailVerify dialog = new DialogEmailVerify(this);
-                logHelper.saveToFirebase("sendCode", "SUCCESS", "Email matches; sending code");
+                //logHelper.saveToFirebase("sendCode", "SUCCESS", "Email matches; sending code");
                 sendVerification(etEmail.getText().toString(), dialog);
             } else {
                 etEmail.setError("Please enter valid email");
@@ -117,7 +117,7 @@ public class OTPActivity extends AppCompatActivity {
                 dialog.etCode.setError("Your code expired. Please retry.");
                 //Toast.makeText(this, "Your code expired. Please retry.", Toast.LENGTH_LONG).show();
             } else if(code.equals(dialog.etCode.getText().toString())) {
-                logHelper.saveToFirebase("sendVerification", "SUCCESS", "Verification Success");
+                //logHelper.saveToFirebase("sendVerification", "SUCCESS", "Verification Success");
 
                 Toast.makeText(this, "Verification Success", Toast.LENGTH_LONG).show();
                 //Close dialog box
@@ -139,12 +139,12 @@ public class OTPActivity extends AppCompatActivity {
                                 Log.i("CHANGE EMAIL", "Email updated");
 
                                 Log.d("Email", "Sending RESULT_OK back to AccountDetailsActivity...");
-                                logHelper.saveToFirebase("sendVerification", "SUCCESS", "user registered");
+                                //logHelper.saveToFirebase("sendVerification", "SUCCESS", "user registered");
                                 Intent otpResult = new Intent(OTPActivity.this, AccountDetailsActivity.class);
                                 setResult(RESULT_OK, otpResult);
                             })
                             .addOnFailureListener(e -> {
-                                logHelper.saveToFirebase("sendVerification", "ERROR", e.getLocalizedMessage());
+                                //logHelper.saveToFirebase("sendVerification", "ERROR", e.getLocalizedMessage());
 
                                 Toast.makeText(getApplicationContext(), "Error updating email", Toast.LENGTH_SHORT).show();
                                 Log.w(TAG, "Error updating email", e);

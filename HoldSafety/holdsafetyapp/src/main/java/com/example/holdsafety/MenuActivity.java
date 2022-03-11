@@ -23,9 +23,12 @@ public class MenuActivity extends AppCompatActivity {
     FirebaseAuth mAuth;
     FirebaseUser user;
     LogHelper logHelper;
-    ImageView btnBack;
+
+    Intent intentLogout;
+
     ConstraintLayout btnUserAccount, btnDesignateContact, btnContactDevelopers, btnUserManual, btnTermsAndConditions, btnAbout;
     TextView btnViewReports, btnLogout, txtName;
+    ImageView btnBack;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,75 +82,93 @@ public class MenuActivity extends AppCompatActivity {
     }
 
     private void userAccount() {
-        logHelper.saveToFirebase("userAccount", "CLICK EVENT", "Go to AccountDetailsActivity");
-        Intent userAccount = new Intent (MenuActivity.this, AccountDetailsActivity.class);
-        startActivity(userAccount);
+        logHelper.saveToFirebase("userAccount", "CLICKED", "Go to AccountDetailsActivity");
+
+        Intent intentUserAccount = new Intent (MenuActivity.this, AccountDetailsActivity.class);
+        startActivity(intentUserAccount);
     }
 
     private void designateContacts() {
-        logHelper.saveToFirebase("designateContacts", "CLICK EVENT", "Go to DesignateContactActivity");
-        Intent designateContacts = new Intent (getApplicationContext(), DesignateContactActivity.class);
-        startActivity(designateContacts);
+        logHelper.saveToFirebase("designateContacts", "CLICKED", "Go to DesignateContactActivity");
+
+        Intent intentDesignateContacts = new Intent (MenuActivity.this, DesignateContactActivity.class);
+        startActivity(intentDesignateContacts);
     }
 
     private void contactDevelopers() {
-        logHelper.saveToFirebase("contactDevelopers", "CLICK EVENT", "Go to ContactDevelopersActivity");
+        logHelper.saveToFirebase("contactDevelopers", "CLICKED", "Go to ContactDevelopersActivity");
 
-        Intent contactDevelopers = new Intent (getApplicationContext(), ContactDevelopersActivity.class);
-        startActivity(contactDevelopers);
+        Intent intentContactDevelopers = new Intent (MenuActivity.this, ContactDevelopersActivity.class);
+        startActivity(intentContactDevelopers);
     }
 
     private void userManual() {
-        logHelper.saveToFirebase("userManual", "CLICK EVENT", "Go to UserManualActivity");
+        logHelper.saveToFirebase("userManual", "CLICKED", "Go to UserManualActivity");
 
-        Intent userManual = new Intent (getApplicationContext(), UserManualActivity.class);
-        startActivity(userManual);
+        Intent intentUserManual = new Intent (MenuActivity.this, UserManualActivity.class);
+        startActivity(intentUserManual);
     }
 
     private void termsOfService() {
-        logHelper.saveToFirebase("termsOfService", "CLICK EVENT", "Go to TermsOfServiceActivity");
+        logHelper.saveToFirebase("termsOfService", "CLICKED", "Go to TermsOfServiceActivity");
 
-        Intent termsOfService = new Intent (getApplicationContext(), TermsOfServiceActivity.class);
-        startActivity(termsOfService);
+        Intent intentTermsOfService = new Intent (MenuActivity.this, TermsOfServiceActivity.class);
+        startActivity(intentTermsOfService);
     }
 
     private void aboutSystem() {
-        logHelper.saveToFirebase("aboutSystem", "CLICK EVENT", "Go to AboutSystemActivity");
+        logHelper.saveToFirebase("aboutSystem", "CLICKED", "Go to AboutSystemActivity");
 
-        Intent aboutSystem = new Intent (getApplicationContext(), AboutSystemActivity.class);
-        startActivity(aboutSystem);
+        Intent intentAboutSystem = new Intent (MenuActivity.this, AboutSystemActivity.class);
+        startActivity(intentAboutSystem);
     }
 
     private void viewReports() {
-        logHelper.saveToFirebase("viewReports", "CLICK EVENT", "Go to ReportsActivity");
+        logHelper.saveToFirebase("viewReports", "CLICKED", "Go to ReportsActivity");
 
-        Intent viewReports = new Intent (getApplicationContext(), ReportsActivity.class);
-        startActivity(viewReports);
+        Intent intentViewReports = new Intent (MenuActivity.this, ReportsActivity.class);
+        startActivity(intentViewReports);
     }
 
     private void logoutUser() {
-
+            intentLogout = new Intent(MenuActivity.this, LoginActivity.class);
             GoogleSignInOptions gso = new GoogleSignInOptions
                     .Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                     .requestIdToken("233680747912-m8q45hor79go5n8aqfkuneklnkshudqs.apps.googleusercontent.com")
                     .requestEmail()
                     .build();
 
-            mAuth.signOut();
-
             GoogleSignInClient gsc = GoogleSignIn.getClient(MenuActivity.this, gso);
             gsc.signOut().addOnSuccessListener(new OnSuccessListener<Void>() {
                 @Override
                 public void onSuccess(Void unused) {
                     logHelper.saveToFirebase("logoutUser", "SUCCESS", "User signed out");
-                    Toast.makeText(MenuActivity.this, "Sign Out", Toast.LENGTH_SHORT).show();
-                    startActivity(new Intent(MenuActivity.this, LoginActivity.class));
+                    //Toast.makeText(MenuActivity.this, "Sign Out", Toast.LENGTH_SHORT).show();
+                    startActivity(intentLogout);
+
+                    //clears logged-in instance
+                    intentLogout.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK
+                            | Intent.FLAG_ACTIVITY_CLEAR_TOP
+                            | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+
                     finish();
                 }
             });
+
+
+        mAuth.signOut();
+
+        //clears logged-in instance
+        intentLogout.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK
+                | Intent.FLAG_ACTIVITY_CLEAR_TOP
+                | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+
+        logHelper.saveToFirebase("logoutUser", "SUCCESS", "User signed out");
+        finish();
     }
 
     private void goBack() {
         finish();
+        onBackPressed();
     }
 }

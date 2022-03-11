@@ -47,7 +47,10 @@ public class LogHelper {
         logMap.put("Description", description);
         logMap.put("Timestamp", timestamp);
 
-        db.collection("logs").document(String.valueOf(calendar.get(Calendar.DATE)))
+        db.collection("logs")
+                .document(String.valueOf(calendar.get(Calendar.MONTH)) + "-"
+                + String.valueOf(calendar.get(Calendar.DATE)) + "-"
+                + String.valueOf(calendar.get(Calendar.YEAR)))
                 .collection(user.getUid()).document(action).set(logMap)
             .addOnSuccessListener(aVoid -> {
                 Log.i(TAG, "logging success");
