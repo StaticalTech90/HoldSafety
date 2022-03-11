@@ -186,19 +186,19 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                    Boolean isProfileComplete = documentSnapshot.getBoolean("profileComplete");
 
                    if(isProfileComplete) { //ACCOUNT EXISTS AND COMPLETE
-                       logHelper.saveToFirebase("updateUI", "SUCCESS", "ACCOUNT EXISTS AND COMPLETE");
+                      // logHelper.saveToFirebase("updateUI", "SUCCESS", "ACCOUNT EXISTS AND COMPLETE");
                        Log.d("isAccountComplete", "updateUI(): if(): Result: Profile Complete");
                        Intent landingPage = new Intent (LoginActivity.this, LandingActivity.class);
                        startActivity(landingPage);
                    } else { //ACCOUNT EXISTS, BUT INCOMPLETE
-                       logHelper.saveToFirebase("updateUI", "SUCCESS", "ACCOUNT EXISTS, BUT INCOMPLETE");
+                    //   logHelper.saveToFirebase("updateUI", "SUCCESS", "ACCOUNT EXISTS, BUT INCOMPLETE");
 
                        Log.d("updateUI:elseif()", "user data: " + user.getEmail());
                        Log.d("isAccountComplete", "updateUI(): else if(): Result: Profile exists, incomplete details");
                        completeGoogleProfile();
                    }
                } else { //ACCOUNT DOES NOT EXIST
-                   logHelper.saveToFirebase("updateUI", "NO DATA", "ACCOUNT DOES NOT EXIST");
+                  // logHelper.saveToFirebase("updateUI", "NO DATA", "ACCOUNT DOES NOT EXIST");
                    Log.d("updateUI:elseif()", "user data: " + user.getEmail());
                    Log.d("isAccountComplete", "updateUI(): else if(): Result: Profile does not exist, creating...");
                    completeGoogleProfile();
@@ -218,10 +218,10 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                         //pass user to check if it exists in user table
                         assert user != null;
 
-                        logHelper.saveToFirebase("loginUser", "SUCCESS", "User exists");
+                        //logHelper.saveToFirebase("loginUser", "SUCCESS", "User exists");
                         checkUserAccount(user);
                     } else {
-                        logHelper.saveToFirebase("loginUser", "ERROR", task.getException().getLocalizedMessage());
+                        //logHelper.saveToFirebase("loginUser", "ERROR", task.getException().getLocalizedMessage());
 
                         Toast.makeText(LoginActivity.this, "Error: " + task.getException().getMessage(), Toast.LENGTH_LONG).show();
                     }
@@ -235,14 +235,14 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
 
         docRef.get().addOnSuccessListener(documentSnapshot -> {
             if(documentSnapshot.exists()) {
-                logHelper.saveToFirebase("checkUserAccount", "SUCCESS", "Login Successful");
+                //logHelper.saveToFirebase("checkUserAccount", "SUCCESS", "Login Successful");
                 Toast.makeText(LoginActivity.this, "Login Successful!", Toast.LENGTH_SHORT).show();
                 startActivity(new Intent(LoginActivity.this, LandingActivity.class));
                 finish();
             }
             else {
                 //account does not exist in users table = you are not a registered user/ you are an admin
-                logHelper.saveToFirebase("checkUserAccount", "ADMIN LOGIN", "Account registered is an admin account");
+               // logHelper.saveToFirebase("checkUserAccount", "ADMIN LOGIN", "Account registered is an admin account");
 
                 FirebaseAuth.getInstance().signOut();
                 Toast.makeText(LoginActivity.this, "You are registered as admin. Login via the ADMIN app.", Toast.LENGTH_LONG).show();
@@ -298,8 +298,8 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                                 });
                             } else {
                                 // If sign in fails, display a message to the user.
-                                logHelper.saveToFirebase("onActivityResult", "ERROR",
-                                        task1.getException().getLocalizedMessage());
+//                                logHelper.saveToFirebase("onActivityResult", "ERROR",
+//                                        task1.getException().getLocalizedMessage());
 
                                 Toast.makeText(getApplicationContext(), "Failed Google Sign In", Toast.LENGTH_SHORT).show();
                                 Log.w(TAG, "signInWithCredential:failure", task1.getException());
@@ -321,8 +321,8 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
 
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-        logHelper.saveToFirebase("onConnectionFailed", "ERROR",
-                connectionResult.getErrorMessage());
+//        logHelper.saveToFirebase("onConnectionFailed", "ERROR",
+//                connectionResult.getErrorMessage());
         Toast.makeText(getApplicationContext(), "Please check your internet connection.", Toast.LENGTH_LONG).show();
     }
 

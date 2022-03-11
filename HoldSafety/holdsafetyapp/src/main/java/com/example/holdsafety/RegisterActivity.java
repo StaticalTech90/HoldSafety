@@ -262,7 +262,7 @@ public class RegisterActivity extends AppCompatActivity {
                }
 
                if(isExisting) { //EMAIL ALREADY IN USE, DISPLAY ERROR
-                   logHelper.saveToFirebase("userRegister", "ERROR", "Duplicate email");
+                   //logHelper.saveToFirebase("userRegister", "ERROR", "Duplicate email");
 
                    Toast.makeText(this, "Email already in use! Sign in instead", Toast.LENGTH_LONG).show();
                    etEmail.setError("Email already in use");
@@ -362,7 +362,7 @@ public class RegisterActivity extends AppCompatActivity {
                                otp.putExtra("Email", email);
                                otp.putExtra("Password", password);
 
-                               logHelper.saveToFirebase("userRegister", "OTP REQUEST", "Starting otp request");
+                              // logHelper.saveToFirebase("userRegister", "OTP REQUEST", "Starting otp request");
 
                                Log.d("REQUEST", "STARTING OTPACTIVITY...");
                                Log.d("REQUEST", "mAuth = " + mAuth);
@@ -370,7 +370,7 @@ public class RegisterActivity extends AppCompatActivity {
                            }
 
                        } else { //ACCOUNT EXISTS, DISPLAY ERROR
-                           logHelper.saveToFirebase("userRegister", "ERROR", "Duplicate email");
+                           //logHelper.saveToFirebase("userRegister", "ERROR", "Duplicate email");
                            Toast.makeText(RegisterActivity.this, "Email already in use", Toast.LENGTH_LONG).show();
                            etEmail.setError("This email is already in use");
                        }
@@ -391,7 +391,7 @@ public class RegisterActivity extends AppCompatActivity {
 
                     db.collection("users").document(user.getUid()).update(docUsers)
                             .addOnSuccessListener(aVoid -> {
-                                logHelper.saveToFirebase("uploadPhotoToStorage", "SUCCESS", "Image inserted to db");
+                                //logHelper.saveToFirebase("uploadPhotoToStorage", "SUCCESS", "Image inserted to db");
 
                                 Toast.makeText(getApplicationContext(),
                                         "pushed image to document",
@@ -399,8 +399,9 @@ public class RegisterActivity extends AppCompatActivity {
                                 Log.i(TAG, "Image pushed");
                             })
                             .addOnFailureListener(e -> {
-                                logHelper.saveToFirebase("uploadPhotoToStorage", "ERROR",
-                                        e.getLocalizedMessage());
+//                                logHelper.saveToFirebase("uploadPhotoToStorage", "ERROR",
+//                                        e.getLocalizedMessage()
+                               // );
 
                                 Toast.makeText(getApplicationContext(),
                                         "Error writing document",
