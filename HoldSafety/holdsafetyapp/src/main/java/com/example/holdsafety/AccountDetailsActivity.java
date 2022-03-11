@@ -51,6 +51,7 @@ public class AccountDetailsActivity extends AppCompatActivity {
     StorageReference imageRef = FirebaseStorage.getInstance().getReference("id");
     DocumentReference docRef;
 
+    Intent intent;
     public static final int OTP_REQUEST_CODE = 5000;
     Boolean isNumberChanged = false, isEmailChanged = false;
     String userPassword = "";
@@ -487,8 +488,16 @@ public class AccountDetailsActivity extends AppCompatActivity {
                 logHelper.saveToFirebase("removeAccount", "SUCCESS", "Deleted Account" + user.getUid());
                 db.collection("users").document(user.getUid()).delete();
                 db.collection("emergencyContacts").document(user.getUid()).delete();
-                user = null;
-                startActivity(new Intent(AccountDetailsActivity.this, LoginActivity.class));
+
+                intent = new Intent(AccountDetailsActivity.this, LoginActivity.class);
+                startActivity(intent);
+
+                //clears logged-in instance
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK
+                        | Intent.FLAG_ACTIVITY_CLEAR_TOP
+                        | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+
+                startActivity(intent);
                 finish();
             }
         }));

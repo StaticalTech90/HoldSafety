@@ -262,8 +262,8 @@ public class RegisterActivity extends AppCompatActivity {
                }
 
                if(isExisting) { //EMAIL ALREADY IN USE, DISPLAY ERROR
-                   //logHelper.saveToFirebase("userRegister", "ERROR", "Duplicate email");
 
+                   //logHelper.saveToFirebase("userRegister", "ERROR", "Duplicate email");
                    Toast.makeText(this, "Email already in use! Sign in instead", Toast.LENGTH_LONG).show();
                    etEmail.setError("Email already in use");
                } else { //EMAIL IS NEW, PROCEED WITH REGISTRATION
@@ -391,7 +391,10 @@ public class RegisterActivity extends AppCompatActivity {
 
                     db.collection("users").document(user.getUid()).update(docUsers)
                             .addOnSuccessListener(aVoid -> {
-                                //logHelper.saveToFirebase("uploadPhotoToStorage", "SUCCESS", "Image inserted to db");
+
+                                logHelper.saveToFirebase("uploadPhotoToStorage",
+                                        "SUCCESS",
+                                        "Image inserted to db");
 
                                 Toast.makeText(getApplicationContext(),
                                         "pushed image to document",
@@ -399,9 +402,10 @@ public class RegisterActivity extends AppCompatActivity {
                                 Log.i(TAG, "Image pushed");
                             })
                             .addOnFailureListener(e -> {
-//                                logHelper.saveToFirebase("uploadPhotoToStorage", "ERROR",
-//                                        e.getLocalizedMessage()
-                               // );
+                                logHelper.saveToFirebase("uploadPhotoToStorage",
+                                        "ERROR",
+                                        e.getLocalizedMessage()
+                                );
 
                                 Toast.makeText(getApplicationContext(),
                                         "Error writing document",
@@ -471,26 +475,40 @@ public class RegisterActivity extends AppCompatActivity {
                             .addOnSuccessListener(unused -> imageRef.child(user.getUid()).getDownloadUrl().addOnSuccessListener(uri -> {
                                 idPicUri = String.valueOf(uri);
                                 docUsers.put("imgUri", idPicUri);
-                                Log.i("REGISTRATION", "ACCOUNT DETAILS SAVED TO DB");
+
+                                logHelper.saveToFirebase("onActivityResult",
+                                        "SUCCESS", "ACCOUNT DETAILS SAVED TO DB");
+
+                                Log.i("REGISTRATION", "Account details saved to db");
                                 Log.i("URI gDUrl()", idPicUri);
 
                                 db.collection("users").document(user.getUid()).update(docUsers)
                                         .addOnSuccessListener(aVoid -> {
-                                            Toast.makeText(getApplicationContext(), "pushed image to document", Toast.LENGTH_SHORT).show();
+
+                                            logHelper.saveToFirebase("onActivityResult",
+                                                    "SUCCESS", "Image pushed to document");
+
+                                            //Toast.makeText(getApplicationContext(), "pushed image to document", Toast.LENGTH_SHORT).show();
                                             Log.i(TAG, "Image pushed");
                                             startActivity(new Intent(RegisterActivity.this, LandingActivity.class));
                                             finish();
                                         })
                                         .addOnFailureListener(e -> {
-                                            Toast.makeText(getApplicationContext(), "Error writing document", Toast.LENGTH_SHORT).show();
+
+                                            logHelper.saveToFirebase("onActivityResult",
+                                                    "ERROR", e.getLocalizedMessage());
+
+                                            //Toast.makeText(getApplicationContext(), "Error writing document", Toast.LENGTH_SHORT).show();
                                             Log.w(TAG, "Error writing document", e);
                                         });
                             }))
                             .addOnFailureListener(e -> Log.w(TAG, "error", e));
                 } else {
                     // If sign up fails, display a message to the user.
+                    logHelper.saveToFirebase("onActivityResult",
+                            "ERROR", task.getException().getLocalizedMessage());
                     Log.w(TAG, "signUpWithEmailPassword:failure", task.getException());
-                    Toast.makeText(getApplicationContext(), "Signup Failed", Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(getApplicationContext(), "Signup Failed", Toast.LENGTH_SHORT).show();
                 }
             });
 
