@@ -391,7 +391,6 @@ public class RegisterActivity extends AppCompatActivity {
 
                     db.collection("users").document(user.getUid()).update(docUsers)
                             .addOnSuccessListener(aVoid -> {
-
                                 logHelper.saveToFirebase("uploadPhotoToStorage",
                                         "SUCCESS",
                                         "Image inserted to db");
@@ -490,8 +489,7 @@ public class RegisterActivity extends AppCompatActivity {
 
                                             //Toast.makeText(getApplicationContext(), "pushed image to document", Toast.LENGTH_SHORT).show();
                                             Log.i(TAG, "Image pushed");
-                                            startActivity(new Intent(RegisterActivity.this, LandingActivity.class));
-                                            finish();
+                                            startActivity(new Intent(RegisterActivity.this, LoginActivity.class));
                                         })
                                         .addOnFailureListener(e -> {
 
@@ -503,6 +501,7 @@ public class RegisterActivity extends AppCompatActivity {
                                         });
                             }))
                             .addOnFailureListener(e -> Log.w(TAG, "error", e));
+                    finish();
                 } else {
                     // If sign up fails, display a message to the user.
                     logHelper.saveToFirebase("onActivityResult",
