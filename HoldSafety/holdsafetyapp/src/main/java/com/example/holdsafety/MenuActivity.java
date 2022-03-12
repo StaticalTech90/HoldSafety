@@ -82,50 +82,36 @@ public class MenuActivity extends AppCompatActivity {
     }
 
     private void userAccount() {
-        logHelper.saveToFirebase("userAccount", "CLICKED", "Go to AccountDetailsActivity");
-
         Intent intentUserAccount = new Intent (MenuActivity.this, AccountDetailsActivity.class);
         startActivity(intentUserAccount);
     }
 
     private void designateContacts() {
-        logHelper.saveToFirebase("designateContacts", "CLICKED", "Go to DesignateContactActivity");
-
         Intent intentDesignateContacts = new Intent (MenuActivity.this, DesignateContactActivity.class);
         startActivity(intentDesignateContacts);
     }
 
     private void contactDevelopers() {
-        logHelper.saveToFirebase("contactDevelopers", "CLICKED", "Go to ContactDevelopersActivity");
-
         Intent intentContactDevelopers = new Intent (MenuActivity.this, ContactDevelopersActivity.class);
         startActivity(intentContactDevelopers);
     }
 
     private void userManual() {
-        logHelper.saveToFirebase("userManual", "CLICKED", "Go to UserManualActivity");
-
         Intent intentUserManual = new Intent (MenuActivity.this, UserManualActivity.class);
         startActivity(intentUserManual);
     }
 
     private void termsOfService() {
-        logHelper.saveToFirebase("termsOfService", "CLICKED", "Go to TermsOfServiceActivity");
-
         Intent intentTermsOfService = new Intent (MenuActivity.this, TermsOfServiceActivity.class);
         startActivity(intentTermsOfService);
     }
 
     private void aboutSystem() {
-        logHelper.saveToFirebase("aboutSystem", "CLICKED", "Go to AboutSystemActivity");
-
         Intent intentAboutSystem = new Intent (MenuActivity.this, AboutSystemActivity.class);
         startActivity(intentAboutSystem);
     }
 
     private void viewReports() {
-        logHelper.saveToFirebase("viewReports", "CLICKED", "Go to ReportsActivity");
-
         Intent intentViewReports = new Intent (MenuActivity.this, ReportsActivity.class);
         startActivity(intentViewReports);
     }
