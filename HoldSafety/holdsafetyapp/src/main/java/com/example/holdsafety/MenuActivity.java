@@ -155,7 +155,6 @@ public class MenuActivity extends AppCompatActivity {
                 }
             });
 
-
         mAuth.signOut();
 
         //clears logged-in instance

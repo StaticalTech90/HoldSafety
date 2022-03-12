@@ -118,7 +118,6 @@ public class OTPActivity extends AppCompatActivity {
                 //Toast.makeText(this, "Your code expired. Please retry.", Toast.LENGTH_LONG).show();
             } else if(code.equals(dialog.etCode.getText().toString())) {
                 //logHelper.saveToFirebase("sendVerification", "SUCCESS", "Verification Success");
-
                 Toast.makeText(this, "Verification Success", Toast.LENGTH_LONG).show();
                 //Close dialog box
                 dialog.dismissDialog();
@@ -126,8 +125,9 @@ public class OTPActivity extends AppCompatActivity {
                 //insert to db depending on which activity started this
                 if(intentSource.equals("RegisterActivity")) {
                     Log.i("REGISTRATION", "OTP Registration in progress...");
-                    Intent otpResult = new Intent(OTPActivity.this, RegisterActivity.class);
+                    Intent otpResult = new Intent(OTPActivity.this, LoginActivity.class);
                     setResult(RESULT_OK, otpResult);
+                    startActivity(otpResult);
                     finish();
                 } else if(intentSource.equals("AccountDetailsActivity")) { //update the user's email
                     Log.i("Email", "Changing user's email in progress...");
@@ -142,6 +142,8 @@ public class OTPActivity extends AppCompatActivity {
                                 //logHelper.saveToFirebase("sendVerification", "SUCCESS", "user registered");
                                 Intent otpResult = new Intent(OTPActivity.this, AccountDetailsActivity.class);
                                 setResult(RESULT_OK, otpResult);
+                                startActivity(otpResult);
+                                finish();
                             })
                             .addOnFailureListener(e -> {
                                 //logHelper.saveToFirebase("sendVerification", "ERROR", e.getLocalizedMessage());
@@ -149,7 +151,6 @@ public class OTPActivity extends AppCompatActivity {
                                 Toast.makeText(getApplicationContext(), "Error updating email", Toast.LENGTH_SHORT).show();
                                 Log.w(TAG, "Error updating email", e);
                             });
-                    finish();
                 }
             } else {
                 dialog.etCode.setError("Invalid verification code.\nPlease check your email.");
