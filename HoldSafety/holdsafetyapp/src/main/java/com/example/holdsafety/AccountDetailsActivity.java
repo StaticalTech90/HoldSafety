@@ -52,7 +52,6 @@ public class AccountDetailsActivity extends AppCompatActivity {
     StorageReference imageRef = FirebaseStorage.getInstance().getReference("id");
     DocumentReference docRef;
 
-    Intent intent;
     public static final int OTP_REQUEST_CODE_CHANGE_EMAIL = 5000;
     public static final int OTP_REQUEST_CODE_CHANGE_NUMBER = 5001;
     public static final int OTP_REQUEST_CODE_REMOVE_ACCOUNT = 9000;
@@ -403,14 +402,12 @@ public class AccountDetailsActivity extends AppCompatActivity {
                     db.collection("users").document(user.getUid()).delete();
                     db.collection("emergencyContacts").document(user.getUid()).delete();
 
-                    intent = new Intent(AccountDetailsActivity.this, LoginActivity.class);
+                    Intent login = new Intent(AccountDetailsActivity.this, LoginActivity.class);
 
                     //clears logged-in instance
-                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK
-                            | Intent.FLAG_ACTIVITY_CLEAR_TOP
-                            | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    login.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_CLEAR_TASK);
 
-                    startActivity(intent);
+                    startActivity(login);
                     finish();
                 } else {
                     Log.i("RemoveAccount", "Removing Account task failed");
