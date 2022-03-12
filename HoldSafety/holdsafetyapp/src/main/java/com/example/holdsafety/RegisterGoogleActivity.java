@@ -94,7 +94,7 @@ public class RegisterGoogleActivity extends AppCompatActivity {
         imageRef = FirebaseStorage.getInstance().getReference("id");
 
         if(user==null){
-            logHelper = new LogHelper(this, mAuth, null, this);
+            logHelper = new LogHelper(this, mAuth, this);
         }
 
         Intent intent = getIntent();

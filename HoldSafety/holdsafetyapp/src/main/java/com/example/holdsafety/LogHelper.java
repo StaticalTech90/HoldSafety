@@ -24,15 +24,12 @@ public class LogHelper {
 
     FirebaseAuth mAuth;
     FirebaseFirestore db = FirebaseFirestore.getInstance();
-    FirebaseUser user;
     Activity activity;
     HashMap <String, Object> logMap = new HashMap<>();
 
-    public LogHelper(Context c, FirebaseAuth fAuth,
-                     FirebaseUser fUser, Activity classActivity){
+    public LogHelper(Context c, FirebaseAuth fAuth, Activity classActivity){
         context = c;
         mAuth = fAuth;
-        user = fUser;
         activity = classActivity;
     }
 

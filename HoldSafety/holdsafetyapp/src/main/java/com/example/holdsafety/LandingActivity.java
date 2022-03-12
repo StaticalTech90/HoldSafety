@@ -7,12 +7,16 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.PendingIntent;
+import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
+import android.bluetooth.BluetoothSocket;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.IntentSender;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
@@ -22,11 +26,14 @@ import android.net.Uri;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.os.Handler;
+import android.os.Looper;
 import android.provider.Settings;
 import android.telephony.SmsManager;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -61,6 +68,8 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -72,6 +81,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 
 public class LandingActivity extends AppCompatActivity {
     LogHelper logHelper;
@@ -91,12 +101,23 @@ public class LandingActivity extends AppCompatActivity {
     Button btnSafetyButton;
     ImageView btnBluetooth, btnMenu;
     TextView seconds, description;
+
     private int timer;
     long remainTime;
+
     Map<String, Object> docDetails = new HashMap<>(); // for reports in db
     HashMap<String, String> evidenceLinkRequirements = new HashMap<>(); // for vid in db
 
+    BluetoothAdapter mBluetoothAdapter;
+
     FusedLocationProviderClient fusedLocationProviderClient;
+
+    private static final UUID MY_UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
+    private InputStream inputStream;
+
+    ConnectedThread connectedThread;
+    private BluetoothSocket sock = null;
+    private Handler handler; // handler that gets info from Bluetooth service
 
     private static final String CAPABILITY_WATCH_APP = "send_signal";
     private static final int LOCATION_REQ_CODE = 1000;
@@ -119,7 +140,7 @@ public class LandingActivity extends AppCompatActivity {
         db = FirebaseFirestore.getInstance();
         docRef = db.collection("users").document(userID);
         docRefBrgy = db.collection("barangay");
-        logHelper = new LogHelper(this, mAuth, user, this);
+        logHelper = new LogHelper(this, mAuth, this);
         isFromWidget = getIntent().getStringExtra("isFromWidget");
 
         //Receive message from smartwatch
@@ -218,10 +239,6 @@ public class LandingActivity extends AppCompatActivity {
 
         btnBluetooth.setOnClickListener(v -> setUpBluetooth());
         btnMenu.setOnClickListener(v -> menuRedirect());
-    }
-
-    public void setUpBluetooth() {
-        //TODO: bluetooth connection for arduino watch ?
     }
 
     public void menuRedirect() {
@@ -797,6 +814,201 @@ public class LandingActivity extends AppCompatActivity {
                 .setNegativeButton("No", (dialog, id) -> dialog.cancel());
         final AlertDialog alert = builder.create();
         alert.show();
+    }
+
+    //bluetooth functionality starts here
+
+    public void setUpBluetooth() {
+        if(mBluetoothAdapter.isEnabled()){ //if bluetooth is on show list of devices
+            getPairedDevices();
+        }
+        else {
+            enableBT(); //if bluetooth is off ask user to turn it on
+        }
+    }
+
+    @SuppressLint("MissingPermission")
+    public void enableBT(){
+        if(mBluetoothAdapter == null){
+            Log.d(TAG, "enableBT: Does not have BT capabilities.");
+            Toast.makeText(getApplicationContext(),"Phone does not have BT capabilities",Toast.LENGTH_LONG).show();
+        }
+
+        if(!mBluetoothAdapter.isEnabled()){
+            Log.d(TAG, "enableBT: enabling BT.");
+            mBluetoothAdapter.enable();
+
+            if(mBluetoothAdapter.isEnabled()){
+                Toast.makeText(getApplicationContext(),"Bluetooth Turned ON",Toast.LENGTH_LONG).show();
+            }
+        }
+    }
+
+    @SuppressLint("MissingPermission")
+    public void getPairedDevices(){
+        ArrayList deviceStrs = new ArrayList();
+        final ArrayList devices = new ArrayList();
+
+        BluetoothAdapter btAdapter = BluetoothAdapter.getDefaultAdapter();
+         Set<BluetoothDevice> pairedDevices = btAdapter.getBondedDevices();
+
+        if (pairedDevices.size() > 0) {
+            for (BluetoothDevice device : pairedDevices) {
+                deviceStrs.add(device.getName() +    "\n"+device.getAddress());
+                devices.add(device.getAddress());
+            }
+        } else {
+            Toast.makeText(getApplicationContext(),"No Paired Devices Found",Toast.LENGTH_LONG).show();
+        }
+        showDeviceSelectedDialog(deviceStrs, devices);
+    }
+
+    private void showDeviceSelectedDialog(ArrayList deviceStrs, ArrayList devices) {
+        // show list of already paired devices
+        final AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
+
+        ArrayAdapter adapter = new ArrayAdapter(this, android.R.layout.select_dialog_singlechoice,
+                deviceStrs.toArray(new String[deviceStrs.size()]));
+
+        alertDialog.setSingleChoiceItems(adapter, -1,
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+
+                        int position = ((AlertDialog) dialog).getListView().getCheckedItemPosition();
+
+                        String deviceAddress = (String) devices.get(position);
+
+                        //store the selected bluetooth device to shared preferences in order to access it from services
+                        SharedPreferences sharedpreferences = getSharedPreferences("MyDevices", Context.MODE_PRIVATE);
+                        SharedPreferences.Editor editor = sharedpreferences.edit();
+
+                        editor.putString("deviceAddress", deviceAddress).commit();
+
+                        //call start connection
+
+                        Toast.makeText(getApplicationContext(),"Selected:" + deviceAddress,Toast.LENGTH_LONG).show();
+
+                        try {
+                            startConnection(deviceAddress);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                });
+
+        alertDialog.setTitle("Choose Bluetooth device");
+        alertDialog.show();
+    }
+
+    @SuppressLint("MissingPermission")
+    private void startConnection(String deviceAddress) throws IOException {
+
+        if (deviceAddress == null || "".equals(deviceAddress)) {
+            Toast.makeText(getApplicationContext(),"No Bluetooth device has been selected.",Toast.LENGTH_LONG).show();
+        } else {
+
+            final BluetoothAdapter btAdapter = BluetoothAdapter.getDefaultAdapter();
+
+            BluetoothDevice dev = btAdapter.getRemoteDevice(deviceAddress);
+
+            btAdapter.cancelDiscovery();
+
+            try {
+                // Instantiate a BluetoothSocket for the remote device and connect it.
+                sock = dev.createRfcommSocketToServiceRecord(MY_UUID);
+                sock.connect();
+
+                //add loading UI here to make it user friendly if there's still time
+                Toast.makeText(getApplicationContext(),"Successfully connected to Bluetooth",Toast.LENGTH_LONG).show();
+
+                inputStream = sock.getInputStream();
+
+                connectedThread = new ConnectedThread(sock);
+                connectedThread.start();
+            } catch (Exception e1) {
+                Toast.makeText(getApplicationContext(),"This is NOT a your target Device. "+ "\nPlease make sure to select the correct device.",Toast.LENGTH_LONG).show();
+            }
+        }
+    }
+
+    private class ConnectedThread extends Thread {
+        private final BluetoothSocket mmSocket;
+        private final InputStream mmInStream;
+        private final OutputStream mmOutStream;
+
+        private byte[] mmBuffer; // mmBuffer store for the stream
+
+        public ConnectedThread(BluetoothSocket socket) {
+            mmSocket = socket;
+            InputStream tmpIn = null;
+            OutputStream tmpOut = null;
+
+            // Get the input and output streams; using temp objects because member streams are final.
+
+            try {
+                tmpIn = socket.getInputStream();
+                Log.e(TAG, "tpmIn: ");
+            } catch (IOException e) {
+                Log.e(TAG, "Error occurred when creating input stream", e);
+            }
+
+            try {
+                tmpOut = socket.getOutputStream();
+            } catch (IOException e) {
+                Log.e(TAG, "Error occurred when creating output stream", e);
+            }
+
+            mmInStream = tmpIn;
+            mmOutStream = tmpOut;
+        }
+
+        @SuppressLint("HandlerLeak")
+        public void run() {
+            Log.d("ConnectedThread Run", "Run is executed");
+
+            mmBuffer = new byte[1024];
+            int numBytes; // bytes returned from read()
+
+            // Keep listening to the InputStream until an exception occurs.
+            while (true) {
+                Log.d("ConnectedThread Run", "Waiting for data...");
+
+                try {
+                    // Read from the InputStream.
+                    numBytes = mmInStream.read(mmBuffer);
+
+                    if(numBytes>0){
+                        Log.d("ConnectedThread Run", "Signal from device received!");
+
+                        handler = new Handler(Looper.getMainLooper());
+
+                        Runnable runnable = new Runnable(){
+                            @Override
+                            public void run() {
+                                getCurrentLocation();
+                            }
+                        };
+
+                        handler.post(runnable);
+                    }
+                } catch (IOException e) {
+                    Log.d("Run", "Input stream was disconnected", e);
+                    cancel();
+                    break;
+                }
+            }
+        }
+
+        // Call this method from the main activity to shut down the connection.
+        public void cancel() {
+            try {
+                mmSocket.close();
+            } catch (IOException e) {
+                Log.e(TAG, "Could not close the connect socket", e);
+            }
+        }
     }
 
     @Override
