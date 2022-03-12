@@ -49,7 +49,7 @@ public class ChangePasswordActivity extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
         user = mAuth.getCurrentUser();
 
-        logHelper = new LogHelper(this, mAuth, user, this);
+        logHelper = new LogHelper(this, mAuth, this);
 
         txtCurrentPassword = findViewById(R.id.txtCurrentPassword);
         txtNewPassword = findViewById(R.id.txtNewPassword);
