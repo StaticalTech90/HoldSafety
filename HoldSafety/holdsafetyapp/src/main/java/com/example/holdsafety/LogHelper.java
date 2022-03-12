@@ -24,15 +24,12 @@ public class LogHelper {
 
     FirebaseAuth mAuth;
     FirebaseFirestore db = FirebaseFirestore.getInstance();
-    FirebaseUser user;
     Activity activity;
     HashMap <String, Object> logMap = new HashMap<>();
 
-    public LogHelper(Context c, FirebaseAuth fAuth,
-                     FirebaseUser fUser, Activity classActivity){
+    public LogHelper(Context c, FirebaseAuth fAuth, Activity classActivity){
         context = c;
         mAuth = fAuth;
-        user = fUser;
         activity = classActivity;
     }
 
@@ -47,16 +44,19 @@ public class LogHelper {
         logMap.put("Description", description);
         logMap.put("Timestamp", timestamp);
 
-        db.collection("logs")
+        db.collection("clientLogs")
                 .document(String.valueOf(calendar.get(Calendar.MONTH)) + "-"
-                + String.valueOf(calendar.get(Calendar.DATE)) + "-"
-                + String.valueOf(calendar.get(Calendar.YEAR)))
-                .collection(user.getUid()).document(action).set(logMap)
-            .addOnSuccessListener(aVoid -> {
-                Log.i(TAG, "logging success");
-            })
-            .addOnFailureListener(e -> {
-                Log.w(TAG, "Error writing document", e);
-            });
+                        + String.valueOf(calendar.get(Calendar.DATE)) + "-"
+                        + String.valueOf(calendar.get(Calendar.YEAR)))
+                .collection(String.valueOf(calendar.get(Calendar.HOUR))
+                        + "-" + String.valueOf(calendar.get(Calendar.MINUTE)))
+                .document(action).set(logMap)
+                .addOnSuccessListener(aVoid -> {
+                    Log.i(TAG, "Logging success");
+                })
+                .addOnFailureListener(e -> {
+                    Log.e(TAG, "Error writing document", e);
+                });
     }
+
 }

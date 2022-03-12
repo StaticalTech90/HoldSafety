@@ -333,7 +333,7 @@
                     android:ellipsize="end"
                     android:fontFamily="sans-serif"
 
-                    android:hint="Email *"
+                    android:hint="Email"
                     android:inputType="textEmailAddress"
                     android:maxLines="1"
                     android:scrollHorizontally="true"

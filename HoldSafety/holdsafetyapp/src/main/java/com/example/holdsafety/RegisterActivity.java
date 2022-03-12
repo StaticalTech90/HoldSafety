@@ -86,7 +86,7 @@ public class RegisterActivity extends AppCompatActivity {
         imageRef = FirebaseStorage.getInstance().getReference("id");
         user = mAuth.getCurrentUser();
 
-        logHelper = new LogHelper(this, mAuth, user, this);
+        logHelper = new LogHelper(this, mAuth, this);
 
         lblLink = findViewById(R.id.txtImageLink);
 
