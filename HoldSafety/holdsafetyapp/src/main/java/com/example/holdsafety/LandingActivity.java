@@ -142,6 +142,7 @@ public class LandingActivity extends AppCompatActivity {
         docRefBrgy = db.collection("barangay");
         logHelper = new LogHelper(this, mAuth, this);
         isFromWidget = getIntent().getStringExtra("isFromWidget");
+        mBluetoothAdapter = mBluetoothAdapter.getDefaultAdapter();
 
         //Receive message from smartwatch
         Wearable.getMessageClient(LandingActivity.this).addListener(messageEvent -> {
