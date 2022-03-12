@@ -1,7 +1,5 @@
 package com.example.holdsafety;
 
-import static android.content.ContentValues.TAG;
-
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -41,10 +39,15 @@ public class OTPActivity extends AppCompatActivity {
     EditText etEmail;
     TextView txtTimeRemaining;
 
-    private String intentSource = null;
-    String userEmail, userPassword;
+    private int requestCode;
+    String userEmail, userPassword, userNumber;
     String code = null; //OTP code
-    HashMap<String, Object> newEmail = new HashMap<>();
+    HashMap<String, Object> newData = new HashMap<>();
+
+    private static final int OTP_REQUEST_CODE_REGISTER = 2000;
+    public static final int OTP_REQUEST_CODE_CHANGE_EMAIL = 5000;
+    public static final int OTP_REQUEST_CODE_CHANGE_NUMBER = 5001;
+    public static final int OTP_REQUEST_CODE_REMOVE_ACCOUNT = 9000;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,11 +67,15 @@ public class OTPActivity extends AppCompatActivity {
         btnSendCode = findViewById(R.id.btnSendCode);
 
         //Get extras
-        intentSource = getIntent().getStringExtra("Source");
+        requestCode = getIntent().getIntExtra("RequestCode", 0);
         userEmail = getIntent().getStringExtra("Email");
         userPassword = getIntent().getStringExtra("Password");
+        userNumber = getIntent().getStringExtra("MobileNumber");
 
-        if(userEmail == null) { userEmail = "placeholdertext"; }
+        if(userEmail == null) {
+            etEmail.setHint("Enter email here");
+            userEmail = "";
+        }
 
         Toast.makeText(this, "Email: " + userEmail, Toast.LENGTH_LONG).show();
         etEmail.setText(userEmail);
@@ -76,7 +83,7 @@ public class OTPActivity extends AppCompatActivity {
         btnBack.setOnClickListener(view -> goBack());
         btnSendCode.setOnClickListener(view -> sendCode());
 
-        Log.d("INTENT", "Intent started by: " + intentSource);
+        Log.d("INTENT", "Intent started by: " + requestCode);
     }
 
     private void sendCode() {
@@ -113,7 +120,7 @@ public class OTPActivity extends AppCompatActivity {
         dialog.btnSubmit.setOnClickListener(view -> {
             if(TextUtils.isEmpty(dialog.etCode.toString())) {
                 dialog.etCode.setError("Please enter your code.");
-            } else if(code == null){
+            } else if(code == null) {
                 dialog.etCode.setError("Your code expired. Please retry.");
                 //Toast.makeText(this, "Your code expired. Please retry.", Toast.LENGTH_LONG).show();
             } else if(code.equals(dialog.etCode.getText().toString())) {
@@ -122,35 +129,46 @@ public class OTPActivity extends AppCompatActivity {
                 //Close dialog box
                 dialog.dismissDialog();
 
-                //insert to db depending on which activity started this
-                if(intentSource.equals("RegisterActivity")) {
+                //action depends on how this activity was called
+                if(requestCode == OTP_REQUEST_CODE_REGISTER) {
                     Log.i("REGISTRATION", "OTP Registration in progress...");
+
                     Intent otpResult = new Intent(OTPActivity.this, LoginActivity.class);
                     setResult(RESULT_OK, otpResult);
                     startActivity(otpResult);
                     finish();
-                } else if(intentSource.equals("AccountDetailsActivity")) { //update the user's email
+                } else if(requestCode == OTP_REQUEST_CODE_CHANGE_EMAIL) { //update the user's email
                     Log.i("Email", "Changing user's email in progress...");
-                    newEmail.put("Email", userEmail);
+                    newData.put("Email", userEmail);
 
-                    db.collection("users").document(user.getUid()).update(newEmail)
-                            .addOnSuccessListener(aVoid -> {
-                                Toast.makeText(getApplicationContext(), "Email updated", Toast.LENGTH_SHORT).show();
-                                Log.i("CHANGE EMAIL", "Email updated");
+                    Toast.makeText(getApplicationContext(), "Email updated", Toast.LENGTH_SHORT).show();
+                    Log.i("Email", "Email updated");
+                    Log.d("Email", "Sending RESULT_OK back to AccountDetailsActivity...");
 
-                                Log.d("Email", "Sending RESULT_OK back to AccountDetailsActivity...");
-                                //logHelper.saveToFirebase("sendVerification", "SUCCESS", "user registered");
-                                Intent otpResult = new Intent(OTPActivity.this, AccountDetailsActivity.class);
-                                setResult(RESULT_OK, otpResult);
-                                startActivity(otpResult);
-                                finish();
-                            })
-                            .addOnFailureListener(e -> {
-                                //logHelper.saveToFirebase("sendVerification", "ERROR", e.getLocalizedMessage());
+                    Intent otpResult = new Intent(OTPActivity.this, AccountDetailsActivity.class);
+                    setResult(RESULT_OK, otpResult);
+                    startActivity(otpResult);
+                    finish();
+                } else if(requestCode == OTP_REQUEST_CODE_CHANGE_NUMBER) {
+                    Log.i("MobileNumber", "Changing user's mobile number in progress...");
+                    newData.put("MobileNumber", userNumber);
 
-                                Toast.makeText(getApplicationContext(), "Error updating email", Toast.LENGTH_SHORT).show();
-                                Log.w(TAG, "Error updating email", e);
-                            });
+                    Toast.makeText(getApplicationContext(), "Mobile number updated", Toast.LENGTH_SHORT).show();
+                    Log.i("MobileNumber", "Mobile number updated");
+                    Log.d("MobileNumber", "Sending RESULT_OK back to AccountDetailsActivity...");
+
+                    Intent otpResult = new Intent(OTPActivity.this, AccountDetailsActivity.class);
+                    setResult(RESULT_OK, otpResult);
+                    startActivity(otpResult);
+                    finish();
+                } else if(requestCode == OTP_REQUEST_CODE_REMOVE_ACCOUNT) {
+                    Log.i("RemoveAccount", "Removing Account in progress...");
+                    Log.d("RemoveAccount", "Sending RESULT_OK back to AccountDetailsActivity...");
+
+                    Intent otpResult = new Intent(OTPActivity.this, AccountDetailsActivity.class);
+                    setResult(RESULT_OK, otpResult);
+                    startActivity(otpResult);
+                    finish();
                 }
             } else {
                 dialog.etCode.setError("Invalid verification code.\nPlease check your email.");

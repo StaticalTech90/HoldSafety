@@ -48,7 +48,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -74,7 +73,7 @@ public class RegisterActivity extends AppCompatActivity {
     Button btnUpload, btnRegister;
 
     private static final int EXTERNAL_STORAGE_REQ_CODE = 1000;
-    private static final int OTP_REQUEST_CODE = 5000;
+    private static final int OTP_REQUEST_CODE_REGISTER = 2000;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -358,7 +357,7 @@ public class RegisterActivity extends AppCompatActivity {
                            if(validInput) {
                                //Verify user's email
                                Intent otp = new Intent(RegisterActivity.this, OTPActivity.class);
-                               otp.putExtra("Source", "RegisterActivity");
+                               otp.putExtra("RequestCode", OTP_REQUEST_CODE_REGISTER);
                                otp.putExtra("Email", email);
                                otp.putExtra("Password", password);
 
@@ -366,7 +365,7 @@ public class RegisterActivity extends AppCompatActivity {
 
                                Log.d("REQUEST", "STARTING OTPACTIVITY...");
                                Log.d("REQUEST", "mAuth = " + mAuth);
-                               startActivityForResult(otp, OTP_REQUEST_CODE);
+                               startActivityForResult(otp, OTP_REQUEST_CODE_REGISTER);
                            }
 
                        } else { //ACCOUNT EXISTS, DISPLAY ERROR
@@ -455,7 +454,7 @@ public class RegisterActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if(requestCode == OTP_REQUEST_CODE && resultCode == RESULT_OK) {
+        if(requestCode == OTP_REQUEST_CODE_REGISTER && resultCode == RESULT_OK) {
             Log.i("REGISTRATION", "CREATING ACCOUNT...");
             mAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(RegisterActivity.this, task -> {
                 if(task.isSuccessful()) {

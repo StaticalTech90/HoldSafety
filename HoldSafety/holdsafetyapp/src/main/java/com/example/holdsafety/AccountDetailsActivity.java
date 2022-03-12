@@ -3,6 +3,7 @@ package com.example.holdsafety;
 import static android.content.ContentValues.TAG;
 
 import android.Manifest;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
@@ -52,10 +53,12 @@ public class AccountDetailsActivity extends AppCompatActivity {
     DocumentReference docRef;
 
     Intent intent;
-    public static final int OTP_REQUEST_CODE = 5000;
+    public static final int OTP_REQUEST_CODE_CHANGE_EMAIL = 5000;
+    public static final int OTP_REQUEST_CODE_CHANGE_NUMBER = 5001;
+    public static final int OTP_REQUEST_CODE_REMOVE_ACCOUNT = 9000;
     Boolean isNumberChanged = false, isEmailChanged = false;
     String userPassword = "";
-    String idUri, userId, newEmail;
+    String idUri, userId, newEmail, newMobileNumber;
     HashMap<String, Object> docUsers = new HashMap<>();
 
     ImageView btnBack;
@@ -174,8 +177,6 @@ public class AccountDetailsActivity extends AppCompatActivity {
         btnUploadID.setOnClickListener(v -> pickImage());
 
         btnSave.setOnClickListener(view -> {
-            String newMobileNumber;
-
             newMobileNumber = txtMobileNumber.getText().toString().trim();
             newEmail = txtEmail.getText().toString().trim();
 
@@ -211,73 +212,8 @@ public class AccountDetailsActivity extends AppCompatActivity {
                 } else if (!emailMatcher.matches()) {
                     txtEmail.setError("Please enter a valid email");
                 } else {
-                    //pop up for re-enter password
-                    EditText txtInputPassword;
-
-                    AlertDialog.Builder dialogSaveChanges;
-                    dialogSaveChanges = new AlertDialog.Builder(AccountDetailsActivity.this);
-                    dialogSaveChanges.setTitle("Save Changes");
-
-                    //if only number is changed
-                    if (isNumberChanged && !isEmailChanged){
-                        dialogSaveChanges.setMessage("Re-enter password to save changes:");
-                    }
-
-                    //if both
-                    if (isEmailChanged){
-                        dialogSaveChanges.setMessage("Note: Upon changing your email, you will not be able to save recordings until the new email is verified." +
-                                "\n\nRe-enter password to save changes:");
-                    }
-
-                    txtInputPassword = new EditText(AccountDetailsActivity.this);
-                    dialogSaveChanges.setView(txtInputPassword);
-
-                    txtInputPassword.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
-
-                    //saves user input if not empty
-                    txtInputPassword.addTextChangedListener(new TextWatcher() {
-                        @Override
-                        public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) { }
-
-                        @Override
-                        public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                            userPassword = txtInputPassword.getText().toString().trim();
-                        }
-
-                        @Override
-                        public void afterTextChanged(Editable editable) { }
-                    });
-
-                    dialogSaveChanges.setPositiveButton("Done", (dialogInterface, i) -> {
-                        //Do nothing here, override this button later to change the close behaviour
-                    });
-
-                    dialogSaveChanges.setNegativeButton("Cancel", (dialogInterface, i) -> {
-                        dialogInterface.dismiss();
-
-                        //reset values
-                        isEmailChanged = false;
-                        isNumberChanged = false;
-                        userPassword = "";
-
-                        finish();
-                        startActivity(getIntent());
-                    });
-
-                    AlertDialog changeEmailDialog = dialogSaveChanges.create();
-                    changeEmailDialog.show();
-
-                    //Override
-                    changeEmailDialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(v -> {
-                        if (TextUtils.isEmpty(userPassword)) {
-                            txtInputPassword.setError("Password is required");
-                        } else {
-                            userPassword = txtInputPassword.getText().toString();
-
-                            if (isNumberChanged) { changeNumber(newMobileNumber); }
-                            if (isEmailChanged) { changeEmail(newEmail); }
-                        }
-                    }); //end of dialog code
+                    if (isNumberChanged) { changeNumber(newMobileNumber); }
+                    if (isEmailChanged) { changeEmail(newEmail); }
                 }
             }
         });
@@ -373,7 +309,7 @@ public class AccountDetailsActivity extends AppCompatActivity {
         }
 
         //For email change
-        if (requestCode == OTP_REQUEST_CODE && resultCode == RESULT_OK) {
+        if(requestCode == OTP_REQUEST_CODE_CHANGE_EMAIL && resultCode == RESULT_OK) {
             AuthCredential credential = EmailAuthProvider
                     .getCredential(user.getEmail(),userPassword);
 
@@ -381,95 +317,132 @@ public class AccountDetailsActivity extends AppCompatActivity {
                     .addOnCompleteListener(task -> {
                         if (task.isSuccessful()) {
                             //updates email in Auth
-                            user.updateEmail(newEmail)
-                                    .addOnCompleteListener(task1 -> {
+                            user.updateEmail(newEmail).addOnCompleteListener(task1 -> {
                                         if (task1.isSuccessful()) {
                                             logHelper.saveToFirebase("onActivityResult", "SUCCESS", "User email address updated");
-
                                             Log.d(TAG, "User email address updated.");
 
                                             //updates email in document
                                             docRef.update("Email", newEmail);
-
-                                            //reset values
-                                            isEmailChanged = false;
-                                            userPassword = "";
-
-                                            //refresh activity
-                                            finish();
-                                            startActivity(getIntent());
                                         }
-                                    })
-                                    .addOnFailureListener(e -> {
-                                        isNumberChanged = false;
-                                        isEmailChanged = false;
-                                        userPassword = "";
-                                        finish();
-                                        startActivity(getIntent());
-                                    });
-                        }
-                    })
-                    .addOnFailureListener(e -> {
-                        isNumberChanged = false;
-                        isEmailChanged = false;
-                        userPassword = "";
+                                //reset values
+                                isNumberChanged = false;
+                                isEmailChanged = false;
+                                userPassword = "";
 
-                        finish();
-                        startActivity(getIntent());
-                    });
-        }
-    }
-
-    public void changePassword(){
-        startActivity(new Intent(AccountDetailsActivity.this, ChangePasswordActivity.class));
-    }
-
-    public void changeEmail(String newEmail){
-        //insert email verification here
-        Intent otpResult = new Intent(AccountDetailsActivity.this, OTPActivity.class);
-        otpResult.putExtra("Source", "AccountDetailsActivity");
-        otpResult.putExtra("Email", newEmail);
-        startActivityForResult(otpResult, OTP_REQUEST_CODE);
-    }
-
-    public void changeNumber(String newMobileNumber){
-        AuthCredential credential = EmailAuthProvider
-                .getCredential(user.getEmail(),userPassword);
-
-        user.reauthenticate(credential)
-                .addOnCompleteListener(task -> {
-                    if (task.isSuccessful()) {
-                        docRef.update("MobileNumber", newMobileNumber);
-                        isNumberChanged = false;
-                        logHelper.saveToFirebase("changeNumber", "SUCCESS", "Mobile Number Successfully Changed");
-
-                        Toast.makeText(AccountDetailsActivity.this, "Mobile Number Successfully Changed", Toast.LENGTH_LONG).show();
-
-                        isNumberChanged = false;
-
-                        if(!isEmailChanged){
+                                //refresh activity
+                                finish();
+                                startActivity(getIntent());
+                            });
+                        } else {
+                            isNumberChanged = false;
+                            isEmailChanged = false;
                             userPassword = "";
 
                             finish();
                             startActivity(getIntent());
                         }
-                    }
-                })
-                .addOnFailureListener(e -> {
-                    isNumberChanged = false;
-                    isEmailChanged = false;
-                    userPassword = "";
+                    });
+        } else {
+            //reset values
+            isNumberChanged = false;
+            isEmailChanged = false;
+            userPassword = "";
 
-                    logHelper.saveToFirebase("changeNumber", "ERROR", e.getLocalizedMessage());
-                    Toast.makeText(AccountDetailsActivity.this, "Incorrect Password" + "\nChanges not Saved", Toast.LENGTH_LONG).show();
+            //logHelper.saveToFirebase("changeNumber", "ERROR", e.getLocalizedMessage());
+            Toast.makeText(AccountDetailsActivity.this, "Incorrect OTP" + "\nChanges not Saved", Toast.LENGTH_LONG).show();
+            finish();
+            startActivity(getIntent());
+        }
+
+        //For number change
+        if(requestCode == OTP_REQUEST_CODE_CHANGE_NUMBER && resultCode == RESULT_OK) {
+            docRef.update("MobileNumber", newMobileNumber);
+            isNumberChanged = false;
+            logHelper.saveToFirebase("changeNumber", "SUCCESS", "Mobile Number Successfully Changed");
+
+            Toast.makeText(AccountDetailsActivity.this, "Mobile Number Successfully Changed", Toast.LENGTH_LONG).show();
+
+            isNumberChanged = false;
+
+            if(!isEmailChanged) {
+                userPassword = "";
+
+                finish();
+                startActivity(getIntent());
+            }
+        } else {
+            //reset values
+            isNumberChanged = false;
+            isEmailChanged = false;
+            userPassword = "";
+
+            //logHelper.saveToFirebase("changeNumber", "ERROR", e.getLocalizedMessage());
+            Toast.makeText(AccountDetailsActivity.this, "Incorrect OTP" + "\nChanges not Saved", Toast.LENGTH_LONG).show();
+            finish();
+            startActivity(getIntent());
+        }
+
+        //For remove account
+        if(requestCode == OTP_REQUEST_CODE_REMOVE_ACCOUNT && resultCode == RESULT_OK) {
+            user = FirebaseAuth.getInstance().getCurrentUser();
+            Log.d("RemoveAccount", "current user: " + user.getUid());
+
+            user.delete().addOnCompleteListener(task -> {
+                Log.i("RemoveAccount", "starting task remove acc");
+                if(task.isSuccessful()) {
+                    Log.i("RemoveAccount", "Removing Account task sucessful");
+                    //DELETE IMAGE
+                    imageRef.child(user.getUid()).delete()
+                            .addOnSuccessListener(v -> Toast.makeText(AccountDetailsActivity.this, "Deleted Image", Toast.LENGTH_LONG).show())
+                            .addOnFailureListener(v1 -> {
+                        //Toast.makeText(AccountDetailsActivity.this, "Failed", Toast.LENGTH_LONG).show();
+                    });
+
+                    logHelper.saveToFirebase("removeAccount", "SUCCESS", "Deleted Account" + user.getUid());
+                    db.collection("users").document(user.getUid()).delete();
+                    db.collection("emergencyContacts").document(user.getUid()).delete();
+
+                    intent = new Intent(AccountDetailsActivity.this, LoginActivity.class);
+
+                    //clears logged-in instance
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK
+                            | Intent.FLAG_ACTIVITY_CLEAR_TOP
+                            | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+
+                    startActivity(intent);
                     finish();
-                    startActivity(getIntent());
-                });
+                } else {
+                    Log.i("RemoveAccount", "Removing Account task failed");
+                }
+            });
+        }
+        finish();
     }
 
-    public void removeAccount(){
-        //add password reauthentication after delete photo works
-        user = FirebaseAuth.getInstance().getCurrentUser();
+    public void changePassword() {
+        startActivity(new Intent(AccountDetailsActivity.this, ChangePasswordActivity.class));
+    }
+
+    public void changeEmail(String newEmail){
+        Intent otpResult = new Intent(AccountDetailsActivity.this, OTPActivity.class);
+        otpResult.putExtra("RequestCode", OTP_REQUEST_CODE_CHANGE_EMAIL);
+        otpResult.putExtra("Email", newEmail);
+        startActivityForResult(otpResult, OTP_REQUEST_CODE_CHANGE_EMAIL);
+    }
+
+    public void changeNumber(String newMobileNumber) {
+        Intent otpResult = new Intent(AccountDetailsActivity.this, OTPActivity.class);
+        otpResult.putExtra("RequestCode", OTP_REQUEST_CODE_CHANGE_NUMBER);
+        otpResult.putExtra("Email", user.getEmail());
+        otpResult.putExtra("MobileNumber", newMobileNumber);
+        startActivityForResult(otpResult, OTP_REQUEST_CODE_CHANGE_NUMBER);
+    }
+
+    public void removeAccount() {
+        Intent otpResult = new Intent(AccountDetailsActivity.this, OTPActivity.class);
+        otpResult.putExtra("RequestCode", OTP_REQUEST_CODE_REMOVE_ACCOUNT);
+        otpResult.putExtra("Email", user.getEmail());
 
         AlertDialog.Builder dialogRemoveAccount;
         dialogRemoveAccount = new AlertDialog.Builder(AccountDetailsActivity.this);
@@ -477,36 +450,13 @@ public class AccountDetailsActivity extends AppCompatActivity {
         dialogRemoveAccount.setMessage("Are you sure you want to delete your account? " +
                 "Keep in mind that all information and files would be deleted from the system.");
 
-        dialogRemoveAccount.setPositiveButton("Delete", (dialogInterface, i) -> user.delete().addOnCompleteListener(task -> {
-            if (task.isSuccessful()) {
-                //DELETE IMAGE
-                imageRef.child(user.getUid()).delete()
-                .addOnSuccessListener(v -> Toast.makeText(AccountDetailsActivity.this, "Deleted Image", Toast.LENGTH_LONG).show()).addOnFailureListener(v1 -> {
-                    //Toast.makeText(AccountDetailsActivity.this, "Failed", Toast.LENGTH_LONG).show();
-                });
-
-                logHelper.saveToFirebase("removeAccount", "SUCCESS", "Deleted Account" + user.getUid());
-                db.collection("users").document(user.getUid()).delete();
-                db.collection("emergencyContacts").document(user.getUid()).delete();
-
-                intent = new Intent(AccountDetailsActivity.this, LoginActivity.class);
-                startActivity(intent);
-
-                //clears logged-in instance
-                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK
-                        | Intent.FLAG_ACTIVITY_CLEAR_TOP
-                        | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-
-                startActivity(intent);
-                finish();
-            }
-        }));
+        dialogRemoveAccount.setPositiveButton("Delete", (dialogInterface, i) -> {
+            startActivityForResult(otpResult, OTP_REQUEST_CODE_REMOVE_ACCOUNT);
+        });
         dialogRemoveAccount.setNegativeButton("Dismiss", (dialogInterface, i) -> dialogInterface.dismiss());
         AlertDialog alertDialog = dialogRemoveAccount.create();
         alertDialog.show();
     }
 
-    private void goBack(){
-        finish();
-    }
+    private void goBack() { finish(); }
 }
