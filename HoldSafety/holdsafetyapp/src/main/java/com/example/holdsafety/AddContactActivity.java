@@ -146,10 +146,6 @@ public class AddContactActivity extends AppCompatActivity {
                 etContactMobileNumber.setError("Please enter contact mobile number");
             }  else if (!mobileNumberMatcher.matches()) {
                 etContactMobileNumber.setError("Please enter a valid mobile number");
-            } else if(TextUtils.isEmpty(contactEmail)){
-                etContactEmail.setError("Please enter contact email");
-            } else if (!emailMatcher.matches()) {
-                etContactEmail.setError("Please enter valid email");
             } else {
                 //check if contact exists in the user's profile
                 db.collection("emergencyContacts").document(user.getUid()).collection("contacts").get().addOnCompleteListener(task -> {
