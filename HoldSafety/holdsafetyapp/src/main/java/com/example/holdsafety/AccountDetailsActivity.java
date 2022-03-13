@@ -3,7 +3,6 @@ package com.example.holdsafety;
 import static android.content.ContentValues.TAG;
 
 import android.Manifest;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
@@ -29,10 +28,13 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.EmailAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
@@ -52,6 +54,7 @@ public class AccountDetailsActivity extends AppCompatActivity {
     StorageReference imageRef = FirebaseStorage.getInstance().getReference("id");
     DocumentReference docRef;
 
+    private static final int EXTERNAL_STORAGE_REQ_CODE = 1000;
     public static final int OTP_REQUEST_CODE_CHANGE_EMAIL = 5000;
     public static final int OTP_REQUEST_CODE_CHANGE_NUMBER = 5001;
     public static final int OTP_REQUEST_CODE_REMOVE_ACCOUNT = 9000;
@@ -65,7 +68,8 @@ public class AccountDetailsActivity extends AppCompatActivity {
     EditText txtMobileNumber, txtEmail;
     Button btnSave, btnUploadID;
 
-    private static final int EXTERNAL_STORAGE_REQ_CODE = 1000;
+    AlertDialog.Builder dialogSaveChanges;
+    AlertDialog passwordInputDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,7 +81,7 @@ public class AccountDetailsActivity extends AppCompatActivity {
         db = FirebaseFirestore.getInstance();
         userId = user.getUid();
         docRef = db.collection("users").document(userId);
-        logHelper = new LogHelper(getApplicationContext(), mAuth, this);
+        logHelper = new LogHelper(getApplicationContext(), mAuth, user, this);
 
         txtLastName = findViewById(R.id.txtLastName);
         txtFirstName = findViewById(R.id.txtFirstName);
@@ -211,11 +215,21 @@ public class AccountDetailsActivity extends AppCompatActivity {
                 } else if (!emailMatcher.matches()) {
                     txtEmail.setError("Please enter a valid email");
                 } else {
+//                    Log.d("CHANGEDETAILS", "isNumberChanged: " + isNumberChanged + ", isEmailChanged: " + isEmailChanged);
                     if (isNumberChanged) { changeNumber(newMobileNumber); }
                     if (isEmailChanged) { changeEmail(newEmail); }
                 }
             }
         });
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        if (passwordInputDialog != null) {
+            passwordInputDialog.dismiss();
+            passwordInputDialog = null;
+        }
     }
 
     private void setAccountStatus(Boolean isVerified, Boolean isProfileComplete) {
@@ -303,51 +317,64 @@ public class AccountDetailsActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if(requestCode == 1 && resultCode == RESULT_OK && data!=null && data.getData()!=null){
+        if(requestCode == 1 && resultCode == RESULT_OK && data!=null && data.getData()!=null) {
             imageURI = data.getData();
         }
 
         //For email change
         if(requestCode == OTP_REQUEST_CODE_CHANGE_EMAIL && resultCode == RESULT_OK) {
-            AuthCredential credential = EmailAuthProvider
-                    .getCredential(user.getEmail(),userPassword);
+            requestCode = 0;
+            String email = user.getEmail();
+            String password = data.getStringExtra("Password");
 
-            user.reauthenticate(credential)
-                    .addOnCompleteListener(task -> {
-                        if (task.isSuccessful()) {
-                            //updates email in Auth
-                            user.updateEmail(newEmail).addOnCompleteListener(task1 -> {
-                                        if (task1.isSuccessful()) {
-                                            logHelper.saveToFirebase("onActivityResult", "SUCCESS", "User email address updated");
-                                            Log.d(TAG, "User email address updated.");
+            GoogleSignInAccount gsa = GoogleSignIn.getLastSignedInAccount(this);
+            AuthCredential googleCredential;
+            AuthCredential regularCredential = EmailAuthProvider.getCredential(email, password);
 
-                                            //updates email in document
-                                            docRef.update("Email", newEmail);
-                                        }
-                                //reset values
-                                isNumberChanged = false;
-                                isEmailChanged = false;
-                                userPassword = "";
+            // GOOGLE ACC
+            if(gsa != null) {
+                googleCredential = GoogleAuthProvider.getCredential(gsa.getIdToken(), null);
+                user.reauthenticate(googleCredential).addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        //updates email in Auth
+                        user.updateEmail(newEmail).addOnCompleteListener(task1 -> {
+                            if (task1.isSuccessful()) {
+                                logHelper.saveToFirebase("onActivityResult", "SUCCESS", "User email address updated");
+                                Log.d("CHANGEDETAILS", "User email address updated.");
 
-                                //refresh activity
-                                finish();
-                                startActivity(getIntent());
-                            });
-                        } else {
-                            isNumberChanged = false;
-                            isEmailChanged = false;
-                            userPassword = "";
+                                //updates email in document
+                                docRef.update("Email", newEmail);
+                            }
+                        });
+                    } else {
+                        Log.d("CHANGEDETAILS", "User email address NOT updated.");
+                    }
+                    //refresh activity
+                    finish();
+                    startActivity(getIntent());
+                });
+            } else { // NON-GOOGLE ACC
+                user.reauthenticate(regularCredential).addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        //updates email in Auth
+                        user.updateEmail(newEmail).addOnCompleteListener(task1 -> {
+                            if (task1.isSuccessful()) {
+                                logHelper.saveToFirebase("onActivityResult", "SUCCESS", "User email address updated");
+                                Log.d(TAG, "User email address updated.");
 
-                            finish();
-                            startActivity(getIntent());
-                        }
-                    });
+                                //updates email in document
+                                docRef.update("Email", newEmail);
+                            }
+                        });
+                    } else {
+                        Log.d("CHANGEDETAILS", "User email address NOT updated.");
+                    }
+                    //refresh activity
+                    finish();
+                    startActivity(getIntent());
+                });
+            }
         } else {
-            //reset values
-            isNumberChanged = false;
-            isEmailChanged = false;
-            userPassword = "";
-
             //logHelper.saveToFirebase("changeNumber", "ERROR", e.getLocalizedMessage());
             Toast.makeText(AccountDetailsActivity.this, "Incorrect OTP" + "\nChanges not Saved", Toast.LENGTH_LONG).show();
             finish();
@@ -384,10 +411,13 @@ public class AccountDetailsActivity extends AppCompatActivity {
 
         //For remove account
         if(requestCode == OTP_REQUEST_CODE_REMOVE_ACCOUNT && resultCode == RESULT_OK) {
-            user = FirebaseAuth.getInstance().getCurrentUser();
             Log.d("RemoveAccount", "current user: " + user.getUid());
 
-            user.delete().addOnCompleteListener(task -> {
+            GoogleSignInAccount gsa = GoogleSignIn.getLastSignedInAccount(this);
+            AuthCredential googleCredential = GoogleAuthProvider.getCredential(gsa.getIdToken(), null);
+
+            // GOOGLE ACC
+            user.reauthenticate(googleCredential).addOnSuccessListener(unused -> user.delete().addOnCompleteListener(task -> {
                 Log.i("RemoveAccount", "starting task remove acc");
                 if(task.isSuccessful()) {
                     Log.i("RemoveAccount", "Removing Account task sucessful");
@@ -395,8 +425,8 @@ public class AccountDetailsActivity extends AppCompatActivity {
                     imageRef.child(user.getUid()).delete()
                             .addOnSuccessListener(v -> Toast.makeText(AccountDetailsActivity.this, "Deleted Image", Toast.LENGTH_LONG).show())
                             .addOnFailureListener(v1 -> {
-                        //Toast.makeText(AccountDetailsActivity.this, "Failed", Toast.LENGTH_LONG).show();
-                    });
+                                //Toast.makeText(AccountDetailsActivity.this, "Failed", Toast.LENGTH_LONG).show();
+                            });
 
                     logHelper.saveToFirebase("removeAccount", "SUCCESS", "Deleted Account" + user.getUid());
                     db.collection("users").document(user.getUid()).delete();
@@ -406,13 +436,13 @@ public class AccountDetailsActivity extends AppCompatActivity {
 
                     //clears logged-in instance
                     login.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-
                     startActivity(login);
                     finish();
                 } else {
                     Log.i("RemoveAccount", "Removing Account task failed");
                 }
-            });
+            }));
+
         }
         finish();
     }
@@ -422,10 +452,89 @@ public class AccountDetailsActivity extends AppCompatActivity {
     }
 
     public void changeEmail(String newEmail){
+        GoogleSignInAccount gsa = GoogleSignIn.getLastSignedInAccount(this);
+        Log.d("CHANGEDETAILS", "gsa: " + gsa);
+
         Intent otpResult = new Intent(AccountDetailsActivity.this, OTPActivity.class);
         otpResult.putExtra("RequestCode", OTP_REQUEST_CODE_CHANGE_EMAIL);
         otpResult.putExtra("Email", newEmail);
-        startActivityForResult(otpResult, OTP_REQUEST_CODE_CHANGE_EMAIL);
+
+        if(gsa == null) { // NON-GOOGLE ACC
+            Log.d("CHANGEDETAILS", "show dialog box for pass");
+            // DIALOG START
+            dialogSaveChanges = new AlertDialog.Builder(AccountDetailsActivity.this);
+            dialogSaveChanges.setTitle("Save Changes");
+            dialogSaveChanges.setMessage("Please re-enter your password to save your changes.");
+            EditText txtInputPassword;
+
+            txtInputPassword = new EditText(AccountDetailsActivity.this);
+            dialogSaveChanges.setView(txtInputPassword);
+
+            txtInputPassword.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+
+            //saves user input if not empty
+            txtInputPassword.addTextChangedListener(new TextWatcher() {
+                @Override
+                public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) { }
+
+                @Override
+                public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                    userPassword = txtInputPassword.getText().toString().trim();
+                }
+
+                @Override
+                public void afterTextChanged(Editable editable) { }
+            });
+
+            dialogSaveChanges.setPositiveButton("Done", (dialogInterface, i) -> {
+                //Do nothing here, override this button later to change the close behaviour
+            });
+
+            dialogSaveChanges.setNegativeButton("Cancel", (dialogInterface, i) -> {
+                dialogInterface.dismiss();
+
+                //reset values
+                isEmailChanged = false;
+                isNumberChanged = false;
+                userPassword = "";
+
+                finish();
+                startActivity(getIntent());
+            });
+
+            passwordInputDialog = dialogSaveChanges.create();
+            passwordInputDialog.show();
+
+            passwordInputDialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(v -> {
+                if (TextUtils.isEmpty(userPassword)) {
+                    txtInputPassword.setError("Password is required");
+                } else {
+                    userPassword = txtInputPassword.getText().toString();
+                    Log.d("CHANGEDETAILS", "password: " + userPassword);
+
+                    AuthCredential credential = EmailAuthProvider.getCredential(user.getEmail(), userPassword);
+                    Log.d("CHANGEDETAILS", "credential: " + credential);
+
+                    user.reauthenticate(credential).addOnCompleteListener(task -> {
+                        Log.d("CHANGEDETAILS", "reauth task begins");
+                        if (task.isSuccessful()) {
+                            Log.d("CHANGEDETAILS", "launch intent");
+                            otpResult.putExtra("Password", userPassword);
+                            startActivityForResult(otpResult, OTP_REQUEST_CODE_CHANGE_EMAIL);
+                        } else {
+                            Log.d("CHANGEDETAILS", "User email address NOT updated.");
+                        }
+                        //reset values
+                        isNumberChanged = false;
+                        isEmailChanged = false;
+                        userPassword = "";
+                    });
+                }
+            });
+            //end of dialog code
+        } else { // GOOGLE ACC
+            startActivityForResult(otpResult, OTP_REQUEST_CODE_CHANGE_EMAIL);
+        }
     }
 
     public void changeNumber(String newMobileNumber) {
@@ -437,10 +546,6 @@ public class AccountDetailsActivity extends AppCompatActivity {
     }
 
     public void removeAccount() {
-        Intent otpResult = new Intent(AccountDetailsActivity.this, OTPActivity.class);
-        otpResult.putExtra("RequestCode", OTP_REQUEST_CODE_REMOVE_ACCOUNT);
-        otpResult.putExtra("Email", user.getEmail());
-
         AlertDialog.Builder dialogRemoveAccount;
         dialogRemoveAccount = new AlertDialog.Builder(AccountDetailsActivity.this);
         dialogRemoveAccount.setTitle("Remove Account");
@@ -448,7 +553,103 @@ public class AccountDetailsActivity extends AppCompatActivity {
                 "Keep in mind that all information and files would be deleted from the system.");
 
         dialogRemoveAccount.setPositiveButton("Delete", (dialogInterface, i) -> {
-            startActivityForResult(otpResult, OTP_REQUEST_CODE_REMOVE_ACCOUNT);
+            GoogleSignInAccount gsa = GoogleSignIn.getLastSignedInAccount(this);
+            if(gsa == null) { // NON-GOOGLE ACC
+                // DIALOG START
+                dialogSaveChanges = new AlertDialog.Builder(AccountDetailsActivity.this);
+                dialogSaveChanges.setTitle("Save Changes");
+                dialogSaveChanges.setMessage("Please re-enter your password to save your changes.");
+                EditText txtInputPassword;
+
+                txtInputPassword = new EditText(AccountDetailsActivity.this);
+                dialogSaveChanges.setView(txtInputPassword);
+
+                txtInputPassword.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+
+                //saves user input if not empty
+                txtInputPassword.addTextChangedListener(new TextWatcher() {
+                    @Override
+                    public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) { }
+
+                    @Override
+                    public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                        userPassword = txtInputPassword.getText().toString().trim();
+                    }
+
+                    @Override
+                    public void afterTextChanged(Editable editable) { }
+                });
+
+                dialogSaveChanges.setPositiveButton("Done", (dialogInterface1, i1) -> {
+                    //Do nothing here, override this button later to change the close behaviour
+                });
+
+                dialogSaveChanges.setNegativeButton("Cancel", (dialogInterface1, i1) -> {
+                    dialogInterface1.dismiss();
+
+                    //reset values
+                    isEmailChanged = false;
+                    isNumberChanged = false;
+                    userPassword = "";
+
+                    finish();
+                    startActivity(getIntent());
+                });
+
+                passwordInputDialog = dialogSaveChanges.create();
+                passwordInputDialog.show();
+
+                passwordInputDialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(v -> {
+                    if (TextUtils.isEmpty(userPassword)) {
+                        txtInputPassword.setError("Password is required");
+                    } else {
+                        userPassword = txtInputPassword.getText().toString();
+                        Log.d("CHANGEDETAILS", "password: " + userPassword);
+
+                        AuthCredential credential = EmailAuthProvider.getCredential(user.getEmail(), userPassword);
+                        Log.d("CHANGEDETAILS", "email: " + user.getEmail() + ", pass: " + userPassword);
+
+                        user.reauthenticate(credential).addOnSuccessListener(unused -> user.delete().addOnCompleteListener(task -> {
+                            Log.i("RemoveAccount", "starting task remove acc");
+                            if(task.isSuccessful()) {
+                                Log.i("RemoveAccount", "Removing Account task sucessful");
+                                //DELETE IMAGE
+                                imageRef.child(user.getUid()).delete()
+                                        .addOnSuccessListener(v1 -> Toast.makeText(AccountDetailsActivity.this, "Deleted Image", Toast.LENGTH_LONG).show())
+                                        .addOnFailureListener(v1 -> {
+                                            //Toast.makeText(AccountDetailsActivity.this, "Failed", Toast.LENGTH_LONG).show();
+                                        });
+
+                                logHelper.saveToFirebase("removeAccount", "SUCCESS", "Deleted Account" + user.getUid());
+                                db.collection("users").document(user.getUid()).delete();
+                                db.collection("emergencyContacts").document(user.getUid()).delete();
+
+                                Intent login = new Intent(AccountDetailsActivity.this, LoginActivity.class);
+
+                                //clears logged-in instance
+                                login.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                startActivity(login);
+                                finish();
+                            } else {
+                                Toast.makeText(AccountDetailsActivity.this, "Update Email Failed" + "\nChanges not Saved", Toast.LENGTH_LONG).show();
+                                Log.i("RemoveAccount", "Removing Account task failed. Incorrect password");
+                            }
+                        }));
+                    }
+                });
+                //end of dialog code
+
+
+
+
+
+
+            } else { // GOOGLE ACC
+                Intent otpResult = new Intent(AccountDetailsActivity.this, OTPActivity.class);
+                otpResult.putExtra("RequestCode", OTP_REQUEST_CODE_REMOVE_ACCOUNT);
+                otpResult.putExtra("Email", user.getEmail());
+                startActivityForResult(otpResult, OTP_REQUEST_CODE_REMOVE_ACCOUNT);
+            }
         });
         dialogRemoveAccount.setNegativeButton("Dismiss", (dialogInterface, i) -> dialogInterface.dismiss());
         AlertDialog alertDialog = dialogRemoveAccount.create();
@@ -456,4 +657,10 @@ public class AccountDetailsActivity extends AppCompatActivity {
     }
 
     private void goBack() { finish(); }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        finish();
+    }
 }

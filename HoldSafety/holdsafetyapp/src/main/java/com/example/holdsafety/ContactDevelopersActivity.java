@@ -45,7 +45,7 @@ public class ContactDevelopersActivity extends AppCompatActivity {
 
         mAuth = FirebaseAuth.getInstance();
         user = mAuth.getCurrentUser();
-        logHelper = new LogHelper(getApplicationContext(), mAuth, this);
+        logHelper = new LogHelper(getApplicationContext(), mAuth, user,this);
 
         dropdownContact();
         btnBack = findViewById(R.id.backArrow);

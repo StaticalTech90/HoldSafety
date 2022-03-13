@@ -21,7 +21,6 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
 import java.util.regex.Matcher;
@@ -42,7 +41,6 @@ public class OTPActivity extends AppCompatActivity {
     private int requestCode;
     String userEmail, userPassword, userNumber;
     String code = null; //OTP code
-    HashMap<String, Object> newData = new HashMap<>();
 
     private static final int OTP_REQUEST_CODE_REGISTER = 2000;
     public static final int OTP_REQUEST_CODE_CHANGE_EMAIL = 5000;
@@ -133,28 +131,27 @@ public class OTPActivity extends AppCompatActivity {
                 if(requestCode == OTP_REQUEST_CODE_REGISTER) {
                     Log.i("REGISTRATION", "OTP Registration in progress...");
 
-                    Intent otpResult = new Intent(OTPActivity.this, LoginActivity.class);
+                    Intent otpResult = new Intent(OTPActivity.this, RegisterActivity.class);
                     setResult(RESULT_OK, otpResult);
                     startActivity(otpResult);
                     finish();
                 } else if(requestCode == OTP_REQUEST_CODE_CHANGE_EMAIL) { //update the user's email
                     Log.i("Email", "Changing user's email in progress...");
-                    newData.put("Email", userEmail);
 
-                    Toast.makeText(getApplicationContext(), "Email updated", Toast.LENGTH_SHORT).show();
-                    Log.i("Email", "Email updated");
+                    Toast.makeText(getApplicationContext(), "Email verified", Toast.LENGTH_SHORT).show();
+                    Log.i("Email", "Email verified");
                     Log.d("Email", "Sending RESULT_OK back to AccountDetailsActivity...");
 
                     Intent otpResult = new Intent(OTPActivity.this, AccountDetailsActivity.class);
+                    otpResult.putExtra("Password", userPassword);
                     setResult(RESULT_OK, otpResult);
                     startActivity(otpResult);
                     finish();
                 } else if(requestCode == OTP_REQUEST_CODE_CHANGE_NUMBER) {
                     Log.i("MobileNumber", "Changing user's mobile number in progress...");
-                    newData.put("MobileNumber", userNumber);
 
-                    Toast.makeText(getApplicationContext(), "Mobile number updated", Toast.LENGTH_SHORT).show();
-                    Log.i("MobileNumber", "Mobile number updated");
+                    Toast.makeText(getApplicationContext(), "Mobile number verified", Toast.LENGTH_SHORT).show();
+                    Log.i("MobileNumber", "Mobile number verified");
                     Log.d("MobileNumber", "Sending RESULT_OK back to AccountDetailsActivity...");
 
                     Intent otpResult = new Intent(OTPActivity.this, AccountDetailsActivity.class);

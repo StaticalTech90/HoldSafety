@@ -102,7 +102,6 @@ public class LandingActivity extends AppCompatActivity {
     ImageView btnBluetooth, btnMenu;
     TextView seconds, description;
 
-    private int timer;
     long remainTime;
 
     Map<String, Object> docDetails = new HashMap<>(); // for reports in db
@@ -113,7 +112,6 @@ public class LandingActivity extends AppCompatActivity {
     FusedLocationProviderClient fusedLocationProviderClient;
 
     private static final UUID MY_UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
-    private InputStream inputStream;
 
     ConnectedThread connectedThread;
     private BluetoothSocket sock = null;
@@ -140,7 +138,7 @@ public class LandingActivity extends AppCompatActivity {
         db = FirebaseFirestore.getInstance();
         docRef = db.collection("users").document(userID);
         docRefBrgy = db.collection("barangay");
-        logHelper = new LogHelper(this, mAuth, this);
+        logHelper = new LogHelper(this, mAuth, user,this);
         isFromWidget = getIntent().getStringExtra("isFromWidget");
         mBluetoothAdapter = mBluetoothAdapter.getDefaultAdapter();
 
@@ -412,7 +410,7 @@ public class LandingActivity extends AppCompatActivity {
                             docDetails.put("Lat", coordsLat);
                             docDetails.put("Lon", coordsLon);
 
-                            logHelper.saveToFirebase("getCurrentLocation", "Success", "");
+                            logHelper.saveToFirebase("getCurrentLocation", "Success", address);
                             getNearestBrgyLocation(location, address);
                         } catch (IOException e) {
                             e.printStackTrace();
@@ -505,6 +503,7 @@ public class LandingActivity extends AppCompatActivity {
                                 nearestBrgySnap = brgySnap;
                             }
                             nearestBrgy = nearestBrgySnap.getString("Barangay");
+                            docDetails.put("Nearest Barangay", nearestBrgy);
                         }
                     }
 
@@ -924,7 +923,7 @@ public class LandingActivity extends AppCompatActivity {
                 //add loading UI here to make it user friendly if there's still time
                 Toast.makeText(getApplicationContext(),"Successfully connected to Bluetooth",Toast.LENGTH_LONG).show();
 
-                inputStream = sock.getInputStream();
+                InputStream inputStream = sock.getInputStream();
 
                 connectedThread = new ConnectedThread(sock);
                 connectedThread.start();

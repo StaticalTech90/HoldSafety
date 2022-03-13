@@ -51,7 +51,7 @@ public class AddContactActivity extends AppCompatActivity {
 
         mAuth = FirebaseAuth.getInstance();
         user = mAuth.getCurrentUser();
-        logHelper = new LogHelper(this, mAuth, this);
+        logHelper = new LogHelper(this, mAuth, user, this);
 
         Toast.makeText(getApplicationContext(), "Designate Contacts", Toast.LENGTH_SHORT).show();
 

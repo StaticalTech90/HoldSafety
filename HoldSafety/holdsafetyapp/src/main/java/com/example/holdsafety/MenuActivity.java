@@ -39,7 +39,7 @@ public class MenuActivity extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
         user = mAuth.getCurrentUser();
-        logHelper = new LogHelper(getApplicationContext(), mAuth, this);
+        logHelper = new LogHelper(getApplicationContext(), mAuth, user,this);
 
 
         btnBack = findViewById(R.id.backArrow);

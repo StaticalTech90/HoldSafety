@@ -88,7 +88,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
         user = mAuth.getCurrentUser();
         db = FirebaseFirestore.getInstance();
         colRef = db.collection("users");
-        logHelper = new LogHelper(getApplicationContext(), mAuth, this);
+        logHelper = new LogHelper(LoginActivity.this, mAuth, user,this);
 
         txtEmailOrMobileNum = findViewById(R.id.txtEmailOrMobileNum);
         txtPassword = findViewById(R.id.txtCurrentPassword);
@@ -298,8 +298,6 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                                 });
                             } else {
                                 // If sign in fails, display a message to the user.
-//                                logHelper.saveToFirebase("onActivityResult", "ERROR",
-//                                        task1.getException().getLocalizedMessage());
 
                                 Toast.makeText(getApplicationContext(), "Failed Google Sign In", Toast.LENGTH_SHORT).show();
                                 Log.w(TAG, "signInWithCredential:failure", task1.getException());
@@ -321,8 +319,6 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
 
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-//        logHelper.saveToFirebase("onConnectionFailed", "ERROR",
-//                connectionResult.getErrorMessage());
         Toast.makeText(getApplicationContext(), "Please check your internet connection.", Toast.LENGTH_LONG).show();
     }
 
@@ -339,5 +335,11 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
     public void userSignUp() {
         Intent register = new Intent (this, RegisterActivity.class);
         startActivity(register);
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        finish();
     }
 }
