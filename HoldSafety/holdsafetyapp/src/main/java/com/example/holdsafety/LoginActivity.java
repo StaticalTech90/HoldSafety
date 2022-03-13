@@ -88,7 +88,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
         user = mAuth.getCurrentUser();
         db = FirebaseFirestore.getInstance();
         colRef = db.collection("users");
-        logHelper = new LogHelper(getApplicationContext(), mAuth, this);
+        logHelper = new LogHelper(LoginActivity.this, mAuth, user,this);
 
         txtEmailOrMobileNum = findViewById(R.id.txtEmailOrMobileNum);
         txtPassword = findViewById(R.id.txtCurrentPassword);

@@ -32,7 +32,7 @@ public class ForgotPasswordActivity extends AppCompatActivity {
 
         mAuth = FirebaseAuth.getInstance();
         user = mAuth.getCurrentUser();
-        logHelper = new LogHelper(getApplicationContext(), mAuth, this);
+        logHelper = new LogHelper(getApplicationContext(), mAuth, user,this);
 
         txtEmail = findViewById(R.id.txtEmail);
         btnBack = findViewById(R.id.backArrow);

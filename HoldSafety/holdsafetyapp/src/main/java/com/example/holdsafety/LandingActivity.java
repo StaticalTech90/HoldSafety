@@ -140,7 +140,7 @@ public class LandingActivity extends AppCompatActivity {
         db = FirebaseFirestore.getInstance();
         docRef = db.collection("users").document(userID);
         docRefBrgy = db.collection("barangay");
-        logHelper = new LogHelper(this, mAuth, this);
+        logHelper = new LogHelper(this, mAuth, user,this);
         isFromWidget = getIntent().getStringExtra("isFromWidget");
         mBluetoothAdapter = mBluetoothAdapter.getDefaultAdapter();
 
@@ -505,6 +505,7 @@ public class LandingActivity extends AppCompatActivity {
                                 nearestBrgySnap = brgySnap;
                             }
                             nearestBrgy = nearestBrgySnap.getString("Barangay");
+                            docDetails.put("Nearest Barangay", nearestBrgy);
                         }
                     }
 
