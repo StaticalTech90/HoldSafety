@@ -500,6 +500,8 @@ public class RegisterActivity extends AppCompatActivity {
                                         });
                             }))
                             .addOnFailureListener(e -> Log.w(TAG, "error", e));
+                    Intent login = new Intent(RegisterActivity.this, LoginActivity.class);
+                    startActivity(login);
                     finish();
                 } else {
                     // If sign up fails, display a message to the user.

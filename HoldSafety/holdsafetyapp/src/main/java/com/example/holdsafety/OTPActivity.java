@@ -133,7 +133,7 @@ public class OTPActivity extends AppCompatActivity {
                 if(requestCode == OTP_REQUEST_CODE_REGISTER) {
                     Log.i("REGISTRATION", "OTP Registration in progress...");
 
-                    Intent otpResult = new Intent(OTPActivity.this, LoginActivity.class);
+                    Intent otpResult = new Intent(OTPActivity.this, RegisterActivity.class);
                     setResult(RESULT_OK, otpResult);
                     startActivity(otpResult);
                     finish();
