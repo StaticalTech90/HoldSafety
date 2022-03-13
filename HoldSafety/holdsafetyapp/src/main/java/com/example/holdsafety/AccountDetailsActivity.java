@@ -77,7 +77,7 @@ public class AccountDetailsActivity extends AppCompatActivity {
         db = FirebaseFirestore.getInstance();
         userId = user.getUid();
         docRef = db.collection("users").document(userId);
-        logHelper = new LogHelper(getApplicationContext(), mAuth, this);
+        logHelper = new LogHelper(getApplicationContext(), mAuth, user, this);
 
         txtLastName = findViewById(R.id.txtLastName);
         txtFirstName = findViewById(R.id.txtFirstName);

@@ -62,7 +62,7 @@ public class AudioRecordingActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_audio_recording);
-        logHelper = new LogHelper(this, mAuth, this);
+        logHelper = new LogHelper(this, mAuth, user,this);
 
         btnAudio = findViewById(R.id.btnRecordAudio);
         mAuth = FirebaseAuth.getInstance();

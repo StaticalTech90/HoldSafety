@@ -140,7 +140,7 @@ public class LandingActivity extends AppCompatActivity {
         db = FirebaseFirestore.getInstance();
         docRef = db.collection("users").document(userID);
         docRefBrgy = db.collection("barangay");
-        logHelper = new LogHelper(this, mAuth, this);
+        logHelper = new LogHelper(this, mAuth, user,this);
         isFromWidget = getIntent().getStringExtra("isFromWidget");
         mBluetoothAdapter = mBluetoothAdapter.getDefaultAdapter();
 

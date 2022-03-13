@@ -71,7 +71,7 @@ public class VideoRecordingActivity extends AppCompatActivity {
         cameraLayout = findViewById(R.id.camera_preview);
         mAuth = FirebaseAuth.getInstance();
         user = mAuth.getCurrentUser();
-        logHelper = new LogHelper(this, mAuth, this);
+        logHelper = new LogHelper(this, mAuth, user,this);
 
         videoRef = FirebaseStorage.getInstance().getReference("emergencyVideos/");
 
