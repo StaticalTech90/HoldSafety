@@ -328,8 +328,8 @@ public class AccountDetailsActivity extends AppCompatActivity {
         if(requestCode == OTP_REQUEST_CODE_CHANGE_EMAIL && resultCode == RESULT_OK) {
             requestCode = 0;
             String email = user.getEmail();
-            String password = getIntent().getStringExtra("Password");
-            Log.d("CHANGEDETAILS", "email: " + user.getEmail() + ", pass: " + password);
+            String password = data.getStringExtra("Password");
+//            Log.d("CHANGEDETAILS", "email: " + user.getEmail() + ", pass: " + password);
 
             GoogleSignInAccount gsa = GoogleSignIn.getLastSignedInAccount(this);
             AuthCredential googleCredential;
@@ -605,6 +605,7 @@ public class AccountDetailsActivity extends AppCompatActivity {
         dialogRemoveAccount.setPositiveButton("Delete", (dialogInterface, i) -> {
             GoogleSignInAccount gsa = GoogleSignIn.getLastSignedInAccount(this);
             if(gsa == null) { // NON-GOOGLE ACC
+                Log.d("CHANGEDETAILS", "email: " + user.getEmail() + ", pass: " + userPassword);
                 AuthCredential credential = EmailAuthProvider.getCredential(user.getEmail(), userPassword);
 
                 user.reauthenticate(credential).addOnSuccessListener(unused -> {
