@@ -522,6 +522,8 @@
                         android:layout_height="wrap_content"
                         android:backgroundTint="@color/white"
 
+                        android:maxLength="11"
+
                         android:fontFamily="sans-serif-black"
                         android:maxLines="1"
                         android:scrollHorizontally="true"
