@@ -1,6 +1,7 @@
 package com.example.holdsafety;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -97,8 +98,13 @@ public class MenuActivity extends AppCompatActivity {
     }
 
     private void userManual() {
-        Intent intentUserManual = new Intent (MenuActivity.this, UserManualActivity.class);
-        startActivity(intentUserManual);
+        //Intent intentUserManual = new Intent (MenuActivity.this, UserManualActivity.class);
+        //intentUserManual.putExtra("pdf_url", "https://drive.google.com/file/d/1WlKSgesRQem4g6lQXVuObyPUkUDdg_8x/view?usp=sharing");
+        //startActivity(intentUserManual);
+        Intent intent =
+        new Intent("android.intent.action.VIEW",
+                Uri.parse("https://drive.google.com/file/d/1BdvEJrBXwXOuXHubaVcB40cQjbpml5c9/view?usp=sharing"));
+        startActivity(intent);
     }
 
     private void termsOfService() {

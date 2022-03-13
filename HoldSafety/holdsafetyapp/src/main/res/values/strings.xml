@@ -10,6 +10,44 @@
     <string name="contact_hint"><i>Please insert a message regarding your concern. </i></string>
     <!--This is the default client to prevent API error 10-->
     <string name="default_web_client">233680747912-m8q45hor79go5n8aqfkuneklnkshudqs.apps.googleusercontent.com</string>
+    <string name="about"><b>HoldSafety</b> is an application that helps in sending emergency messages in a shorter amount of time. With a press/hold of a button, HoldSafety will send an emergency alert message containing your location, to your designated emergency contact/s and the nearest barangay. Additionally, if permitted, the application can also initiate automatic video or audio recording that may serve as evidence. HoldSafety requires a smart phone with GPS to get your location, mobile load to send text messages, and internet connection to send emails.</string>
+    <string name="appInfo"><b>Application Info</b>
+<b>Version: </b>Above Android 5.0 (Lollipop)
+<b>Smartwatch Version: </b>Android 6.0
+<b>Developed by: </b>HoldSafety
+<b>Release Date: </b>2022</string>
+    <string name="termsOfService">The following terms and conditions (the "Terms") govern your use of the services we provide (the "Service"). These Terms constitute a legally binding agreement (the "Agreement") between you and HoldSafety. (the "HoldSafety"). HoldSafety may update the Terms from time to time without notice. Any changes in the Terms will be incorporated into a revised Agreement that we will post on the mobile app. Unless otherwise specified, such changes shall be effective when they are posted.</string>
+    <string name="usagePolicy">You agree to comply with all applicable laws and regulations in connection with your use of this service.You further agree that you, or anyone using the service under your account, will not engage in any of the following activities, and that any of the following activities constitute grounds for termination of your account:
+\n<br/>\n<br/>• Sending or transmitting unsolicited advertisements or content ("spam") over the Service, via e-mail or any other communication channel.
+\n<br/>• Sending, transmitting or receiving any illegal content over the Service, including but not limited to sexual exploitation, whether via e-mail, peer-to-peer file sharing, or any other electronic communication channel.
+\n<br/>• Uploading, downloading, posting, reproducing, or distribution of any content protected by copyright, or any other proprietary right, without first having obtained permission of the owner of the proprietary content.
+\n<br/>• Engaging in any conduct that restricts or inhibits any other users from using or enjoying the Service.
+\n<br/>• Attempting to access, probe, or connect to computing devices without proper authorization (i.e., any form of "hacking").
+\n<br/>• Using the Service for anything other than lawful purposes.
+\n<br/>\n<br/>Violations of this Usage Policy may result in termination of your account. Additionally, you may be held responsible for any and all damages incurred by HoldSafety , including any amounts charged by any outside entity due to said violation(s), including without limitation attorney’s fees and costs.
+\n<br/>HoldSafety enables you to download software, software updates or patches, or other utilities and tools onto your mobile device or Internet-enabled device ("Software"). HoldSafety grants to you a non-exclusive, limited license to use the software solely for the purpose stated by HoldSafety at the time the Software is made available to you and in accordance with these Terms. Modifying, distributing to unauthorized parties, reverse engineering, or otherwise using the Software in any way not expressly authorized by HoldSafety, is strictly prohibited.
+</string>
+    <string name="privacyPolicy">We are committed to your privacy, we will not collect or log traffic data or browsing activity from individual users connected to our application.
+\n<br/>When you use our app we may collect the following information:
+\n<br/>\n<br/>• Full Name
+\n<br/>• Date of Birth
+\n<br/>• Phone Number
+\n<br/>• Email Address
+\n<br/>• Internet Service Provider
+\n<br/>• Device OS Version
+\n<br/>• Device Manufacturer and Model
+\n<br/>• App Version
+\n<br/>• Current location
+\n<br/>\n<br/>We store this to be able to ensure the quality of service and maintain and optimize it.
+\n<br/>Our software may send diagnostic data to a third party analytics provider for the purpose of identifying connection errors and possible bugs in our application, as well as officials to ensure that the accuracy and response towards reports are maintained. The information collected is generic in nature and does not contain personally identifying information.
+</string>
+
+
+    <string name="disclaimers">We will strive to prevent interruptions to the Service. However, these are provided on an as is and as available basis, and we do not warrant, either expressly or by implication, the accuracy of any materials or information provided through the Service, or their suitability for any particular purpose. We expressly disclaim all warranties of any kind, whether express or implied, including, but not limited to, warranties of merchantability or fitness for a particular purpose, or non-infringement. We do not make any warranty that the Service will meet your requirements, or that it will be uninterrupted, timely, secure, or error free, or that defects, if any, will be corrected. You acknowledge that you access the Service at your own discretion and risk.
+\n<br/>\n<br/>We may, but do not have any obligation to, block information, transmissions or access to certain information, services, products or domains to protect the Service, our network, the public or our users. We are not a publisher of third-party content accessed through the Service and are not responsible for the content, accuracy, timeliness or delivery of any opinions, advice, statements, messages, services, graphics, data or any other information provided to or by third parties as accessible through the Service.
+\n<br/>\n<br/>HoldSafety will attempt to make the Service available at all times. However, the Service may be subject to unavailability for a variety of factors beyond our control including but not limited to emergencies, third party service failures, transmission, equipment or network problems or limitations, interference or signal strength, and may be interrupted, refused, limited or curtailed. We are not responsible for criminal offenses perpetrated through the Service nor are we responsible for reports ignored by the officials.. We may impose usage or service limits, suspend service, or block certain kinds of usage in our sole discretion to protect users or the Service. The accuracy and timeliness of data received is not guaranteed; delays or omissions may occur.
+\n<br/>\n<br/>HoldSafety does not as a matter of ordinary practice actively monitor user sessions for inappropriate behavior, nor do we maintain direct logs of customers Internet activities. However, HoldSafety reserves the right to investigate matters we consider to be violations of these Terms. We may, but are not obligated to, in our sole discretion, and without notice, remove, block, filter or restrict by any means any materials or information that we consider to be actual or potential violations of the restrictions set forth in these Terms, and any other activities that may subject HoldSafety or its customers to liability. HoldSafety disclaims any and all liability for any failure on its part to prevent such materials or information from being transmitted over the Service and/or into your computing device.
+</string>
 
 
     <string-array name="sex">
