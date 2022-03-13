@@ -505,6 +505,7 @@ public class LandingActivity extends AppCompatActivity {
                                 nearestBrgySnap = brgySnap;
                             }
                             nearestBrgy = nearestBrgySnap.getString("Barangay");
+                            docDetails.put("Nearest Barangay", nearestBrgy);
                         }
                     }
 
