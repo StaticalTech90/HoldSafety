@@ -139,22 +139,21 @@ public class OTPActivity extends AppCompatActivity {
                     finish();
                 } else if(requestCode == OTP_REQUEST_CODE_CHANGE_EMAIL) { //update the user's email
                     Log.i("Email", "Changing user's email in progress...");
-                    newData.put("Email", userEmail);
 
-                    Toast.makeText(getApplicationContext(), "Email updated", Toast.LENGTH_SHORT).show();
-                    Log.i("Email", "Email updated");
+                    Toast.makeText(getApplicationContext(), "Email verified", Toast.LENGTH_SHORT).show();
+                    Log.i("Email", "Email verified");
                     Log.d("Email", "Sending RESULT_OK back to AccountDetailsActivity...");
 
                     Intent otpResult = new Intent(OTPActivity.this, AccountDetailsActivity.class);
+                    otpResult.putExtra("Password", userPassword);
                     setResult(RESULT_OK, otpResult);
                     startActivity(otpResult);
                     finish();
                 } else if(requestCode == OTP_REQUEST_CODE_CHANGE_NUMBER) {
                     Log.i("MobileNumber", "Changing user's mobile number in progress...");
-                    newData.put("MobileNumber", userNumber);
 
-                    Toast.makeText(getApplicationContext(), "Mobile number updated", Toast.LENGTH_SHORT).show();
-                    Log.i("MobileNumber", "Mobile number updated");
+                    Toast.makeText(getApplicationContext(), "Mobile number verified", Toast.LENGTH_SHORT).show();
+                    Log.i("MobileNumber", "Mobile number verified");
                     Log.d("MobileNumber", "Sending RESULT_OK back to AccountDetailsActivity...");
 
                     Intent otpResult = new Intent(OTPActivity.this, AccountDetailsActivity.class);
