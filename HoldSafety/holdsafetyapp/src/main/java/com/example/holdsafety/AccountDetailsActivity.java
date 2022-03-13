@@ -657,4 +657,10 @@ public class AccountDetailsActivity extends AppCompatActivity {
     }
 
     private void goBack() { finish(); }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        finish();
+    }
 }
