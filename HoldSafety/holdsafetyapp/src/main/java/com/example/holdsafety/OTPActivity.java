@@ -21,7 +21,6 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
 import java.util.regex.Matcher;
@@ -42,7 +41,6 @@ public class OTPActivity extends AppCompatActivity {
     private int requestCode;
     String userEmail, userPassword, userNumber;
     String code = null; //OTP code
-    HashMap<String, Object> newData = new HashMap<>();
 
     private static final int OTP_REQUEST_CODE_REGISTER = 2000;
     public static final int OTP_REQUEST_CODE_CHANGE_EMAIL = 5000;

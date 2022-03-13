@@ -3,7 +3,6 @@ package com.example.holdsafety;
 import static android.content.ContentValues.TAG;
 
 import android.Manifest;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
@@ -29,10 +28,8 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
-import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.EmailAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
@@ -329,7 +326,6 @@ public class AccountDetailsActivity extends AppCompatActivity {
             requestCode = 0;
             String email = user.getEmail();
             String password = data.getStringExtra("Password");
-//            Log.d("CHANGEDETAILS", "email: " + user.getEmail() + ", pass: " + password);
 
             GoogleSignInAccount gsa = GoogleSignIn.getLastSignedInAccount(this);
             AuthCredential googleCredential;
@@ -419,67 +415,35 @@ public class AccountDetailsActivity extends AppCompatActivity {
 
             GoogleSignInAccount gsa = GoogleSignIn.getLastSignedInAccount(this);
             AuthCredential googleCredential = GoogleAuthProvider.getCredential(gsa.getIdToken(), null);
-            AuthCredential regularCredential = EmailAuthProvider.getCredential(user.getEmail(), userPassword);
 
             // GOOGLE ACC
-            user.reauthenticate(googleCredential).addOnSuccessListener(unused -> {
-                user.delete().addOnCompleteListener(task -> {
-                    Log.i("RemoveAccount", "starting task remove acc");
-                    if(task.isSuccessful()) {
-                        Log.i("RemoveAccount", "Removing Account task sucessful");
-                        //DELETE IMAGE
-                        imageRef.child(user.getUid()).delete()
-                                .addOnSuccessListener(v -> Toast.makeText(AccountDetailsActivity.this, "Deleted Image", Toast.LENGTH_LONG).show())
-                                .addOnFailureListener(v1 -> {
-                                    //Toast.makeText(AccountDetailsActivity.this, "Failed", Toast.LENGTH_LONG).show();
-                                });
+            user.reauthenticate(googleCredential).addOnSuccessListener(unused -> user.delete().addOnCompleteListener(task -> {
+                Log.i("RemoveAccount", "starting task remove acc");
+                if(task.isSuccessful()) {
+                    Log.i("RemoveAccount", "Removing Account task sucessful");
+                    //DELETE IMAGE
+                    imageRef.child(user.getUid()).delete()
+                            .addOnSuccessListener(v -> Toast.makeText(AccountDetailsActivity.this, "Deleted Image", Toast.LENGTH_LONG).show())
+                            .addOnFailureListener(v1 -> {
+                                //Toast.makeText(AccountDetailsActivity.this, "Failed", Toast.LENGTH_LONG).show();
+                            });
 
-                        logHelper.saveToFirebase("removeAccount", "SUCCESS", "Deleted Account" + user.getUid());
-                        db.collection("users").document(user.getUid()).delete();
-                        db.collection("emergencyContacts").document(user.getUid()).delete();
+                    logHelper.saveToFirebase("removeAccount", "SUCCESS", "Deleted Account" + user.getUid());
+                    db.collection("users").document(user.getUid()).delete();
+                    db.collection("emergencyContacts").document(user.getUid()).delete();
 
-                        Intent login = new Intent(AccountDetailsActivity.this, LoginActivity.class);
+                    Intent login = new Intent(AccountDetailsActivity.this, LoginActivity.class);
 
-                        //clears logged-in instance
-                        login.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                        startActivity(login);
-                        finish();
-                    } else {
-                        Log.i("RemoveAccount", "Removing Account task failed");
-                    }
-                });
-            });
+                    //clears logged-in instance
+                    login.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    startActivity(login);
+                    finish();
+                } else {
+                    Log.i("RemoveAccount", "Removing Account task failed");
+                }
+            }));
 
-//            // NON-GOOGLE ACC
-//            user.reauthenticate(regularCredential).addOnSuccessListener(unused -> {
-//                user.delete().addOnCompleteListener(task -> {
-//                    Log.i("RemoveAccount", "starting task remove acc");
-//                    if(task.isSuccessful()) {
-//                        Log.i("RemoveAccount", "Removing Account task sucessful");
-//                        //DELETE IMAGE
-//                        imageRef.child(user.getUid()).delete()
-//                                .addOnSuccessListener(v -> Toast.makeText(AccountDetailsActivity.this, "Deleted Image", Toast.LENGTH_LONG).show())
-//                                .addOnFailureListener(v1 -> {
-//                                    //Toast.makeText(AccountDetailsActivity.this, "Failed", Toast.LENGTH_LONG).show();
-//                                });
-//
-//                        logHelper.saveToFirebase("removeAccount", "SUCCESS", "Deleted Account" + user.getUid());
-//                        db.collection("users").document(user.getUid()).delete();
-//                        db.collection("emergencyContacts").document(user.getUid()).delete();
-//
-//                        Intent login = new Intent(AccountDetailsActivity.this, LoginActivity.class);
-//
-//                        //clears logged-in instance
-//                        login.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-//                        startActivity(login);
-//                        finish();
-//                    } else {
-//                        Log.i("RemoveAccount", "Removing Account task failed");
-//                    }
-//                });
-//            });
         }
-
         finish();
     }
 
