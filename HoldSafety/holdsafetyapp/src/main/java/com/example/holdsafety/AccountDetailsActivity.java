@@ -554,16 +554,6 @@ public class AccountDetailsActivity extends AppCompatActivity {
                     user.reauthenticate(credential).addOnCompleteListener(task -> {
                         Log.d("CHANGEDETAILS", "reauth task begins");
                         if (task.isSuccessful()) {
-//                            //updates email in Auth
-//                            user.updateEmail(newEmail).addOnCompleteListener(task1 -> {
-//                                if (task1.isSuccessful()) {
-//                                    logHelper.saveToFirebase("onActivityResult", "SUCCESS", "User email address updated");
-//                                    Log.d("CHANGEDETAILS", "User email address updated.");
-//
-//                                    //updates email in document
-//                                    docRef.update("Email", newEmail);
-//                                }
-//                            });
                             Log.d("CHANGEDETAILS", "launch intent");
                             otpResult.putExtra("Password", userPassword);
                             startActivityForResult(otpResult, OTP_REQUEST_CODE_CHANGE_EMAIL);
@@ -574,10 +564,6 @@ public class AccountDetailsActivity extends AppCompatActivity {
                         isNumberChanged = false;
                         isEmailChanged = false;
                         userPassword = "";
-
-//                        //refresh activity
-//                        finish();
-//                        startActivity(getIntent());
                     });
                 }
             });
@@ -605,37 +591,95 @@ public class AccountDetailsActivity extends AppCompatActivity {
         dialogRemoveAccount.setPositiveButton("Delete", (dialogInterface, i) -> {
             GoogleSignInAccount gsa = GoogleSignIn.getLastSignedInAccount(this);
             if(gsa == null) { // NON-GOOGLE ACC
-                Log.d("CHANGEDETAILS", "email: " + user.getEmail() + ", pass: " + userPassword);
-                AuthCredential credential = EmailAuthProvider.getCredential(user.getEmail(), userPassword);
+                // DIALOG START
+                dialogSaveChanges = new AlertDialog.Builder(AccountDetailsActivity.this);
+                dialogSaveChanges.setTitle("Save Changes");
+                dialogSaveChanges.setMessage("Please re-enter your password to save your changes.");
+                EditText txtInputPassword;
 
-                user.reauthenticate(credential).addOnSuccessListener(unused -> {
-                    user.delete().addOnCompleteListener(task -> {
-                        Log.i("RemoveAccount", "starting task remove acc");
-                        if(task.isSuccessful()) {
-                            Log.i("RemoveAccount", "Removing Account task sucessful");
-                            //DELETE IMAGE
-                            imageRef.child(user.getUid()).delete()
-                                    .addOnSuccessListener(v -> Toast.makeText(AccountDetailsActivity.this, "Deleted Image", Toast.LENGTH_LONG).show())
-                                    .addOnFailureListener(v1 -> {
-                                        //Toast.makeText(AccountDetailsActivity.this, "Failed", Toast.LENGTH_LONG).show();
-                                    });
+                txtInputPassword = new EditText(AccountDetailsActivity.this);
+                dialogSaveChanges.setView(txtInputPassword);
 
-                            logHelper.saveToFirebase("removeAccount", "SUCCESS", "Deleted Account" + user.getUid());
-                            db.collection("users").document(user.getUid()).delete();
-                            db.collection("emergencyContacts").document(user.getUid()).delete();
+                txtInputPassword.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
 
-                            Intent login = new Intent(AccountDetailsActivity.this, LoginActivity.class);
+                //saves user input if not empty
+                txtInputPassword.addTextChangedListener(new TextWatcher() {
+                    @Override
+                    public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) { }
 
-                            //clears logged-in instance
-                            login.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                            startActivity(login);
-                            finish();
-                        } else {
-                            Toast.makeText(AccountDetailsActivity.this, "Update Email Failed" + "\nChanges not Saved", Toast.LENGTH_LONG).show();
-                            Log.i("RemoveAccount", "Removing Account task failed. Incorrect password");
-                        }
-                    });
+                    @Override
+                    public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                        userPassword = txtInputPassword.getText().toString().trim();
+                    }
+
+                    @Override
+                    public void afterTextChanged(Editable editable) { }
                 });
+
+                dialogSaveChanges.setPositiveButton("Done", (dialogInterface1, i1) -> {
+                    //Do nothing here, override this button later to change the close behaviour
+                });
+
+                dialogSaveChanges.setNegativeButton("Cancel", (dialogInterface1, i1) -> {
+                    dialogInterface1.dismiss();
+
+                    //reset values
+                    isEmailChanged = false;
+                    isNumberChanged = false;
+                    userPassword = "";
+
+                    finish();
+                    startActivity(getIntent());
+                });
+
+                passwordInputDialog = dialogSaveChanges.create();
+                passwordInputDialog.show();
+
+                passwordInputDialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(v -> {
+                    if (TextUtils.isEmpty(userPassword)) {
+                        txtInputPassword.setError("Password is required");
+                    } else {
+                        userPassword = txtInputPassword.getText().toString();
+                        Log.d("CHANGEDETAILS", "password: " + userPassword);
+
+                        AuthCredential credential = EmailAuthProvider.getCredential(user.getEmail(), userPassword);
+                        Log.d("CHANGEDETAILS", "email: " + user.getEmail() + ", pass: " + userPassword);
+
+                        user.reauthenticate(credential).addOnSuccessListener(unused -> user.delete().addOnCompleteListener(task -> {
+                            Log.i("RemoveAccount", "starting task remove acc");
+                            if(task.isSuccessful()) {
+                                Log.i("RemoveAccount", "Removing Account task sucessful");
+                                //DELETE IMAGE
+                                imageRef.child(user.getUid()).delete()
+                                        .addOnSuccessListener(v1 -> Toast.makeText(AccountDetailsActivity.this, "Deleted Image", Toast.LENGTH_LONG).show())
+                                        .addOnFailureListener(v1 -> {
+                                            //Toast.makeText(AccountDetailsActivity.this, "Failed", Toast.LENGTH_LONG).show();
+                                        });
+
+                                logHelper.saveToFirebase("removeAccount", "SUCCESS", "Deleted Account" + user.getUid());
+                                db.collection("users").document(user.getUid()).delete();
+                                db.collection("emergencyContacts").document(user.getUid()).delete();
+
+                                Intent login = new Intent(AccountDetailsActivity.this, LoginActivity.class);
+
+                                //clears logged-in instance
+                                login.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                startActivity(login);
+                                finish();
+                            } else {
+                                Toast.makeText(AccountDetailsActivity.this, "Update Email Failed" + "\nChanges not Saved", Toast.LENGTH_LONG).show();
+                                Log.i("RemoveAccount", "Removing Account task failed. Incorrect password");
+                            }
+                        }));
+                    }
+                });
+                //end of dialog code
+
+
+
+
+
+
             } else { // GOOGLE ACC
                 Intent otpResult = new Intent(AccountDetailsActivity.this, OTPActivity.class);
                 otpResult.putExtra("RequestCode", OTP_REQUEST_CODE_REMOVE_ACCOUNT);
