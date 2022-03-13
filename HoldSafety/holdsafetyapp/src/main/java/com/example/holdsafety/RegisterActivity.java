@@ -361,8 +361,6 @@ public class RegisterActivity extends AppCompatActivity {
                                otp.putExtra("Email", email);
                                otp.putExtra("Password", password);
 
-                              // logHelper.saveToFirebase("userRegister", "OTP REQUEST", "Starting otp request");
-
                                Log.d("REQUEST", "STARTING OTPACTIVITY...");
                                Log.d("REQUEST", "mAuth = " + mAuth);
                                startActivityForResult(otp, OTP_REQUEST_CODE_REGISTER);
@@ -483,17 +481,11 @@ public class RegisterActivity extends AppCompatActivity {
                                 db.collection("users").document(user.getUid()).update(docUsers)
                                         .addOnSuccessListener(aVoid -> {
 
-                                            logHelper.saveToFirebase("onActivityResult",
-                                                    "SUCCESS", "Image pushed to document");
-
                                             //Toast.makeText(getApplicationContext(), "pushed image to document", Toast.LENGTH_SHORT).show();
                                             Log.i(TAG, "Image pushed");
                                             startActivity(new Intent(RegisterActivity.this, LoginActivity.class));
                                         })
                                         .addOnFailureListener(e -> {
-
-                                            logHelper.saveToFirebase("onActivityResult",
-                                                    "ERROR", e.getLocalizedMessage());
 
                                             //Toast.makeText(getApplicationContext(), "Error writing document", Toast.LENGTH_SHORT).show();
                                             Log.w(TAG, "Error writing document", e);
@@ -506,7 +498,7 @@ public class RegisterActivity extends AppCompatActivity {
                     logHelper.saveToFirebase("onActivityResult",
                             "ERROR", task.getException().getLocalizedMessage());
                     Log.w(TAG, "signUpWithEmailPassword:failure", task.getException());
-                    //Toast.makeText(getApplicationContext(), "Signup Failed", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(RegisterActivity.this, task.getException().getLocalizedMessage(), Toast.LENGTH_SHORT).show();
                 }
             });
 
