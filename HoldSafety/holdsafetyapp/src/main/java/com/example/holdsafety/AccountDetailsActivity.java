@@ -29,10 +29,15 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
+import com.google.android.gms.auth.api.Auth;
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.EmailAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
@@ -309,38 +314,70 @@ public class AccountDetailsActivity extends AppCompatActivity {
 
         //For email change
         if(requestCode == OTP_REQUEST_CODE_CHANGE_EMAIL && resultCode == RESULT_OK) {
-            AuthCredential credential = EmailAuthProvider
-                    .getCredential(user.getEmail(),userPassword);
+            GoogleSignInAccount gsa = GoogleSignIn.getLastSignedInAccount(this);
+            AuthCredential googleCredential = GoogleAuthProvider.getCredential(gsa.getIdToken(), null);
+            AuthCredential regularCredential = EmailAuthProvider.getCredential(user.getEmail(), userPassword);
 
-            user.reauthenticate(credential)
-                    .addOnCompleteListener(task -> {
-                        if (task.isSuccessful()) {
-                            //updates email in Auth
-                            user.updateEmail(newEmail).addOnCompleteListener(task1 -> {
-                                        if (task1.isSuccessful()) {
-                                            logHelper.saveToFirebase("onActivityResult", "SUCCESS", "User email address updated");
-                                            Log.d(TAG, "User email address updated.");
+            // GOOGLE ACC
+            user.reauthenticate(googleCredential).addOnCompleteListener(task -> {
+                if (task.isSuccessful()) {
+                    //updates email in Auth
+                    user.updateEmail(newEmail).addOnCompleteListener(task1 -> {
+                        if (task1.isSuccessful()) {
+                            logHelper.saveToFirebase("onActivityResult", "SUCCESS", "User email address updated");
+                            Log.d(TAG, "User email address updated.");
 
-                                            //updates email in document
-                                            docRef.update("Email", newEmail);
-                                        }
-                                //reset values
-                                isNumberChanged = false;
-                                isEmailChanged = false;
-                                userPassword = "";
-
-                                //refresh activity
-                                finish();
-                                startActivity(getIntent());
-                            });
-                        } else {
-                            isNumberChanged = false;
-                            isEmailChanged = false;
-                            userPassword = "";
-
-                            finish();
-                            startActivity(getIntent());
+                            //updates email in document
+                            docRef.update("Email", newEmail);
                         }
+                        //reset values
+                        isNumberChanged = false;
+                        isEmailChanged = false;
+                        userPassword = "";
+
+                        //refresh activity
+                        finish();
+                        startActivity(getIntent());
+                    });
+                } else {
+                    isNumberChanged = false;
+                    isEmailChanged = false;
+                    userPassword = "";
+
+                    finish();
+                    startActivity(getIntent());
+                }
+                    });
+
+            // NON-GOOGLE ACC
+            user.reauthenticate(regularCredential).addOnCompleteListener(task -> {
+                if (task.isSuccessful()) {
+                    //updates email in Auth
+                    user.updateEmail(newEmail).addOnCompleteListener(task1 -> {
+                                if (task1.isSuccessful()) {
+                                    logHelper.saveToFirebase("onActivityResult", "SUCCESS", "User email address updated");
+                                    Log.d(TAG, "User email address updated.");
+
+                                    //updates email in document
+                                    docRef.update("Email", newEmail);
+                                }
+                        //reset values
+                        isNumberChanged = false;
+                        isEmailChanged = false;
+                        userPassword = "";
+
+                        //refresh activity
+                        finish();
+                        startActivity(getIntent());
+                    });
+                } else {
+                    isNumberChanged = false;
+                    isEmailChanged = false;
+                    userPassword = "";
+
+                    finish();
+                    startActivity(getIntent());
+                }
                     });
         } else {
             //reset values
@@ -384,34 +421,68 @@ public class AccountDetailsActivity extends AppCompatActivity {
 
         //For remove account
         if(requestCode == OTP_REQUEST_CODE_REMOVE_ACCOUNT && resultCode == RESULT_OK) {
-            user = FirebaseAuth.getInstance().getCurrentUser();
             Log.d("RemoveAccount", "current user: " + user.getUid());
 
-            user.delete().addOnCompleteListener(task -> {
-                Log.i("RemoveAccount", "starting task remove acc");
-                if(task.isSuccessful()) {
-                    Log.i("RemoveAccount", "Removing Account task sucessful");
-                    //DELETE IMAGE
-                    imageRef.child(user.getUid()).delete()
-                            .addOnSuccessListener(v -> Toast.makeText(AccountDetailsActivity.this, "Deleted Image", Toast.LENGTH_LONG).show())
-                            .addOnFailureListener(v1 -> {
-                        //Toast.makeText(AccountDetailsActivity.this, "Failed", Toast.LENGTH_LONG).show();
-                    });
+            GoogleSignInAccount gsa = GoogleSignIn.getLastSignedInAccount(this);
+            AuthCredential googleCredential = GoogleAuthProvider.getCredential(gsa.getIdToken(), null);
+            AuthCredential regularCredential = EmailAuthProvider.getCredential(user.getEmail(), userPassword);
 
-                    logHelper.saveToFirebase("removeAccount", "SUCCESS", "Deleted Account" + user.getUid());
-                    db.collection("users").document(user.getUid()).delete();
-                    db.collection("emergencyContacts").document(user.getUid()).delete();
+            // GOOGLE ACC
+            user.reauthenticate(googleCredential).addOnSuccessListener(unused -> {
+                user.delete().addOnCompleteListener(task -> {
+                    Log.i("RemoveAccount", "starting task remove acc");
+                    if(task.isSuccessful()) {
+                        Log.i("RemoveAccount", "Removing Account task sucessful");
+                        //DELETE IMAGE
+                        imageRef.child(user.getUid()).delete()
+                                .addOnSuccessListener(v -> Toast.makeText(AccountDetailsActivity.this, "Deleted Image", Toast.LENGTH_LONG).show())
+                                .addOnFailureListener(v1 -> {
+                                    //Toast.makeText(AccountDetailsActivity.this, "Failed", Toast.LENGTH_LONG).show();
+                                });
 
-                    Intent login = new Intent(AccountDetailsActivity.this, LoginActivity.class);
+                        logHelper.saveToFirebase("removeAccount", "SUCCESS", "Deleted Account" + user.getUid());
+                        db.collection("users").document(user.getUid()).delete();
+                        db.collection("emergencyContacts").document(user.getUid()).delete();
 
-                    //clears logged-in instance
-                    login.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                        Intent login = new Intent(AccountDetailsActivity.this, LoginActivity.class);
 
-                    startActivity(login);
-                    finish();
-                } else {
-                    Log.i("RemoveAccount", "Removing Account task failed");
-                }
+                        //clears logged-in instance
+                        login.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                        startActivity(login);
+                        finish();
+                    } else {
+                        Log.i("RemoveAccount", "Removing Account task failed");
+                    }
+                });
+            });
+
+            // NON-GOOGLE ACC
+            user.reauthenticate(googleCredential).addOnSuccessListener(unused -> {
+                user.delete().addOnCompleteListener(task -> {
+                    Log.i("RemoveAccount", "starting task remove acc");
+                    if(task.isSuccessful()) {
+                        Log.i("RemoveAccount", "Removing Account task sucessful");
+                        //DELETE IMAGE
+                        imageRef.child(user.getUid()).delete()
+                                .addOnSuccessListener(v -> Toast.makeText(AccountDetailsActivity.this, "Deleted Image", Toast.LENGTH_LONG).show())
+                                .addOnFailureListener(v1 -> {
+                                    //Toast.makeText(AccountDetailsActivity.this, "Failed", Toast.LENGTH_LONG).show();
+                                });
+
+                        logHelper.saveToFirebase("removeAccount", "SUCCESS", "Deleted Account" + user.getUid());
+                        db.collection("users").document(user.getUid()).delete();
+                        db.collection("emergencyContacts").document(user.getUid()).delete();
+
+                        Intent login = new Intent(AccountDetailsActivity.this, LoginActivity.class);
+
+                        //clears logged-in instance
+                        login.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                        startActivity(login);
+                        finish();
+                    } else {
+                        Log.i("RemoveAccount", "Removing Account task failed");
+                    }
+                });
             });
         }
         finish();
