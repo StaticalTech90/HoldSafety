@@ -11,9 +11,11 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -124,18 +126,20 @@ public class MenuActivity extends AppCompatActivity {
 
     private void logoutUser() {
             intentLogout = new Intent(MenuActivity.this, LoginActivity.class);
+
             GoogleSignInOptions gso = new GoogleSignInOptions
                     .Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                     .requestIdToken("233680747912-m8q45hor79go5n8aqfkuneklnkshudqs.apps.googleusercontent.com")
                     .requestEmail()
                     .build();
-
             GoogleSignInClient gsc = GoogleSignIn.getClient(MenuActivity.this, gso);
+
             gsc.signOut().addOnSuccessListener(new OnSuccessListener<Void>() {
                 @Override
                 public void onSuccess(Void unused) {
                     logHelper.saveToFirebase("logoutUser", "SUCCESS", "User signed out");
                     //Toast.makeText(MenuActivity.this, "Sign Out", Toast.LENGTH_SHORT).show();
+
                     startActivity(intentLogout);
 
                     //clears logged-in instance

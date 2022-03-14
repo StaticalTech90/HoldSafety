@@ -129,7 +129,7 @@ public class OTPActivity extends AppCompatActivity {
 
                     Intent otpResult = new Intent(OTPActivity.this, RegisterActivity.class);
                     setResult(RESULT_OK, otpResult);
-                    startActivity(otpResult);
+                    //startActivity(otpResult);
                     finish();
                 } else if(requestCode == OTP_REQUEST_CODE_CHANGE_EMAIL) { //update the user's email
                     Log.i("Email", "Changing user's email in progress...");

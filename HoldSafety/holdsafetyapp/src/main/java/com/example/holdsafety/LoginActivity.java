@@ -74,6 +74,8 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                 landing.putExtra("isFromWidget", "true");
                 Toast.makeText(getApplicationContext(), "Inside IF Widget" , Toast.LENGTH_SHORT).show();
             }
+
+            Toast.makeText(LoginActivity.this, "Welcome back, "+user.getDisplayName(), Toast.LENGTH_LONG).show();
             startActivity(landing);
         }
     }

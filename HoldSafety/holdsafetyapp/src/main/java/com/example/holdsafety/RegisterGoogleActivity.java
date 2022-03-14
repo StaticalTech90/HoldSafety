@@ -59,7 +59,6 @@ public class RegisterGoogleActivity extends AppCompatActivity {
     FirebaseUser user;
     FirebaseFirestore db;
     StorageReference imageRef;
-    LogHelper logHelper;
 
     ImageView btnBack;
     EditText etMiddleName, etMobileNo, etBirthDate;
@@ -88,10 +87,6 @@ public class RegisterGoogleActivity extends AppCompatActivity {
         user = mAuth.getCurrentUser();
         db = FirebaseFirestore.getInstance();
         imageRef = FirebaseStorage.getInstance().getReference("id");
-
-        if(user==null){
-            logHelper = new LogHelper(this, mAuth, user,this);
-        }
 
         Intent intent = getIntent();
         googleSignInMap = (HashMap<String, String>)intent.getSerializableExtra("googleSignInMap");
@@ -199,16 +194,14 @@ public class RegisterGoogleActivity extends AppCompatActivity {
 
             db.collection("users").document(userId).set(docUsers)
                     .addOnSuccessListener(aVoid -> {
-                        logHelper.saveToFirebase("(GAuth) userRegister", "SUCCESS",
-                                "userdata pushed to database");
+
                         Intent landing = new Intent(RegisterGoogleActivity.this,
                                 LandingActivity.class);
                         startActivity(landing);
                         finish();
                     })
                     .addOnFailureListener(e -> {
-                        logHelper.saveToFirebase("(GAuth) userRegister", "ERROR",
-                                e.getLocalizedMessage());
+
                         Toast.makeText(getApplicationContext(),
                                 "Error writing document",
                                 Toast.LENGTH_SHORT).show();
@@ -229,14 +222,12 @@ public class RegisterGoogleActivity extends AppCompatActivity {
 
                         db.collection("users").document(user.getUid()).set(docUsers)
                                 .addOnSuccessListener(aVoid -> {
-                                    logHelper.saveToFirebase("(GAuth) uploadPhotoToStorage", "SUCCESS",
-                                            "pushed image to document");
+
                                     Toast.makeText(getApplicationContext(), "pushed image to document", Toast.LENGTH_SHORT).show();
                                     Log.i(TAG, "Image pushed");
                                 })
                                 .addOnFailureListener(e -> {
-                                    logHelper.saveToFirebase("(GAuth) uploadPhotoToStorage", "ERROR",
-                                            e.getLocalizedMessage());
+
                                     Toast.makeText(getApplicationContext(), "Error writing document", Toast.LENGTH_SHORT).show();
                                     Log.w(TAG, "Error writing document", e);
                                 });

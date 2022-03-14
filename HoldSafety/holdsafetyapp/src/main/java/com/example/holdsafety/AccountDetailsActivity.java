@@ -30,6 +30,9 @@ import androidx.core.app.ActivityCompat;
 
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.auth.api.signin.GoogleSignInApi;
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.EmailAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
@@ -329,7 +332,6 @@ public class AccountDetailsActivity extends AppCompatActivity {
 
             GoogleSignInAccount gsa = GoogleSignIn.getLastSignedInAccount(this);
             AuthCredential googleCredential;
-            AuthCredential regularCredential = EmailAuthProvider.getCredential(email, password);
 
             // GOOGLE ACC
             if(gsa != null) {
@@ -349,9 +351,9 @@ public class AccountDetailsActivity extends AppCompatActivity {
                     } else {
                         Log.d("CHANGEDETAILS", "User email address NOT updated.");
                     }
-
                 });
             } else { // NON-GOOGLE ACC
+                AuthCredential regularCredential = EmailAuthProvider.getCredential(email, password);
                 user.reauthenticate(regularCredential).addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         //updates email in Auth
@@ -442,6 +444,7 @@ public class AccountDetailsActivity extends AppCompatActivity {
         startActivity(new Intent(AccountDetailsActivity.this, ChangePasswordActivity.class));
     }
 
+    //TODO: after user changes email, the old account can still log-in
     public void changeEmail(String newEmail){
         GoogleSignInAccount gsa = GoogleSignIn.getLastSignedInAccount(this);
         Log.d("CHANGEDETAILS", "gsa: " + gsa);
@@ -529,11 +532,93 @@ public class AccountDetailsActivity extends AppCompatActivity {
     }
 
     public void changeNumber(String newMobileNumber) {
+        GoogleSignInAccount gsa = GoogleSignIn.getLastSignedInAccount(this);
+        Log.d("CHANGEDETAILS", "gsa: " + gsa);
+
         Intent otpResult = new Intent(AccountDetailsActivity.this, OTPActivity.class);
         otpResult.putExtra("RequestCode", OTP_REQUEST_CODE_CHANGE_NUMBER);
         otpResult.putExtra("Email", user.getEmail());
         otpResult.putExtra("MobileNumber", newMobileNumber);
-        startActivityForResult(otpResult, OTP_REQUEST_CODE_CHANGE_NUMBER);
+
+        if(gsa == null) { // NON-GOOGLE ACC
+            Log.d("CHANGEDETAILS", "show dialog box for pass");
+            // DIALOG START
+            dialogSaveChanges = new AlertDialog.Builder(AccountDetailsActivity.this);
+            dialogSaveChanges.setTitle("Save Changes");
+            dialogSaveChanges.setMessage("Please re-enter your password to save your changes.");
+            EditText txtInputPassword;
+
+            txtInputPassword = new EditText(AccountDetailsActivity.this);
+            dialogSaveChanges.setView(txtInputPassword);
+
+            txtInputPassword.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+
+            //saves user input if not empty
+            txtInputPassword.addTextChangedListener(new TextWatcher() {
+                @Override
+                public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) { }
+
+                @Override
+                public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                    userPassword = txtInputPassword.getText().toString().trim();
+                }
+
+                @Override
+                public void afterTextChanged(Editable editable) { }
+            });
+
+            dialogSaveChanges.setPositiveButton("Done", (dialogInterface, i) -> {
+                //Do nothing here, override this button later to change the close behaviour
+            });
+
+            dialogSaveChanges.setNegativeButton("Cancel", (dialogInterface, i) -> {
+                dialogInterface.dismiss();
+
+                //reset values
+                isEmailChanged = false;
+                isNumberChanged = false;
+                userPassword = "";
+
+                finish();
+                startActivity(getIntent());
+            });
+
+            passwordInputDialog = dialogSaveChanges.create();
+            passwordInputDialog.show();
+
+            passwordInputDialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(v -> {
+                if (TextUtils.isEmpty(userPassword)) {
+                    txtInputPassword.setError("Password is required");
+                } else {
+                    userPassword = txtInputPassword.getText().toString();
+                    Log.d("CHANGEDETAILS", "password: " + userPassword);
+
+                    AuthCredential credential = EmailAuthProvider.getCredential(user.getEmail(), userPassword);
+                    Log.d("CHANGEDETAILS", "credential: " + credential);
+
+                    user.reauthenticate(credential).addOnCompleteListener(task -> {
+                        Log.d("CHANGEDETAILS", "reauth task begins");
+                        if (task.isSuccessful()) {
+                            Log.d("CHANGEDETAILS", "launch intent");
+                            docRef.update("MobileNumber", newMobileNumber);
+                            isNumberChanged = false;
+                            logHelper.saveToFirebase("changeNumber", "SUCCESS", "Mobile Number Successfully Changed");
+                            passwordInputDialog.dismiss();
+                            Toast.makeText(this, "Phone number changed successfully.", Toast.LENGTH_SHORT).show();
+                        } else {
+                            Log.d("CHANGEDETAILS", "User phone number NOT updated.");
+                        }
+                        //reset values
+                        isNumberChanged = false;
+                        isEmailChanged = false;
+                        userPassword = "";
+                    });
+                }
+            });
+            //end of dialog code
+        } else { // GOOGLE ACC
+            startActivityForResult(otpResult, OTP_REQUEST_CODE_CHANGE_NUMBER);
+        }
     }
 
     public void removeAccount() {
