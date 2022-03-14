@@ -367,7 +367,7 @@ public class RegisterActivity extends AppCompatActivity {
                            }
 
                        } else { //ACCOUNT EXISTS, DISPLAY ERROR
-                           //logHelper.saveToFirebase("userRegister", "ERROR", "Duplicate email");
+                           logHelper.saveToFirebase("userRegister", "ERROR", "Duplicate email");
                            Toast.makeText(RegisterActivity.this, "Email already in use", Toast.LENGTH_LONG).show();
                            etEmail.setError("This email is already in use");
                        }

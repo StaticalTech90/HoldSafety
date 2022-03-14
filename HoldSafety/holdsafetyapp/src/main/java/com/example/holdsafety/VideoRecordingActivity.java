@@ -266,8 +266,8 @@ public class VideoRecordingActivity extends AppCompatActivity {
     private File getOutputMediaFile() {
         // To be safe, you should check that the SDCard is mounted
         // using Environment.getExternalStorageState() before doing this.
-        File mediaStorageDir = new File(Environment.getExternalStoragePublicDirectory(
-                Environment.DIRECTORY_PICTURES), "EmergencyVideo");
+        File mediaStorageDir = new File(getFilesDir(), "EmergencyVideo");
+        Log.i("Path", "the path is" + mediaStorageDir.getPath());
         // This location works best if you want the created images to be shared
         // between applications and persist after your app has been uninstalled.
 

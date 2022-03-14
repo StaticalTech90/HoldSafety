@@ -352,8 +352,8 @@ public class LandingActivity extends AppCompatActivity {
                 ActivityCompat.requestPermissions(this, permissions, STORAGE_WRITE_REQ_CODE);
             } else if (ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
                     == PackageManager.PERMISSION_GRANTED){
+                setPermissions();
                 //Toast.makeText(this, "Permissions granted.", Toast.LENGTH_SHORT).show();
-
             } else {
                 Intent settingsIntent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
                 Uri uri = Uri.fromParts("package", getPackageName(), null);
@@ -382,42 +382,42 @@ public class LandingActivity extends AppCompatActivity {
     @SuppressLint("MissingPermission")
     private void getCurrentLocation() {
         fusedLocationProviderClient.getLastLocation()
-                .addOnCompleteListener(task -> {
-                    Location location = task.getResult();
-                    if (location == null) {
-                        //TODO DISPLAY GPS DIALOG
-                        showGPSDialog();
-                    } else {
-                        String address="";
-                        Geocoder geocoder = new Geocoder(this, Locale.getDefault());
+            .addOnCompleteListener(task -> {
+                Location location = task.getResult();
+                if (location == null) {
+                    //TODO DISPLAY GPS DIALOG
+                    showGPSDialog();
+                } else {
+                    String address="";
+                    Geocoder geocoder = new Geocoder(this, Locale.getDefault());
 
-                        try {
-                            List<Address> addresses = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
-                            if (addresses != null) {
-                                Address returnedAddress = addresses.get(0);
-                                StringBuilder strReturnedAddress = new StringBuilder("");
+                    try {
+                        List<Address> addresses = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
+                        if (addresses != null) {
+                            Address returnedAddress = addresses.get(0);
+                            StringBuilder strReturnedAddress = new StringBuilder("");
 
-                                for (int i = 0; i <= returnedAddress.getMaxAddressLineIndex(); i++) {
-                                    strReturnedAddress.append(returnedAddress.getAddressLine(i)).append("\n");
-                                }
-                                address = strReturnedAddress.toString();
-                                Log.w("User Address", address);
-                            } else {
-                                Log.w("User Address", "No Address returned!");
+                            for (int i = 0; i <= returnedAddress.getMaxAddressLineIndex(); i++) {
+                                strReturnedAddress.append(returnedAddress.getAddressLine(i)).append("\n");
                             }
-                            coordsLat = Double.toString(location.getLatitude());
-                            coordsLon = Double.toString(location.getLongitude());
-                            docDetails.put("Lat", coordsLat);
-                            docDetails.put("Lon", coordsLon);
-
-                            logHelper.saveToFirebase("getCurrentLocation", "Success", address);
-                            getNearestBrgyLocation(location, address);
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                            logHelper.saveToFirebase("getCurrentLocation", "Error", e.getLocalizedMessage());
+                            address = strReturnedAddress.toString();
+                            Log.w("User Address", address);
+                        } else {
+                            Log.w("User Address", "No Address returned!");
                         }
+                        coordsLat = Double.toString(location.getLatitude());
+                        coordsLon = Double.toString(location.getLongitude());
+                        docDetails.put("Lat", coordsLat);
+                        docDetails.put("Lon", coordsLon);
+
+                        logHelper.saveToFirebase("getCurrentLocation", "Success", address);
+                        getNearestBrgyLocation(location, address);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                        logHelper.saveToFirebase("getCurrentLocation", "Error", e.getLocalizedMessage());
                     }
-                });
+                }
+            });
     }
 
     private void showGPSDialog() {

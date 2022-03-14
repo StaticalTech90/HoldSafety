@@ -31,7 +31,7 @@ public class OTPActivity extends AppCompatActivity {
     FirebaseFirestore db;
     FirebaseUser user;
     StorageReference imageRef;
-    //LogHelper logHelper;
+    LogHelper logHelper;
 
     ImageView btnBack;
     Button btnSendCode;
@@ -57,7 +57,7 @@ public class OTPActivity extends AppCompatActivity {
         user = mAuth.getCurrentUser();
         db = FirebaseFirestore.getInstance();
         imageRef = FirebaseStorage.getInstance().getReference("id");
-        //logHelper = new LogHelper(getApplicationContext(), mAuth, user, this);
+        logHelper = new LogHelper(OTPActivity.this, mAuth, user, this);
 
         etEmail = findViewById(R.id.txtEmail);
         txtTimeRemaining = findViewById(R.id.txtTimeRemaining);
@@ -94,7 +94,7 @@ public class OTPActivity extends AppCompatActivity {
 
             if(emailMatcher.matches()) {
                 DialogEmailVerify dialog = new DialogEmailVerify(this);
-                //logHelper.saveToFirebase("sendCode", "SUCCESS", "Email matches; sending code");
+                logHelper.saveToFirebase("sendCode", "SUCCESS", "Email matches; sending code");
                 sendVerification(etEmail.getText().toString(), dialog);
             } else {
                 etEmail.setError("Please enter valid email");
@@ -122,7 +122,7 @@ public class OTPActivity extends AppCompatActivity {
                 dialog.etCode.setError("Your code expired. Please retry.");
                 //Toast.makeText(this, "Your code expired. Please retry.", Toast.LENGTH_LONG).show();
             } else if(code.equals(dialog.etCode.getText().toString())) {
-                //logHelper.saveToFirebase("sendVerification", "SUCCESS", "Verification Success");
+                logHelper.saveToFirebase("sendVerification", "SUCCESS", "Verification Success");
                 Toast.makeText(this, "Verification Success", Toast.LENGTH_LONG).show();
                 //Close dialog box
                 dialog.dismissDialog();
