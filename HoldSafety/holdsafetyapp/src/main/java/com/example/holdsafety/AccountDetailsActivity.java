@@ -349,9 +349,7 @@ public class AccountDetailsActivity extends AppCompatActivity {
                     } else {
                         Log.d("CHANGEDETAILS", "User email address NOT updated.");
                     }
-                    //refresh activity
-                    finish();
-                    startActivity(getIntent());
+
                 });
             } else { // NON-GOOGLE ACC
                 user.reauthenticate(regularCredential).addOnCompleteListener(task -> {
@@ -369,16 +367,12 @@ public class AccountDetailsActivity extends AppCompatActivity {
                     } else {
                         Log.d("CHANGEDETAILS", "User email address NOT updated.");
                     }
-                    //refresh activity
-                    finish();
-                    startActivity(getIntent());
+
                 });
             }
         } else {
-            //logHelper.saveToFirebase("changeNumber", "ERROR", e.getLocalizedMessage());
             Toast.makeText(AccountDetailsActivity.this, "Incorrect OTP" + "\nChanges not Saved", Toast.LENGTH_LONG).show();
-            finish();
-            startActivity(getIntent());
+
         }
 
         //For number change
@@ -403,10 +397,8 @@ public class AccountDetailsActivity extends AppCompatActivity {
             isEmailChanged = false;
             userPassword = "";
 
-            //logHelper.saveToFirebase("changeNumber", "ERROR", e.getLocalizedMessage());
             Toast.makeText(AccountDetailsActivity.this, "Incorrect OTP" + "\nChanges not Saved", Toast.LENGTH_LONG).show();
-            finish();
-            startActivity(getIntent());
+
         }
 
         //For remove account
@@ -444,7 +436,6 @@ public class AccountDetailsActivity extends AppCompatActivity {
             }));
 
         }
-        finish();
     }
 
     public void changePassword() {
@@ -546,6 +537,7 @@ public class AccountDetailsActivity extends AppCompatActivity {
     }
 
     public void removeAccount() {
+        Intent login = new Intent(AccountDetailsActivity.this, LoginActivity.class);
         AlertDialog.Builder dialogRemoveAccount;
         dialogRemoveAccount = new AlertDialog.Builder(AccountDetailsActivity.this);
         dialogRemoveAccount.setTitle("Remove Account");
@@ -592,8 +584,8 @@ public class AccountDetailsActivity extends AppCompatActivity {
                     isNumberChanged = false;
                     userPassword = "";
 
-                    finish();
                     startActivity(getIntent());
+                    finish();
                 });
 
                 passwordInputDialog = dialogSaveChanges.create();
@@ -624,7 +616,6 @@ public class AccountDetailsActivity extends AppCompatActivity {
                                 db.collection("users").document(user.getUid()).delete();
                                 db.collection("emergencyContacts").document(user.getUid()).delete();
 
-                                Intent login = new Intent(AccountDetailsActivity.this, LoginActivity.class);
 
                                 //clears logged-in instance
                                 login.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_CLEAR_TASK);
@@ -638,11 +629,6 @@ public class AccountDetailsActivity extends AppCompatActivity {
                     }
                 });
                 //end of dialog code
-
-
-
-
-
 
             } else { // GOOGLE ACC
                 Intent otpResult = new Intent(AccountDetailsActivity.this, OTPActivity.class);

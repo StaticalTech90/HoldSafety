@@ -31,7 +31,6 @@ public class OTPActivity extends AppCompatActivity {
     FirebaseFirestore db;
     FirebaseUser user;
     StorageReference imageRef;
-    LogHelper logHelper;
 
     ImageView btnBack;
     Button btnSendCode;
@@ -57,7 +56,6 @@ public class OTPActivity extends AppCompatActivity {
         user = mAuth.getCurrentUser();
         db = FirebaseFirestore.getInstance();
         imageRef = FirebaseStorage.getInstance().getReference("id");
-        logHelper = new LogHelper(OTPActivity.this, mAuth, user, this);
 
         etEmail = findViewById(R.id.txtEmail);
         txtTimeRemaining = findViewById(R.id.txtTimeRemaining);
@@ -94,7 +92,6 @@ public class OTPActivity extends AppCompatActivity {
 
             if(emailMatcher.matches()) {
                 DialogEmailVerify dialog = new DialogEmailVerify(this);
-                logHelper.saveToFirebase("sendCode", "SUCCESS", "Email matches; sending code");
                 sendVerification(etEmail.getText().toString(), dialog);
             } else {
                 etEmail.setError("Please enter valid email");
@@ -122,7 +119,6 @@ public class OTPActivity extends AppCompatActivity {
                 dialog.etCode.setError("Your code expired. Please retry.");
                 //Toast.makeText(this, "Your code expired. Please retry.", Toast.LENGTH_LONG).show();
             } else if(code.equals(dialog.etCode.getText().toString())) {
-                logHelper.saveToFirebase("sendVerification", "SUCCESS", "Verification Success");
                 Toast.makeText(this, "Verification Success", Toast.LENGTH_LONG).show();
                 //Close dialog box
                 dialog.dismissDialog();
@@ -145,7 +141,6 @@ public class OTPActivity extends AppCompatActivity {
                     Intent otpResult = new Intent(OTPActivity.this, AccountDetailsActivity.class);
                     otpResult.putExtra("Password", userPassword);
                     setResult(RESULT_OK, otpResult);
-                    startActivity(otpResult);
                     finish();
                 } else if(requestCode == OTP_REQUEST_CODE_CHANGE_NUMBER) {
                     Log.i("MobileNumber", "Changing user's mobile number in progress...");
@@ -156,7 +151,6 @@ public class OTPActivity extends AppCompatActivity {
 
                     Intent otpResult = new Intent(OTPActivity.this, AccountDetailsActivity.class);
                     setResult(RESULT_OK, otpResult);
-                    startActivity(otpResult);
                     finish();
                 } else if(requestCode == OTP_REQUEST_CODE_REMOVE_ACCOUNT) {
                     Log.i("RemoveAccount", "Removing Account in progress...");
@@ -164,7 +158,6 @@ public class OTPActivity extends AppCompatActivity {
 
                     Intent otpResult = new Intent(OTPActivity.this, AccountDetailsActivity.class);
                     setResult(RESULT_OK, otpResult);
-                    startActivity(otpResult);
                     finish();
                 }
             } else {
