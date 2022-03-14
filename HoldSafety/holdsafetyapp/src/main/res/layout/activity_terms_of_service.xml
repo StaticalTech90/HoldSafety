@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".AboutSystemActivity"
+    tools:context=".TermsOfServiceActivity"
     android:background="@color/dark_blue">
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -44,52 +44,26 @@
             android:id="@+id/headingContainer"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            app:layout_constraintDimensionRatio="1:0.3"
+            app:layout_constraintDimensionRatio="1:0.2"
             app:layout_constraintStart_toStartOf="@id/mainGuidelineV1"
             app:layout_constraintEnd_toEndOf="@id/mainGuidelineV2"
             app:layout_constraintTop_toBottomOf="@+id/backContainer">
 
             <TextView
-                android:id="@+id/lblAbout"
+                android:id="@+id/lblTermsOfService"
                 android:layout_width="0dp"
-                android:layout_height="0dp"
+                android:layout_height="wrap_content"
 
                 android:fontFamily="sans-serif-black"
-                android:text="About"
+                android:text="Terms of Service"
                 android:textColor="@color/white"
 
-                app:autoSizeMaxTextSize="40sp"
-                app:autoSizeMinTextSize="25sp"
-                app:autoSizeStepGranularity="5sp"
-
-                app:autoSizeTextType="uniform"
-
-                app:layout_constraintDimensionRatio="1:0.15"
+                android:textSize="38sp"
 
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
-
-
-            <TextView
-                android:id="@+id/lblRegisterDesc"
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-
-                android:fontFamily="sans-serif"
-                android:text="What is HoldSafety?"
-                android:textColor="@color/gray"
-
-                app:autoSizeMaxTextSize="15sp"
-                app:autoSizeMinTextSize="10sp"
-                app:autoSizeStepGranularity="1sp"
-
-                app:autoSizeTextType="uniform"
-                app:layout_constraintDimensionRatio="1:0.1"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/lblAbout" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -115,12 +89,12 @@
                 app:layout_constraintTop_toTopOf="parent">
 
                 <TextView
-                    android:id="@+id/aboutContent"
+                    android:id="@+id/termsOfServiceDesc"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
 
                     android:fontFamily="sans-serif"
-                    android:text="@string/about"
+                    android:text="@string/termsOfService"
                     android:textColor="@color/gray"
 
                     android:textSize="18sp"
@@ -129,12 +103,29 @@
                     app:layout_constraintTop_toTopOf="parent" />
 
                 <TextView
+                    android:id="@+id/lblUsagePolicy"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+
+                    android:fontFamily="sans-serif-black"
+                    android:text="1. Usage Policy"
+                    android:textColor="@color/white"
+
+                    android:layout_marginTop="20dp"
+                    android:textSize="32sp"
+
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/termsOfServiceDesc" />
+
+                <TextView
                     android:id="@+id/appInfo"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
 
                     android:fontFamily="sans-serif"
-                    android:text="@string/appInfo"
+                    android:text="@string/usagePolicy"
                     android:textColor="@color/gray"
 
                     android:layout_marginTop="12dp"
@@ -142,7 +133,73 @@
                     android:textSize="18sp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/aboutContent" />
+                    app:layout_constraintTop_toBottomOf="@id/lblUsagePolicy" />
+
+                <TextView
+                    android:id="@+id/lblPrivacyPolicy"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+
+                    android:fontFamily="sans-serif-black"
+                    android:text="2. Privacy Policy"
+                    android:textColor="@color/white"
+
+                    android:layout_marginTop="20dp"
+                    android:textSize="32sp"
+
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/appInfo" />
+
+                <TextView
+                    android:id="@+id/privacyPolicy"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+
+                    android:fontFamily="sans-serif"
+                    android:text="@string/privacyPolicy"
+                    android:textColor="@color/gray"
+
+                    android:layout_marginTop="12dp"
+
+                    android:textSize="18sp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/lblPrivacyPolicy" />
+
+                <TextView
+                    android:id="@+id/lblDisclaimers"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+
+                    android:fontFamily="sans-serif-black"
+                    android:text="3. Disclaimers"
+                    android:textColor="@color/white"
+
+                    android:layout_marginTop="20dp"
+                    android:textSize="32sp"
+
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/privacyPolicy" />
+
+                <TextView
+                    android:id="@+id/disclaimers"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+
+                    android:fontFamily="sans-serif"
+                    android:text="@string/disclaimers"
+                    android:textColor="@color/gray"
+
+                    android:layout_marginTop="12dp"
+
+                    android:textSize="18sp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/lblDisclaimers" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
         </ScrollView>

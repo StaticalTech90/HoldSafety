@@ -136,17 +136,30 @@ public class AddContactActivity extends AppCompatActivity {
             docContacts.put("email", contactEmail);
             docContacts.put("relation", contactRelation);
 
-            if(TextUtils.isEmpty(contactLastName)){
+            Boolean valid = true;
+
+            if(TextUtils.isEmpty(contactLastName)) {
                 etContactLastName.setError("Please enter contact last name");
-            } else if(TextUtils.isEmpty(contactFirstName)) {
+                valid = false;
+            }
+            if(TextUtils.isEmpty(contactFirstName)) {
                 etContactFirstName.setError("Please enter contact first name");
-            } else if (contactRelation.equals("Relation With Contact *")) {
-                ((TextView)etRelation.getSelectedView()).setError("Please select relation with contact");
-            } else if(TextUtils.isEmpty(contactMobileNumber)){
+                valid = false;
+            }
+            if (contactRelation.equals("Relation With Contact *")) {
+                ((TextView) etRelation.getSelectedView()).setError("Please select relation with contact");
+                valid = false;
+            }
+            if(TextUtils.isEmpty(contactMobileNumber)){
                 etContactMobileNumber.setError("Please enter contact mobile number");
-            }  else if (!mobileNumberMatcher.matches()) {
+                valid = false;
+            }
+            if (!mobileNumberMatcher.matches()) {
                 etContactMobileNumber.setError("Please enter a valid mobile number");
-            } else {
+                valid = false;
+            }
+
+            if(valid){
                 //check if contact exists in the user's profile
                 db.collection("emergencyContacts").document(user.getUid()).collection("contacts").get().addOnCompleteListener(task -> {
                    if(task.isSuccessful()) {

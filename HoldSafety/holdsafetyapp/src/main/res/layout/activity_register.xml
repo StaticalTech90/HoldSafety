@@ -381,6 +381,8 @@
                         android:ellipsize="end"
                         android:fontFamily="sans-serif"
 
+                        android:maxLength="11"
+
                         android:hint="Mobile Number *"
                         android:inputType="number"
                         android:maxLines="1"
