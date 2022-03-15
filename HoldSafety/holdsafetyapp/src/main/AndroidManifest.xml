@@ -43,9 +43,6 @@
             android:name=".TermsOfServiceActivity"
             android:exported="false" />
         <activity
-            android:name=".UserManualActivity"
-            android:exported="false" />
-        <activity
             android:name=".AudioRecordingActivity"
             android:exported="true"
             android:screenOrientation="portrait" />

@@ -1,10 +1,9 @@
 package com.example.holdsafety;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.ImageView;
-import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
@@ -37,8 +36,10 @@ public class OthersActivity extends AppCompatActivity {
     }
 
     private void userManual() {
-        Intent userManual = new Intent (getApplicationContext(), UserManualActivity.class);
-        startActivity(userManual);
+        Intent intent =
+                new Intent("android.intent.action.VIEW",
+                        Uri.parse("https://drive.google.com/file/d/1BdvEJrBXwXOuXHubaVcB40cQjbpml5c9/view?usp=sharing"));
+        startActivity(intent);
     }
 
     private void termsOfService() {
@@ -52,6 +53,12 @@ public class OthersActivity extends AppCompatActivity {
     }
 
     private void goBack(){
+        finish();
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
         finish();
     }
 }
