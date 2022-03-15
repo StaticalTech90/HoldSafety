@@ -38,8 +38,10 @@ import com.google.firebase.auth.EmailAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
@@ -185,48 +187,68 @@ public class AccountDetailsActivity extends AppCompatActivity {
             newMobileNumber = txtMobileNumber.getText().toString().trim();
             newEmail = txtEmail.getText().toString().trim();
 
-            //checks if fields are empty
-            if (TextUtils.isEmpty(newMobileNumber) && TextUtils.isEmpty(newEmail)) {
-                txtMobileNumber.setError("Email is required");
-                txtEmail.setError("Password is required");
-                return;
-            }
+            CollectionReference colRef = db.collection("users");
 
-            if (TextUtils.isEmpty(newMobileNumber)) {
-                txtMobileNumber.setError("Mobile Number is required");
-                return;
-            }
+            colRef.get().addOnCompleteListener(taskCheck -> {
+                if(taskCheck.isSuccessful()) {
+                    boolean isExisting = false;
 
-            if (TextUtils.isEmpty(newEmail)) {
-                txtEmail.setError("Email is required");
-                return;
-            }
+                    for(QueryDocumentSnapshot userSnap : taskCheck.getResult()) {
+                        String dbEmail = userSnap.getString("Email");
 
-            if (!isEmailChanged && !isNumberChanged) { //not empty fields, no changes
-                Toast.makeText(AccountDetailsActivity.this, "No Changes Made", Toast.LENGTH_LONG).show();
-            } else { //one or both fields changed
-                String emailRegex = "^[a-zA-Z0-9_!#$%&'*+/=?`{|}~^.-]+@[a-zA-Z0-9.-]+$";
-                String mobileNumberRegex = "^(09|\\+639)\\d{9}$";
-                Pattern emailPattern = Pattern.compile(emailRegex);
-                Pattern mobileNumberPattern = Pattern.compile(mobileNumberRegex);
-                Matcher emailMatcher = emailPattern.matcher(txtEmail.getText());
-                Matcher mobileNumberMatcher = mobileNumberPattern.matcher(txtMobileNumber.getText());
+                        assert dbEmail != null;
+                        if(dbEmail.equals(newEmail)) { //CHECK IF EMAIL EXISTS IN ANY USER DETAILS
+                                isExisting = true;
+                                txtEmail.setError("Email already in use!");
+                        }
+                    }
+                    Log.d("EXISTING", "acount exists? " + isExisting);
+                    if(!isExisting) {
+                        //checks if fields are empty
+                        if (TextUtils.isEmpty(newMobileNumber) && TextUtils.isEmpty(newEmail)) {
+                            txtMobileNumber.setError("Email is required");
+                            txtEmail.setError("Password is required");
+                            return;
+                        }
 
-                if (!mobileNumberMatcher.matches()) {
-                    txtMobileNumber.setError("Please enter a valid mobile number");
-                } else if (!emailMatcher.matches()) {
-                    txtEmail.setError("Please enter a valid email");
-                } else {
-                    if(isNumberChanged && isEmailChanged) {
-                        changeEmailAndNumber(newEmail, newMobileNumber);
-                        //Log.d("STATUS", "numberchange: " + isNumberChanged + ", emailchange: " + isEmailChanged);
-                    } else if (isNumberChanged) {
-                        changeNumber(newMobileNumber);
-                    } else if (isEmailChanged) {
-                        changeEmail(newEmail);
+                        if (TextUtils.isEmpty(newMobileNumber)) {
+                            txtMobileNumber.setError("Mobile Number is required");
+                            return;
+                        }
+
+                        if (TextUtils.isEmpty(newEmail)) {
+                            txtEmail.setError("Email is required");
+                            return;
+                        }
+
+                        if (!isEmailChanged && !isNumberChanged) { //not empty fields, no changes
+                            Toast.makeText(AccountDetailsActivity.this, "No Changes Made", Toast.LENGTH_LONG).show();
+                        } else { //one or both fields changed
+                            String emailRegex = "^[a-zA-Z0-9_!#$%&'*+/=?`{|}~^.-]+@[a-zA-Z0-9.-]+$";
+                            String mobileNumberRegex = "^(09|\\+639)\\d{9}$";
+                            Pattern emailPattern = Pattern.compile(emailRegex);
+                            Pattern mobileNumberPattern = Pattern.compile(mobileNumberRegex);
+                            Matcher emailMatcher = emailPattern.matcher(txtEmail.getText());
+                            Matcher mobileNumberMatcher = mobileNumberPattern.matcher(txtMobileNumber.getText());
+
+                            if (!mobileNumberMatcher.matches()) {
+                                txtMobileNumber.setError("Please enter a valid mobile number");
+                            } else if (!emailMatcher.matches()) {
+                                txtEmail.setError("Please enter a valid email");
+                            } else {
+                                if(isNumberChanged && isEmailChanged) {
+                                    changeEmailAndNumber(newEmail, newMobileNumber);
+                                    //Log.d("STATUS", "numberchange: " + isNumberChanged + ", emailchange: " + isEmailChanged);
+                                } else if (isNumberChanged) {
+                                    changeNumber(newMobileNumber);
+                                } else if (isEmailChanged) {
+                                    changeEmail(newEmail);
+                                }
+                            }
+                        }
                     }
                 }
-            }
+            });
         });
     }
 

@@ -634,7 +634,7 @@
 
                 android:background="@drawable/blue_button"
                 android:fontFamily="sans-serif-black"
-                android:text="PROCEED"
+                android:text="SAVE CHANGES"
 
                 android:textColor="@color/dark_blue"
                 app:autoSizeMaxTextSize="22sp"
