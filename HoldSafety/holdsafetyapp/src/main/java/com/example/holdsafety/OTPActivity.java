@@ -44,6 +44,7 @@ public class OTPActivity extends AppCompatActivity {
     private static final int OTP_REQUEST_CODE_REGISTER = 2000;
     public static final int OTP_REQUEST_CODE_CHANGE_EMAIL = 5000;
     public static final int OTP_REQUEST_CODE_CHANGE_NUMBER = 5001;
+    public static final int OTP_REQUEST_CODE_CHANGE_EMAIL_AND_NUMBER = 5002;
     public static final int OTP_REQUEST_CODE_REMOVE_ACCOUNT = 9000;
 
     @Override
@@ -150,6 +151,17 @@ public class OTPActivity extends AppCompatActivity {
                     Log.d("MobileNumber", "Sending RESULT_OK back to AccountDetailsActivity...");
 
                     Intent otpResult = new Intent(OTPActivity.this, AccountDetailsActivity.class);
+                    setResult(RESULT_OK, otpResult);
+                    finish();
+                } else if(requestCode == OTP_REQUEST_CODE_CHANGE_EMAIL_AND_NUMBER) {
+                    Log.i("EmailNum", "Changing user's email and number progress...");
+
+                    Toast.makeText(getApplicationContext(), "Email verified", Toast.LENGTH_SHORT).show();
+                    Log.i("EmailNum", "Email verified");
+                    Log.d("EmailNum", "Sending RESULT_OK back to AccountDetailsActivity...");
+
+                    Intent otpResult = new Intent(OTPActivity.this, AccountDetailsActivity.class);
+                    otpResult.putExtra("Password", userPassword);
                     setResult(RESULT_OK, otpResult);
                     finish();
                 } else if(requestCode == OTP_REQUEST_CODE_REMOVE_ACCOUNT) {

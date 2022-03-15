@@ -60,7 +60,9 @@ public class AccountDetailsActivity extends AppCompatActivity {
     private static final int EXTERNAL_STORAGE_REQ_CODE = 1000;
     public static final int OTP_REQUEST_CODE_CHANGE_EMAIL = 5000;
     public static final int OTP_REQUEST_CODE_CHANGE_NUMBER = 5001;
+    public static final int OTP_REQUEST_CODE_CHANGE_EMAIL_AND_NUMBER = 5002;
     public static final int OTP_REQUEST_CODE_REMOVE_ACCOUNT = 9000;
+
     Boolean isNumberChanged = false, isEmailChanged = false;
     String userPassword = "";
     String idUri, userId, newEmail, newMobileNumber;
@@ -103,7 +105,7 @@ public class AccountDetailsActivity extends AppCompatActivity {
 
         //show details
         docRef.get().addOnSuccessListener(documentSnapshot -> {
-            if(documentSnapshot.exists()){
+            if(documentSnapshot.exists()) {
                 String lastName = documentSnapshot.getString("LastName");
                 String firstName = documentSnapshot.getString("FirstName");
                 String middleName = documentSnapshot.getString("MiddleName");
@@ -129,8 +131,7 @@ public class AccountDetailsActivity extends AppCompatActivity {
                 txtMobileNumber.addTextChangedListener(new TextWatcher() {
                     String newNumber;
                     @Override
-                    public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                    }
+                    public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) { }
 
                     @Override
                     public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
@@ -141,9 +142,8 @@ public class AccountDetailsActivity extends AppCompatActivity {
                     public void afterTextChanged(Editable editable) {
                         if(currentMobileNumber.equals(newNumber)){
                             isNumberChanged = false;
-
                             Toast.makeText(AccountDetailsActivity.this, "No Changes", Toast.LENGTH_SHORT).show();
-                        } else{
+                        } else {
                             isNumberChanged = true;
                             Toast.makeText(AccountDetailsActivity.this, "New Number", Toast.LENGTH_SHORT).show();
                         }
@@ -152,8 +152,7 @@ public class AccountDetailsActivity extends AppCompatActivity {
 
                 txtEmail.addTextChangedListener(new TextWatcher() {
                     @Override
-                    public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                    }
+                    public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) { }
 
                     @Override
                     public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
@@ -218,9 +217,14 @@ public class AccountDetailsActivity extends AppCompatActivity {
                 } else if (!emailMatcher.matches()) {
                     txtEmail.setError("Please enter a valid email");
                 } else {
-//                    Log.d("CHANGEDETAILS", "isNumberChanged: " + isNumberChanged + ", isEmailChanged: " + isEmailChanged);
-                    if (isNumberChanged) { changeNumber(newMobileNumber); }
-                    if (isEmailChanged) { changeEmail(newEmail); }
+                    if(isNumberChanged && isEmailChanged) {
+                        changeEmailAndNumber(newEmail, newMobileNumber);
+                        //Log.d("STATUS", "numberchange: " + isNumberChanged + ", emailchange: " + isEmailChanged);
+                    } else if (isNumberChanged) {
+                        changeNumber(newMobileNumber);
+                    } else if (isEmailChanged) {
+                        changeEmail(newEmail);
+                    }
                 }
             }
         });
@@ -369,12 +373,10 @@ public class AccountDetailsActivity extends AppCompatActivity {
                     } else {
                         Log.d("CHANGEDETAILS", "User email address NOT updated.");
                     }
-
                 });
             }
         } else {
             Toast.makeText(AccountDetailsActivity.this, "Incorrect OTP" + "\nChanges not Saved", Toast.LENGTH_LONG).show();
-
         }
 
         //For number change
@@ -382,10 +384,7 @@ public class AccountDetailsActivity extends AppCompatActivity {
             docRef.update("MobileNumber", newMobileNumber);
             isNumberChanged = false;
             logHelper.saveToFirebase("changeNumber", "SUCCESS", "Mobile Number Successfully Changed");
-
             Toast.makeText(AccountDetailsActivity.this, "Mobile Number Successfully Changed", Toast.LENGTH_LONG).show();
-
-            isNumberChanged = false;
 
             if(!isEmailChanged) {
                 userPassword = "";
@@ -400,7 +399,63 @@ public class AccountDetailsActivity extends AppCompatActivity {
             userPassword = "";
 
             Toast.makeText(AccountDetailsActivity.this, "Incorrect OTP" + "\nChanges not Saved", Toast.LENGTH_LONG).show();
+        }
 
+        //For email and number change
+        if(requestCode == OTP_REQUEST_CODE_CHANGE_EMAIL_AND_NUMBER && resultCode == RESULT_OK) {
+            requestCode = 0;
+            String email = user.getEmail();
+            String password = data.getStringExtra("Password");
+
+            GoogleSignInAccount gsa = GoogleSignIn.getLastSignedInAccount(this);
+            AuthCredential googleCredential;
+
+            // UPDATE MOBILE NUMBER
+            docRef.update("MobileNumber", newMobileNumber);
+            isNumberChanged = false;
+            logHelper.saveToFirebase("changeNumber", "SUCCESS", "Mobile Number Successfully Changed");
+            Toast.makeText(AccountDetailsActivity.this, "Mobile Number Successfully Changed", Toast.LENGTH_LONG).show();
+
+            // GOOGLE ACC
+            if(gsa != null) {
+                googleCredential = GoogleAuthProvider.getCredential(gsa.getIdToken(), null);
+                user.reauthenticate(googleCredential).addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        //updates email in Auth
+                        user.updateEmail(newEmail).addOnCompleteListener(task1 -> {
+                            if (task1.isSuccessful()) {
+                                logHelper.saveToFirebase("onActivityResult", "SUCCESS", "User email address updated");
+                                Log.d("CHANGEDETAILS", "User email address updated.");
+
+                                //updates email in document
+                                docRef.update("Email", newEmail);
+                            }
+                        });
+                    } else {
+                        Log.d("CHANGEDETAILS", "User email address NOT updated.");
+                    }
+                });
+            } else { // NON-GOOGLE ACC
+                AuthCredential regularCredential = EmailAuthProvider.getCredential(email, password);
+                user.reauthenticate(regularCredential).addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        //updates email in Auth
+                        user.updateEmail(newEmail).addOnCompleteListener(task1 -> {
+                            if (task1.isSuccessful()) {
+                                logHelper.saveToFirebase("onActivityResult", "SUCCESS", "User email address updated");
+                                Log.d(TAG, "User email address updated.");
+
+                                //updates email in document
+                                docRef.update("Email", newEmail);
+                            }
+                        });
+                    } else {
+                        Log.d("CHANGEDETAILS", "User email address NOT updated.");
+                    }
+                });
+            }
+        } else {
+            Toast.makeText(AccountDetailsActivity.this, "Incorrect OTP" + "\nChanges not Saved", Toast.LENGTH_LONG).show();
         }
 
         //For remove account
@@ -444,7 +499,6 @@ public class AccountDetailsActivity extends AppCompatActivity {
         startActivity(new Intent(AccountDetailsActivity.this, ChangePasswordActivity.class));
     }
 
-    //TODO: after user changes email, the old account can still log-in
     public void changeEmail(String newEmail){
         GoogleSignInAccount gsa = GoogleSignIn.getLastSignedInAccount(this);
         Log.d("CHANGEDETAILS", "gsa: " + gsa);
@@ -519,7 +573,7 @@ public class AccountDetailsActivity extends AppCompatActivity {
                             Log.d("CHANGEDETAILS", "User email address NOT updated.");
                         }
                         //reset values
-                        isNumberChanged = false;
+//                        isNumberChanged = false;
                         isEmailChanged = false;
                         userPassword = "";
                     });
@@ -601,10 +655,101 @@ public class AccountDetailsActivity extends AppCompatActivity {
                         if (task.isSuccessful()) {
                             Log.d("CHANGEDETAILS", "launch intent");
                             docRef.update("MobileNumber", newMobileNumber);
-                            isNumberChanged = false;
                             logHelper.saveToFirebase("changeNumber", "SUCCESS", "Mobile Number Successfully Changed");
                             passwordInputDialog.dismiss();
                             Toast.makeText(this, "Phone number changed successfully.", Toast.LENGTH_SHORT).show();
+                        } else {
+                            Log.d("CHANGEDETAILS", "User phone number NOT updated.");
+                        }
+                        //reset values
+                        isNumberChanged = false;
+//                        isEmailChanged = false;
+                        userPassword = "";
+                    });
+                }
+            });
+            //end of dialog code
+        } else { // GOOGLE ACC
+            startActivityForResult(otpResult, OTP_REQUEST_CODE_CHANGE_NUMBER);
+        }
+    }
+
+    public void changeEmailAndNumber(String newEmail, String newMobileNumber) {
+        GoogleSignInAccount gsa = GoogleSignIn.getLastSignedInAccount(this);
+        Log.d("CHANGEDETAILS", "gsa: " + gsa);
+
+        Intent otpResult = new Intent(AccountDetailsActivity.this, OTPActivity.class);
+        otpResult.putExtra("RequestCode", OTP_REQUEST_CODE_CHANGE_EMAIL_AND_NUMBER);
+        otpResult.putExtra("Email", newEmail);
+        otpResult.putExtra("MobileNumber", newMobileNumber);
+
+        if(gsa == null) { // NON-GOOGLE ACC
+            Log.d("CHANGEDETAILS", "show dialog box for pass");
+            // DIALOG START
+            dialogSaveChanges = new AlertDialog.Builder(AccountDetailsActivity.this);
+            dialogSaveChanges.setTitle("Save Changes");
+            dialogSaveChanges.setMessage("Please re-enter your password to save your changes.");
+            EditText txtInputPassword;
+
+            txtInputPassword = new EditText(AccountDetailsActivity.this);
+            dialogSaveChanges.setView(txtInputPassword);
+
+            txtInputPassword.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+
+            //saves user input if not empty
+            txtInputPassword.addTextChangedListener(new TextWatcher() {
+                @Override
+                public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) { }
+
+                @Override
+                public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                    userPassword = txtInputPassword.getText().toString().trim();
+                }
+
+                @Override
+                public void afterTextChanged(Editable editable) { }
+            });
+
+            dialogSaveChanges.setPositiveButton("Done", (dialogInterface, i) -> {
+                //Do nothing here, override this button later to change the close behaviour
+            });
+
+            dialogSaveChanges.setNegativeButton("Cancel", (dialogInterface, i) -> {
+                dialogInterface.dismiss();
+
+                //reset values
+                isEmailChanged = false;
+                isNumberChanged = false;
+                userPassword = "";
+
+                finish();
+                startActivity(getIntent());
+            });
+
+            passwordInputDialog = dialogSaveChanges.create();
+            passwordInputDialog.show();
+
+            passwordInputDialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(v -> {
+                if (TextUtils.isEmpty(userPassword)) {
+                    txtInputPassword.setError("Password is required");
+                } else {
+                    userPassword = txtInputPassword.getText().toString();
+                    Log.d("CHANGEDETAILS", "password: " + userPassword);
+
+                    AuthCredential credential = EmailAuthProvider.getCredential(user.getEmail(), userPassword);
+                    Log.d("CHANGEDETAILS", "credential: " + credential);
+
+                    user.reauthenticate(credential).addOnCompleteListener(task -> {
+                        Log.d("CHANGEDETAILS", "reauth task begins");
+                        if (task.isSuccessful()) {
+                            docRef.update("MobileNumber", newMobileNumber);
+
+                            logHelper.saveToFirebase("changeNumber", "SUCCESS", "Mobile Number Successfully Changed");
+                            passwordInputDialog.dismiss();
+                            Toast.makeText(this, "Phone number changed successfully.", Toast.LENGTH_SHORT).show();
+
+                            otpResult.putExtra("Password", userPassword);
+                            startActivityForResult(otpResult, OTP_REQUEST_CODE_CHANGE_EMAIL_AND_NUMBER);
                         } else {
                             Log.d("CHANGEDETAILS", "User phone number NOT updated.");
                         }
@@ -617,7 +762,7 @@ public class AccountDetailsActivity extends AppCompatActivity {
             });
             //end of dialog code
         } else { // GOOGLE ACC
-            startActivityForResult(otpResult, OTP_REQUEST_CODE_CHANGE_NUMBER);
+            startActivityForResult(otpResult, OTP_REQUEST_CODE_CHANGE_EMAIL_AND_NUMBER);
         }
     }
 
