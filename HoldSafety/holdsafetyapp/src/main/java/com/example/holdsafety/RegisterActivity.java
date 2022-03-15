@@ -483,7 +483,8 @@ public class RegisterActivity extends AppCompatActivity {
 
                                             //Toast.makeText(getApplicationContext(), "pushed image to document", Toast.LENGTH_SHORT).show();
                                             Log.i(TAG, "Image pushed");
-                                            startActivity(new Intent(RegisterActivity.this, LoginActivity.class));
+
+//                                            startActivity(new Intent(RegisterActivity.this, LoginActivity.class));
                                         })
                                         .addOnFailureListener(e -> {
 
@@ -499,6 +500,8 @@ public class RegisterActivity extends AppCompatActivity {
                     Log.w(TAG, "signUpWithEmailPassword:failure", task.getException());
                     Toast.makeText(RegisterActivity.this, task.getException().getLocalizedMessage(), Toast.LENGTH_SHORT).show();
                 }
+
+                mAuth.signOut();
                 Intent login = new Intent(RegisterActivity.this, LoginActivity.class);
                 startActivity(login);
                 finish();
