@@ -10,12 +10,17 @@
     <string name="contact_hint"><i>Please insert a message regarding your concern. </i></string>
     <!--This is the default client to prevent API error 10-->
     <string name="default_web_client">233680747912-m8q45hor79go5n8aqfkuneklnkshudqs.apps.googleusercontent.com</string>
-    <string name="about"><b>HoldSafety</b> is an application that helps in sending emergency messages in a shorter amount of time. With a press/hold of a button, HoldSafety will send an emergency alert message containing your location, to your designated emergency contact/s and the nearest barangay. Additionally, if permitted, the application can also initiate automatic video or audio recording that may serve as evidence. HoldSafety requires a smart phone with GPS to get your location, mobile load to send text messages, and internet connection to send emails.</string>
+    <string name="about"><b>HoldSafety</b> is an application that helps in sending emergency messages in a shorter amount of time.
+        \n<br/>With a press/hold of a button, HoldSafety will send an emergency alert message containing your location, to your designated emergency contact/s and the nearest barangay.
+        \n<br/>Additionally, if permitted, the application can also initiate automatic video or audio recording that may serve as evidence.
+        \n<br/>HoldSafety requires a smart phone with GPS to get your location, mobile load to send text messages, and internet connection to send emails.
+        \n<br/>As of <b>HoldSafety Version 1.0</b>, the "Send Report to Barangay" feature is only available within Metro Manila.
+    </string>
     <string name="appInfo"><b>Application Info</b>
 <b>Version: </b>Above Android 5.0 (Lollipop)
-<b>Smartwatch Version: </b>Android 6.0
-<b>Developed by: </b>HoldSafety
-<b>Release Date: </b>2022</string>
+\n<br/><b>Smartwatch Version: </b>Android 6.0
+\n<br/><b>Developed by: </b>HoldSafety
+\n<br/><b>Release Date: </b>2022</string>
     <string name="termsOfService">The following terms and conditions (the "Terms") govern your use of the services we provide (the "Service"). These Terms constitute a legally binding agreement (the "Agreement") between you and HoldSafety. (the "HoldSafety"). HoldSafety may update the Terms from time to time without notice. Any changes in the Terms will be incorporated into a revised Agreement that we will post on the mobile app. Unless otherwise specified, such changes shall be effective when they are posted.</string>
     <string name="usagePolicy">You agree to comply with all applicable laws and regulations in connection with your use of this service.You further agree that you, or anyone using the service under your account, will not engage in any of the following activities, and that any of the following activities constitute grounds for termination of your account:
 \n<br/>\n<br/>• Sending or transmitting unsolicited advertisements or content ("spam") over the Service, via e-mail or any other communication channel.

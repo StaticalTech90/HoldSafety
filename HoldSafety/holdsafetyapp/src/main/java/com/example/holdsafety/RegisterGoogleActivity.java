@@ -208,7 +208,6 @@ public class RegisterGoogleActivity extends AppCompatActivity {
                         Log.w(TAG, "Error writing document", e);
                     });
         }
-
     }
 
     //Since the methods here are async, set this value ahead of the rest of the document fields
@@ -340,9 +339,7 @@ public class RegisterGoogleActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {
-
-            }
+            public void onNothingSelected(AdapterView<?> adapterView) { }
         });
         return selectedSex;
     }
