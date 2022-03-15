@@ -35,6 +35,7 @@ import java.io.File;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 public class AudioRecordingActivity extends AppCompatActivity {
     LogHelper logHelper;
@@ -62,7 +63,7 @@ public class AudioRecordingActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_audio_recording);
-        logHelper = new LogHelper(this, mAuth, user,this);
+
 
         btnAudio = findViewById(R.id.btnRecordAudio);
         mAuth = FirebaseAuth.getInstance();
@@ -71,6 +72,7 @@ public class AudioRecordingActivity extends AppCompatActivity {
         txtAudioRecording = findViewById(R.id.txtAudioRecord);
 
         audioRef = FirebaseStorage.getInstance().getReference("emergencyAudios/");
+        logHelper = new LogHelper(this, mAuth, user,this);
 
         Intent intent = getIntent();
         evidenceLinkRequirements = (HashMap<String, String>) intent.getSerializableExtra("evidenceLinkRequirements");
@@ -174,11 +176,10 @@ public class AudioRecordingActivity extends AppCompatActivity {
         //show progress bar
         progressBar.setVisibility(View.VISIBLE);
 
-
         //add to firebase
         FirebaseStorage.getInstance()
                 .getReference("emergencyAudios")
-                .child(mAuth.getCurrentUser().getUid())
+                .child(Objects.requireNonNull(mAuth.getCurrentUser()).getUid())
                 .child(recordingFile.getName())
                 .putFile(Uri.fromFile(recordingFile))
                 .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
