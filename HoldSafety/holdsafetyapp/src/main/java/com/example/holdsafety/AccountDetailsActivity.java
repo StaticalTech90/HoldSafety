@@ -30,9 +30,6 @@ import androidx.core.app.ActivityCompat;
 
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
-import com.google.android.gms.auth.api.signin.GoogleSignInApi;
-import com.google.android.gms.auth.api.signin.GoogleSignInClient;
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.EmailAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
@@ -57,6 +54,7 @@ public class AccountDetailsActivity extends AppCompatActivity {
     FirebaseUser user;
     FirebaseFirestore db = FirebaseFirestore.getInstance();
     StorageReference imageRef = FirebaseStorage.getInstance().getReference("id");
+    GoogleSignInAccount gsa;
     DocumentReference docRef;
 
     private static final int EXTERNAL_STORAGE_REQ_CODE = 1000;
@@ -87,6 +85,7 @@ public class AccountDetailsActivity extends AppCompatActivity {
         user = mAuth.getCurrentUser();
         db = FirebaseFirestore.getInstance();
         userId = user.getUid();
+        gsa = GoogleSignIn.getLastSignedInAccount(this);
         docRef = db.collection("users").document(userId);
         logHelper = new LogHelper(getApplicationContext(), mAuth, user, this);
 
@@ -177,6 +176,9 @@ public class AccountDetailsActivity extends AppCompatActivity {
                 Toast.makeText(AccountDetailsActivity.this, "Details not found. Please contact developer.", Toast.LENGTH_SHORT).show();
             }
         });
+
+        //hide 'change password' if google acc
+        if(gsa != null) { btnChangePass.setVisibility(View.GONE); }
 
         btnBack.setOnClickListener(view -> goBack());
         btnRemoveAccount.setOnClickListener(view -> removeAccount());
@@ -350,14 +352,13 @@ public class AccountDetailsActivity extends AppCompatActivity {
             imageURI = data.getData();
         }
 
+        AuthCredential googleCredential;
+
         //For email change
         if(requestCode == OTP_REQUEST_CODE_CHANGE_EMAIL && resultCode == RESULT_OK) {
             requestCode = 0;
             String email = user.getEmail();
             String password = data.getStringExtra("Password");
-
-            GoogleSignInAccount gsa = GoogleSignIn.getLastSignedInAccount(this);
-            AuthCredential googleCredential;
 
             // GOOGLE ACC
             if(gsa != null) {
@@ -429,9 +430,6 @@ public class AccountDetailsActivity extends AppCompatActivity {
             String email = user.getEmail();
             String password = data.getStringExtra("Password");
 
-            GoogleSignInAccount gsa = GoogleSignIn.getLastSignedInAccount(this);
-            AuthCredential googleCredential;
-
             // UPDATE MOBILE NUMBER
             docRef.update("MobileNumber", newMobileNumber);
             isNumberChanged = false;
@@ -484,8 +482,7 @@ public class AccountDetailsActivity extends AppCompatActivity {
         if(requestCode == OTP_REQUEST_CODE_REMOVE_ACCOUNT && resultCode == RESULT_OK) {
             Log.d("RemoveAccount", "current user: " + user.getUid());
 
-            GoogleSignInAccount gsa = GoogleSignIn.getLastSignedInAccount(this);
-            AuthCredential googleCredential = GoogleAuthProvider.getCredential(gsa.getIdToken(), null);
+            googleCredential = GoogleAuthProvider.getCredential(gsa.getIdToken(), null);
 
             // GOOGLE ACC
             user.reauthenticate(googleCredential).addOnSuccessListener(unused -> user.delete().addOnCompleteListener(task -> {
@@ -513,7 +510,6 @@ public class AccountDetailsActivity extends AppCompatActivity {
                     Log.i("RemoveAccount", "Removing Account task failed");
                 }
             }));
-
         }
     }
 
