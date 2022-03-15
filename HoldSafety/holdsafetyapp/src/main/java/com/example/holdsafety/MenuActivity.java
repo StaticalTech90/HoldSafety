@@ -105,7 +105,7 @@ public class MenuActivity extends AppCompatActivity {
         //startActivity(intentUserManual);
         Intent intent =
         new Intent("android.intent.action.VIEW",
-                Uri.parse("https://drive.google.com/file/d/1BdvEJrBXwXOuXHubaVcB40cQjbpml5c9/view?usp=sharing"));
+                Uri.parse("https://drive.google.com/file/d/1UpVP266vD24nipyDp1ilS5NEPLdB5-wE/view?usp=sharing"));
         startActivity(intent);
     }
 

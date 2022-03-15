@@ -41,7 +41,11 @@ public class LogHelper {
         timestamp = new Timestamp(date.getTime());
 
         logMap.put("Activity", activity.getLocalClassName());
-        logMap.put("UserID", user.getUid());
+        if(user==null){
+            logMap.put("User", "Anonymous");
+        } else {
+            logMap.put("UserID", user.getUid());
+        }
         logMap.put("Action", action);
         logMap.put("Result", result);
         logMap.put("Description", description);
