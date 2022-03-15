@@ -425,14 +425,14 @@ public class AccountDetailsActivity extends AppCompatActivity {
                         user.updateEmail(newEmail).addOnCompleteListener(task1 -> {
                             if (task1.isSuccessful()) {
                                 logHelper.saveToFirebase("onActivityResult", "SUCCESS", "User email address updated");
-                                Log.d("CHANGEDETAILS", "User email address updated.");
+                                Log.d("EMAILNUMCHANGE", "User email address updated.");
 
                                 //updates email in document
                                 docRef.update("Email", newEmail);
                             }
                         });
                     } else {
-                        Log.d("CHANGEDETAILS", "User email address NOT updated.");
+                        Log.d("EMAILNUMCHANGE", "User email address NOT updated.");
                     }
                 });
             } else { // NON-GOOGLE ACC
@@ -443,14 +443,14 @@ public class AccountDetailsActivity extends AppCompatActivity {
                         user.updateEmail(newEmail).addOnCompleteListener(task1 -> {
                             if (task1.isSuccessful()) {
                                 logHelper.saveToFirebase("onActivityResult", "SUCCESS", "User email address updated");
-                                Log.d(TAG, "User email address updated.");
+                                Log.d("EMAILNUMCHANGE", "User email address updated.");
 
                                 //updates email in document
                                 docRef.update("Email", newEmail);
                             }
                         });
                     } else {
-                        Log.d("CHANGEDETAILS", "User email address NOT updated.");
+                        Log.d("EMAILNUMCHANGE", "User email address NOT updated.");
                     }
                 });
             }
@@ -677,6 +677,7 @@ public class AccountDetailsActivity extends AppCompatActivity {
     public void changeEmailAndNumber(String newEmail, String newMobileNumber) {
         GoogleSignInAccount gsa = GoogleSignIn.getLastSignedInAccount(this);
         Log.d("CHANGEDETAILS", "gsa: " + gsa);
+        Log.d("CHANGEDETAILS", "CHANGING BOTH EMAIL AND NUMBER");
 
         Intent otpResult = new Intent(AccountDetailsActivity.this, OTPActivity.class);
         otpResult.putExtra("RequestCode", OTP_REQUEST_CODE_CHANGE_EMAIL_AND_NUMBER);
@@ -684,7 +685,7 @@ public class AccountDetailsActivity extends AppCompatActivity {
         otpResult.putExtra("MobileNumber", newMobileNumber);
 
         if(gsa == null) { // NON-GOOGLE ACC
-            Log.d("CHANGEDETAILS", "show dialog box for pass");
+            Log.d("CHANGEDETAILS", "NON-GOOGLE: CHANGING BOTH EMAIL AND NUMBER");
             // DIALOG START
             dialogSaveChanges = new AlertDialog.Builder(AccountDetailsActivity.this);
             dialogSaveChanges.setTitle("Save Changes");
@@ -762,6 +763,7 @@ public class AccountDetailsActivity extends AppCompatActivity {
             });
             //end of dialog code
         } else { // GOOGLE ACC
+            Log.d("CHANGEDETAILS", "GOOGLE: CHANGING BOTH EMAIL AND NUMBER");
             startActivityForResult(otpResult, OTP_REQUEST_CODE_CHANGE_EMAIL_AND_NUMBER);
         }
     }
