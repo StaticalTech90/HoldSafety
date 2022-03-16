@@ -491,6 +491,8 @@ public class AccountDetailsActivity extends AppCompatActivity {
                     Intent login = new Intent(AccountDetailsActivity.this, LoginActivity.class);
                     login.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_CLEAR_TASK);
 
+                    /*
+
                     GoogleSignInOptions gso = new GoogleSignInOptions
                             .Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                             .requestIdToken("233680747912-m8q45hor79go5n8aqfkuneklnkshudqs.apps.googleusercontent.com")
@@ -505,12 +507,12 @@ public class AccountDetailsActivity extends AppCompatActivity {
                             startActivity(login);
                             finish();
                         }
-                    });
+                    });*/
 
                     //clears logged-in instance
 
-                    //startActivity(login);
-                    //finish();
+                    startActivity(login);
+                    finish();
                 } else {
                     Log.i("RemoveAccount", "Removing Account task failed");
                 }
@@ -891,7 +893,8 @@ public class AccountDetailsActivity extends AppCompatActivity {
 
                                 //clears logged-in instance
                                 login.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                                Toast.makeText(AccountDetailsActivity.this, "Accouunt Details: Add Flags", Toast.LENGTH_LONG).show();
+                                startActivity(login);
+                                finish();
 
                                 GoogleSignInOptions gso = new GoogleSignInOptions
                                         .Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
@@ -908,24 +911,6 @@ public class AccountDetailsActivity extends AppCompatActivity {
                                         finish();
                                     }
                                 });
-
-                                /*
-
-                                GoogleSignInOptions gso = new GoogleSignInOptions
-                                        .Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                                        .requestIdToken("233680747912-m8q45hor79go5n8aqfkuneklnkshudqs.apps.googleusercontent.com")
-                                        .requestEmail()
-                                        .build();
-
-                                GoogleSignInClient gsc = GoogleSignIn.getClient(AccountDetailsActivity.this, gso);
-
-                                gsc.signOut().addOnSuccessListener(new OnSuccessListener<Void>() {
-                                    @Override
-                                    public void onSuccess(Void unused) {
-                                        startActivity(login);
-                                        finish();
-                                    }
-                                });*/
                             } else {
                                 Toast.makeText(AccountDetailsActivity.this, "Update Email Failed" + "\nChanges not Saved", Toast.LENGTH_LONG).show();
                                 Log.i("RemoveAccount", "Removing Account task failed. Incorrect password");

@@ -220,8 +220,6 @@ public class UpdateContactActivity extends AppCompatActivity {
                 contactMobileNumber.setError("Please enter mobile number");
             } else if (!mobileNumberMatcher.matches()) {
                 contactMobileNumber.setError("Please enter a valid mobile number");
-            } else if (!emailMatcher.matches()) {
-                contactEmail.setError("Please enter a valid email");
             } else {
                 docRef.get().addOnSuccessListener(documentSnapshot -> {
                     if(documentSnapshot.exists()){
@@ -232,6 +230,7 @@ public class UpdateContactActivity extends AppCompatActivity {
                         docRef.update("relation", changedRelation);
 
                         Toast.makeText(this, "Successfully updated", Toast.LENGTH_SHORT).show();
+                        startActivity(new Intent(this, DesignateContactActivity.class));
                         finish();
                     }
                     else {

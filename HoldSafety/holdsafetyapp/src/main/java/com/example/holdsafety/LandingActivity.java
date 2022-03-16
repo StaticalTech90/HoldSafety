@@ -22,6 +22,8 @@ import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationManager;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
@@ -771,7 +773,9 @@ public class LandingActivity extends AppCompatActivity {
         if (!manager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
             buildAlertMessageNoGps();
         } else if (wifiManager.getWifiState() == 1){
-            buildAlertMessageNoWifi();
+            if(!haveNetworkConnection()){
+                buildAlertMessageNoWifi();
+            }
         }
     }
 
@@ -987,6 +991,23 @@ public class LandingActivity extends AppCompatActivity {
                 Log.e("Cancel (IOException)", "Could not close the connect socket. " + e.getLocalizedMessage());
             }
         }
+    }
+
+    private boolean haveNetworkConnection() {
+        boolean haveConnectedWifi = false;
+        boolean haveConnectedMobile = false;
+
+        ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo[] netInfo = cm.getAllNetworkInfo();
+        for (NetworkInfo ni : netInfo) {
+            if (ni.getTypeName().equalsIgnoreCase("WIFI"))
+                if (ni.isConnected())
+                    haveConnectedWifi = true;
+            if (ni.getTypeName().equalsIgnoreCase("MOBILE"))
+                if (ni.isConnected())
+                    haveConnectedMobile = true;
+        }
+        return haveConnectedWifi || haveConnectedMobile;
     }
 
     @Override
