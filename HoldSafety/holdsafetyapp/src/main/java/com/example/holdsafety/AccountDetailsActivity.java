@@ -30,6 +30,9 @@ import androidx.core.app.ActivityCompat;
 
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.EmailAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
@@ -195,16 +198,19 @@ public class AccountDetailsActivity extends AppCompatActivity {
                 if(taskCheck.isSuccessful()) {
                     boolean isExisting = false;
 
-                    for(QueryDocumentSnapshot userSnap : taskCheck.getResult()) {
-                        String dbEmail = userSnap.getString("Email");
+                    if(isEmailChanged){
+                        for(QueryDocumentSnapshot userSnap : taskCheck.getResult()) {
+                            String dbEmail = userSnap.getString("Email");
 
-                        assert dbEmail != null;
-                        if(dbEmail.equals(newEmail)) { //CHECK IF EMAIL EXISTS IN ANY USER DETAILS
+                            assert dbEmail != null;
+                            if(dbEmail.equals(newEmail)) { //CHECK IF EMAIL EXISTS IN ANY USER DETAILS
                                 isExisting = true;
                                 txtEmail.setError("Email already in use!");
+                            }
                         }
                     }
-                    Log.d("EXISTING", "acount exists? " + isExisting);
+
+                    Log.d("EXISTING", "account exists? " + isExisting);
                     if(!isExisting) {
                         //checks if fields are empty
                         if (TextUtils.isEmpty(newMobileNumber) && TextUtils.isEmpty(newEmail)) {
@@ -689,7 +695,17 @@ public class AccountDetailsActivity extends AppCompatActivity {
     }
 
     public void changeEmailAndNumber(String newEmail, String newMobileNumber) {
+        /*
         GoogleSignInAccount gsa = GoogleSignIn.getLastSignedInAccount(this);
+
+        GoogleSignIn.getSignedInAccountFromIntent(null).addOnSuccessListener(new OnSuccessListener<GoogleSignInAccount>() {
+            @Override
+            public void onSuccess(GoogleSignInAccount googleSignInAccount) {
+                Log.d("CHANGEDETAILS", googleSignInAccount.getIdToken());
+            }
+        }).addOnFailureListener(new on)*/
+
+
         Log.d("CHANGEDETAILS", "gsa: " + gsa);
         Log.d("CHANGEDETAILS", "CHANGING BOTH EMAIL AND NUMBER");
 
@@ -865,8 +881,22 @@ public class AccountDetailsActivity extends AppCompatActivity {
 
                                 //clears logged-in instance
                                 login.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                                startActivity(login);
-                                finish();
+
+                                GoogleSignInOptions gso = new GoogleSignInOptions
+                                        .Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                                        .requestIdToken("233680747912-m8q45hor79go5n8aqfkuneklnkshudqs.apps.googleusercontent.com")
+                                        .requestEmail()
+                                        .build();
+                                GoogleSignInClient gsc = GoogleSignIn.getClient(AccountDetailsActivity.this, gso);
+
+                                gsc.signOut().addOnSuccessListener(new OnSuccessListener<Void>() {
+                                    @Override
+                                    public void onSuccess(Void unused) {
+                                        startActivity(login);
+                                        finish();
+                                    }
+                                });
+
                             } else {
                                 Toast.makeText(AccountDetailsActivity.this, "Update Email Failed" + "\nChanges not Saved", Toast.LENGTH_LONG).show();
                                 Log.i("RemoveAccount", "Removing Account task failed. Incorrect password");

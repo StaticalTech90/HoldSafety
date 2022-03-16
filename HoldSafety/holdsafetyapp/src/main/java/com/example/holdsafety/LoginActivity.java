@@ -63,6 +63,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
 
     protected void onStart() {
         super.onStart();
+        Log.i("GSO/GSC", gso.getLogSessionId() +"/"+ gsc.toString());
         //check if user is already logged in
         if(user != null) {
             Intent landing = new Intent(LoginActivity.this, LandingActivity.class);
