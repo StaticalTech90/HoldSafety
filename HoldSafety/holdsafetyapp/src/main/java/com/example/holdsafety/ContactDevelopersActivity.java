@@ -34,7 +34,6 @@ public class ContactDevelopersActivity extends AppCompatActivity {
     EditText etMessage, etEmail;
     Button btnSend;
 
-    LogHelper logHelper;
     FirebaseUser user;
     FirebaseAuth mAuth;
 
@@ -45,7 +44,6 @@ public class ContactDevelopersActivity extends AppCompatActivity {
 
         mAuth = FirebaseAuth.getInstance();
         user = mAuth.getCurrentUser();
-        logHelper = new LogHelper(getApplicationContext(), mAuth, user,this);
 
         dropdownContact();
         btnBack = findViewById(R.id.backArrow);
@@ -62,13 +60,10 @@ public class ContactDevelopersActivity extends AppCompatActivity {
 
     public void checkUserEmail(){
         if(mAuth.getCurrentUser() == null){
-            logHelper.saveToFirebase("checkUserEmail", "NULL", "No user");
             Toast.makeText(getApplicationContext(), "No User ", Toast.LENGTH_SHORT).show();
         }
 
         else{
-            logHelper.saveToFirebase("checkUserEmail", "SUCCESS",
-                    "User is " + user.getEmail());
 
             Toast.makeText(getApplicationContext(), "User: " + user.getEmail(), Toast.LENGTH_SHORT).show();
             etEmail.setText(user.getEmail());
@@ -114,19 +109,16 @@ public class ContactDevelopersActivity extends AppCompatActivity {
                                         //email of sender, password of sender, list of recipients, email subject, email body
                                         new MailTask(ContactDevelopersActivity.this).execute(username, password, recipients, subject, message1);
 
-                                        logHelper.saveToFirebase("sendMessage", "SUCCESS", "Messaged sent to the admins");
                                         Toast.makeText(getApplicationContext(), "Messaged sent to the admins.", Toast.LENGTH_SHORT).show();
                                         goBack();
                                     }
                                 }
                             });
                 } else {
-                    logHelper.saveToFirebase("sendMessage", "ERROR", "Your internet is not connected or unstable. Message Failed");
                     Toast.makeText(getApplicationContext(), "Your internet is not connected or unstable. Message Failed.", Toast.LENGTH_SHORT).show();
                 }
 
             } catch (Exception e) {
-                logHelper.saveToFirebase("sendMessage", "ERROR", e.getLocalizedMessage());
                 Toast.makeText(getApplicationContext(), "Message Failed:" + e.getMessage(), Toast.LENGTH_SHORT).show();
             }
 
