@@ -74,7 +74,6 @@ public class OTPActivity extends AppCompatActivity {
             userEmail = "";
         }
 
-        Toast.makeText(this, "Email: " + userEmail, Toast.LENGTH_LONG).show();
         etEmail.setText(userEmail);
 
         btnBack.setOnClickListener(view -> goBack());
@@ -118,7 +117,6 @@ public class OTPActivity extends AppCompatActivity {
                 dialog.etCode.setError("Please enter your code.");
             } else if(code == null) {
                 dialog.etCode.setError("Your code expired. Please retry.");
-                //Toast.makeText(this, "Your code expired. Please retry.", Toast.LENGTH_LONG).show();
             } else if(code.equals(dialog.etCode.getText().toString())) {
                 Toast.makeText(this, "Verification Success", Toast.LENGTH_LONG).show();
                 //Close dialog box
@@ -130,14 +128,12 @@ public class OTPActivity extends AppCompatActivity {
 
                     Intent otpResult = new Intent(OTPActivity.this, RegisterActivity.class);
                     setResult(RESULT_OK, otpResult);
-                    //startActivity(otpResult);
                     finish();
                 } else if(requestCode == OTP_REQUEST_CODE_CHANGE_EMAIL) { //update the user's email
                     Log.i("Email", "Changing user's email in progress...");
 
-                    Toast.makeText(getApplicationContext(), "Email verified", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), "OTP verified", Toast.LENGTH_SHORT).show();
                     Log.i("Email", "Email verified");
-                    Log.d("Email", "Sending RESULT_OK back to AccountDetailsActivity...");
 
                     Intent otpResult = new Intent(OTPActivity.this, AccountDetailsActivity.class);
                     otpResult.putExtra("Password", userPassword);
@@ -146,9 +142,8 @@ public class OTPActivity extends AppCompatActivity {
                 } else if(requestCode == OTP_REQUEST_CODE_CHANGE_NUMBER) {
                     Log.i("MobileNumber", "Changing user's mobile number in progress...");
 
-                    Toast.makeText(getApplicationContext(), "Mobile number verified", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), "OTP verified", Toast.LENGTH_SHORT).show();
                     Log.i("MobileNumber", "Mobile number verified");
-                    Log.d("MobileNumber", "Sending RESULT_OK back to AccountDetailsActivity...");
 
                     Intent otpResult = new Intent(OTPActivity.this, AccountDetailsActivity.class);
                     setResult(RESULT_OK, otpResult);
@@ -156,9 +151,8 @@ public class OTPActivity extends AppCompatActivity {
                 } else if(requestCode == OTP_REQUEST_CODE_CHANGE_EMAIL_AND_NUMBER) {
                     Log.i("EmailNum", "Changing user's email and number progress...");
 
-                    Toast.makeText(getApplicationContext(), "Email verified", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), "OTP verified", Toast.LENGTH_SHORT).show();
                     Log.i("EmailNum", "Email verified");
-                    Log.d("EmailNum", "Sending RESULT_OK back to AccountDetailsActivity...");
 
                     Intent otpResult = new Intent(OTPActivity.this, AccountDetailsActivity.class);
                     otpResult.putExtra("Password", userPassword);
@@ -166,7 +160,6 @@ public class OTPActivity extends AppCompatActivity {
                     finish();
                 } else if(requestCode == OTP_REQUEST_CODE_REMOVE_ACCOUNT) {
                     Log.i("RemoveAccount", "Removing Account in progress...");
-                    Log.d("RemoveAccount", "Sending RESULT_OK back to AccountDetailsActivity...");
 
                     Intent otpResult = new Intent(OTPActivity.this, AccountDetailsActivity.class);
                     setResult(RESULT_OK, otpResult);
@@ -214,4 +207,10 @@ public class OTPActivity extends AppCompatActivity {
     }
 
     private void goBack() { finish(); }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        finish();
+    }
 }

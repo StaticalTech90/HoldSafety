@@ -142,9 +142,9 @@ public class RegisterActivity extends AppCompatActivity {
                 // First item is disable and it is used for hint
                 if(position > 0) {
                     // Notify the selected item text
-                    Toast.makeText
-                            (getApplicationContext(), "Selected : " + selectedItemText, Toast.LENGTH_SHORT)
-                            .show();
+//                    Toast.makeText
+//                            (getApplicationContext(), "Selected : " + selectedItemText, Toast.LENGTH_SHORT)
+//                            .show();
                 }
             }
 
@@ -262,7 +262,6 @@ public class RegisterActivity extends AppCompatActivity {
 
                if(isExisting) { //EMAIL ALREADY IN USE, DISPLAY ERROR
 
-                   //logHelper.saveToFirebase("userRegister", "ERROR", "Duplicate email");
                    Toast.makeText(this, "Email already in use! Sign in instead", Toast.LENGTH_LONG).show();
                    etEmail.setError("Email already in use");
                } else { //EMAIL IS NEW, PROCEED WITH REGISTRATION
@@ -392,21 +391,13 @@ public class RegisterActivity extends AppCompatActivity {
                                         "SUCCESS",
                                         "Image inserted to db");
 
-                                Toast.makeText(getApplicationContext(),
-                                        "pushed image to document",
-                                        Toast.LENGTH_SHORT).show();
                                 Log.i(TAG, "Image pushed");
                             })
                             .addOnFailureListener(e -> {
                                 logHelper.saveToFirebase("uploadPhotoToStorage",
                                         "ERROR",
-                                        e.getLocalizedMessage()
-                                );
-
-                                Toast.makeText(getApplicationContext(),
-                                        "Error writing document",
-                                        Toast.LENGTH_SHORT).show();
-                                Log.w(TAG, "Error writing document", e);
+                                        e.getLocalizedMessage());
+                                Log.e(TAG, "Error writing document " + e.getLocalizedMessage());
                             });
                 })).addOnFailureListener(e -> Toast.makeText(RegisterActivity.this, "Upload failed.",
                         Toast.LENGTH_SHORT).show());
@@ -421,6 +412,7 @@ public class RegisterActivity extends AppCompatActivity {
                     EXTERNAL_STORAGE_REQ_CODE);
             return;
         }
+
         //PICK IMAGE
         //PERMISSION GRANTED
         //OPEN IMAGE PICKER
@@ -480,15 +472,9 @@ public class RegisterActivity extends AppCompatActivity {
 
                                 db.collection("users").document(user.getUid()).update(docUsers)
                                         .addOnSuccessListener(aVoid -> {
-
-                                            //Toast.makeText(getApplicationContext(), "pushed image to document", Toast.LENGTH_SHORT).show();
                                             Log.i(TAG, "Image pushed");
-
-//                                            startActivity(new Intent(RegisterActivity.this, LoginActivity.class));
                                         })
                                         .addOnFailureListener(e -> {
-
-                                            //Toast.makeText(getApplicationContext(), "Error writing document", Toast.LENGTH_SHORT).show();
                                             Log.w(TAG, "Error writing document", e);
                                         });
                             }))
@@ -559,6 +545,12 @@ public class RegisterActivity extends AppCompatActivity {
     }
 
     public void goBack() {
+        finish();
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
         finish();
     }
 }

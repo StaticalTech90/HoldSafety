@@ -59,13 +59,7 @@ public class ContactDevelopersActivity extends AppCompatActivity {
     }
 
     public void checkUserEmail(){
-        if(mAuth.getCurrentUser() == null){
-            Toast.makeText(getApplicationContext(), "No User ", Toast.LENGTH_SHORT).show();
-        }
-
-        else{
-
-            Toast.makeText(getApplicationContext(), "User: " + user.getEmail(), Toast.LENGTH_SHORT).show();
+        if(mAuth.getCurrentUser() != null){
             etEmail.setText(user.getEmail());
             etEmail.setTextColor(getResources().getColor(R.color.dark_blue));
             etEmail.setEnabled(false);
@@ -138,12 +132,7 @@ public class ContactDevelopersActivity extends AppCompatActivity {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 String selectedItemText = (String) parent.getItemAtPosition(position);
-                // If user change the default selection
-                // First item is disable and it is used for hint
-                // Notify the selected item text
-//                Toast.makeText
-//                        (getApplicationContext(), "Selected : " + selectedItemText, Toast.LENGTH_SHORT)
-//                        .show();
+
                 selectedConcern  = spinnerAction.getSelectedItem().toString().trim();
             }
 
@@ -172,6 +161,12 @@ public class ContactDevelopersActivity extends AppCompatActivity {
     }
 
     private void goBack(){
+        finish();
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
         finish();
     }
 }

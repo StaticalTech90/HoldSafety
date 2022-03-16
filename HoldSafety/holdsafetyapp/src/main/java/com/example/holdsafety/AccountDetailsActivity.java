@@ -295,15 +295,11 @@ public class AccountDetailsActivity extends AppCompatActivity {
                                 Log.i(TAG, "Image pushed");
                             })
                             .addOnFailureListener(e -> {
-                                Toast.makeText(getApplicationContext(),
-                                        "Error writing document",
-                                        Toast.LENGTH_SHORT).show();
                                 Log.w(TAG, "Error writing document", e);
                             });
 
                     setAccountStatus(false, true);
-                })).addOnFailureListener(e -> Toast.makeText(AccountDetailsActivity.this, "Upload failed.",
-                Toast.LENGTH_SHORT).show());
+                })).addOnFailureListener(e -> Log.e("uploadPhotoStorage", "Upload failed."));
     }
 
     private void pickImage() {
@@ -399,7 +395,7 @@ public class AccountDetailsActivity extends AppCompatActivity {
                 });
             }
         } else {
-            Toast.makeText(AccountDetailsActivity.this, "Incorrect OTP" + "\nChanges not Saved", Toast.LENGTH_LONG).show();
+            Toast.makeText(AccountDetailsActivity.this, "Incorrect OTP." + "\nChanges not Saved", Toast.LENGTH_LONG).show();
         }
 
         //For number change
@@ -421,7 +417,7 @@ public class AccountDetailsActivity extends AppCompatActivity {
             isEmailChanged = false;
             userPassword = "";
 
-            Toast.makeText(AccountDetailsActivity.this, "Incorrect OTP" + "\nChanges not Saved", Toast.LENGTH_LONG).show();
+            Toast.makeText(AccountDetailsActivity.this, "Incorrect OTP." + "\nChanges not Saved", Toast.LENGTH_LONG).show();
         }
 
         //For email and number change
@@ -564,8 +560,8 @@ public class AccountDetailsActivity extends AppCompatActivity {
                 isNumberChanged = false;
                 userPassword = "";
 
-                finish();
                 startActivity(getIntent());
+                finish();
             });
 
             passwordInputDialog = dialogSaveChanges.create();
@@ -741,8 +737,8 @@ public class AccountDetailsActivity extends AppCompatActivity {
                 isNumberChanged = false;
                 userPassword = "";
 
-                finish();
                 startActivity(getIntent());
+                finish();
             });
 
             passwordInputDialog = dialogSaveChanges.create();

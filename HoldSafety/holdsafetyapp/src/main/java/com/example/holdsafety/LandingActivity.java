@@ -145,12 +145,9 @@ public class LandingActivity extends AppCompatActivity {
             if(result == 0) {
                 logHelper.saveToFirebase("onCreate", "SUCCESS", "MESSAGE RECEIVED FROM CONNECTED DEVICE");
 
-                Log.d("SIGNAL", "MESSAGE RECEIVED FROM CONNECTED DEVICE");
                 getCurrentLocation();
             } else {
-                Log.d("SIGNAL", "MESSAGE NOT RECEIVED");
                 logHelper.saveToFirebase("onCreate", "ERROR", "MESSAGE NOT RECEIVED");
-
             }
         });
 
@@ -164,8 +161,6 @@ public class LandingActivity extends AppCompatActivity {
                 Set<Node> nodes = capabilityInfo.getNodes();
             } else {
                 logHelper.saveToFirebase("onCreate", "SUCCESS", "Capability request failed to return any results");
-
-                Log.d("SIGNAL", "Capability request failed to return any results.");
             }
         });
 
@@ -243,16 +238,14 @@ public class LandingActivity extends AppCompatActivity {
     private void setPermissions(){
         if (ActivityCompat.checkSelfPermission(this,
                 Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_DENIED) {
-            //DENIED LOCATION PERMISSION
-            Log.d("location permission", "Please Grant Location Permission");
+
             //SHOW PERMISSION
             ActivityCompat.requestPermissions(this,
                     new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
                     LOCATION_REQ_CODE);
         } else if (ActivityCompat.checkSelfPermission(this,
                 Manifest.permission.SEND_SMS) == PackageManager.PERMISSION_DENIED) {
-            //DENIED LOCATION PERMISSION
-            Log.d("location permission", "Please Grant SMS Permission");
+
             //SHOW PERMISSION
             ActivityCompat.requestPermissions(this,
                     new String[]{Manifest.permission.SEND_SMS},
@@ -262,7 +255,6 @@ public class LandingActivity extends AppCompatActivity {
             //DENIED AUDIO PERMISSION
             logHelper.saveToFirebase("setPermissions", "NO PERMISSION", "Please Grant Audio Permission");
 
-            Log.d("audio permission", "Please Grant Audio Permission");
             //SHOW PERMISSION
             ActivityCompat.requestPermissions(this,
                     new String[]{Manifest.permission.RECORD_AUDIO}, AUDIO_REQ_CODE);
@@ -271,7 +263,6 @@ public class LandingActivity extends AppCompatActivity {
             //DENIED STORAGE PERMISSION
             logHelper.saveToFirebase("setPermissions", "NO PERMISSION", "Please Grant Storage Permission");
 
-            Log.d("storage permission", "Please Grant Storage Permission");
             //SHOW PERMISSION
             ActivityCompat.requestPermissions(this,
                     new String[] {Manifest.permission.WRITE_EXTERNAL_STORAGE}, STORAGE_WRITE_REQ_CODE);
@@ -280,7 +271,6 @@ public class LandingActivity extends AppCompatActivity {
             //DENIED CAMERA PERMISSION
             logHelper.saveToFirebase("setPermissions", "NO PERMISSION", "Please Grant Camera Permission");
 
-            Log.d("camera permission", "Please Grant Camera Permission");
             //SHOW PERMISSION
             ActivityCompat.requestPermissions(this,
                     new String[] {Manifest.permission.CAMERA}, CAMERA_REQ_CODE);
@@ -348,7 +338,7 @@ public class LandingActivity extends AppCompatActivity {
             } else if (ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
                     == PackageManager.PERMISSION_GRANTED){
                 setPermissions();
-                //Toast.makeText(this, "Permissions granted.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Permissions granted.", Toast.LENGTH_SHORT).show();
             } else {
                 Intent settingsIntent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
                 Uri uri = Uri.fromParts("package", getPackageName(), null);
@@ -585,11 +575,9 @@ public class LandingActivity extends AppCompatActivity {
                                     docDetails.put("Barangay", nearestBrgy);
                                     manager.sendMultipartTextMessage(brgyMobileNumber, null, msgArray, sentPendingIntents, null);
                                     logHelper.saveToFirebase("sendAlertMessage", "Success", "Text Sent to Brgy");
-                                    Toast.makeText(getApplicationContext(), "Text Sent to Brgy", Toast.LENGTH_LONG).show();
+                                    Toast.makeText(getApplicationContext(), "Text Sent to Barangay", Toast.LENGTH_LONG).show();
                                 } catch (Exception ex) {
                                     logHelper.saveToFirebase("sendAlertMessage", "Error", ex.getLocalizedMessage());
-
-                                    Toast.makeText(getApplicationContext(), "SMS Error: " + ex.getMessage(), Toast.LENGTH_LONG).show();
                                     ex.printStackTrace();
                                 }
                             }
@@ -616,7 +604,7 @@ public class LandingActivity extends AppCompatActivity {
                 }
 
             } else {
-                Toast.makeText(getApplicationContext(), "No current user", Toast.LENGTH_LONG).show();
+                Toast.makeText(getApplicationContext(), "No current user", Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -682,10 +670,9 @@ public class LandingActivity extends AppCompatActivity {
                                     sentPendingIntents.add(i, sentPI);
                                 }
                                 manager.sendMultipartTextMessage(contactMobileNumber, null, msgArray, sentPendingIntents, null);
-                                //Toast.makeText(getApplicationContext(), "Message Sent", Toast.LENGTH_LONG).show();
+                                Toast.makeText(getApplicationContext(), "Message Sent", Toast.LENGTH_SHORT).show();
                             } catch (Exception ex) {
                                 logHelper.saveToFirebase("sendAlertMessage", "Error", ex.getLocalizedMessage());
-//                                Toast.makeText(getApplicationContext(), "SMS Error: " + ex.getMessage(), Toast.LENGTH_LONG).show();
                                 ex.printStackTrace();
                             }
                         }
@@ -727,7 +714,6 @@ public class LandingActivity extends AppCompatActivity {
                         //GET THE ID OF THE REPORT TO BE SAVED IN DB
                         DocumentReference docRefDetails = db.collection("reports").document();
                         reportID = docRefDetails.getId();
-                        Log.d("DocID", "documentId: " + reportID);
 
                         //putExtras for evidence push to reportId
                         Intent audioRecordIntent = new Intent(this, AudioRecordingActivity.class);
@@ -769,7 +755,6 @@ public class LandingActivity extends AppCompatActivity {
                     //GET THE ID OF THE REPORT TO BE SAVED IN DB
                     DocumentReference docRefDetails = db.collection("reports").document();
                     reportID = docRefDetails.getId();
-                    Log.d("DocID", "documentId: " + reportID);
 
                     //ADD TO GENERAL COLLECTION USING THE SAME ID
                     db.collection("reports").document(reportID).set(docDetails)
@@ -824,12 +809,12 @@ public class LandingActivity extends AppCompatActivity {
     @SuppressLint("MissingPermission")
     public void enableBT(){
         if(mBluetoothAdapter == null){
-            Log.d(TAG, "enableBT: Does not have BT capabilities.");
+            Log.d("Enable BT", "Does not have BT capabilities.");
             Toast.makeText(getApplicationContext(),"Phone does not have BT capabilities",Toast.LENGTH_LONG).show();
         }
 
         if(!mBluetoothAdapter.isEnabled()){
-            Log.d(TAG, "enableBT: enabling BT.");
+            Log.d("Enable BT", "Enabling BT.");
             mBluetoothAdapter.enable();
 
             if(mBluetoothAdapter.isEnabled()){
@@ -852,7 +837,7 @@ public class LandingActivity extends AppCompatActivity {
                 devices.add(device.getAddress());
             }
         } else {
-            Toast.makeText(getApplicationContext(),"No Paired Devices Found",Toast.LENGTH_LONG).show();
+            Toast.makeText(LandingActivity.this,"No Paired Devices Found",Toast.LENGTH_LONG).show();
         }
         showDeviceSelectedDialog(deviceStrs, devices);
     }
@@ -881,8 +866,6 @@ public class LandingActivity extends AppCompatActivity {
                         editor.putString("deviceAddress", deviceAddress).commit();
 
                         //call start connection
-
-                        Toast.makeText(getApplicationContext(),"Selected:" + deviceAddress,Toast.LENGTH_LONG).show();
 
                         try {
                             startConnection(deviceAddress);
@@ -922,7 +905,7 @@ public class LandingActivity extends AppCompatActivity {
                 connectedThread = new ConnectedThread(sock);
                 connectedThread.start();
             } catch (Exception e1) {
-                Toast.makeText(getApplicationContext(),"This is NOT a your target Device. "+ "\nPlease make sure to select the correct device.",Toast.LENGTH_LONG).show();
+                Toast.makeText(LandingActivity.this,"Connection failed. Please try again.",Toast.LENGTH_LONG).show();
             }
         }
     }
@@ -943,15 +926,15 @@ public class LandingActivity extends AppCompatActivity {
 
             try {
                 tmpIn = socket.getInputStream();
-                Log.e(TAG, "tpmIn: ");
+                Log.i("ConnectedThread", "tpmIn: "+tmpIn);
             } catch (IOException e) {
-                Log.e(TAG, "Error occurred when creating input stream", e);
+                Log.e("IOException", "Error occurred when creating input stream" + e.getLocalizedMessage());
             }
 
             try {
                 tmpOut = socket.getOutputStream();
             } catch (IOException e) {
-                Log.e(TAG, "Error occurred when creating output stream", e);
+                Log.e("IOException", "Error occurred when creating output stream" + e.getLocalizedMessage());
             }
 
             mmInStream = tmpIn;
@@ -960,21 +943,21 @@ public class LandingActivity extends AppCompatActivity {
 
         @SuppressLint("HandlerLeak")
         public void run() {
-            Log.d("ConnectedThread Run", "Run is executed");
+            Log.i("ConnectedThread Run", "Run is executed");
 
             mmBuffer = new byte[1024];
             int numBytes; // bytes returned from read()
 
             // Keep listening to the InputStream until an exception occurs.
             while (true) {
-                Log.d("ConnectedThread Run", "Waiting for data...");
+                Log.i("ConnectedThread Run", "Waiting for data...");
 
                 try {
                     // Read from the InputStream.
                     numBytes = mmInStream.read(mmBuffer);
 
                     if(numBytes>0){
-                        Log.d("ConnectedThread Run", "Signal from device received!");
+                        Log.i("ConnectedThread Run", "Signal from device received!");
 
                         handler = new Handler(Looper.getMainLooper());
 
@@ -1000,7 +983,7 @@ public class LandingActivity extends AppCompatActivity {
             try {
                 mmSocket.close();
             } catch (IOException e) {
-                Log.e(TAG, "Could not close the connect socket", e);
+                Log.e("Cancel (IOException)", "Could not close the connect socket. " + e.getLocalizedMessage());
             }
         }
     }

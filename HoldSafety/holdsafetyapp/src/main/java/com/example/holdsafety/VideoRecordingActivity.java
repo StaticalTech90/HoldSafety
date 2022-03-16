@@ -143,7 +143,7 @@ public class VideoRecordingActivity extends AppCompatActivity {
                 .addOnFailureListener(e -> {
                     logHelper.saveToFirebase("addFileToFirebase", "ERROR",
                             e.getLocalizedMessage());
-                    Toast.makeText(VideoRecordingActivity.this, "Upload failed: " +e.getMessage(), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(VideoRecordingActivity.this, "Upload failed", Toast.LENGTH_SHORT).show();
                     setHandler();
 
                 })
@@ -297,6 +297,7 @@ public class VideoRecordingActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
+        super.onBackPressed();
         finish();
     }
 

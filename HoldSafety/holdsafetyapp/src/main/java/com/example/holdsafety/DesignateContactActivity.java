@@ -2,7 +2,6 @@ package com.example.holdsafety;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.ImageView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -35,6 +34,12 @@ public class DesignateContactActivity extends AppCompatActivity {
     }
 
     private void goBack() {
+        finish();
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
         finish();
     }
 }

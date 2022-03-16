@@ -100,9 +100,6 @@ public class MenuActivity extends AppCompatActivity {
     }
 
     private void userManual() {
-        //Intent intentUserManual = new Intent (MenuActivity.this, UserManualActivity.class);
-        //intentUserManual.putExtra("pdf_url", "https://drive.google.com/file/d/1WlKSgesRQem4g6lQXVuObyPUkUDdg_8x/view?usp=sharing");
-        //startActivity(intentUserManual);
         Intent intent =
         new Intent("android.intent.action.VIEW",
                 Uri.parse("https://drive.google.com/file/d/1UpVP266vD24nipyDp1ilS5NEPLdB5-wE/view?usp=sharing"));
@@ -138,7 +135,6 @@ public class MenuActivity extends AppCompatActivity {
                 @Override
                 public void onSuccess(Void unused) {
                     logHelper.saveToFirebase("logoutUser", "SUCCESS", "User signed out");
-                    //Toast.makeText(MenuActivity.this, "Sign Out", Toast.LENGTH_SHORT).show();
 
                     startActivity(intentLogout);
 

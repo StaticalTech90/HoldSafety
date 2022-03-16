@@ -5,24 +5,17 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.FirebaseFirestoreException;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -83,9 +76,6 @@ public class UpdateContactActivity extends AppCompatActivity {
             mobileNumber = previousActivity.getStringExtra("mobileNumber").trim();
             relation = previousActivity.getStringExtra("relation").trim();
 
-            //Toast.makeText(this, previousActivity.getStringExtra("email"), Toast.LENGTH_SHORT).show();
-
-            //Need String vars because maarte
             contactLastName.setText(lastName);
             contactFirstName.setText(firstName);
             contactEmail.setText(email);
@@ -94,8 +84,6 @@ public class UpdateContactActivity extends AppCompatActivity {
 
             checkUpdates();
             btnUpdate.setOnClickListener(view -> updateContact());
-        } else {
-            Toast.makeText(this, "Unable to get Extras", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -118,7 +106,6 @@ public class UpdateContactActivity extends AppCompatActivity {
                     Toast.makeText(UpdateContactActivity.this, "No Changes", Toast.LENGTH_SHORT).show();
                 } else{
                     isLastNameChanged = true;
-                    //Toast.makeText(UpdateContactActivity.this, "New Last Name", Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -140,7 +127,6 @@ public class UpdateContactActivity extends AppCompatActivity {
                     Toast.makeText(UpdateContactActivity.this, "No Changes", Toast.LENGTH_SHORT).show();
                 } else{
                     isFirstNameChanged = true;
-                    //Toast.makeText(UpdateContactActivity.this, "New First Name", Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -162,7 +148,6 @@ public class UpdateContactActivity extends AppCompatActivity {
                     Toast.makeText(UpdateContactActivity.this, "No Changes", Toast.LENGTH_SHORT).show();
                 } else{
                     isRelationChanged = true;
-                    //Toast.makeText(UpdateContactActivity.this, "New Relation", Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -184,7 +169,6 @@ public class UpdateContactActivity extends AppCompatActivity {
                     Toast.makeText(UpdateContactActivity.this, "No Changes", Toast.LENGTH_SHORT).show();
                 } else{
                     isNumberChanged = true;
-                    //Toast.makeText(UpdateContactActivity.this, "New Mobile Number", Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -206,7 +190,6 @@ public class UpdateContactActivity extends AppCompatActivity {
                     Toast.makeText(UpdateContactActivity.this, "No Changes", Toast.LENGTH_SHORT).show();
                 } else{
                     isEmailChanged = true;
-                    //Toast.makeText(UpdateContactActivity.this, "New Email", Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -237,8 +220,6 @@ public class UpdateContactActivity extends AppCompatActivity {
                 contactMobileNumber.setError("Please enter mobile number");
             } else if (!mobileNumberMatcher.matches()) {
                 contactMobileNumber.setError("Please enter a valid mobile number");
-            } else if(TextUtils.isEmpty(changedEmail)){
-                contactEmail.setError("Please enter email");
             } else if (!emailMatcher.matches()) {
                 contactEmail.setError("Please enter a valid email");
             } else {

@@ -53,8 +53,6 @@ public class AddContactActivity extends AppCompatActivity {
         user = mAuth.getCurrentUser();
         logHelper = new LogHelper(this, mAuth, user, this);
 
-        Toast.makeText(getApplicationContext(), "Designate Contacts", Toast.LENGTH_SHORT).show();
-
         btnBack = findViewById(R.id.backArrow);
         etContactLastName = findViewById(R.id.txtContactLastName);
         etContactFirstName = findViewById(R.id.txtContactFirstName);
@@ -101,10 +99,6 @@ public class AddContactActivity extends AppCompatActivity {
                 // If user change the default selection
                 // First item is disable and it is used for hint
                 if(position > 0){
-                    // Notify the selected item text
-                    Toast.makeText
-                            (getApplicationContext(), "Selected : " + selectedItemText, Toast.LENGTH_SHORT)
-                            .show();
                 }
             }
 
@@ -179,11 +173,7 @@ public class AddContactActivity extends AppCompatActivity {
                                    goBack();
                                } else {
                                    logHelper.saveToFirebase("saveContact", "ERROR", task1.getException().getLocalizedMessage());
-
-                                   Toast.makeText(getApplicationContext(),
-                                           Objects.requireNonNull(task1.getException()).toString(),
-                                           Toast.LENGTH_SHORT).show();
-                               }
+                                 }
                            });
                        } else {
                            for(QueryDocumentSnapshot contactSnap : task.getResult()) {
@@ -212,10 +202,6 @@ public class AddContactActivity extends AppCompatActivity {
                                                goBack();
                                            } else {
                                                logHelper.saveToFirebase("saveContact", "ERROR", task1.getException().getLocalizedMessage());
-
-                                               Toast.makeText(getApplicationContext(),
-                                                       Objects.requireNonNull(task1.getException()).toString(),
-                                                       Toast.LENGTH_SHORT).show();
                                            }
                                        });
                                    }
@@ -246,13 +232,18 @@ public class AddContactActivity extends AppCompatActivity {
                         lblContactCount.setText(emergencyContactCount + " out of 5");
                     } else {
                         logHelper.saveToFirebase("getContactCount", "ERROR", "No Contacts Available");
-
                         Toast.makeText(this, "No Contacts Available", Toast.LENGTH_SHORT).show();
                     }
                 });
     }
 
     private void goBack() {
+        finish();
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
         finish();
     }
 }

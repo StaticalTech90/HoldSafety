@@ -91,9 +91,6 @@ public class RegisterGoogleActivity extends AppCompatActivity {
         Intent intent = getIntent();
         googleSignInMap = (HashMap<String, String>)intent.getSerializableExtra("googleSignInMap");
 
-        //email = googleSignInMap.get("email");
-        //Log.v("HashMapTest", hashMap.get("key"));
-
         lblLink = findViewById(R.id.txtImageLink);
         etMiddleName = findViewById(R.id.txtMiddleName);
         etMobileNo = findViewById(R.id.txtMobileNumber);
@@ -221,14 +218,10 @@ public class RegisterGoogleActivity extends AppCompatActivity {
 
                         db.collection("users").document(user.getUid()).set(docUsers)
                                 .addOnSuccessListener(aVoid -> {
-
-                                    Toast.makeText(getApplicationContext(), "pushed image to document", Toast.LENGTH_SHORT).show();
                                     Log.i(TAG, "Image pushed");
                                 })
                                 .addOnFailureListener(e -> {
-
-                                    Toast.makeText(getApplicationContext(), "Error writing document", Toast.LENGTH_SHORT).show();
-                                    Log.w(TAG, "Error writing document", e);
+                                    Log.e(TAG, "Error writing document", e);
                                 });
                     }))
                     .addOnFailureListener(e -> Toast.makeText(RegisterGoogleActivity.this, "Upload failed.",
@@ -391,11 +384,12 @@ public class RegisterGoogleActivity extends AppCompatActivity {
             public void onSuccess(Void unused) {
             }
         });
+
         super.onBackPressed();
+        finish();
     }
 
     public void goBack(){
-        //finish();
-        onBackPressed();
+        finish();
     }
 }

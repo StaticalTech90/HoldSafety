@@ -1,29 +1,22 @@
 package com.example.holdsafety;
 
 import android.annotation.SuppressLint;
-import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
 
 public class SelectContactActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
@@ -65,7 +58,6 @@ public class SelectContactActivity extends AppCompatActivity {
                 .document(user.getUid()).collection("contacts").get()
                 .addOnCompleteListener(task -> {
                     Intent updateContact = new Intent(this, UpdateContactActivity.class);
-                    //Toast.makeText(this, user.getUid(), Toast.LENGTH_SHORT).show();
                     if (task.isSuccessful()) {
                         //FOR EACH
                         //GET ALL ID
@@ -162,6 +154,12 @@ public class SelectContactActivity extends AppCompatActivity {
     }
 
     private void goBack(){
+        finish();
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
         finish();
     }
 }

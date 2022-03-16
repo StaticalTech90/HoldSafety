@@ -68,7 +68,7 @@ public class ReportsActivity extends AppCompatActivity {
                             longitude = reportSnap.getString("Lon");
                             location = getGeoLoc(latitude, longitude);
                             date = reportSnap.getTimestamp("Report Date").toDate().toString();
-                            barangay = reportSnap.getString("Barangay");
+                            barangay = reportSnap.getString("Nearest Barangay");
                             evidence = reportSnap.getString("Evidence");
 
                             View displayReportView = getLayoutInflater().inflate(R.layout.report_row, null, false);

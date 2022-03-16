@@ -134,23 +134,6 @@ public class AudioRecordingActivity extends AppCompatActivity {
             btnAudio.setText("Stop Recording");
             Toast.makeText(AudioRecordingActivity.this, "Audio Recording Started", Toast.LENGTH_SHORT).show();
 
-            /*
-            //2. SET TIMER (5 SECONDS) - Limit of the recording
-            new CountDownTimer(5000, 1000){
-                @Override
-                public void onTick(long l) {
-                    long timeRemaining = (l/1000) + 1;
-                    txtAudioRecording.setText("Recording will stop in " + timeRemaining + " seconds");
-                }
-                @Override
-                public void onFinish() {
-                    //3. STOP RECORDING
-                    txtAudioRecording.setText("");
-                    stopRecording();
-                }
-            }.start();
-             */
-
         } catch (Exception e){
             Toast.makeText(AudioRecordingActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
             e.printStackTrace();
@@ -203,7 +186,6 @@ public class AudioRecordingActivity extends AppCompatActivity {
 
                         Toast.makeText(AudioRecordingActivity.this, "Upload failed.", Toast.LENGTH_SHORT).show();
                         setHandler();
-
                     }
                 })
                 .addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
@@ -239,31 +221,8 @@ public class AudioRecordingActivity extends AppCompatActivity {
     }
 
     public void recordAudio(){
-
-        /*
-        //START DELAY TIMER
-        new CountDownTimer(1000, 1000){
-            @Override
-            public void onTick(long l) {
-                long timeRemaining = (l/1000) + 1;
-                txtAudioRecording.setText("Recording in " + timeRemaining + " seconds");
-            }
-            @RequiresApi(api = Build.VERSION_CODES.O)
-            @Override
-            public void onFinish() {
-                //TODO SET TO FRONT CAM
-                //SET TO 5 SECONDS ONLY
-                //1. START RECORDING
-                //startRecording();
-                btnAudio.setEnabled(true);
-                btnAudio.performClick();
-            }
-        }.start();
-         */
-
         btnAudio.setEnabled(true);
         btnAudio.performClick();
-
     }
 
     /**
