@@ -28,6 +28,7 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.FirebaseAuth;
@@ -63,7 +64,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
 
     protected void onStart() {
         super.onStart();
-        Log.i("GSO/GSC", gso.getLogSessionId() +"/"+ gsc.toString());
+
         //check if user is already logged in
         if(user != null) {
             Intent landing = new Intent(LoginActivity.this, LandingActivity.class);
@@ -213,8 +214,8 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
 
                         checkUserAccount(user);
                     } else {
-
-                        Toast.makeText(LoginActivity.this, "Error logging in", Toast.LENGTH_LONG).show();
+                        Log.e("check user", "Account does not exist");
+                        Toast.makeText(LoginActivity.this, "Account does not exist", Toast.LENGTH_SHORT).show();
                     }
                 });
     }
@@ -228,12 +229,6 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
             if(documentSnapshot.exists()) {
                 Toast.makeText(LoginActivity.this, "Login Successful!", Toast.LENGTH_SHORT).show();
                 startActivity(new Intent(LoginActivity.this, LandingActivity.class));
-                finish();
-            } else {
-                //account does not exist in users table = you are not a registered user/ you are an admin
-                FirebaseAuth.getInstance().signOut();
-                Toast.makeText(LoginActivity.this, "you are not a registered user", Toast.LENGTH_LONG).show();
-                startActivity(getIntent());
                 finish();
             }
         });

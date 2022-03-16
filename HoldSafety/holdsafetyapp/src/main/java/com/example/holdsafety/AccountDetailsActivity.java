@@ -146,10 +146,8 @@ public class AccountDetailsActivity extends AppCompatActivity {
                     public void afterTextChanged(Editable editable) {
                         if(currentMobileNumber.equals(newNumber)){
                             isNumberChanged = false;
-                            Toast.makeText(AccountDetailsActivity.this, "No Changes", Toast.LENGTH_SHORT).show();
                         } else {
                             isNumberChanged = true;
-                            Toast.makeText(AccountDetailsActivity.this, "New Number", Toast.LENGTH_SHORT).show();
                         }
                     }
                 });
@@ -167,10 +165,8 @@ public class AccountDetailsActivity extends AppCompatActivity {
                     public void afterTextChanged(Editable editable) {
                         if(currentEmail.equals(newEmail)){
                             isEmailChanged = false;
-                            Toast.makeText(AccountDetailsActivity.this, "No Changes", Toast.LENGTH_SHORT).show();
                         } else {
                             isEmailChanged = true;
-                            Toast.makeText(AccountDetailsActivity.this, "New Email", Toast.LENGTH_SHORT).show();
                         }
                     }
                 });
@@ -400,12 +396,10 @@ public class AccountDetailsActivity extends AppCompatActivity {
                     }
                 });
             }
-        } else {
-            Toast.makeText(AccountDetailsActivity.this, "Incorrect OTP." + "\nChanges not Saved", Toast.LENGTH_LONG).show();
         }
 
         //For number change
-        if(requestCode == OTP_REQUEST_CODE_CHANGE_NUMBER && resultCode == RESULT_OK) {
+        else if(requestCode == OTP_REQUEST_CODE_CHANGE_NUMBER && resultCode == RESULT_OK) {
             docRef.update("MobileNumber", newMobileNumber);
             isNumberChanged = false;
             logHelper.saveToFirebase("changeNumber", "SUCCESS", "Mobile Number Successfully Changed");
@@ -417,17 +411,10 @@ public class AccountDetailsActivity extends AppCompatActivity {
                 finish();
                 startActivity(getIntent());
             }
-        } else {
-            //reset values
-            isNumberChanged = false;
-            isEmailChanged = false;
-            userPassword = "";
-
-            Toast.makeText(AccountDetailsActivity.this, "Incorrect OTP." + "\nChanges not Saved", Toast.LENGTH_LONG).show();
         }
 
         //For email and number change
-        if(requestCode == OTP_REQUEST_CODE_CHANGE_EMAIL_AND_NUMBER && resultCode == RESULT_OK) {
+        else if(requestCode == OTP_REQUEST_CODE_CHANGE_EMAIL_AND_NUMBER && resultCode == RESULT_OK) {
             requestCode = 0;
             String email = user.getEmail();
             String password = data.getStringExtra("Password");
@@ -476,12 +463,10 @@ public class AccountDetailsActivity extends AppCompatActivity {
                     }
                 });
             }
-        } else {
-            Toast.makeText(AccountDetailsActivity.this, "Incorrect OTP" + "\nChanges not Saved", Toast.LENGTH_LONG).show();
         }
 
         //For remove account
-        if(requestCode == OTP_REQUEST_CODE_REMOVE_ACCOUNT && resultCode == RESULT_OK) {
+        else if(requestCode == OTP_REQUEST_CODE_REMOVE_ACCOUNT && resultCode == RESULT_OK) {
             Log.d("RemoveAccount", "current user: " + user.getUid());
 
             googleCredential = GoogleAuthProvider.getCredential(gsa.getIdToken(), null);
@@ -493,8 +478,9 @@ public class AccountDetailsActivity extends AppCompatActivity {
                     Log.i("RemoveAccount", "Removing Account task sucessful");
                     //DELETE IMAGE
                     imageRef.child(user.getUid()).delete()
-                            .addOnSuccessListener(v -> Toast.makeText(AccountDetailsActivity.this, "Deleted Image", Toast.LENGTH_LONG).show())
-                            .addOnFailureListener(v1 -> {
+                            .addOnSuccessListener(v -> {
+                                //Toast.makeText(AccountDetailsActivity.this, "Deleted Image", Toast.LENGTH_LONG).show()
+                            }).addOnFailureListener(v1 -> {
                                 //Toast.makeText(AccountDetailsActivity.this, "Failed", Toast.LENGTH_LONG).show();
                             });
 
@@ -503,15 +489,39 @@ public class AccountDetailsActivity extends AppCompatActivity {
                     db.collection("emergencyContacts").document(user.getUid()).delete();
 
                     Intent login = new Intent(AccountDetailsActivity.this, LoginActivity.class);
+                    login.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+
+                    GoogleSignInOptions gso = new GoogleSignInOptions
+                            .Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                            .requestIdToken("233680747912-m8q45hor79go5n8aqfkuneklnkshudqs.apps.googleusercontent.com")
+                            .requestEmail()
+                            .build();
+                    GoogleSignInClient gsc = GoogleSignIn.getClient(AccountDetailsActivity.this, gso);
+
+                    gsc.signOut().addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void unused) {
+                            Toast.makeText(AccountDetailsActivity.this, "Accouunt Details: Sign Out", Toast.LENGTH_LONG).show();
+                            startActivity(login);
+                            finish();
+                        }
+                    });
 
                     //clears logged-in instance
-                    login.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                    startActivity(login);
-                    finish();
+
+                    //startActivity(login);
+                    //finish();
                 } else {
                     Log.i("RemoveAccount", "Removing Account task failed");
                 }
             }));
+        } else {
+            //reset values
+            isNumberChanged = false;
+            isEmailChanged = false;
+            userPassword = "";
+
+            Toast.makeText(AccountDetailsActivity.this, "Incorrect OTP." + "\nChanges not Saved", Toast.LENGTH_LONG).show();
         }
     }
 
@@ -770,6 +780,7 @@ public class AccountDetailsActivity extends AppCompatActivity {
                     AuthCredential credential = EmailAuthProvider.getCredential(user.getEmail(), userPassword);
                     Log.d("CHANGEDETAILS", "credential: " + credential);
 
+
                     user.reauthenticate(credential).addOnCompleteListener(task -> {
                         Log.d("CHANGEDETAILS", "reauth task begins");
                         if (task.isSuccessful()) {
@@ -878,9 +889,9 @@ public class AccountDetailsActivity extends AppCompatActivity {
                                 db.collection("users").document(user.getUid()).delete();
                                 db.collection("emergencyContacts").document(user.getUid()).delete();
 
-
                                 //clears logged-in instance
                                 login.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                Toast.makeText(AccountDetailsActivity.this, "Accouunt Details: Add Flags", Toast.LENGTH_LONG).show();
 
                                 GoogleSignInOptions gso = new GoogleSignInOptions
                                         .Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
@@ -892,11 +903,29 @@ public class AccountDetailsActivity extends AppCompatActivity {
                                 gsc.signOut().addOnSuccessListener(new OnSuccessListener<Void>() {
                                     @Override
                                     public void onSuccess(Void unused) {
+                                        Toast.makeText(AccountDetailsActivity.this, "Accouunt Details: Sign Out", Toast.LENGTH_LONG).show();
                                         startActivity(login);
                                         finish();
                                     }
                                 });
 
+                                /*
+
+                                GoogleSignInOptions gso = new GoogleSignInOptions
+                                        .Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                                        .requestIdToken("233680747912-m8q45hor79go5n8aqfkuneklnkshudqs.apps.googleusercontent.com")
+                                        .requestEmail()
+                                        .build();
+
+                                GoogleSignInClient gsc = GoogleSignIn.getClient(AccountDetailsActivity.this, gso);
+
+                                gsc.signOut().addOnSuccessListener(new OnSuccessListener<Void>() {
+                                    @Override
+                                    public void onSuccess(Void unused) {
+                                        startActivity(login);
+                                        finish();
+                                    }
+                                });*/
                             } else {
                                 Toast.makeText(AccountDetailsActivity.this, "Update Email Failed" + "\nChanges not Saved", Toast.LENGTH_LONG).show();
                                 Log.i("RemoveAccount", "Removing Account task failed. Incorrect password");
@@ -923,6 +952,5 @@ public class AccountDetailsActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        finish();
     }
 }

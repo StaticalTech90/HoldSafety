@@ -185,7 +185,7 @@ public class AddContactActivity extends AppCompatActivity {
                                if(contactMobileNumber.equals(mobileNumber)) {
                                    existing = true;
                                    etContactMobileNumber.setError("This number is already an emergency contact");
-                               } else if(contactEmail.equals(email)) {
+                               } else if(contactEmail.equals(email) && !contactEmail.equals("")) {
                                    existing = true;
                                    etContactEmail.setError("This email is already an emergency contact");
                                }

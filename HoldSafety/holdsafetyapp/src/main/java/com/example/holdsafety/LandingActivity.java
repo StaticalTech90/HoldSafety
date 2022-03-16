@@ -816,6 +816,7 @@ public class LandingActivity extends AppCompatActivity {
         if(!mBluetoothAdapter.isEnabled()){
             Log.d("Enable BT", "Enabling BT.");
             mBluetoothAdapter.enable();
+            Toast.makeText(getApplicationContext(),"Bluetooth Turned ON",Toast.LENGTH_LONG).show();
 
             if(mBluetoothAdapter.isEnabled()){
                 Toast.makeText(getApplicationContext(),"Bluetooth Turned ON",Toast.LENGTH_LONG).show();

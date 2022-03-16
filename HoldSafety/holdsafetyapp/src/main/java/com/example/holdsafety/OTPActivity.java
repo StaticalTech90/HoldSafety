@@ -103,6 +103,7 @@ public class OTPActivity extends AppCompatActivity {
         String hsEmail = "holdsafety.ph@gmail.com";
         String hsPass = "HoldSafety@4qmag";
         code = randomNumber();
+        Log.i("OTP", code);
 
         List<String> recipients = Collections.singletonList(email);
         String subject = "HoldSafety App Verification Code";
@@ -132,7 +133,6 @@ public class OTPActivity extends AppCompatActivity {
                 } else if(requestCode == OTP_REQUEST_CODE_CHANGE_EMAIL) { //update the user's email
                     Log.i("Email", "Changing user's email in progress...");
 
-                    Toast.makeText(getApplicationContext(), "OTP verified", Toast.LENGTH_SHORT).show();
                     Log.i("Email", "Email verified");
 
                     Intent otpResult = new Intent(OTPActivity.this, AccountDetailsActivity.class);
@@ -142,7 +142,6 @@ public class OTPActivity extends AppCompatActivity {
                 } else if(requestCode == OTP_REQUEST_CODE_CHANGE_NUMBER) {
                     Log.i("MobileNumber", "Changing user's mobile number in progress...");
 
-                    Toast.makeText(getApplicationContext(), "OTP verified", Toast.LENGTH_SHORT).show();
                     Log.i("MobileNumber", "Mobile number verified");
 
                     Intent otpResult = new Intent(OTPActivity.this, AccountDetailsActivity.class);
@@ -151,7 +150,6 @@ public class OTPActivity extends AppCompatActivity {
                 } else if(requestCode == OTP_REQUEST_CODE_CHANGE_EMAIL_AND_NUMBER) {
                     Log.i("EmailNum", "Changing user's email and number progress...");
 
-                    Toast.makeText(getApplicationContext(), "OTP verified", Toast.LENGTH_SHORT).show();
                     Log.i("EmailNum", "Email verified");
 
                     Intent otpResult = new Intent(OTPActivity.this, AccountDetailsActivity.class);
