@@ -1,7 +1,12 @@
 package com.example.holdsafety;
 
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Intent;
 import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.text.TextUtils;
@@ -13,6 +18,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -38,6 +45,7 @@ public class OTPActivity extends AppCompatActivity {
     TextView txtTimeRemaining;
 
     private int requestCode;
+
     String userEmail, userPassword, userNumber;
     String code = null; //OTP code
 
@@ -51,6 +59,16 @@ public class OTPActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register_otp);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            CharSequence name = "HOLDSAFETY";
+            String description = "Holdsafety notification group";
+            int importance = NotificationManager.IMPORTANCE_HIGH;
+            NotificationChannel channel = new NotificationChannel("HOLDSAFETY", name, importance);
+            channel.setDescription(description);
+            NotificationManager notificationManager = getSystemService(NotificationManager.class);
+            notificationManager.createNotificationChannel(channel);
+        }
 
         //Firebase
         mAuth = FirebaseAuth.getInstance();
@@ -104,6 +122,18 @@ public class OTPActivity extends AppCompatActivity {
         String hsPass = "HoldSafety@4qmag";
         code = randomNumber();
         Log.i("OTP", code);
+
+        NotificationCompat.Builder notificationBuilder =
+                new NotificationCompat.Builder(this, "HOLDSAFETY")
+                        .setSmallIcon(R.drawable.holdsafety_login)
+                        .setContentTitle("Verification OTP")
+                        .setContentText(code)
+                        .setAutoCancel(true)
+                        .setPriority(NotificationCompat.PRIORITY_HIGH)
+                        .setCategory(NotificationCompat.CATEGORY_EMAIL);
+
+        NotificationManagerCompat otpManager = NotificationManagerCompat.from(OTPActivity.this);
+        otpManager.notify(1, notificationBuilder.build());
 
         List<String> recipients = Collections.singletonList(email);
         String subject = "HoldSafety App Verification Code";
