@@ -172,9 +172,9 @@ public class OTPActivity extends AppCompatActivity {
         //Allow code to be resent every 60 seconds
         CountDownTimer timer = new CountDownTimer(180000, 1000) {
             @Override
-            public void onTick(long millisUntilFinished) { //ticking timer
+            public void onTick(long millisUntilFinished) { // ticking timer
                 long timeRemaining = millisUntilFinished / 1000;
-                dialog.timeRemaining.setOnClickListener(null); // make unclickable while ticking
+                dialog.timeRemaining.setOnClickListener(null); // make un-clickable while ticking
                 dialog.timeRemaining.setText("Resend in " + timeRemaining + " seconds");
             }
 

@@ -704,8 +704,12 @@ public class LandingActivity extends AppCompatActivity {
         docRef.get()
                 .addOnSuccessListener(documentSnapshot -> {
                     if(documentSnapshot.exists()) {
+                        String id = documentSnapshot.getString("ID");
+                        String reportId = "REPORT-"+id.substring(id.length()-6);
                         String firstName = documentSnapshot.getString("FirstName");
                         String lastName = documentSnapshot.getString("LastName");
+
+                        docDetails.put("reportId", reportId);
                         docDetails.put("FirstName", firstName);
                         docDetails.put("LastName", lastName);
                         docDetails.put("Report Date", timestamp);
@@ -719,7 +723,7 @@ public class LandingActivity extends AppCompatActivity {
 
                         //putExtras for evidence push to reportId
                         Intent audioRecordIntent = new Intent(this, AudioRecordingActivity.class);
-                        audioRecordIntent.putExtra("reportId", reportID);
+                        audioRecordIntent.putExtra("reportId", "REPORT-"+id.substring(id.length()-6));
                         audioRecordIntent.putExtra("userId", userID);
 
                         Intent videoRecordIntent = new Intent(this, VideoRecordingActivity.class);
@@ -731,7 +735,7 @@ public class LandingActivity extends AppCompatActivity {
                         evidenceLinkRequirements.put("reportID", reportID);
 
                         //ADD TO GENERAL REPORTS COLLECTION
-                        docDetails.put("User ID", userID);
+                        docDetails.put("User ID", id);
                         db.collection("reports").document(reportID).set(docDetails)
                                 .addOnSuccessListener(aVoid ->
                                         logHelper.saveToFirebase("saveToDB",

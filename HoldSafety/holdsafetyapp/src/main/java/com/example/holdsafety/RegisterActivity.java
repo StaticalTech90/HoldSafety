@@ -35,11 +35,14 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
@@ -48,9 +51,11 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -385,7 +390,7 @@ public class RegisterActivity extends AppCompatActivity {
                     docUsers.put("imgUri", idPicUri);
                     Log.i("URI gDUrl()", idPicUri);
 
-                    db.collection("users").document(user.getUid()).update(docUsers)
+                    db.collection("users").document(user.getUid()).set(docUsers)
                             .addOnSuccessListener(aVoid -> {
                                 logHelper.saveToFirebase("uploadPhotoToStorage",
                                         "SUCCESS",
@@ -451,8 +456,9 @@ public class RegisterActivity extends AppCompatActivity {
                     Log.i("REGISTRATION", "ACCOUNT CREATED!");
                     // Sign up success
                     user = mAuth.getCurrentUser();
+                    String id = randomNumber();
                     assert user != null;
-                    docUsers.put("ID", user.getUid());
+                    docUsers.put("ID", "USER-"+id);
 
                     if(!lblLink.getText().equals("")) {
                         uploadPhotoToStorage();
@@ -470,7 +476,7 @@ public class RegisterActivity extends AppCompatActivity {
                                 Log.i("REGISTRATION", "Account details saved to db");
                                 Log.i("URI gDUrl()", idPicUri);
 
-                                db.collection("users").document(user.getUid()).update(docUsers)
+                                db.collection("users").document(user.getUid()).set(docUsers)
                                         .addOnSuccessListener(aVoid -> {
                                             Log.i(TAG, "Image pushed");
                                         })
@@ -546,6 +552,17 @@ public class RegisterActivity extends AppCompatActivity {
 
     public void goBack() {
         finish();
+    }
+
+    private String randomNumber() {
+        String code;
+
+        int random  = new Random().nextInt(999999 + 1);
+        code = String.valueOf(random);
+        while(code.length() != 6) {
+            code = "0" + code;
+        }
+        return code;
     }
 
     @Override

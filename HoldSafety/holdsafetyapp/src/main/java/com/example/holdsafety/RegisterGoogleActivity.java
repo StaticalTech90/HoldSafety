@@ -35,10 +35,14 @@ import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
@@ -51,6 +55,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -134,7 +139,7 @@ public class RegisterGoogleActivity extends AppCompatActivity {
         user = mAuth.getCurrentUser();
         String mobileNumberRegex = "^(09|\\+639)\\d{9}$";
         Pattern mobileNumberPattern = Pattern.compile(mobileNumberRegex);
-
+        String id = randomNumber();
         SimpleDateFormat dateFormat = new SimpleDateFormat("MM-dd-yyyy");
 
         String userId = user.getUid();
@@ -189,21 +194,47 @@ public class RegisterGoogleActivity extends AppCompatActivity {
                 docUsers.put("profileComplete", false);
             }
 
-            db.collection("users").document(userId).set(docUsers)
-                    .addOnSuccessListener(aVoid -> {
+            db.collection("users").whereEqualTo("ID", id).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                    if (task.isSuccessful()){
+                        for(QueryDocumentSnapshot userSnap : task.getResult()){
+                            if(userSnap.get("ID").equals("G_USER-"+id)){
+                                docUsers.put("ID", "G_USER-" + id);
+                                db.collection("users").document(userId).update(docUsers)
+                                        .addOnSuccessListener(aVoid -> {
+                                            Intent landing = new Intent(RegisterGoogleActivity.this,
+                                                    LandingActivity.class);
+                                            startActivity(landing);
+                                            finish();
+                                        })
+                                        .addOnFailureListener(e -> {
 
-                        Intent landing = new Intent(RegisterGoogleActivity.this,
-                                LandingActivity.class);
-                        startActivity(landing);
-                        finish();
-                    })
-                    .addOnFailureListener(e -> {
-
-                        Toast.makeText(getApplicationContext(),
-                                "Error writing document",
-                                Toast.LENGTH_SHORT).show();
-                        Log.w(TAG, "Error writing document", e);
-                    });
+                                            Toast.makeText(getApplicationContext(),
+                                                    "Error writing document",
+                                                    Toast.LENGTH_SHORT).show();
+                                            Log.w(TAG, "Error writing document", e);
+                                        });
+                            } else {
+                                docUsers.put("ID", "G_USER-" + id);
+                                db.collection("users").document(userId).set(docUsers)
+                                        .addOnSuccessListener(aVoid -> {
+                                            Intent landing = new Intent(RegisterGoogleActivity.this,
+                                                    LandingActivity.class);
+                                            startActivity(landing);
+                                            finish();
+                                        })
+                                        .addOnFailureListener(e -> {
+                                            Toast.makeText(getApplicationContext(),
+                                                    "Error writing document",
+                                                    Toast.LENGTH_SHORT).show();
+                                            Log.w(TAG, "Error writing document", e);
+                                        });
+                            }
+                        }
+                    }
+                }
+            });
         }
     }
 
@@ -364,6 +395,17 @@ public class RegisterGoogleActivity extends AppCompatActivity {
             dpDialog.getDatePicker().setMaxDate(maxCal.getTimeInMillis());
             dpDialog.show();
         });
+    }
+
+    private String randomNumber() {
+        String code;
+
+        int random  = new Random().nextInt(999999 + 1);
+        code = String.valueOf(random);
+        while(code.length() != 6) {
+            code = "0" + code;
+        }
+        return code;
     }
 
     @Override
