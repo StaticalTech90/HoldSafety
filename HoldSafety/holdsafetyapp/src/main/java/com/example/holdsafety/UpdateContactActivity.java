@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.util.Patterns;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -188,7 +189,7 @@ public class UpdateContactActivity extends AppCompatActivity {
                 if(mobileNumber.equals(newEmail)){
                     isEmailChanged = false;
                     Toast.makeText(UpdateContactActivity.this, "No Changes", Toast.LENGTH_SHORT).show();
-                } else{
+                } else {
                     isEmailChanged = true;
                 }
             }
@@ -220,6 +221,8 @@ public class UpdateContactActivity extends AppCompatActivity {
                 contactMobileNumber.setError("Please enter mobile number");
             } else if (!mobileNumberMatcher.matches()) {
                 contactMobileNumber.setError("Please enter a valid mobile number");
+            } else if(!Patterns.EMAIL_ADDRESS.matcher(changedEmail).matches()) {
+                contactEmail.setError("Please enter a valid email");
             } else {
                 docRef.get().addOnSuccessListener(documentSnapshot -> {
                     if(documentSnapshot.exists()){

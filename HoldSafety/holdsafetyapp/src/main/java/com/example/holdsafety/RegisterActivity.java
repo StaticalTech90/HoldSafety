@@ -3,7 +3,6 @@ package com.example.holdsafety;
 import static android.content.ContentValues.TAG;
 
 import android.Manifest;
-import android.annotation.SuppressLint;
 import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -15,6 +14,7 @@ import android.text.InputType;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.util.Patterns;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -35,14 +35,11 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
@@ -51,7 +48,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -147,9 +143,7 @@ public class RegisterActivity extends AppCompatActivity {
                 // First item is disable and it is used for hint
                 if(position > 0) {
                     // Notify the selected item text
-//                    Toast.makeText
-//                            (getApplicationContext(), "Selected : " + selectedItemText, Toast.LENGTH_SHORT)
-//                            .show();
+//                    Toast.makeText(getApplicationContext(), "Selected : " + selectedItemText, Toast.LENGTH_SHORT).show();
                 }
             }
 
@@ -230,10 +224,8 @@ public class RegisterActivity extends AppCompatActivity {
     }
 
     public void userRegister() throws ParseException {
-        String emailRegex = "^[a-zA-Z0-9_!#$%&'*+/=?`{|}~^.-]+@[a-zA-Z0-9.-]+$";
         String passRegex = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[-@%}+'!/#$^?:;,(\")~`.=&{><_])(?=\\S+$).{8,}$";
         String mobileNumberRegex = "^(09|\\+639)\\d{9}$";
-        Pattern emailPattern = Pattern.compile(emailRegex);
         Pattern passPattern = Pattern.compile(passRegex);
         Pattern mobileNumberPattern = Pattern.compile(mobileNumberRegex);
 
@@ -246,8 +238,6 @@ public class RegisterActivity extends AppCompatActivity {
         email = etEmail.getText().toString().trim();
         password = etPassword.getText().toString().trim();
         String cPassword = etConPassword.getText().toString().trim();
-
-        @SuppressLint("SimpleDateFormat") SimpleDateFormat dateFormat = new SimpleDateFormat("MM-dd-yyyy");
 
         //CHECK IF EMAIL IS ALREADY IN DB
         CollectionReference colRef = db.collection("users");
@@ -266,7 +256,6 @@ public class RegisterActivity extends AppCompatActivity {
                }
 
                if(isExisting) { //EMAIL ALREADY IN USE, DISPLAY ERROR
-
                    Toast.makeText(this, "Email already in use! Sign in instead", Toast.LENGTH_LONG).show();
                    etEmail.setError("Email already in use");
                } else { //EMAIL IS NEW, PROCEED WITH REGISTRATION
@@ -285,11 +274,8 @@ public class RegisterActivity extends AppCompatActivity {
                            docUsers.put("isVerified", false);
 
                            //Data validation and register
-                           //Date parsedDate = dateFormat.parse(birthDate);
-                           Boolean validInput = true;
+                           boolean validInput = true;
 
-                           //assert parsedDate != null;
-                           Matcher emailMatcher = emailPattern.matcher(etEmail.getText());
                            Matcher passMatcher = passPattern.matcher(etPassword.getText());
                            Matcher mobileNumberMatcher = mobileNumberPattern.matcher(etMobileNumber.getText());
 
@@ -330,7 +316,7 @@ public class RegisterActivity extends AppCompatActivity {
                            if(TextUtils.isEmpty(email)) {
                                etEmail.setError("Please enter email");
                                validInput = false;
-                           } else if (!emailMatcher.matches()) {
+                           } else if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
                                etEmail.setError("Please enter valid email");
                                validInput = false;
                            }
@@ -458,7 +444,7 @@ public class RegisterActivity extends AppCompatActivity {
                     user = mAuth.getCurrentUser();
                     String id = randomNumber();
                     assert user != null;
-                    docUsers.put("ID", "USER-"+id);
+                    docUsers.put("ID", "USER-" + id);
 
                     if(!lblLink.getText().equals("")) {
                         uploadPhotoToStorage();
@@ -477,12 +463,8 @@ public class RegisterActivity extends AppCompatActivity {
                                 Log.i("URI gDUrl()", idPicUri);
 
                                 db.collection("users").document(user.getUid()).set(docUsers)
-                                        .addOnSuccessListener(aVoid -> {
-                                            Log.i(TAG, "Image pushed");
-                                        })
-                                        .addOnFailureListener(e -> {
-                                            Log.w(TAG, "Error writing document", e);
-                                        });
+                                        .addOnSuccessListener(aVoid -> Log.i(TAG, "Image pushed"))
+                                        .addOnFailureListener(e -> Log.w(TAG, "Error writing document", e));
                             }))
                             .addOnFailureListener(e -> Log.w(TAG, "error", e));
                 } else {

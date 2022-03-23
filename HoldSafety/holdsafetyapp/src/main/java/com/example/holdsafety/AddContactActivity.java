@@ -4,6 +4,7 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
+import android.util.Patterns;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -27,7 +28,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -95,11 +95,6 @@ public class AddContactActivity extends AppCompatActivity {
         etRelation.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                String selectedItemText = (String) parent.getItemAtPosition(position);
-                // If user change the default selection
-                // First item is disable and it is used for hint
-                if(position > 0){
-                }
             }
 
             @Override
@@ -121,7 +116,6 @@ public class AddContactActivity extends AppCompatActivity {
             String mobileNumberRegex = "^(09|\\+639)\\d{9}$";
             Pattern emailPattern = Pattern.compile(emailRegex);
             Pattern mobileNumberPattern = Pattern.compile(mobileNumberRegex);
-            Matcher emailMatcher = emailPattern.matcher(contactEmail);
             Matcher mobileNumberMatcher = mobileNumberPattern.matcher(contactMobileNumber);
 
             docContacts.put("lastName", contactLastName);
@@ -130,7 +124,7 @@ public class AddContactActivity extends AppCompatActivity {
             docContacts.put("email", contactEmail);
             docContacts.put("relation", contactRelation);
 
-            Boolean valid = true;
+            boolean valid = true;
 
             if(TextUtils.isEmpty(contactLastName)) {
                 etContactLastName.setError("Please enter contact last name");
@@ -148,9 +142,15 @@ public class AddContactActivity extends AppCompatActivity {
                 etContactMobileNumber.setError("Please enter contact mobile number");
                 valid = false;
             }
-            if (!mobileNumberMatcher.matches()) {
+            if(!mobileNumberMatcher.matches()) {
                 etContactMobileNumber.setError("Please enter a valid mobile number");
                 valid = false;
+            }
+            if(!TextUtils.isEmpty(contactEmail)) { //user entered an email even when not required
+                if(!Patterns.EMAIL_ADDRESS.matcher(contactEmail).matches()) {
+                    etContactEmail.setError("Invalid email");
+                    valid = false;
+                }
             }
 
             if(valid){
