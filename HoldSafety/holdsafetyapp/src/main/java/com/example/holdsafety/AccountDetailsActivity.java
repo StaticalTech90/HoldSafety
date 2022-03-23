@@ -12,6 +12,7 @@ import android.text.InputType;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.util.Patterns;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -228,16 +229,13 @@ public class AccountDetailsActivity extends AppCompatActivity {
                         if (!isEmailChanged && !isNumberChanged) { //not empty fields, no changes
                             Toast.makeText(AccountDetailsActivity.this, "No Changes Made", Toast.LENGTH_LONG).show();
                         } else { //one or both fields changed
-                            String emailRegex = "^[a-zA-Z0-9_!#$%&'*+/=?`{|}~^.-]+@[a-zA-Z0-9.-]+$";
                             String mobileNumberRegex = "^(09|\\+639)\\d{9}$";
-                            Pattern emailPattern = Pattern.compile(emailRegex);
                             Pattern mobileNumberPattern = Pattern.compile(mobileNumberRegex);
-                            Matcher emailMatcher = emailPattern.matcher(txtEmail.getText());
                             Matcher mobileNumberMatcher = mobileNumberPattern.matcher(txtMobileNumber.getText());
 
                             if (!mobileNumberMatcher.matches()) {
                                 txtMobileNumber.setError("Please enter a valid mobile number");
-                            } else if (!emailMatcher.matches()) {
+                            } else if (!Patterns.EMAIL_ADDRESS.matcher(newEmail).matches()) {
                                 txtEmail.setError("Please enter a valid email");
                             } else {
                                 if(isNumberChanged && isEmailChanged) {
