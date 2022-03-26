@@ -193,48 +193,20 @@ public class RegisterGoogleActivity extends AppCompatActivity {
             } else {
                 docUsers.put("profileComplete", false);
             }
-
-            db.collection("users").whereEqualTo("ID", id).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                @Override
-                public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                    if (task.isSuccessful()){
-                        for(QueryDocumentSnapshot userSnap : task.getResult()){
-                            if(userSnap.get("ID").equals("G_USER-"+id)){
-                                docUsers.put("ID", "G_USER-" + id);
-                                db.collection("users").document(userId).update(docUsers)
-                                        .addOnSuccessListener(aVoid -> {
-                                            Intent landing = new Intent(RegisterGoogleActivity.this,
-                                                    LandingActivity.class);
-                                            startActivity(landing);
-                                            finish();
-                                        })
-                                        .addOnFailureListener(e -> {
-
-                                            Toast.makeText(getApplicationContext(),
-                                                    "Error writing document",
-                                                    Toast.LENGTH_SHORT).show();
-                                            Log.w(TAG, "Error writing document", e);
-                                        });
-                            } else {
-                                docUsers.put("ID", "G_USER-" + id);
-                                db.collection("users").document(userId).set(docUsers)
-                                        .addOnSuccessListener(aVoid -> {
-                                            Intent landing = new Intent(RegisterGoogleActivity.this,
-                                                    LandingActivity.class);
-                                            startActivity(landing);
-                                            finish();
-                                        })
-                                        .addOnFailureListener(e -> {
-                                            Toast.makeText(getApplicationContext(),
-                                                    "Error writing document",
-                                                    Toast.LENGTH_SHORT).show();
-                                            Log.w(TAG, "Error writing document", e);
-                                        });
-                            }
-                        }
-                    }
-                }
-            });
+                docUsers.put("ID", "G_USER-" + id);
+                db.collection("users").document(userId).set(docUsers)
+                        .addOnSuccessListener(aVoid -> {
+                            Intent landing = new Intent(RegisterGoogleActivity.this,
+                                    LandingActivity.class);
+                            startActivity(landing);
+                            finish();
+                        })
+                        .addOnFailureListener(e -> {
+                            Toast.makeText(getApplicationContext(),
+                                    "Error writing document",
+                                    Toast.LENGTH_SHORT).show();
+                            Log.w(TAG, "Error writing document", e);
+                        });
         }
     }
 
