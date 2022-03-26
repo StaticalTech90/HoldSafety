@@ -138,13 +138,8 @@ public class RegisterActivity extends AppCompatActivity {
         spinnerSex.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                String selectedItemText = (String) parent.getItemAtPosition(position);
                 // If user change the default selection
                 // First item is disable and it is used for hint
-                if(position > 0) {
-                    // Notify the selected item text
-//                    Toast.makeText(getApplicationContext(), "Selected : " + selectedItemText, Toast.LENGTH_SHORT).show();
-                }
             }
 
             @Override
@@ -305,10 +300,7 @@ public class RegisterActivity extends AppCompatActivity {
                            if(TextUtils.isEmpty(mobileNumber)) {
                                etMobileNumber.setError("Please enter mobile number");
                                validInput = false;
-                           } else if (!mobileNumberMatcher.matches()) {
-                               etMobileNumber.setError("Please enter a valid mobile number");
-                               validInput = false;
-                           } else if(etMobileNumber.getText().length() != 11) {
+                           } else if(!mobileNumberMatcher.matches() || etMobileNumber.getText().length() != 11) {
                                etMobileNumber.setError("Please enter a valid mobile number");
                                validInput = false;
                            }
@@ -316,9 +308,11 @@ public class RegisterActivity extends AppCompatActivity {
                            if(TextUtils.isEmpty(email)) {
                                etEmail.setError("Please enter email");
                                validInput = false;
-                           } else if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+                           } else if(!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
                                etEmail.setError("Please enter valid email");
                                validInput = false;
+                           } else if(!CustomDNSChecker.checkEmailDNS(email)) {
+                               etEmail.setError("Enter a GOOGLE or YAHOO email only");
                            }
 
                            if(TextUtils.isEmpty(etPassword.getText())) {

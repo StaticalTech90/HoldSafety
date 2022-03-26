@@ -237,6 +237,8 @@ public class AccountDetailsActivity extends AppCompatActivity {
                                 txtMobileNumber.setError("Please enter a valid mobile number");
                             } else if (!Patterns.EMAIL_ADDRESS.matcher(newEmail).matches()) {
                                 txtEmail.setError("Please enter a valid email");
+                            } else if(!CustomDNSChecker.checkEmailDNS(newEmail)) {
+                                txtEmail.setError("Enter a GOOGLE or YAHOO email only");
                             } else {
                                 if(isNumberChanged && isEmailChanged) {
                                     changeEmailAndNumber(newEmail, newMobileNumber);
@@ -294,9 +296,7 @@ public class AccountDetailsActivity extends AppCompatActivity {
 
                                 Log.i(TAG, "Image pushed");
                             })
-                            .addOnFailureListener(e -> {
-                                Log.w(TAG, "Error writing document", e);
-                            });
+                            .addOnFailureListener(e -> Log.w(TAG, "Error writing document", e));
 
                     setAccountStatus(false, true);
                 })).addOnFailureListener(e -> Log.e("uploadPhotoStorage", "Upload failed."));
@@ -413,7 +413,6 @@ public class AccountDetailsActivity extends AppCompatActivity {
 
         //For email and number change
         else if(requestCode == OTP_REQUEST_CODE_CHANGE_EMAIL_AND_NUMBER && resultCode == RESULT_OK) {
-            requestCode = 0;
             String email = user.getEmail();
             String password = data.getStringExtra("Password");
 
@@ -488,24 +487,6 @@ public class AccountDetailsActivity extends AppCompatActivity {
 
                     Intent login = new Intent(AccountDetailsActivity.this, LoginActivity.class);
                     login.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-
-                    /*
-
-                    GoogleSignInOptions gso = new GoogleSignInOptions
-                            .Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                            .requestIdToken("233680747912-m8q45hor79go5n8aqfkuneklnkshudqs.apps.googleusercontent.com")
-                            .requestEmail()
-                            .build();
-                    GoogleSignInClient gsc = GoogleSignIn.getClient(AccountDetailsActivity.this, gso);
-
-                    gsc.signOut().addOnSuccessListener(new OnSuccessListener<Void>() {
-                        @Override
-                        public void onSuccess(Void unused) {
-                            Toast.makeText(AccountDetailsActivity.this, "Accouunt Details: Sign Out", Toast.LENGTH_LONG).show();
-                            startActivity(login);
-                            finish();
-                        }
-                    });*/
 
                     //clears logged-in instance
 
@@ -901,13 +882,10 @@ public class AccountDetailsActivity extends AppCompatActivity {
                                         .build();
                                 GoogleSignInClient gsc = GoogleSignIn.getClient(AccountDetailsActivity.this, gso);
 
-                                gsc.signOut().addOnSuccessListener(new OnSuccessListener<Void>() {
-                                    @Override
-                                    public void onSuccess(Void unused) {
-                                        Toast.makeText(AccountDetailsActivity.this, "Accouunt Details: Sign Out", Toast.LENGTH_LONG).show();
-                                        startActivity(login);
-                                        finish();
-                                    }
+                                gsc.signOut().addOnSuccessListener(unused1 -> {
+                                    Toast.makeText(AccountDetailsActivity.this, "Accouunt Details: Sign Out", Toast.LENGTH_LONG).show();
+                                    startActivity(login);
+                                    finish();
                                 });
                             } else {
                                 Toast.makeText(AccountDetailsActivity.this, "Update Email Failed" + "\nChanges not Saved", Toast.LENGTH_LONG).show();

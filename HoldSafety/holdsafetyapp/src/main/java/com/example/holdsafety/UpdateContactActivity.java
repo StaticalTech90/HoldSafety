@@ -203,11 +203,8 @@ public class UpdateContactActivity extends AppCompatActivity {
         String changedMobileNumber = contactMobileNumber.getText().toString().trim();
         String changedRelation = contactRelation.getText().toString().trim();
 
-        String emailRegex = "^[a-zA-Z0-9_!#$%&'*+/=?`{|}~^.-]+@[a-zA-Z0-9.-]+$";
         String mobileNumberRegex = "^(09|\\+639)\\d{9}$";
-        Pattern emailPattern = Pattern.compile(emailRegex);
         Pattern mobileNumberPattern = Pattern.compile(mobileNumberRegex);
-        Matcher emailMatcher = emailPattern.matcher(changedEmail);
         Matcher mobileNumberMatcher = mobileNumberPattern.matcher(changedMobileNumber);
 
         if(isLastNameChanged || isFirstNameChanged || isRelationChanged || isNumberChanged || isEmailChanged){
@@ -223,6 +220,8 @@ public class UpdateContactActivity extends AppCompatActivity {
                 contactMobileNumber.setError("Please enter a valid mobile number");
             } else if(!Patterns.EMAIL_ADDRESS.matcher(changedEmail).matches()) {
                 contactEmail.setError("Please enter a valid email");
+            } else if(!CustomDNSChecker.checkEmailDNS(changedEmail)) {
+                contactEmail.setError("Enter a GOOGLE or YAHOO email only");
             } else {
                 docRef.get().addOnSuccessListener(documentSnapshot -> {
                     if(documentSnapshot.exists()){

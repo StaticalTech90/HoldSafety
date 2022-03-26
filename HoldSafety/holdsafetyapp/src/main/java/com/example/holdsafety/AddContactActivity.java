@@ -112,9 +112,7 @@ public class AddContactActivity extends AppCompatActivity {
             String contactEmail = etContactEmail.getText().toString().trim();
             String contactRelation = etRelation.getSelectedItem().toString().trim();
 
-            String emailRegex = "^[a-zA-Z0-9_!#$%&'*+/=?`{|}~^.-]+@[a-zA-Z0-9.-]+$";
             String mobileNumberRegex = "^(09|\\+639)\\d{9}$";
-            Pattern emailPattern = Pattern.compile(emailRegex);
             Pattern mobileNumberPattern = Pattern.compile(mobileNumberRegex);
             Matcher mobileNumberMatcher = mobileNumberPattern.matcher(contactMobileNumber);
 
@@ -150,6 +148,8 @@ public class AddContactActivity extends AppCompatActivity {
                 if(!Patterns.EMAIL_ADDRESS.matcher(contactEmail).matches()) {
                     etContactEmail.setError("Invalid email");
                     valid = false;
+                } else if(!CustomDNSChecker.checkEmailDNS(contactEmail)) {
+                    etContactEmail.setError("Enter a GOOGLE or YAHOO email only");
                 }
             }
 
