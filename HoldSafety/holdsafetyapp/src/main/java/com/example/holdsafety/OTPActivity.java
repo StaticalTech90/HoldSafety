@@ -1,9 +1,7 @@
 package com.example.holdsafety;
 
-import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Build;
@@ -42,7 +40,7 @@ public class OTPActivity extends AppCompatActivity {
     ImageView btnBack;
     Button btnSendCode;
     EditText etEmail;
-    TextView txtTimeRemaining;
+    TextView txtTimeRemaining, txtVerifyDesc;
 
     private int requestCode;
 
@@ -58,7 +56,7 @@ public class OTPActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_register_otp);
+        setContentView(R.layout.activity_otp);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             CharSequence name = "HOLDSAFETY";
@@ -78,6 +76,7 @@ public class OTPActivity extends AppCompatActivity {
 
         etEmail = findViewById(R.id.txtEmail);
         txtTimeRemaining = findViewById(R.id.txtTimeRemaining);
+        txtVerifyDesc = findViewById(R.id.lblVerifyDesc);
         btnBack = findViewById(R.id.backArrow);
         btnSendCode = findViewById(R.id.btnSendCode);
 
@@ -138,7 +137,8 @@ public class OTPActivity extends AppCompatActivity {
         List<String> recipients = Collections.singletonList(email);
         String subject = "HoldSafety App Verification Code";
         String message = "Please enter the verification code in your HoldSafety app:" +
-                "\n\n" + code;
+                "\n\n" + code + ". " +
+                "\n\n" + "If you do not use HoldSafety or you did not request for an OTP, please ignore this message.";
 
         new MailTask(OTPActivity.this).execute(hsEmail, hsPass, recipients, subject, message);
 
@@ -198,6 +198,8 @@ public class OTPActivity extends AppCompatActivity {
             }
         });
         dialog.showDialog();
+
+        dialog.verifyDesc.setText("One-Time Password (OTP) has been sent to " + userEmail);
 
         //Allow code to be resent every 60 seconds
         CountDownTimer timer = new CountDownTimer(180000, 1000) {

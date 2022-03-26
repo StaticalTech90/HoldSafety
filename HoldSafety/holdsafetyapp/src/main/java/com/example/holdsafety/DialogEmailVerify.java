@@ -15,7 +15,7 @@ public class DialogEmailVerify {
 
     public EditText etCode;
     public Button btnSubmit;
-    public TextView timeRemaining;
+    public TextView timeRemaining, verifyDesc;
 
     //Constructor for OTP dialog box, make another constructor if this class is to be used for other dialog boxes
     public DialogEmailVerify(Context context) {
@@ -28,6 +28,7 @@ public class DialogEmailVerify {
         etCode = dialogView.findViewById(R.id.txtCode);
         btnSubmit = dialogView.findViewById(R.id.btnSubmit);
         timeRemaining = dialogView.findViewById(R.id.txtTimeRemaining);
+        verifyDesc = dialogView.findViewById(R.id.lblVerifyDesc);
     }
 
     public void showDialog() {
