@@ -275,7 +275,5 @@ public class ChangePasswordActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        super.onBackPressed();
-        finish();
     }
 }

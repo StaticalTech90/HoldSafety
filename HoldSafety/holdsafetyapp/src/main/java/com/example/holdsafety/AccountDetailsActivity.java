@@ -912,6 +912,5 @@ public class AccountDetailsActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        super.onBackPressed();
     }
 }

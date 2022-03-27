@@ -150,6 +150,7 @@ public class AddContactActivity extends AppCompatActivity {
                     valid = false;
                 } else if(!CustomDNSChecker.checkEmailDNS(contactEmail)) {
                     etContactEmail.setError("Enter a GOOGLE or YAHOO email only");
+                    valid = false;
                 }
             }
 
@@ -243,7 +244,5 @@ public class AddContactActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        super.onBackPressed();
-        finish();
     }
 }

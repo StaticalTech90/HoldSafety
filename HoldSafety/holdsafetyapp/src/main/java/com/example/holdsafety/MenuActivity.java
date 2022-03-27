@@ -160,6 +160,9 @@ public class MenuActivity extends AppCompatActivity {
 
     private void goBack() {
         finish();
-        onBackPressed();
+    }
+
+    @Override
+    public void onBackPressed() {
     }
 }

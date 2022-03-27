@@ -121,7 +121,7 @@ public class ContactDevelopersActivity extends AppCompatActivity {
 
     public void dropdownContact(){
         Spinner spinnerAction = findViewById(R.id.txtAction);
-        String[] action = new String[]{"Concern", "Report a bug", "Feedback"};
+        String[] action = new String[]{"Concern", "Report a bug", "Feedback", "Request Barangay"};
         List<String> actionList = new ArrayList<>(Arrays.asList(action));
 
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this, R.layout.spinner, actionList);
@@ -166,7 +166,5 @@ public class ContactDevelopersActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        super.onBackPressed();
-        finish();
     }
 }

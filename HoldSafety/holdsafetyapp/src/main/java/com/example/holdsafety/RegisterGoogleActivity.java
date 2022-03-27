@@ -380,8 +380,7 @@ public class RegisterGoogleActivity extends AppCompatActivity {
         return code;
     }
 
-    @Override
-    public void onBackPressed() {
+    public void goBack(){
         //remobve any instance of the selected google acocunt
         GoogleSignInOptions gso = new GoogleSignInOptions
                 .Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
@@ -399,11 +398,10 @@ public class RegisterGoogleActivity extends AppCompatActivity {
             }
         });
 
-        super.onBackPressed();
         finish();
     }
 
-    public void goBack(){
-        finish();
+    @Override
+    public void onBackPressed() {
     }
 }
