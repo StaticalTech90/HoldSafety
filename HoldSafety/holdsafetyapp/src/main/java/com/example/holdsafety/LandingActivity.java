@@ -77,6 +77,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Random;
 import java.util.Set;
 import java.util.UUID;
 
@@ -705,7 +706,7 @@ public class LandingActivity extends AppCompatActivity {
                 .addOnSuccessListener(documentSnapshot -> {
                     if(documentSnapshot.exists()) {
                         String id = documentSnapshot.getString("ID");
-                        String reportId = "REPORT-"+id.substring(id.length()-6);
+                        String reportId = "REPORT-"+randomNumber();
                         String firstName = documentSnapshot.getString("FirstName");
                         String lastName = documentSnapshot.getString("LastName");
 
@@ -995,6 +996,17 @@ public class LandingActivity extends AppCompatActivity {
                 Log.e("Cancel (IOException)", "Could not close the connect socket. " + e.getLocalizedMessage());
             }
         }
+    }
+
+    private String randomNumber() {
+        String code;
+
+        int random  = new Random().nextInt(999999 + 1);
+        code = String.valueOf(random);
+        while(code.length() != 6) {
+            code = "0" + code;
+        }
+        return code;
     }
 
     private boolean haveNetworkConnection() {
