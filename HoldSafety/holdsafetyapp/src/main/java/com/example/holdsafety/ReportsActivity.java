@@ -12,8 +12,10 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
@@ -56,28 +58,31 @@ public class ReportsActivity extends AppCompatActivity {
     }
 
     public void listMyReports() {
-        db.collection("reports").whereEqualTo("User ID", userID).orderBy("Report Date", Query.Direction.DESCENDING)
-                .get().addOnCompleteListener(task -> {
-                    if (task.isSuccessful()) {
-                        for(QueryDocumentSnapshot reportSnap : task.getResult()) {
-                            reportID = reportSnap.getId();
-                            count++;
-                            //Toast.makeText(ReportsActivity.this, reportID, Toast.LENGTH_SHORT).show();
+        // GET THE NEW USER ID USING THE OLD GIBBERISH ID
+        db.collection("users").document(userID).get().addOnSuccessListener(documentSnapshot -> {
+            String uniformUserID = documentSnapshot.getString("ID");
 
-                            latitude = reportSnap.getString("Lat");
-                            longitude = reportSnap.getString("Lon");
-                            location = getGeoLoc(latitude, longitude);
-                            date = reportSnap.getTimestamp("Report Date").toDate().toString();
-                            barangay = reportSnap.getString("Nearest Barangay");
-                            evidence = reportSnap.getString("Evidence");
+            // USER THE NEW USER ID TO FETCH THE REPORTS
+            db.collection("reports").whereEqualTo("User ID", uniformUserID).orderBy("Report Date", Query.Direction.DESCENDING).get().addOnCompleteListener(task -> {
+                if (task.isSuccessful()) {
+                    for(QueryDocumentSnapshot reportSnap : task.getResult()) {
+                        reportID = reportSnap.getId();
+                        count++;
 
-                            View displayReportView = getLayoutInflater().inflate(R.layout.report_row, null, false);
+                        latitude = reportSnap.getString("Lat");
+                        longitude = reportSnap.getString("Lon");
+                        location = getGeoLoc(latitude, longitude);
+                        date = reportSnap.getTimestamp("Report Date").toDate().toString();
+                        barangay = reportSnap.getString("Nearest Barangay");
+                        evidence = reportSnap.getString("Evidence");
 
-                            TextView txtReportID = displayReportView.findViewById(R.id.txtReportID);
-                            TextView txtReportLocation = displayReportView.findViewById(R.id.txtReportLocation);
-                            TextView txtDateAndTime = displayReportView.findViewById(R.id.txtDateAndTime);
-                            TextView txtBarangay = displayReportView.findViewById(R.id.txtBarangay);
-                            TextView txtEvidence = displayReportView.findViewById(R.id.txtEvidence);
+                        View displayReportView = getLayoutInflater().inflate(R.layout.report_row, null, false);
+
+                        TextView txtReportID = displayReportView.findViewById(R.id.txtReportID);
+                        TextView txtReportLocation = displayReportView.findViewById(R.id.txtReportLocation);
+                        TextView txtDateAndTime = displayReportView.findViewById(R.id.txtDateAndTime);
+                        TextView txtBarangay = displayReportView.findViewById(R.id.txtBarangay);
+                        TextView txtEvidence = displayReportView.findViewById(R.id.txtEvidence);
 
                         txtReportID.setText(reportID);
                         txtReportLocation.setText(location.trim());
@@ -85,19 +90,22 @@ public class ReportsActivity extends AppCompatActivity {
                         txtBarangay.setText(barangay);
                         txtEvidence.setText(evidence);
 
-                            reportView.addView(displayReportView);
-                        }
-                        lblReportsCount.setText("Number of Reports: " + count);
-
-                        if(count==0){
-                            lblNoReports.setVisibility(View.VISIBLE);
-                        } else {
-                            lblNoReports.setVisibility(View.GONE);
-                        }
-                    } else {
-                        Log.w("Reports", "Error getting documents: ", task.getException());
+                        reportView.addView(displayReportView);
                     }
-                });
+                    lblReportsCount.setText("Number of Reports: " + count);
+
+                    if(count==0){
+                        lblNoReports.setVisibility(View.VISIBLE);
+                    } else {
+                        lblNoReports.setVisibility(View.GONE);
+                    }
+                } else {
+                    Log.w("Reports", "Error getting documents: ", task.getException());
+                }
+            });
+        });
+
+
     }
 
     public String getGeoLoc(String latitude, String longitude) {
