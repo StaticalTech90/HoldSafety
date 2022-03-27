@@ -502,7 +502,7 @@ public class AccountDetailsActivity extends AppCompatActivity {
             isEmailChanged = false;
             userPassword = "";
 
-            Toast.makeText(AccountDetailsActivity.this, "Incorrect OTP." + "\nChanges not Saved", Toast.LENGTH_LONG).show();
+            //Toast.makeText(AccountDetailsActivity.this, "Incorrect OTP." + "\nChanges not Saved", Toast.LENGTH_LONG).show();
         }
     }
 
